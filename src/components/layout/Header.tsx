@@ -68,9 +68,9 @@ const Header: React.FC = () => {
               key={link.name}
               to={link.path}
               className={cn(
-                'text-sm transition-colors',
+                'text-sm transition-colors hover:opacity-75',
                 isActive(link.path) 
-                  ? 'font-bold text-black' 
+                  ? 'font-bold text-black border-b-2 border-black pb-1' 
                   : 'font-light text-[#9F9EA1] hover:text-black'
               )}
             >
@@ -117,8 +117,8 @@ const Header: React.FC = () => {
                 className={cn(
                   'py-2 text-sm transition-colors',
                   isActive(link.path) 
-                    ? 'font-bold text-black' 
-                    : 'font-light text-[#9F9EA1] hover:text-black'
+                    ? 'font-bold text-black border-l-4 border-black pl-3' 
+                    : 'font-light text-[#9F9EA1] hover:text-black pl-3'
                 )}
               >
                 {link.name}
