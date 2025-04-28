@@ -18,7 +18,7 @@
     --secondary: 220 14% 96%; /* Light Gray/Beige */
     --secondary-foreground: 0 0% 0%; /* Black */
     --muted: 220 14% 96%; /* Light Gray/Beige */
-    --muted-foreground: 220 8% 46%; /* Light Blue/Gray */
+    --muted-foreground: 0 0% 62%; /* Light Gray */
     --accent: 220 14% 96%; /* Light Gray/Beige */
     --accent-foreground: 0 0% 0%; /* Black */
     --destructive: 0 84.2% 60.2%; /* Keep the destructive color */
@@ -31,6 +31,10 @@
 
   * {
     @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
@@ -66,11 +70,11 @@
   }
 
   .link {
-    @apply text-[#C8C8C9] hover:text-[#9F9EA1] transition-colors duration-200;
+    @apply text-[#9F9EA1] hover:text-black transition-colors duration-200;
   }
 
   input, textarea, select {
-    @apply rounded-xl border border-[#F1F1F1] bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C8C8C9]/20 focus:border-[#C8C8C9] transition-all duration-200;
+    @apply rounded-xl border border-[#F1F1F1] bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#9F9EA1]/20 focus:border-[#9F9EA1] transition-all duration-200;
   }
 
   .card {

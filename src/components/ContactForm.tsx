@@ -58,8 +58,8 @@ const ContactForm: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-4 bg-gradient-to-r from-black to-[#9F9EA1] bg-clip-text text-transparent">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-4xl font-semibold mb-4">
           Contact Us
         </h2>
         <p className="text-black text-lg">
@@ -81,7 +81,7 @@ const ContactForm: React.FC = () => {
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="w-full rounded-xl border-[#F1F1F1] focus:border-[#C8C8C9] focus:ring-[#C8C8C9]/20 transition-all duration-200"
+              className="w-full rounded-xl border-[#F1F1F1] focus:border-[#9F9EA1] focus:ring-[#9F9EA1]/20 transition-all duration-200"
             />
           </div>
 
@@ -97,7 +97,7 @@ const ContactForm: React.FC = () => {
               value={formData.lastName}
               onChange={handleChange}
               required
-              className="w-full rounded-xl border-[#F1F1F1] focus:border-[#C8C8C9] focus:ring-[#C8C8C9]/20 transition-all duration-200"
+              className="w-full rounded-xl border-[#F1F1F1] focus:border-[#9F9EA1] focus:ring-[#9F9EA1]/20 transition-all duration-200"
             />
           </div>
         </div>
@@ -114,7 +114,7 @@ const ContactForm: React.FC = () => {
             value={formData.contact}
             onChange={handleChange}
             required
-            className="w-full rounded-xl border-[#F1F1F1] focus:border-[#C8C8C9] focus:ring-[#C8C8C9]/20 transition-all duration-200"
+            className="w-full rounded-xl border-[#F1F1F1] focus:border-[#9F9EA1] focus:ring-[#9F9EA1]/20 transition-all duration-200"
           />
         </div>
 
@@ -130,15 +130,16 @@ const ContactForm: React.FC = () => {
             onChange={handleChange}
             rows={5}
             required
-            className="w-full rounded-xl border-[#F1F1F1] focus:border-[#C8C8C9] focus:ring-[#C8C8C9]/20 transition-all duration-200 resize-none"
+            className="w-full rounded-xl border-[#F1F1F1] focus:border-[#9F9EA1] focus:ring-[#9F9EA1]/20 transition-all duration-200 resize-none"
           />
         </div>
 
-        <div className="text-center pt-4">
+        <div className="text-center pt-8">
           <Button 
             type="submit" 
             disabled={isSubmitting}
-            className="bg-black hover:bg-black/90 text-white transition-all duration-300 rounded-full px-12 py-6 text-lg"
+            size="lg"
+            className="bg-black hover:bg-black/90 text-white transition-all duration-300 rounded-full px-12 py-6 text-base"
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>

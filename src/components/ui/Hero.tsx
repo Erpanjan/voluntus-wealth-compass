@@ -33,24 +33,24 @@ const Hero: React.FC<HeroProps> = ({
     )}>
       <div className="container-custom">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-6 animate-fade-in-up text-black">
+          <h1 className="text-3xl md:text-4xl lg:text-6xl font-semibold leading-tight mb-8 animate-fade-in-up text-black">
             {title}
           </h1>
           
           {subtitle && (
-            <p className="text-lg md:text-xl text-[#000006] mb-8 animate-fade-in-up" style={{animationDelay: '0.2s'}}> {/* Black with slight transparency */}
+            <p className="text-lg md:text-xl text-[#000006] mb-10 animate-fade-in-up max-w-2xl mx-auto" style={{animationDelay: '0.2s'}}>
               {subtitle}
             </p>
           )}
           
           {collaboration && (
-            <p className="text-sm text-[#9F9EA1] italic mb-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}> {/* Light Gray */}
+            <p className="text-sm text-[#9F9EA1] italic mb-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               {collaboration}
             </p>
           )}
           
           {children && (
-            <div className="mt-10 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+            <div className="mt-12 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
               {children}
             </div>
           )}

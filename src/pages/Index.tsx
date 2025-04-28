@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-voluntus-gray-lightest">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <Hero 
         title="We're There With You Every Step of The Way"
@@ -20,10 +20,11 @@ const Index = () => {
         <div className="flex flex-wrap justify-center gap-4">
           <Button 
             asChild 
-            className="bg-voluntus-gray-medium hover:bg-voluntus-gray-dark text-white transition-all duration-300 rounded-full px-8"
+            size="lg"
+            className="bg-black hover:bg-black/90 text-white transition-all duration-300 rounded-full px-8"
           >
             <Link to="/services" className="inline-flex items-center">
-              Our Services <ArrowRight size={16} className="ml-2" />
+              Our Services <ArrowRight size={18} className="ml-2" />
             </Link>
           </Button>
         </div>
@@ -31,12 +32,12 @@ const Index = () => {
 
       {/* Content Sections */}
       <Section id="gambling" background="light" className="overflow-hidden">
-        <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div className="space-y-6 animate-fade-in-up">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-voluntus-text-primary">
+        <div className="grid md:grid-cols-2 gap-16 lg:gap-24 items-center">
+          <div className="space-y-8 animate-fade-in-up">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-black">
               Tired of Feeling Like You're Gambling With Your Money?
             </h2>
-            <div className="space-y-4 text-voluntus-text-secondary text-lg">
+            <div className="space-y-6 text-black text-lg">
               <p>
                 Managing your wealth shouldn't feel like placing bets in a game where the odds are stacked against you. But for many, that's exactly what it is: guesswork, conflicting advice, and a constant fear of making the wrong move.
               </p>
@@ -46,10 +47,11 @@ const Index = () => {
             </div>
             <Button 
               asChild 
-              className="bg-voluntus-blue hover:bg-voluntus-blue-dark text-white transition-all duration-300 rounded-full px-8 mt-8"
+              size="lg"
+              className="bg-black hover:bg-black/90 text-white transition-all duration-300 rounded-full px-8 mt-8"
             >
-              <Link to="/services">
-                HOW WE CAN HELP YOU <ArrowRight size={16} className="ml-2" />
+              <Link to="/services" className="inline-flex items-center">
+                HOW WE CAN HELP YOU <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
@@ -57,7 +59,7 @@ const Index = () => {
             <img 
               src="https://images.unsplash.com/photo-1567427018141-0584cfcbf1b8?auto=format&fit=crop&q=80" 
               alt="Financial planning" 
-              className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-700"
+              className="w-full h-[450px] object-cover hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
           </div>
@@ -66,19 +68,19 @@ const Index = () => {
 
       {/* Complicated Section */}
       <Section id="complicated">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="order-2 md:order-1 rounded-xl overflow-hidden shadow-lg">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <div className="order-2 md:order-1 rounded-3xl overflow-hidden shadow-lg">
             <img 
               src="https://images.unsplash.com/photo-1579621970590-9d624316904b?auto=format&fit=crop&q=80" 
               alt="Complex financial charts" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
             />
           </div>
-          <div className="order-1 md:order-2">
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+          <div className="order-1 md:order-2 space-y-8">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-black">
               Does Managing Your Wealth Have to Be So Complicated and Expensive?
             </h2>
-            <div className="space-y-4 text-voluntus-text-secondary">
+            <div className="space-y-6 text-black text-lg">
               <p>
                 Investing can feel overwhelming—endless strategies, intricate products, and expensive fees. But does it really need to be this way?
               </p>
@@ -86,9 +88,13 @@ const Index = () => {
                 Complexity provides only marginal value and oftentimes drives up the cost, while simplicity delivers clarity and confidence.
               </p>
             </div>
-            <Button asChild className="btn btn-primary mt-8">
-              <Link to="/services">
-                HOW WE CAN HELP YOU→
+            <Button 
+              asChild 
+              size="lg"
+              className="bg-black hover:bg-black/90 text-white transition-all duration-300 rounded-full px-8"
+            >
+              <Link to="/services" className="inline-flex items-center">
+                HOW WE CAN HELP YOU <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
@@ -97,12 +103,12 @@ const Index = () => {
 
       {/* Best Interest Section */}
       <Section id="best-interest" background="light">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <div className="space-y-8">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-black">
               Can Financial Advice Ever Be in Your Best Interest?
             </h2>
-            <div className="space-y-4 text-voluntus-text-secondary">
+            <div className="space-y-6 text-black text-lg">
               <p>
                 Everywhere you turn, you're bombarded with financial advice, all telling you what to do with your money. But most of this 'advice' comes with a catch: it's incentivized to get you to trade, transact, and eventually buy products.
               </p>
@@ -110,17 +116,21 @@ const Index = () => {
                 Commission-based advice is not in your best interest, so we offer a subscription-based service.
               </p>
             </div>
-            <Button asChild className="btn btn-primary mt-8">
-              <Link to="/services">
-                HOW WE CAN HELP YOU→
+            <Button 
+              asChild 
+              size="lg"
+              className="bg-black hover:bg-black/90 text-white transition-all duration-300 rounded-full px-8"
+            >
+              <Link to="/services" className="inline-flex items-center">
+                HOW WE CAN HELP YOU <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
-          <div className="rounded-xl overflow-hidden shadow-lg">
+          <div className="rounded-3xl overflow-hidden shadow-lg">
             <img 
               src="https://images.unsplash.com/photo-1554774853-719586f82d77?auto=format&fit=crop&q=80" 
               alt="Financial advisor" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
             />
           </div>
         </div>
@@ -128,19 +138,19 @@ const Index = () => {
 
       {/* Accountability Section */}
       <Section id="accountability">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="order-2 md:order-1 rounded-xl overflow-hidden shadow-lg">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <div className="order-2 md:order-1 rounded-3xl overflow-hidden shadow-lg">
             <img 
               src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80" 
               alt="Investment journey" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
             />
           </div>
-          <div className="order-1 md:order-2">
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+          <div className="order-1 md:order-2 space-y-8">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-black">
               Does Investing End Once the Product is Purchased?
             </h2>
-            <div className="space-y-4 text-voluntus-text-secondary">
+            <div className="space-y-6 text-black text-lg">
               <p>
                 Investment products are so much accessible, but what happens after the purchase? Once decisions are made, people are often left navigating the market volatility on their own.
               </p>
@@ -148,9 +158,13 @@ const Index = () => {
                 Purchasing a product is only the start of the journey, what matters is what comes after the purchase.
               </p>
             </div>
-            <Button asChild className="btn btn-primary mt-8">
-              <Link to="/services">
-                HOW WE CAN HELP YOU→
+            <Button 
+              asChild 
+              size="lg"
+              className="bg-black hover:bg-black/90 text-white transition-all duration-300 rounded-full px-8"
+            >
+              <Link to="/services" className="inline-flex items-center">
+                HOW WE CAN HELP YOU <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
@@ -158,7 +172,7 @@ const Index = () => {
       </Section>
 
       {/* Contact Form Section */}
-      <Section id="contact" background="light" className="bg-gradient-to-b from-voluntus-gray-lightest to-white">
+      <Section id="contact" background="light">
         <ContactForm />
       </Section>
     </div>
