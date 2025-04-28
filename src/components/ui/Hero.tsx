@@ -27,30 +27,30 @@ const Hero: React.FC<HeroProps> = ({
 
   return (
     <section className={cn(
-      'pt-40 pb-24 md:pt-48 md:pb-28 overflow-hidden relative',
+      'min-h-screen flex flex-col justify-center items-center overflow-hidden relative',
       bgClasses[background],
       className
     )}>
-      <div className="container-custom relative z-10">
+      <div className="container-custom relative z-10 flex flex-col justify-center py-20">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold leading-tight mb-8 tracking-tight animate-fade-in-up">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold leading-tight mb-6 tracking-tight animate-fade-in-up">
             {title}
           </h1>
           
           {subtitle && (
-            <p className="text-lg md:text-xl text-[#000006] mb-12 animate-fade-in-up max-w-2xl mx-auto" style={{animationDelay: '0.2s'}}>
+            <p className="text-lg md:text-xl text-[#000006] mb-10 animate-fade-in-up max-w-2xl mx-auto" style={{animationDelay: '0.2s'}}>
               {subtitle}
             </p>
           )}
           
           {collaboration && (
-            <p className="text-sm text-[#9F9EA1] italic mb-10 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+            <p className="text-sm text-[#9F9EA1] italic mb-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               {collaboration}
             </p>
           )}
           
           {children && (
-            <div className="mt-12 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+            <div className="mt-10 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
               {children}
             </div>
           )}
