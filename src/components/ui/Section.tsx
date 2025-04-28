@@ -23,8 +23,8 @@ const Section: React.FC<SectionProps> = ({
 }) => {
   const bgClasses = {
     'white': 'bg-white',
-    'light': 'bg-voluntus-gray-light',
-    'dark': 'bg-voluntus-text-primary text-white',
+    'light': 'bg-[#F1F1F1]', // Light Gray
+    'dark': 'bg-black text-white', // Black background with white text
   };
 
   return (
@@ -45,7 +45,7 @@ const Section: React.FC<SectionProps> = ({
               </h2>
             )}
             {subtitle && (
-              <p className="text-lg text-voluntus-text-secondary">
+              <p className="text-lg text-[#000006]"> {/* Black with slight transparency */}
                 {subtitle}
               </p>
             )}

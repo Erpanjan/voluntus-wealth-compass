@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -56,15 +57,15 @@ export default {
           white: '#FFFFFF',
           gray: {
             lightest: '#F9FAFB',
-            light: '#F2F2F2',
-            DEFAULT: '#EFEFEF',
-            medium: '#9CA3AF',
-            dark: '#333333',
+            light: '#F1F1F1', // Updated to Light Gray
+            DEFAULT: '#CCCCCC', // Updated to Light Gray/Beige
+            medium: '#9F9EA1', // Updated to Light Blue/Gray
+            dark: '#000000', // Updated to Black
           },
           blue: {
-            light: '#E5F0FF',
-            DEFAULT: '#A3C9F1',
-            dark: '#2563EB',
+            light: '#F1F0FB', // Updated to Light Blue/Gray
+            DEFAULT: '#D3E4FD', // Updated to Light Blue/Gray
+            dark: '#C8C8C9', // Updated to Light Blue/Gray
           },
           teal: {
             light: '#E7F9F7',
@@ -72,9 +73,9 @@ export default {
             dark: '#0D9488',
           },
           text: {
-            primary: '#333333',
-            secondary: '#555555',
-            tertiary: '#6B7280',
+            primary: '#000000', // Updated to Black
+            secondary: '#000006', // Updated to Black (with slight transparency)
+            tertiary: '#9F9EA1', // Updated to Light Blue/Gray
           },
           accent: {
             peach: '#FFE4E6',

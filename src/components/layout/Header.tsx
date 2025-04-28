@@ -52,12 +52,12 @@ const Header: React.FC = () => {
       <div className="container-custom py-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
-          <div className="text-2xl font-bold text-voluntus-text-primary">
-            <span className="text-voluntus-blue">V</span>
+          <div className="text-2xl font-bold text-black">
+            <span className="text-[#D3E4FD]">V</span>
           </div>
           <div className="hidden md:flex flex-col">
-            <span className="font-semibold text-lg leading-none">VOLUNTUS</span>
-            <span className="text-xs text-voluntus-text-secondary leading-none">LONG-TERM CAPITAL</span>
+            <span className="font-semibold text-lg leading-none text-black">VOLUNTUS</span>
+            <span className="text-xs text-[#9F9EA1] leading-none">LONG-TERM CAPITAL</span>
           </div>
         </Link>
 
@@ -68,8 +68,8 @@ const Header: React.FC = () => {
               key={link.name}
               to={link.path}
               className={cn(
-                'text-sm font-medium hover:text-voluntus-blue transition-colors',
-                isActive(link.path) ? 'text-voluntus-blue' : 'text-voluntus-text-primary'
+                'text-sm font-medium hover:text-[#D3E4FD] transition-colors',
+                isActive(link.path) ? 'text-[#D3E4FD]' : 'text-black'
               )}
             >
               {link.name}
@@ -114,7 +114,7 @@ const Header: React.FC = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className={cn(
                   'py-2 text-sm font-medium transition-colors',
-                  isActive(link.path) ? 'text-voluntus-blue' : 'text-voluntus-text-primary'
+                  isActive(link.path) ? 'text-[#D3E4FD]' : 'text-black'
                 )}
               >
                 {link.name}

@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -6,25 +7,25 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --background: 0 0% 100%; /* White */
+    --foreground: 0 0% 0%; /* Black */
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 0 0% 0%; /* Black */
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 0 0% 0%; /* Black */
+    --primary: 0 0% 0%; /* Black */
+    --primary-foreground: 0 0% 100%; /* White */
+    --secondary: 220 14% 96%; /* Light Gray/Beige */
+    --secondary-foreground: 0 0% 0%; /* Black */
+    --muted: 220 14% 96%; /* Light Gray/Beige */
+    --muted-foreground: 220 8% 46%; /* Light Blue/Gray */
+    --accent: 220 14% 96%; /* Light Gray/Beige */
+    --accent-foreground: 0 0% 0%; /* Black */
+    --destructive: 0 84.2% 60.2%; /* Keep the destructive color */
+    --destructive-foreground: 0 0% 100%; /* White */
+    --border: 220 13% 91%; /* Light Gray */
+    --input: 220 13% 91%; /* Light Gray */
+    --ring: 0 0% 0%; /* Black */
     --radius: 0.75rem;
   }
 
@@ -33,11 +34,11 @@
   }
 
   body {
-    @apply bg-white text-voluntus-text-primary font-poppins antialiased;
+    @apply bg-white text-black font-poppins antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+    @apply font-semibold tracking-tight text-black;
   }
 
   .btn {
@@ -45,15 +46,15 @@
   }
 
   .btn-primary {
-    @apply bg-voluntus-blue text-white hover:shadow-hover hover:bg-voluntus-blue/90;
+    @apply bg-black text-white hover:shadow-hover hover:bg-opacity-90;
   }
 
   .btn-secondary {
-    @apply bg-voluntus-gray-light text-voluntus-text-primary hover:bg-voluntus-gray hover:shadow-soft;
+    @apply bg-[#F1F1F1] text-black hover:bg-[#CCCCCC] hover:shadow-soft;
   }
 
   .btn-outline {
-    @apply border border-voluntus-gray-light text-voluntus-text-primary hover:bg-voluntus-gray-light hover:shadow-soft;
+    @apply border border-[#F1F1F1] text-black hover:bg-[#F1F1F1] hover:shadow-soft;
   }
 
   .section {
@@ -65,11 +66,11 @@
   }
 
   .link {
-    @apply text-voluntus-blue hover:text-voluntus-blue-dark transition-colors duration-200;
+    @apply text-[#D3E4FD] hover:text-[#C8C8C9] transition-colors duration-200;
   }
 
   input, textarea, select {
-    @apply rounded-xl border border-voluntus-gray-light bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-voluntus-blue/20 focus:border-voluntus-blue transition-all duration-200;
+    @apply rounded-xl border border-[#F1F1F1] bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D3E4FD]/20 focus:border-[#D3E4FD] transition-all duration-200;
   }
 
   .card {
