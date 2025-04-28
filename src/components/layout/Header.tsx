@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, LogIn } from 'lucide-react';
@@ -56,7 +57,7 @@ const Header: React.FC = () => {
           </div>
         </Link>
 
-        <nav className="hidden lg:flex items-center space-x-8">
+        <nav className="hidden lg:flex items-center">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -66,30 +67,18 @@ const Header: React.FC = () => {
                   e.preventDefault();
                 }
               }}
-              className="relative px-1 py-1 group"
+              className={cn(
+                "px-4 py-2 text-sm transition-all duration-300",
+                isActive(link.path) 
+                  ? 'font-semibold text-black' 
+                  : 'font-normal text-[#9F9EA1] hover:text-black'
+              )}
             >
-              <span
-                className={cn(
-                  'text-sm transition-all duration-300',
-                  isActive(link.path) 
-                    ? 'font-bold text-black' 
-                    : 'font-light text-[#9F9EA1] hover:text-black'
-                )}
-              >
-                {link.name}
-              </span>
-              <span 
-                className={cn(
-                  'absolute bottom-0 left-0 w-full h-0.5 bg-black transform transition-all duration-300',
-                  isActive(link.path) 
-                    ? 'scale-x-100' 
-                    : 'scale-x-0 group-hover:scale-x-75'
-                )}
-              />
+              {link.name}
             </Link>
           ))}
 
-          <Link to="/login">
+          <Link to="/login" className="ml-4">
             <Button variant="ghost" size="icon" className="text-[#9F9EA1] hover:text-black">
               <LogIn size={20} />
             </Button>
@@ -128,10 +117,10 @@ const Header: React.FC = () => {
                   }
                 }}
                 className={cn(
-                  'py-2 text-sm transition-all duration-300 border-l-4 pl-3',
+                  'py-2 text-sm transition-all duration-300',
                   isActive(link.path) 
-                    ? 'font-bold text-black border-black' 
-                    : 'font-light text-[#9F9EA1] hover:text-black border-transparent'
+                    ? 'font-semibold text-black border-l-2 border-black pl-3' 
+                    : 'font-normal text-[#9F9EA1] hover:text-black pl-3'
                 )}
               >
                 {link.name}
