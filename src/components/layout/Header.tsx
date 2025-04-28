@@ -68,8 +68,10 @@ const Header: React.FC = () => {
               key={link.name}
               to={link.path}
               className={cn(
-                'text-sm font-medium hover:text-[#C8C8C9] transition-colors',
-                isActive(link.path) ? 'text-[#C8C8C9]' : 'text-black'
+                'text-sm transition-colors',
+                isActive(link.path) 
+                  ? 'font-bold text-black' 
+                  : 'font-light text-[#9F9EA1] hover:text-black'
               )}
             >
               {link.name}
@@ -113,8 +115,10 @@ const Header: React.FC = () => {
                 to={link.path}
                 onClick={() => setIsMenuOpen(false)}
                 className={cn(
-                  'py-2 text-sm font-medium transition-colors',
-                  isActive(link.path) ? 'text-[#C8C8C9]' : 'text-black'
+                  'py-2 text-sm transition-colors',
+                  isActive(link.path) 
+                    ? 'font-bold text-black' 
+                    : 'font-light text-[#9F9EA1] hover:text-black'
                 )}
               >
                 {link.name}
