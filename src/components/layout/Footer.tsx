@@ -21,8 +21,14 @@ const Footer: React.FC = () => {
           {/* Logo */}
           <div className="col-span-2 lg:col-span-1">
             <div className="flex items-center mb-6">
-              <div className="text-2xl font-bold">
-                <span className="text-voluntus-blue">V</span>
+              <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M30 15C50 50 50 85 70 85" stroke="black" strokeWidth="8" strokeLinecap="round"/>
+                <circle cx="70" cy="85" r="3" fill="black"/>
+              </svg>
+              <div className="h-8 w-px bg-black mx-3"></div>
+              <div className="flex flex-col">
+                <span className="font-bold text-sm leading-tight text-black">VOLUNTUS</span>
+                <span className="text-xs tracking-wider leading-tight text-black">LONG-TERM CAPITAL</span>
               </div>
             </div>
             <p className="text-xs text-gray-500 mb-6">

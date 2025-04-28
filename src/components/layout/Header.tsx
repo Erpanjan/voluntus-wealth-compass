@@ -51,23 +51,21 @@ const Header: React.FC = () => {
       <div className="container-custom py-4 flex justify-between items-center">
         <Link to="/" className="flex items-center">
           {isMobile ? (
-            // Stacked logo for mobile (first logo variant)
+            // Stacked logo for mobile
             <div className="flex flex-col items-center">
-              <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-1">
-                <path d="M120 40C100 70 80 140 60 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
-                <path d="M80 40C100 70 120 140 140 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
-                <circle cx="100" cy="170" r="5" fill="black"/>
+              <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M30 15C50 50 50 85 70 85" stroke="black" strokeWidth="8" strokeLinecap="round"/>
+                <circle cx="70" cy="85" r="3" fill="black"/>
               </svg>
               <span className="font-bold text-lg text-black">VOLUNTUS</span>
               <span className="text-xs tracking-wider text-[#9F9EA1]">LONG-TERM CAPITAL</span>
             </div>
           ) : (
-            // Horizontal logo for desktop (second logo variant)
+            // Horizontal logo for desktop that matches the screenshot
             <div className="flex items-center">
-              <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M120 40C100 70 80 140 60 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
-                <path d="M80 40C100 70 120 140 140 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
-                <circle cx="100" cy="170" r="5" fill="black"/>
+              <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M30 15C50 50 50 85 70 85" stroke="black" strokeWidth="8" strokeLinecap="round"/>
+                <circle cx="70" cy="85" r="3" fill="black"/>
               </svg>
               <div className="h-10 w-px bg-black mx-4"></div>
               <div className="flex flex-col">
