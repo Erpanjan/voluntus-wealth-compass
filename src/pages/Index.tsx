@@ -30,7 +30,7 @@ const Index = () => {
         </div>
       </Hero>
 
-      {/* Content Sections - Alternating backgrounds */}
+      {/* Content Sections */}
       <Section id="gambling" background="light" className="overflow-hidden">
         <div className="grid md:grid-cols-1 gap-16 items-center max-w-3xl mx-auto">
           <div className="space-y-8 animate-fade-in-up">
@@ -59,7 +59,7 @@ const Index = () => {
       </Section>
 
       {/* Complicated Section */}
-      <Section id="complicated" background="white">
+      <Section id="complicated">
         <div className="grid md:grid-cols-1 gap-16 items-center max-w-3xl mx-auto">
           <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
@@ -115,7 +115,7 @@ const Index = () => {
       </Section>
 
       {/* Accountability Section */}
-      <Section id="accountability" background="white">
+      <Section id="accountability">
         <div className="grid md:grid-cols-1 gap-16 items-center max-w-3xl mx-auto">
           <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
