@@ -29,7 +29,7 @@ const Section: React.FC<SectionProps> = ({
 
   return (
     <section id={id} className={cn(
-      'py-24 md:py-32 overflow-hidden relative',
+      'min-h-screen flex flex-col justify-center py-24 md:py-32 overflow-hidden relative',
       bgClasses[background],
       className
     )}>
