@@ -68,7 +68,7 @@ const Header: React.FC = () => {
                 }
               }}
               className={cn(
-                "px-5 py-2 text-sm tracking-wide transition-all duration-300",
+                "px-5 py-2 text-xs tracking-wide transition-all duration-300",
                 isActive(link.path) 
                   ? 'font-semibold text-black' 
                   : 'font-normal text-[#9F9EA1] hover:text-black'
