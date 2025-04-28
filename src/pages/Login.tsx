@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -168,7 +169,7 @@ const Login = () => {
             <img 
               src="/lovable-uploads/d8ffd81b-bc8d-4b05-8575-464c7deef1ca.png" 
               alt="Voluntus Logo" 
-              className="h-12 mx-auto" 
+              className="h-18 mx-auto" 
             />
           </Link>
           <h1 className="text-lg font-medium mt-2">Client Portal</h1>

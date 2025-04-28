@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, UserRound } from 'lucide-react';
@@ -55,7 +56,7 @@ const Header: React.FC = () => {
               <img 
                 src="/lovable-uploads/d8ffd81b-bc8d-4b05-8575-464c7deef1ca.png" 
                 alt="Voluntus Logo" 
-                className="h-10" 
+                className="h-16" 
               />
             </div>
           ) : (
@@ -64,7 +65,7 @@ const Header: React.FC = () => {
               <img 
                 src="/lovable-uploads/d8ffd81b-bc8d-4b05-8575-464c7deef1ca.png" 
                 alt="Voluntus Logo" 
-                className="h-10" 
+                className="h-16" 
               />
             </div>
           )}
