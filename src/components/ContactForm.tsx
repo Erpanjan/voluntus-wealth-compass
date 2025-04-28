@@ -2,19 +2,18 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
-import { ChevronDown } from 'lucide-react';
 
 const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    country: '',
+    firstName: '',
+    lastName: '',
+    contact: '',
     message: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -39,9 +38,9 @@ const ContactForm: React.FC = () => {
 
       // Reset form
       setFormData({
-        name: '',
-        email: '',
-        country: '',
+        firstName: '',
+        lastName: '',
+        contact: '',
         message: '',
       });
     } catch (error) {
@@ -59,91 +58,92 @@ const ContactForm: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-16">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-center">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-4xl font-semibold mb-4">
           Contact Us
         </h2>
-        <p className="text-[#9F9EA1] text-lg font-light text-center">
+        <p className="text-black text-lg">
           Our advisor will contact you shortly
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="space-y-8">
-          <div className="border-b border-[#F1F1F1]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-3">
+            <label htmlFor="firstName" className="block text-sm font-medium text-black">
+              First name
+            </label>
             <input
-              id="name"
-              name="name"
+              id="firstName"
+              name="firstName"
               type="text"
-              placeholder="Name"
-              value={formData.name}
+              placeholder="Jane"
+              value={formData.firstName}
               onChange={handleChange}
               required
-              className="w-full py-4 bg-transparent border-none focus:ring-0 text-black placeholder:text-[#9F9EA1] outline-none"
+              className="w-full rounded-xl border-[#F1F1F1] focus:border-[#9F9EA1] focus:ring-[#9F9EA1]/20 transition-all duration-200"
             />
           </div>
 
-          <div className="border-b border-[#F1F1F1]">
+          <div className="space-y-3">
+            <label htmlFor="lastName" className="block text-sm font-medium text-black">
+              Last name
+            </label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Email address"
-              value={formData.email}
+              id="lastName"
+              name="lastName"
+              type="text"
+              placeholder="Doe"
+              value={formData.lastName}
               onChange={handleChange}
               required
-              className="w-full py-4 bg-transparent border-none focus:ring-0 text-black placeholder:text-[#9F9EA1] outline-none"
-            />
-          </div>
-
-          <div className="border-b border-[#F1F1F1] relative">
-            <select
-              id="country"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              required
-              className="w-full py-4 bg-transparent border-none focus:ring-0 text-black placeholder:text-[#9F9EA1] outline-none appearance-none"
-            >
-              <option value="" disabled>Country</option>
-              <option value="us">United States</option>
-              <option value="cn">China</option>
-              <option value="uk">United Kingdom</option>
-              <option value="ca">Canada</option>
-              <option value="au">Australia</option>
-              <option value="sg">Singapore</option>
-              <option value="hk">Hong Kong</option>
-            </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-[#9F9EA1]" size={18} />
-          </div>
-
-          <div className="border-b border-[#F1F1F1]">
-            <textarea
-              id="message"
-              name="message"
-              placeholder="Your message"
-              value={formData.message}
-              onChange={handleChange}
-              rows={4}
-              required
-              className="w-full py-4 bg-transparent border-none focus:ring-0 text-black placeholder:text-[#9F9EA1] outline-none resize-none"
+              className="w-full rounded-xl border-[#F1F1F1] focus:border-[#9F9EA1] focus:ring-[#9F9EA1]/20 transition-all duration-200"
             />
           </div>
         </div>
 
-        <div className="pt-8">
+        <div className="space-y-3">
+          <label htmlFor="contact" className="block text-sm font-medium text-black">
+            Contact
+          </label>
+          <input
+            id="contact"
+            name="contact"
+            type="text"
+            placeholder="Provide Your Preferred Contact — Email, WhatsApp, or Any Other Method"
+            value={formData.contact}
+            onChange={handleChange}
+            required
+            className="w-full rounded-xl border-[#F1F1F1] focus:border-[#9F9EA1] focus:ring-[#9F9EA1]/20 transition-all duration-200"
+          />
+        </div>
+
+        <div className="space-y-3">
+          <label htmlFor="message" className="block text-sm font-medium text-black">
+            Your message
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            placeholder="Enter your question or message"
+            value={formData.message}
+            onChange={handleChange}
+            rows={5}
+            required
+            className="w-full rounded-xl border-[#F1F1F1] focus:border-[#9F9EA1] focus:ring-[#9F9EA1]/20 transition-all duration-200 resize-none"
+          />
+        </div>
+
+        <div className="text-center pt-8">
           <Button 
             type="submit" 
             disabled={isSubmitting}
-            className="w-full bg-black hover:bg-black/90 text-white transition-all duration-300 py-6"
+            size="lg"
+            className="bg-black hover:bg-black/90 text-white transition-all duration-300 rounded-full px-12 py-6 text-base"
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
         </div>
-
-        <p className="text-xs text-[#9F9EA1] text-center pt-4">
-          By clicking "Submit", I authorize 1X to notify me about exclusive events, product updates, and company news.
-        </p>
       </form>
     </div>
   );
