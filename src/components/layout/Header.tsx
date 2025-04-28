@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, LogIn } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
 
@@ -10,12 +9,10 @@ const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
-  // Check if the current route matches the link
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
-  // Handle scroll event to add background to header on scroll
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY;
@@ -32,7 +29,6 @@ const Header: React.FC = () => {
     };
   }, []);
 
-  // Navigation links
   const navLinks = [
     { name: 'HOME', path: '/' },
     { name: 'SERVICE & PRICING', path: '/services' },
@@ -50,7 +46,6 @@ const Header: React.FC = () => {
       )}
     >
       <div className="container-custom py-4 flex justify-between items-center">
-        {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <div className="text-2xl font-bold text-black">
             <span className="text-[#C8C8C9]">V</span>
@@ -61,14 +56,12 @@ const Header: React.FC = () => {
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-8">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.path}
               onClick={(e) => {
-                // Prevent default if it's the active link to avoid page refresh
                 if (isActive(link.path)) {
                   e.preventDefault();
                 }
@@ -96,20 +89,17 @@ const Header: React.FC = () => {
             </Link>
           ))}
 
-          {/* Login Button */}
           <Link to="/login">
-            <Button variant="outline" className="rounded-full flex items-center gap-2">
-              <User size={18} />
-              <span className="hidden md:inline">Login</span>
+            <Button variant="ghost" size="icon" className="text-[#9F9EA1] hover:text-black">
+              <LogIn size={20} />
             </Button>
           </Link>
         </nav>
 
-        {/* Mobile Navigation Trigger */}
         <div className="flex items-center lg:hidden space-x-4">
           <Link to="/login">
-            <Button variant="outline" size="icon" className="rounded-full">
-              <User size={18} />
+            <Button variant="ghost" size="icon" className="text-[#9F9EA1] hover:text-black">
+              <LogIn size={20} />
             </Button>
           </Link>
           <Button 
@@ -123,7 +113,6 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
       {isMenuOpen && (
         <div className="container-custom lg:hidden pb-6 animate-fade-in">
           <nav className="flex flex-col space-y-4">
@@ -132,7 +121,6 @@ const Header: React.FC = () => {
                 key={link.name}
                 to={link.path}
                 onClick={(e) => {
-                  // Prevent default if it's the active link to avoid page refresh
                   if (isActive(link.path)) {
                     e.preventDefault();
                   } else {
