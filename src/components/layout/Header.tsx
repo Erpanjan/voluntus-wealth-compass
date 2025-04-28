@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, LogIn } from 'lucide-react';
+import { Menu, X, UserRound } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
 
@@ -79,16 +79,18 @@ const Header: React.FC = () => {
           ))}
 
           <Link to="/login" className="ml-5">
-            <Button variant="ghost" size="icon" className="text-[#9F9EA1] hover:text-black">
-              <LogIn size={20} />
+            <Button variant="ghost" size="sm" className="text-[#9F9EA1] hover:text-black flex items-center gap-1 text-xs tracking-wide">
+              <UserRound size={18} />
+              LOGIN
             </Button>
           </Link>
         </nav>
 
         <div className="flex items-center lg:hidden space-x-4">
           <Link to="/login">
-            <Button variant="ghost" size="icon" className="text-[#9F9EA1] hover:text-black">
-              <LogIn size={20} />
+            <Button variant="ghost" size="sm" className="text-[#9F9EA1] hover:text-black flex items-center gap-1 text-xs">
+              <UserRound size={18} />
+              LOGIN
             </Button>
           </Link>
           <Button 
