@@ -21,11 +21,9 @@ const Footer: React.FC = () => {
           {/* Logo */}
           <div className="col-span-2 lg:col-span-1">
             <div className="flex items-center mb-6">
-              <img 
-                src="/lovable-uploads/d8ffd81b-bc8d-4b05-8575-464c7deef1ca.png" 
-                alt="Voluntus Logo" 
-                className="h-14" 
-              />
+              <div className="text-2xl font-bold">
+                <span className="text-voluntus-blue">V</span>
+              </div>
             </div>
             <p className="text-xs text-gray-500 mb-6">
               © {new Date().getFullYear()} Voluntus Long-term Capital

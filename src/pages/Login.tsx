@@ -166,13 +166,10 @@ const Login = () => {
         {/* Header */}
         <div className="py-5 text-center mb-4">
           <Link to="/" className="inline-block mb-2">
-            <img 
-              src="/lovable-uploads/d8ffd81b-bc8d-4b05-8575-464c7deef1ca.png" 
-              alt="Voluntus Logo" 
-              className="h-18 mx-auto" 
-            />
+            <span className="font-bold text-xl">V</span>
+            <span className="font-medium">OLUNTUS</span>
           </Link>
-          <h1 className="text-lg font-medium mt-2">Client Portal</h1>
+          <h1 className="text-lg font-medium">Client Portal</h1>
         </div>
 
         {/* Tabs */}
