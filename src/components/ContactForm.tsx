@@ -1,15 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -118,25 +110,6 @@ const ContactForm: React.FC = () => {
         </div>
 
         <div className="space-y-1.5">
-          <Select>
-            <SelectTrigger className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500">
-              <SelectValue placeholder="Country" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="us">United States</SelectItem>
-              <SelectItem value="ca">Canada</SelectItem>
-              <SelectItem value="uk">United Kingdom</SelectItem>
-              <SelectItem value="au">Australia</SelectItem>
-              <SelectItem value="de">Germany</SelectItem>
-              <SelectItem value="fr">France</SelectItem>
-              <SelectItem value="jp">Japan</SelectItem>
-              <SelectItem value="cn">China</SelectItem>
-              <SelectItem value="in">India</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-1.5">
           <textarea
             id="message"
             name="message"
@@ -160,7 +133,7 @@ const ContactForm: React.FC = () => {
         </div>
         
         <p className="text-xs text-center text-gray-500 mt-4">
-          By clicking "Submit", I authorize 1X to notify me about exclusive events, product updates, and company news.
+          By clicking "Submit", I authorize Voluntus Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.
         </p>
       </form>
     </div>
