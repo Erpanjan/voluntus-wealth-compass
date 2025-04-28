@@ -32,7 +32,7 @@ const Index = () => {
 
       {/* Content Sections */}
       <Section id="gambling" background="light" className="overflow-hidden">
-        <div className="grid md:grid-cols-2 gap-16 lg:gap-24 items-center">
+        <div className="grid md:grid-cols-1 gap-16 items-center max-w-3xl mx-auto">
           <div className="space-y-8 animate-fade-in-up">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
               Tired of Feeling Like You're Gambling With Your Money?
@@ -55,28 +55,13 @@ const Index = () => {
               </Link>
             </Button>
           </div>
-          <div className="relative rounded-3xl overflow-hidden shadow-hover animate-fade-in-up h-[500px]" style={{ animationDelay: '0.2s' }}>
-            <img 
-              src="https://images.unsplash.com/photo-1567427018141-0584cfcbf1b8?auto=format&fit=crop&q=80" 
-              alt="Financial planning" 
-              className="w-full h-full object-cover img-zoom"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-          </div>
         </div>
       </Section>
 
       {/* Complicated Section */}
       <Section id="complicated">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="order-2 md:order-1 rounded-3xl overflow-hidden shadow-lg h-[500px]">
-            <img 
-              src="https://images.unsplash.com/photo-1579621970590-9d624316904b?auto=format&fit=crop&q=80" 
-              alt="Complex financial charts" 
-              className="w-full h-full object-cover img-zoom"
-            />
-          </div>
-          <div className="order-1 md:order-2 space-y-8">
+        <div className="grid md:grid-cols-1 gap-16 items-center max-w-3xl mx-auto">
+          <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
               Does Managing Your Wealth Have to Be So Complicated and Expensive?
             </h2>
@@ -103,7 +88,7 @@ const Index = () => {
 
       {/* Best Interest Section */}
       <Section id="best-interest" background="light">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
+        <div className="grid md:grid-cols-1 gap-16 items-center max-w-3xl mx-auto">
           <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
               Can Financial Advice Ever Be in Your Best Interest?
@@ -126,27 +111,13 @@ const Index = () => {
               </Link>
             </Button>
           </div>
-          <div className="rounded-3xl overflow-hidden shadow-lg h-[500px]">
-            <img 
-              src="https://images.unsplash.com/photo-1554774853-719586f82d77?auto=format&fit=crop&q=80" 
-              alt="Financial advisor" 
-              className="w-full h-full object-cover img-zoom"
-            />
-          </div>
         </div>
       </Section>
 
       {/* Accountability Section */}
       <Section id="accountability">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="order-2 md:order-1 rounded-3xl overflow-hidden shadow-lg h-[500px]">
-            <img 
-              src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80" 
-              alt="Investment journey" 
-              className="w-full h-full object-cover img-zoom"
-            />
-          </div>
-          <div className="order-1 md:order-2 space-y-8">
+        <div className="grid md:grid-cols-1 gap-16 items-center max-w-3xl mx-auto">
+          <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
               Does Investing End Once the Product is Purchased?
             </h2>
