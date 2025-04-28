@@ -20,31 +20,31 @@ const Hero: React.FC<HeroProps> = ({
   background = 'transparent'
 }) => {
   const bgClasses = {
-    'light': 'bg-[#F1F1F1]', // Light Gray
-    'dark': 'bg-black text-white', // Black with white text
+    'light': 'bg-[#F1F1F1]',
+    'dark': 'bg-black text-white',
     'transparent': 'bg-transparent',
   };
 
   return (
     <section className={cn(
-      'pt-32 pb-16 md:pt-40 md:pb-24',
+      'pt-40 pb-24 md:pt-48 md:pb-28 overflow-hidden relative',
       bgClasses[background],
       className
     )}>
-      <div className="container-custom">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl lg:text-6xl font-semibold leading-tight mb-8 animate-fade-in-up text-black">
+      <div className="container-custom relative z-10">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold leading-tight mb-8 tracking-tight animate-fade-in-up">
             {title}
           </h1>
           
           {subtitle && (
-            <p className="text-lg md:text-xl text-[#000006] mb-10 animate-fade-in-up max-w-2xl mx-auto" style={{animationDelay: '0.2s'}}>
+            <p className="text-lg md:text-xl text-[#000006] mb-12 animate-fade-in-up max-w-2xl mx-auto" style={{animationDelay: '0.2s'}}>
               {subtitle}
             </p>
           )}
           
           {collaboration && (
-            <p className="text-sm text-[#9F9EA1] italic mb-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+            <p className="text-sm text-[#9F9EA1] italic mb-10 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               {collaboration}
             </p>
           )}
@@ -56,6 +56,7 @@ const Hero: React.FC<HeroProps> = ({
           )}
         </div>
       </div>
+      <div className="absolute left-0 bottom-0 w-full h-32 bg-gradient-to-t from-[#F1F1F1]/30 to-transparent"></div>
     </section>
   );
 };

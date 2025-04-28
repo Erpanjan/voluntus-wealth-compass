@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -26,7 +26,7 @@
     --border: 220 13% 91%; /* Light Gray */
     --input: 220 13% 91%; /* Light Gray */
     --ring: 0 0% 0%; /* Black */
-    --radius: 0.75rem;
+    --radius: 1.5rem;
   }
 
   * {
@@ -38,15 +38,15 @@
   }
 
   body {
-    @apply bg-white text-black font-poppins antialiased;
+    @apply bg-white text-black font-space antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight text-black;
+    @apply font-space font-semibold tracking-tight text-black;
   }
 
   .btn {
-    @apply px-6 py-3 rounded-full font-medium transition-all duration-300 inline-flex items-center gap-2;
+    @apply px-7 py-3 rounded-full font-medium transition-all duration-300 inline-flex items-center gap-2;
   }
 
   .btn-primary {
@@ -62,11 +62,11 @@
   }
 
   .section {
-    @apply py-16 md:py-24;
+    @apply py-24 md:py-32;
   }
 
   .container-custom {
-    @apply container mx-auto px-4 md:px-8;
+    @apply container mx-auto px-6 md:px-8 max-w-7xl;
   }
 
   .link {
@@ -74,14 +74,24 @@
   }
 
   input, textarea, select {
-    @apply rounded-xl border border-[#F1F1F1] bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#9F9EA1]/20 focus:border-[#9F9EA1] transition-all duration-200;
+    @apply rounded-2xl border border-[#F1F1F1] bg-white px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#9F9EA1]/20 focus:border-[#9F9EA1] transition-all duration-200;
   }
 
   .card {
-    @apply bg-white rounded-2xl shadow-soft p-6 transition-all duration-300 hover:shadow-hover;
+    @apply bg-white rounded-3xl shadow-soft p-8 transition-all duration-300 hover:shadow-hover;
   }
 
   .animate-fade-in-up {
     @apply animate-fade-up;
+  }
+  
+  /* Image styling */
+  .img-zoom {
+    @apply transition-transform duration-700 hover:scale-105;
+  }
+  
+  /* Text effects */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-black to-[#9F9EA1];
   }
 }

@@ -63,9 +63,9 @@ export default {
             dark: '#000000',
           },
           blue: {
-            light: '#F1F1F1', // Changed from '#F1F0FB' to light gray
-            DEFAULT: '#C8C8C9', // Changed from '#D3E4FD' to light gray
-            dark: '#9F9EA1', // Changed from '#C8C8C9' to medium gray
+            light: '#F1F1F1',
+            DEFAULT: '#C8C8C9',
+            dark: '#9F9EA1',
           },
           teal: {
             light: '#E7F9F7',
@@ -89,7 +89,7 @@ export default {
         sans: ['Poppins', 'system-ui', 'sans-serif'],
         nunito: ['Nunito', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
-        quicksand: ['Quicksand', 'sans-serif'],
+        space: ['Space Grotesk', 'sans-serif'],
         manrope: ['Manrope', 'sans-serif'],
       },
       boxShadow: {
@@ -100,6 +100,7 @@ export default {
         'xl': '1rem',
         '2xl': '1.5rem',
         '3xl': '2rem',
+        '4xl': '3rem',
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
