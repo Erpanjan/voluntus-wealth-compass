@@ -81,7 +81,7 @@ const ContactForm: React.FC = () => {
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="w-full rounded-xl border-[#F1F1F1] focus:border-[#D3E4FD] focus:ring-[#D3E4FD]/20 transition-all duration-200"
+              className="w-full rounded-xl border-[#F1F1F1] focus:border-[#C8C8C9] focus:ring-[#C8C8C9]/20 transition-all duration-200"
             />
           </div>
 
@@ -97,7 +97,7 @@ const ContactForm: React.FC = () => {
               value={formData.lastName}
               onChange={handleChange}
               required
-              className="w-full rounded-xl border-[#F1F1F1] focus:border-[#D3E4FD] focus:ring-[#D3E4FD]/20 transition-all duration-200"
+              className="w-full rounded-xl border-[#F1F1F1] focus:border-[#C8C8C9] focus:ring-[#C8C8C9]/20 transition-all duration-200"
             />
           </div>
         </div>
@@ -114,7 +114,7 @@ const ContactForm: React.FC = () => {
             value={formData.contact}
             onChange={handleChange}
             required
-            className="w-full rounded-xl border-[#F1F1F1] focus:border-[#D3E4FD] focus:ring-[#D3E4FD]/20 transition-all duration-200"
+            className="w-full rounded-xl border-[#F1F1F1] focus:border-[#C8C8C9] focus:ring-[#C8C8C9]/20 transition-all duration-200"
           />
         </div>
 
@@ -130,7 +130,7 @@ const ContactForm: React.FC = () => {
             onChange={handleChange}
             rows={5}
             required
-            className="w-full rounded-xl border-[#F1F1F1] focus:border-[#D3E4FD] focus:ring-[#D3E4FD]/20 transition-all duration-200 resize-none"
+            className="w-full rounded-xl border-[#F1F1F1] focus:border-[#C8C8C9] focus:ring-[#C8C8C9]/20 transition-all duration-200 resize-none"
           />
         </div>
 

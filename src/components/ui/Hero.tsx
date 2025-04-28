@@ -44,7 +44,7 @@ const Hero: React.FC<HeroProps> = ({
           )}
           
           {collaboration && (
-            <p className="text-sm text-[#9F9EA1] italic mb-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}> {/* Light Blue/Gray */}
+            <p className="text-sm text-[#9F9EA1] italic mb-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}> {/* Light Gray */}
               {collaboration}
             </p>
           )}

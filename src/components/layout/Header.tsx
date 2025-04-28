@@ -53,7 +53,7 @@ const Header: React.FC = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <div className="text-2xl font-bold text-black">
-            <span className="text-[#D3E4FD]">V</span>
+            <span className="text-[#C8C8C9]">V</span>
           </div>
           <div className="hidden md:flex flex-col">
             <span className="font-semibold text-lg leading-none text-black">VOLUNTUS</span>
@@ -68,8 +68,8 @@ const Header: React.FC = () => {
               key={link.name}
               to={link.path}
               className={cn(
-                'text-sm font-medium hover:text-[#D3E4FD] transition-colors',
-                isActive(link.path) ? 'text-[#D3E4FD]' : 'text-black'
+                'text-sm font-medium hover:text-[#C8C8C9] transition-colors',
+                isActive(link.path) ? 'text-[#C8C8C9]' : 'text-black'
               )}
             >
               {link.name}
@@ -114,7 +114,7 @@ const Header: React.FC = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className={cn(
                   'py-2 text-sm font-medium transition-colors',
-                  isActive(link.path) ? 'text-[#D3E4FD]' : 'text-black'
+                  isActive(link.path) ? 'text-[#C8C8C9]' : 'text-black'
                 )}
               >
                 {link.name}

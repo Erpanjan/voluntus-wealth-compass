@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -19,7 +20,7 @@ const Index = () => {
         <div className="flex flex-wrap justify-center gap-4">
           <Button 
             asChild 
-            className="bg-voluntus-blue hover:bg-voluntus-blue-dark text-white transition-all duration-300 rounded-full px-8"
+            className="bg-voluntus-gray-medium hover:bg-voluntus-gray-dark text-white transition-all duration-300 rounded-full px-8"
           >
             <Link to="/services" className="inline-flex items-center">
               Our Services <ArrowRight size={16} className="ml-2" />

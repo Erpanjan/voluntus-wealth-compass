@@ -57,15 +57,15 @@ export default {
           white: '#FFFFFF',
           gray: {
             lightest: '#F9FAFB',
-            light: '#F1F1F1', // Updated to Light Gray
-            DEFAULT: '#CCCCCC', // Updated to Light Gray/Beige
-            medium: '#9F9EA1', // Updated to Light Blue/Gray
-            dark: '#000000', // Updated to Black
+            light: '#F1F1F1',
+            DEFAULT: '#CCCCCC',
+            medium: '#9F9EA1',
+            dark: '#000000',
           },
           blue: {
-            light: '#F1F0FB', // Updated to Light Blue/Gray
-            DEFAULT: '#D3E4FD', // Updated to Light Blue/Gray
-            dark: '#C8C8C9', // Updated to Light Blue/Gray
+            light: '#F1F1F1', // Changed from '#F1F0FB' to light gray
+            DEFAULT: '#C8C8C9', // Changed from '#D3E4FD' to light gray
+            dark: '#9F9EA1', // Changed from '#C8C8C9' to medium gray
           },
           teal: {
             light: '#E7F9F7',
@@ -73,9 +73,9 @@ export default {
             dark: '#0D9488',
           },
           text: {
-            primary: '#000000', // Updated to Black
-            secondary: '#000006', // Updated to Black (with slight transparency)
-            tertiary: '#9F9EA1', // Updated to Light Blue/Gray
+            primary: '#000000',
+            secondary: '#000006',
+            tertiary: '#9F9EA1',
           },
           accent: {
             peach: '#FFE4E6',
