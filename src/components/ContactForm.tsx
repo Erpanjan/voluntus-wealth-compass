@@ -58,15 +58,15 @@ const ContactForm: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="text-center mb-10">
-        <h2 className="text-2xl md:text-3xl font-semibold mb-3">Contact Us</h2>
+      <div className="text-center mb-10 animate-fade-in-up">
+        <h2 className="text-2xl md:text-3xl font-semibold mb-3 bg-gradient-to-r from-voluntus-blue to-voluntus-teal bg-clip-text text-transparent">Contact Us</h2>
         <p className="text-voluntus-text-secondary">Our advisor will contact you shortly</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="firstName" className="block text-sm font-medium mb-2">
+            <label htmlFor="firstName" className="block text-sm font-medium mb-2 text-voluntus-text-primary">
               First name
             </label>
             <input
@@ -77,12 +77,12 @@ const ContactForm: React.FC = () => {
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="w-full"
+              className="w-full shadow-soft hover:shadow-hover focus:shadow-hover"
             />
           </div>
 
           <div>
-            <label htmlFor="lastName" className="block text-sm font-medium mb-2">
+            <label htmlFor="lastName" className="block text-sm font-medium mb-2 text-voluntus-text-primary">
               Last name
             </label>
             <input
@@ -93,13 +93,13 @@ const ContactForm: React.FC = () => {
               value={formData.lastName}
               onChange={handleChange}
               required
-              className="w-full"
+              className="w-full shadow-soft hover:shadow-hover focus:shadow-hover"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="contact" className="block text-sm font-medium mb-2">
+          <label htmlFor="contact" className="block text-sm font-medium mb-2 text-voluntus-text-primary">
             Contact
           </label>
           <input
@@ -110,12 +110,12 @@ const ContactForm: React.FC = () => {
             value={formData.contact}
             onChange={handleChange}
             required
-            className="w-full"
+            className="w-full shadow-soft hover:shadow-hover focus:shadow-hover"
           />
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-sm font-medium mb-2">
+          <label htmlFor="message" className="block text-sm font-medium mb-2 text-voluntus-text-primary">
             Your message
           </label>
           <textarea
@@ -126,7 +126,7 @@ const ContactForm: React.FC = () => {
             onChange={handleChange}
             rows={5}
             required
-            className="w-full"
+            className="w-full shadow-soft hover:shadow-hover focus:shadow-hover resize-none"
           />
         </div>
 
@@ -134,7 +134,7 @@ const ContactForm: React.FC = () => {
           <Button 
             type="submit" 
             disabled={isSubmitting}
-            className="btn btn-primary"
+            className="w-full md:w-auto transition-all duration-300 transform hover:scale-105"
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
