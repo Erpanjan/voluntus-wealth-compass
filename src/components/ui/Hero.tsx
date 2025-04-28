@@ -33,7 +33,7 @@ const Hero: React.FC<HeroProps> = ({
     )}>
       <div className="container-custom relative z-10 flex flex-col justify-center py-20">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold leading-tight mb-6 tracking-tight animate-fade-in-up">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold leading-tight mb-6 tracking-tight animate-fade-in-up text-center">
             {title}
           </h1>
           
