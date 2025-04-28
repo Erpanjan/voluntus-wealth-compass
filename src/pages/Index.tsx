@@ -51,7 +51,7 @@ const Index = () => {
               className="bg-black hover:bg-black/90 text-white transition-all duration-300 mt-8"
             >
               <Link to="/services" className="inline-flex items-center">
-                Learn More <ArrowRight size={18} className="ml-2" />
+                How We Can Help <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
@@ -79,7 +79,7 @@ const Index = () => {
               className="bg-black hover:bg-black/90 text-white transition-all duration-300"
             >
               <Link to="/services" className="inline-flex items-center">
-                Learn More <ArrowRight size={18} className="ml-2" />
+                How We Can Help <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
@@ -107,7 +107,7 @@ const Index = () => {
               className="bg-black hover:bg-black/90 text-white transition-all duration-300"
             >
               <Link to="/services" className="inline-flex items-center">
-                Learn More <ArrowRight size={18} className="ml-2" />
+                How We Can Help <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
@@ -135,7 +135,7 @@ const Index = () => {
               className="bg-black hover:bg-black/90 text-white transition-all duration-300"
             >
               <Link to="/services" className="inline-flex items-center">
-                Learn More <ArrowRight size={18} className="ml-2" />
+                How We Can Help <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
