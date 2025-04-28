@@ -58,19 +58,15 @@ const ContactForm: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-4 bg-gradient-to-r from-voluntus-blue to-voluntus-teal bg-clip-text text-transparent">
-          Contact Us
-        </h2>
-        <p className="text-voluntus-text-secondary text-lg">
-          Our advisor will contact you shortly
-        </p>
+      <div className="text-center mb-10">
+        <h2 className="text-2xl md:text-3xl font-semibold mb-3">Contact Us</h2>
+        <p className="text-voluntus-text-secondary">Our advisor will contact you shortly</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-3">
-            <label htmlFor="firstName" className="block text-sm font-medium text-voluntus-text-primary">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="firstName" className="block text-sm font-medium mb-2">
               First name
             </label>
             <input
@@ -81,12 +77,12 @@ const ContactForm: React.FC = () => {
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="w-full rounded-xl border-voluntus-gray focus:border-voluntus-blue focus:ring-voluntus-blue/20 transition-all duration-200"
+              className="w-full"
             />
           </div>
 
-          <div className="space-y-3">
-            <label htmlFor="lastName" className="block text-sm font-medium text-voluntus-text-primary">
+          <div>
+            <label htmlFor="lastName" className="block text-sm font-medium mb-2">
               Last name
             </label>
             <input
@@ -97,13 +93,13 @@ const ContactForm: React.FC = () => {
               value={formData.lastName}
               onChange={handleChange}
               required
-              className="w-full rounded-xl border-voluntus-gray focus:border-voluntus-blue focus:ring-voluntus-blue/20 transition-all duration-200"
+              className="w-full"
             />
           </div>
         </div>
 
-        <div className="space-y-3">
-          <label htmlFor="contact" className="block text-sm font-medium text-voluntus-text-primary">
+        <div>
+          <label htmlFor="contact" className="block text-sm font-medium mb-2">
             Contact
           </label>
           <input
@@ -114,12 +110,12 @@ const ContactForm: React.FC = () => {
             value={formData.contact}
             onChange={handleChange}
             required
-            className="w-full rounded-xl border-voluntus-gray focus:border-voluntus-blue focus:ring-voluntus-blue/20 transition-all duration-200"
+            className="w-full"
           />
         </div>
 
-        <div className="space-y-3">
-          <label htmlFor="message" className="block text-sm font-medium text-voluntus-text-primary">
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium mb-2">
             Your message
           </label>
           <textarea
@@ -130,15 +126,15 @@ const ContactForm: React.FC = () => {
             onChange={handleChange}
             rows={5}
             required
-            className="w-full rounded-xl border-voluntus-gray focus:border-voluntus-blue focus:ring-voluntus-blue/20 transition-all duration-200 resize-none"
+            className="w-full"
           />
         </div>
 
-        <div className="text-center pt-4">
+        <div className="text-center">
           <Button 
             type="submit" 
             disabled={isSubmitting}
-            className="bg-voluntus-blue hover:bg-voluntus-blue-dark text-white transition-all duration-300 rounded-full px-12 py-6 text-lg"
+            className="btn btn-primary"
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
