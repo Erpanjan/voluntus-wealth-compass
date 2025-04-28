@@ -67,14 +67,32 @@ const Header: React.FC = () => {
             <Link
               key={link.name}
               to={link.path}
-              className={cn(
-                'text-sm transition-colors hover:opacity-75',
-                isActive(link.path) 
-                  ? 'font-bold text-black border-b-2 border-black pb-1' 
-                  : 'font-light text-[#9F9EA1] hover:text-black'
-              )}
+              onClick={(e) => {
+                // Prevent default if it's the active link to avoid page refresh
+                if (isActive(link.path)) {
+                  e.preventDefault();
+                }
+              }}
+              className="relative px-1 py-1 group"
             >
-              {link.name}
+              <span
+                className={cn(
+                  'text-sm transition-all duration-300',
+                  isActive(link.path) 
+                    ? 'font-bold text-black' 
+                    : 'font-light text-[#9F9EA1] hover:text-black'
+                )}
+              >
+                {link.name}
+              </span>
+              <span 
+                className={cn(
+                  'absolute bottom-0 left-0 w-full h-0.5 bg-black transform transition-all duration-300',
+                  isActive(link.path) 
+                    ? 'scale-x-100' 
+                    : 'scale-x-0 group-hover:scale-x-75'
+                )}
+              />
             </Link>
           ))}
 
@@ -113,12 +131,19 @@ const Header: React.FC = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => {
+                  // Prevent default if it's the active link to avoid page refresh
+                  if (isActive(link.path)) {
+                    e.preventDefault();
+                  } else {
+                    setIsMenuOpen(false);
+                  }
+                }}
                 className={cn(
-                  'py-2 text-sm transition-colors',
+                  'py-2 text-sm transition-all duration-300 border-l-4 pl-3',
                   isActive(link.path) 
-                    ? 'font-bold text-black border-l-4 border-black pl-3' 
-                    : 'font-light text-[#9F9EA1] hover:text-black pl-3'
+                    ? 'font-bold text-black border-black' 
+                    : 'font-light text-[#9F9EA1] hover:text-black border-transparent'
                 )}
               >
                 {link.name}
