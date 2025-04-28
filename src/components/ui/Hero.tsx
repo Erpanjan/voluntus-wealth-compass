@@ -38,7 +38,7 @@ const Hero: React.FC<HeroProps> = ({
           </h1>
           
           {subtitle && (
-            <p className="text-lg md:text-xl text-[#000006] mb-10 animate-fade-in-up max-w-2xl mx-auto" style={{animationDelay: '0.2s'}}>
+            <p className="text-lg md:text-xl text-[#9F9EA1] font-light mb-10 animate-fade-in-up max-w-2xl mx-auto" style={{animationDelay: '0.2s'}}>
               {subtitle}
             </p>
           )}
