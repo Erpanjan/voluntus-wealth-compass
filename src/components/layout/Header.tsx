@@ -4,11 +4,13 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, UserRound } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -47,14 +49,33 @@ const Header: React.FC = () => {
       )}
     >
       <div className="container-custom py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center space-x-2">
-          <div className="text-2xl font-bold text-black">
-            <span className="text-[#C8C8C9]">V</span>
-          </div>
-          <div className="hidden md:flex flex-col">
-            <span className="font-semibold text-lg leading-none text-black">VOLUNTUS</span>
-            <span className="text-xs text-[#9F9EA1] leading-none">LONG-TERM CAPITAL</span>
-          </div>
+        <Link to="/" className="flex items-center">
+          {isMobile ? (
+            // Stacked logo for mobile (first logo variant)
+            <div className="flex flex-col items-center">
+              <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-1">
+                <path d="M120 40C100 70 80 140 60 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
+                <path d="M80 40C100 70 120 140 140 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
+                <circle cx="100" cy="170" r="5" fill="black"/>
+              </svg>
+              <span className="font-bold text-lg text-black">VOLUNTUS</span>
+              <span className="text-xs tracking-wider text-[#9F9EA1]">LONG-TERM CAPITAL</span>
+            </div>
+          ) : (
+            // Horizontal logo for desktop (second logo variant)
+            <div className="flex items-center">
+              <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M120 40C100 70 80 140 60 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
+                <path d="M80 40C100 70 120 140 140 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
+                <circle cx="100" cy="170" r="5" fill="black"/>
+              </svg>
+              <div className="h-10 w-px bg-black mx-4"></div>
+              <div className="flex flex-col">
+                <span className="font-bold text-lg leading-tight text-black">VOLUNTUS</span>
+                <span className="text-xs tracking-wider leading-tight text-black">LONG-TERM CAPITAL</span>
+              </div>
+            </div>
+          )}
         </Link>
 
         <nav className="hidden lg:flex items-center">
