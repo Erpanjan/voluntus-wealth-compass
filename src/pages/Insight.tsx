@@ -4,8 +4,6 @@ import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ArticleCard from '@/components/ArticleCard';
 import ContactForm from '@/components/ContactForm';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 
 const Insight = () => {
   // Sample articles
@@ -38,12 +36,11 @@ const Insight = () => {
       <Hero 
         title="Market Insight"
         subtitle="Our insights guide us in formulating and updating Financial Planning Policies for clients, ensuring they remain consistently informed about the market and their progress."
-        background="transparent"
       />
 
       {/* Research Library Section */}
-      <Section title="Selected Insights from Our Research Library" background="white">
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+      <Section title="Selected Insights from Our Research Library">
+        <div className="grid md:grid-cols-2 gap-8">
           {articles.map((article, index) => (
             <ArticleCard
               key={index}
@@ -52,11 +49,6 @@ const Insight = () => {
               description={article.description}
             />
           ))}
-        </div>
-        <div className="mt-12 text-center">
-          <Button className="bg-black hover:bg-black/90 text-white inline-flex items-center">
-            View all insights <ArrowRight size={18} className="ml-2" />
-          </Button>
         </div>
       </Section>
 
