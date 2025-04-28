@@ -1,6 +1,7 @@
 
 import React, { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SectionProps {
   id?: string;
@@ -21,6 +22,8 @@ const Section: React.FC<SectionProps> = ({
   titleCentered = false,
   background = 'white'
 }) => {
+  const isMobile = useIsMobile();
+  
   const bgClasses = {
     'white': 'bg-white',
     'light': 'bg-[#F1F1F1]',
@@ -51,7 +54,9 @@ const Section: React.FC<SectionProps> = ({
             )}
           </div>
         )}
-        <div className="flex-grow flex items-center">{children}</div>
+        <div className="flex-grow flex flex-col md:items-center w-full">
+          {children}
+        </div>
       </div>
     </section>
   );
