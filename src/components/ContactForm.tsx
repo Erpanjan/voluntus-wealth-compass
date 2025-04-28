@@ -119,7 +119,7 @@ const ContactForm: React.FC = () => {
             onChange={handleChange}
             rows={4}
             required
-            className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 bg-transparent focus:ring-0 focus:outline-none resize-none placeholder:text-gray-500"
+            className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 bg-transparent focus:ring-0 focus:outline-none resize-none placeholder:text-gray-500 text-base md:text-sm"
           />
         </div>
 
