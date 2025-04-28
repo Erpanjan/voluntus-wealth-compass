@@ -14,7 +14,7 @@ const Index = () => {
       {/* Hero Section */}
       <Hero 
         title="We're There With You Every Step of The Way"
-        subtitle="Personalized wealth management solutions for your financial journey"
+        subtitle="Personalized investment solutions for your financial journey"
         background="transparent"
       >
         <div className="flex flex-wrap justify-center gap-4">
