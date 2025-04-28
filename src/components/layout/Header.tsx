@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, UserRound } from 'lucide-react';
@@ -51,29 +50,22 @@ const Header: React.FC = () => {
       <div className="container-custom py-4 flex justify-between items-center">
         <Link to="/" className="flex items-center">
           {isMobile ? (
-            // Stacked logo for mobile (first logo variant)
+            // Stacked logo for mobile
             <div className="flex flex-col items-center">
-              <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-1">
-                <path d="M120 40C100 70 80 140 60 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
-                <path d="M80 40C100 70 120 140 140 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
-                <circle cx="100" cy="170" r="5" fill="black"/>
-              </svg>
-              <span className="font-bold text-lg text-black">VOLUNTUS</span>
-              <span className="text-xs tracking-wider text-[#9F9EA1]">LONG-TERM CAPITAL</span>
+              <img 
+                src="/lovable-uploads/d8ffd81b-bc8d-4b05-8575-464c7deef1ca.png" 
+                alt="Voluntus Logo" 
+                className="h-10" 
+              />
             </div>
           ) : (
-            // Horizontal logo for desktop (second logo variant)
+            // Horizontal logo for desktop
             <div className="flex items-center">
-              <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M120 40C100 70 80 140 60 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
-                <path d="M80 40C100 70 120 140 140 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
-                <circle cx="100" cy="170" r="5" fill="black"/>
-              </svg>
-              <div className="h-10 w-px bg-black mx-4"></div>
-              <div className="flex flex-col">
-                <span className="font-bold text-lg leading-tight text-black">VOLUNTUS</span>
-                <span className="text-xs tracking-wider leading-tight text-black">LONG-TERM CAPITAL</span>
-              </div>
+              <img 
+                src="/lovable-uploads/d8ffd81b-bc8d-4b05-8575-464c7deef1ca.png" 
+                alt="Voluntus Logo" 
+                className="h-10" 
+              />
             </div>
           )}
         </Link>
