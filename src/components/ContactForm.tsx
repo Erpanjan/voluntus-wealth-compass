@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
@@ -101,7 +102,7 @@ const ContactForm: React.FC = () => {
             id="contact"
             name="contact"
             type="text"
-            placeholder="Email address"
+            placeholder="Your preferred contact - Email, WeChat, WhatsApp..."
             value={formData.contact}
             onChange={handleChange}
             required
