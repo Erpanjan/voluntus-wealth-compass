@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -10,26 +9,33 @@ import { Button } from '@/components/ui/button';
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-b from-white to-voluntus-gray-lightest">
       {/* Hero Section */}
       <Hero 
         title="We're There With You Every Step of The Way"
+        subtitle="Personalized wealth management solutions for your financial journey"
+        background="transparent"
       >
-        <Button asChild className="btn btn-primary">
-          <Link to="/services">
-            Our Services <ArrowRight size={16} className="ml-1" />
-          </Link>
-        </Button>
+        <div className="flex flex-wrap justify-center gap-4">
+          <Button 
+            asChild 
+            className="bg-voluntus-blue hover:bg-voluntus-blue-dark text-white transition-all duration-300 rounded-full px-8"
+          >
+            <Link to="/services" className="inline-flex items-center">
+              Our Services <ArrowRight size={16} className="ml-2" />
+            </Link>
+          </Button>
+        </div>
       </Hero>
 
-      {/* Gambling Section */}
-      <Section id="gambling" background="light">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+      {/* Content Sections */}
+      <Section id="gambling" background="light" className="overflow-hidden">
+        <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div className="space-y-6 animate-fade-in-up">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-voluntus-text-primary">
               Tired of Feeling Like You're Gambling With Your Money?
             </h2>
-            <div className="space-y-4 text-voluntus-text-secondary">
+            <div className="space-y-4 text-voluntus-text-secondary text-lg">
               <p>
                 Managing your wealth shouldn't feel like placing bets in a game where the odds are stacked against you. But for many, that's exactly what it is: guesswork, conflicting advice, and a constant fear of making the wrong move.
               </p>
@@ -37,18 +43,22 @@ const Index = () => {
                 It is time for a strategic and systematic approach to financial success.
               </p>
             </div>
-            <Button asChild className="btn btn-primary mt-8">
+            <Button 
+              asChild 
+              className="bg-voluntus-blue hover:bg-voluntus-blue-dark text-white transition-all duration-300 rounded-full px-8 mt-8"
+            >
               <Link to="/services">
-                HOW WE CAN HELP YOU→
+                HOW WE CAN HELP YOU <ArrowRight size={16} className="ml-2" />
               </Link>
             </Button>
           </div>
-          <div className="rounded-xl overflow-hidden shadow-lg">
+          <div className="relative rounded-3xl overflow-hidden shadow-hover animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <img 
               src="https://images.unsplash.com/photo-1567427018141-0584cfcbf1b8?auto=format&fit=crop&q=80" 
               alt="Financial planning" 
-              className="w-full h-full object-cover"
+              className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-700"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
           </div>
         </div>
       </Section>
@@ -147,7 +157,7 @@ const Index = () => {
       </Section>
 
       {/* Contact Form Section */}
-      <Section id="contact" background="light">
+      <Section id="contact" background="light" className="bg-gradient-to-b from-voluntus-gray-lightest to-white">
         <ContactForm />
       </Section>
     </div>
