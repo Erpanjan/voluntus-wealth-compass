@@ -4,6 +4,8 @@ import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import EventCard from '@/components/EventCard';
 import ContactForm from '@/components/ContactForm';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 const Event = () => {
   return (
@@ -13,11 +15,12 @@ const Event = () => {
         title="Our Community"
         subtitle="A community where you can connect with others, exchange ideas, and enjoy meaningful conversations."
         collaboration="A collaberation with Besties"
+        background="transparent"
       />
 
       {/* Upcoming Events */}
-      <Section title="Upcoming Events">
-        <div className="grid md:grid-cols-2 gap-8">
+      <Section title="Upcoming Events" background="white">
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           <EventCard 
             upcoming={true}
             title="Financial Planning Workshop"
@@ -31,11 +34,16 @@ const Event = () => {
             image="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80"
           />
         </div>
+        <div className="mt-12 text-center">
+          <Button className="bg-black hover:bg-black/90 text-white inline-flex items-center">
+            Register for events <ArrowRight size={18} className="ml-2" />
+          </Button>
+        </div>
       </Section>
 
       {/* Previous Events */}
       <Section title="Previous Events" background="light">
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           <EventCard 
             upcoming={false}
             title="Market Outlook 2025"
@@ -49,10 +57,15 @@ const Event = () => {
             image="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80"
           />
         </div>
+        <div className="mt-12 text-center">
+          <Button className="bg-black hover:bg-black/90 text-white inline-flex items-center">
+            View all past events <ArrowRight size={18} className="ml-2" />
+          </Button>
+        </div>
       </Section>
 
       {/* Contact Form */}
-      <Section id="contact">
+      <Section id="contact" background="white">
         <ContactForm />
       </Section>
     </div>

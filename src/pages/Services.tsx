@@ -6,6 +6,7 @@ import TabContent from '@/components/TabContent';
 import ValueCard from '@/components/ValueCard';
 import ContactForm from '@/components/ContactForm';
 import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 const Services = () => {
   // Tab content
@@ -64,24 +65,24 @@ const Services = () => {
       />
 
       {/* Roadmap Section */}
-      <Section id="roadmap">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+      <Section id="roadmap" background="white">
+        <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+          <div className="space-y-6">
+            <h2 className="text-3xl md:text-4xl font-semibold mb-6 tracking-tight">
               A Roadmap for your Investment Journey
             </h2>
-            <p className="text-voluntus-text-secondary mb-8">
+            <p className="text-[#9F9EA1] font-light">
               The Financial Planning Policy is a personalized roadmap for managing your wealth. It outlines how your funds should be allocated to kick-start your investment journey, providing step-by-step guidance along with ongoing monitoring and plan governance. It also defines our roles and responsibilities throughout this process, ensuring the policy remains up-to-date and that you're never alone on your journey to reach your financial goals.
             </p>
-            <Button className="btn btn-primary">
-              Request a demo
+            <Button className="bg-black hover:bg-black/90 text-white mt-4 inline-flex items-center">
+              Request a demo <ArrowRight size={18} className="ml-2" />
             </Button>
           </div>
-          <div className="rounded-xl overflow-hidden shadow-lg">
+          <div className="rounded-xl overflow-hidden shadow-hover">
             <img 
               src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80" 
               alt="Investment journey roadmap" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover img-zoom"
             />
           </div>
         </div>
@@ -98,8 +99,9 @@ const Services = () => {
         title="Our Value Propositions" 
         subtitle="What sets us apart" 
         titleCentered
+        background="white"
       >
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
           {valuePropositions.map((value, index) => (
             <ValueCard
               key={index}
@@ -115,22 +117,22 @@ const Services = () => {
       {/* Pricing Section */}
       <Section id="policy-fee" title="Our Pricing" background="light" titleCentered>
         <div className="max-w-2xl mx-auto text-center space-y-6">
-          <p className="text-voluntus-text-secondary">
+          <p className="text-[#9F9EA1] font-light">
             This is a subscription service with policy fee is charged periodically, with the amount depending on the complexity of your financial needs and the duration of the policy.
           </p>
-          <p className="text-voluntus-text-secondary">
+          <p className="text-[#9F9EA1] font-light">
             We DO NOT charge based on investment vehicle selected or size of the investment.
           </p>
           <div className="mt-8">
-            <Button className="btn btn-primary">
-              Request pricing information
+            <Button className="bg-black hover:bg-black/90 text-white inline-flex items-center">
+              Request pricing information <ArrowRight size={18} className="ml-2" />
             </Button>
           </div>
         </div>
       </Section>
 
       {/* Contact Form */}
-      <Section id="contact">
+      <Section id="contact" background="white">
         <ContactForm />
       </Section>
     </div>

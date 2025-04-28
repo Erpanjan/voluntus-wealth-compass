@@ -15,9 +15,9 @@ const About = () => {
       />
 
       {/* Vision Section */}
-      <Section>
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight">
+      <Section background="white">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-12 tracking-tight">
             We envision a world where people are freed from the complexity of finance and truly empowered to flourish in life.
           </h2>
         </div>
@@ -25,7 +25,7 @@ const About = () => {
 
       {/* Team Section */}
       <Section title="Our Team" background="light" titleCentered>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto max-w-5xl">
           {/* Team Member 1 */}
           <div className="text-center">
             <div className="aspect-square rounded-full overflow-hidden w-40 h-40 mx-auto mb-6">
@@ -36,8 +36,8 @@ const About = () => {
               />
             </div>
             <h3 className="font-semibold text-xl mb-1">John Wei</h3>
-            <p className="text-voluntus-text-secondary mb-3">Founder & CEO</p>
-            <p className="text-voluntus-text-secondary">
+            <p className="text-[#9F9EA1] mb-3">Founder & CEO</p>
+            <p className="text-[#9F9EA1] font-light">
               With over 15 years of experience in wealth management, John brings a wealth of knowledge and insight to help clients achieve their financial goals.
             </p>
           </div>
@@ -52,8 +52,8 @@ const About = () => {
               />
             </div>
             <h3 className="font-semibold text-xl mb-1">Sarah Chen</h3>
-            <p className="text-voluntus-text-secondary mb-3">Chief Investment Officer</p>
-            <p className="text-voluntus-text-secondary">
+            <p className="text-[#9F9EA1] mb-3">Chief Investment Officer</p>
+            <p className="text-[#9F9EA1] font-light">
               Sarah specializes in developing tailored investment strategies that align with clients' long-term financial aspirations and risk tolerance.
             </p>
           </div>
@@ -68,45 +68,45 @@ const About = () => {
               />
             </div>
             <h3 className="font-semibold text-xl mb-1">David Lam</h3>
-            <p className="text-voluntus-text-secondary mb-3">Senior Financial Advisor</p>
-            <p className="text-voluntus-text-secondary">
+            <p className="text-[#9F9EA1] mb-3">Senior Financial Advisor</p>
+            <p className="text-[#9F9EA1] font-light">
               David works closely with clients to understand their unique needs and helps them navigate complex financial decisions with confidence.
             </p>
           </div>
         </div>
 
         <div className="text-center mt-12">
-          <Button className="btn btn-primary">
+          <Button className="bg-black hover:bg-black/90 text-white">
             Meet our full team
           </Button>
         </div>
       </Section>
 
       {/* Our Approach Section */}
-      <Section title="Our Approach" titleCentered>
+      <Section title="Our Approach" titleCentered background="white">
         <div className="max-w-3xl mx-auto">
-          <p className="text-voluntus-text-secondary text-lg text-center mb-8">
+          <p className="text-[#9F9EA1] text-lg text-center mb-8 font-light">
             At Voluntus Long-term Capital, we believe that wealth management should be transparent, accountable, and tailored to your unique needs.
           </p>
 
           <div className="space-y-8">
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="bg-white rounded-xl p-6 shadow-soft hover:shadow-hover transition-all duration-300">
               <h3 className="text-xl font-semibold mb-3">Client-Centered Philosophy</h3>
-              <p className="text-voluntus-text-secondary">
+              <p className="text-[#9F9EA1] font-light">
                 We place your interests at the center of everything we do. Our subscription-based model eliminates conflicts of interest that often arise from commission-based advice, ensuring that our recommendations are always aligned with your financial goals.
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="bg-white rounded-xl p-6 shadow-soft hover:shadow-hover transition-all duration-300">
               <h3 className="text-xl font-semibold mb-3">Long-Term Partnership</h3>
-              <p className="text-voluntus-text-secondary">
+              <p className="text-[#9F9EA1] font-light">
                 We view wealth management as a journey, not a transaction. Our advisors work with you continuously, adjusting strategies as market conditions change and as your life evolves, ensuring your financial plan remains relevant and effective.
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="bg-white rounded-xl p-6 shadow-soft hover:shadow-hover transition-all duration-300">
               <h3 className="text-xl font-semibold mb-3">Clarity and Simplicity</h3>
-              <p className="text-voluntus-text-secondary">
+              <p className="text-[#9F9EA1] font-light">
                 We demystify complex financial concepts, providing you with clear explanations and straightforward strategies. This approach empowers you to make informed decisions about your wealth with confidence.
               </p>
             </div>
