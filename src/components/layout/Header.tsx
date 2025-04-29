@@ -48,7 +48,8 @@ const Header: React.FC = () => {
         scrolled || isMenuOpen ? 'bg-white shadow-sm' : 'bg-transparent'
       )}
     >
-      <div className="container-custom py-4 flex justify-between items-center">
+      <div className="container-custom py-4 flex justify-between items-center relative">
+        {/* Logo on the left */}
         <Link to="/" className="flex items-center ml-[-20px]">
           {isMobile ? (
             // Stacked logo for mobile
@@ -71,7 +72,8 @@ const Header: React.FC = () => {
           )}
         </Link>
 
-        <nav className="hidden lg:flex items-center">
+        {/* Navigation centered absolutely */}
+        <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 items-center">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -91,8 +93,11 @@ const Header: React.FC = () => {
               {link.name}
             </Link>
           ))}
+        </nav>
 
-          <Link to="/login" className="ml-5">
+        {/* Login button on the right */}
+        <div className="flex items-center">
+          <Link to="/login" className="hidden lg:block">
             <Button 
               variant="ghost" 
               size="sm" 
@@ -101,26 +106,26 @@ const Header: React.FC = () => {
               LOGIN
             </Button>
           </Link>
-        </nav>
-
-        <div className="flex items-center lg:hidden space-x-4">
-          <Link to="/login">
+          
+          <div className="flex lg:hidden space-x-4 items-center">
+            <Link to="/login">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-[#9F9EA1] hover:text-black text-xs border border-[#9F9EA1] rounded-full px-4 py-1"
+              >
+                LOGIN
+              </Button>
+            </Link>
             <Button 
               variant="ghost" 
-              size="sm" 
-              className="text-[#9F9EA1] hover:text-black text-xs border border-[#9F9EA1] rounded-full px-4 py-1"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle Menu"
             >
-              LOGIN
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </Button>
-          </Link>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle Menu"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </Button>
+          </div>
         </div>
       </div>
 
