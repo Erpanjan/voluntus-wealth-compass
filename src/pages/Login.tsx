@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,6 +29,15 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  const history = useHistory();
+  
+  // Check if user is already logged in
+  useEffect(() => {
+    if (localStorage.getItem('isAuthenticated') === 'true') {
+      history.push('/dashboard');
+    }
+  }, [history]);
 
   // Handle login form change
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,11 +75,18 @@ const Login = () => {
       // Simulating login request
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Set authentication flag in localStorage
+      localStorage.setItem('isAuthenticated', 'true');
+      
       toast({
         title: "Login successful",
         description: "Welcome back to Voluntus Long-term Capital.",
         duration: 5000,
       });
+      
+      // Redirect to dashboard
+      history.push('/dashboard');
+      
     } catch (error) {
       toast({
         title: "Login failed",
@@ -106,17 +122,13 @@ const Login = () => {
       
       toast({
         title: "Registration successful",
-        description: "A verification link has been sent to your contact. Please verify to continue.",
+        description: "Your account has been created. Let's complete your profile setup.",
         duration: 5000,
       });
 
-      // Reset form
-      setRegisterData({
-        contactType: 'email',
-        contact: '',
-        password: '',
-        confirmPassword: '',
-      });
+      // Redirect to onboarding
+      history.push('/onboarding');
+      
     } catch (error) {
       toast({
         title: "Registration failed",
@@ -160,14 +172,31 @@ const Login = () => {
     }
   };
 
+  // Handle demo account login
+  const handleDemoLogin = () => {
+    setIsSubmitting(true);
+    
+    setTimeout(() => {
+      localStorage.setItem('isAuthenticated', 'true');
+      history.push('/dashboard');
+      
+      toast({
+        title: "Demo Account Activated",
+        description: "You are now using a demo account to explore the platform.",
+        duration: 5000,
+      });
+      
+      setIsSubmitting(false);
+    }, 1000);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-sm overflow-hidden">
         {/* Header */}
         <div className="py-5 text-center mb-4">
           <Link to="/" className="inline-block mb-2">
-            <span className="font-bold text-xl">V</span>
-            <span className="font-medium">OLUNTUS</span>
+            <img src="/logo.png" alt="Voluntus" className="h-18 mx-auto" />
           </Link>
           <h1 className="text-lg font-medium">Client Portal</h1>
         </div>
@@ -229,6 +258,17 @@ const Login = () => {
               >
                 {isSubmitting ? 'Logging in...' : 'Login'}
               </Button>
+              
+              <div className="text-center">
+                <Button 
+                  variant="link" 
+                  className="text-sm" 
+                  onClick={handleDemoLogin}
+                  disabled={isSubmitting}
+                >
+                  Try Demo Account
+                </Button>
+              </div>
             </form>
           </TabsContent>
 
