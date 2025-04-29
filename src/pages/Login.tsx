@@ -40,8 +40,8 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-sm overflow-hidden">
         {/* Header with Logo */}
         <div className="py-5 text-center mb-4">
           <Link to="/" className="inline-block mb-2">
