@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -93,7 +92,6 @@ const Onboarding = () => {
           
           {showConsultationScheduling && (
             <div className="border-t my-8 pt-8">
-              <h2 className="text-2xl font-semibold mb-6">Schedule Your Consultation</h2>
               <div id="consultation-component">
                 <ConsultationScheduling setCompleted={setCompleteConsultation} />
               </div>
