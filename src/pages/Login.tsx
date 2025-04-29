@@ -39,6 +39,11 @@ const Login = () => {
     }, 1000);
   };
 
+  // Handle regular login success
+  const handleRegularLogin = () => {
+    navigate('/dashboard');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-sm overflow-hidden">
@@ -71,7 +76,10 @@ const Login = () => {
 
           {/* Login Tab */}
           <TabsContent value="login" className="p-6">
-            <LoginForm onDemoLogin={handleDemoLogin} />
+            <LoginForm 
+              onDemoLogin={handleDemoLogin} 
+              onRegularLogin={handleRegularLogin}
+            />
           </TabsContent>
 
           {/* Register Tab */}

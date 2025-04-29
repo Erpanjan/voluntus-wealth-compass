@@ -9,9 +9,10 @@ import { Eye, EyeOff } from 'lucide-react';
 
 interface LoginFormProps {
   onDemoLogin: () => void;
+  onRegularLogin?: () => void; // Make this prop optional to maintain backward compatibility
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) => {
   const [loginData, setLoginData] = useState({
     accountName: '',
     password: '',
@@ -47,8 +48,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin }) => {
         duration: 5000,
       });
       
-      // Redirect to dashboard
-      navigate('/dashboard');
+      // Call the onRegularLogin prop if it exists
+      if (onRegularLogin) {
+        onRegularLogin();
+      } else {
+        // Redirect to dashboard if onRegularLogin is not provided
+        navigate('/dashboard');
+      }
       
     } catch (error) {
       toast({
