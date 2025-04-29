@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
@@ -18,7 +18,7 @@ const Onboarding = () => {
   const [progress, setProgress] = useState(0);
   const [completeQuestionnaire, setCompleteQuestionnaire] = useState(false);
   const [completeConsultation, setCompleteConsultation] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { toast } = useToast();
   
   // Steps in the onboarding process
@@ -68,7 +68,7 @@ const Onboarding = () => {
     if (currentStep === 5) {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('onboardingComplete', 'true');
-      history.push('/dashboard');
+      navigate('/dashboard');
       return;
     }
 
@@ -82,7 +82,7 @@ const Onboarding = () => {
       // If last step (Personalize AI), skip to dashboard
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('onboardingComplete', 'true');
-      history.push('/dashboard');
+      navigate('/dashboard');
     } else if (currentStep !== 3) { 
       // Can't skip consultation
       setCurrentStep(currentStep + 1);
@@ -99,7 +99,7 @@ const Onboarding = () => {
             <span className="font-bold text-xl">VOLUNTUS</span>
           </Link>
           {currentStep < 4 && (
-            <Button variant="link" onClick={() => history.push('/login')}>
+            <Button variant="link" onClick={() => navigate('/login')}>
               Exit Setup
             </Button>
           )}
