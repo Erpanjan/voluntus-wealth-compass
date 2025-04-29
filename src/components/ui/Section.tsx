@@ -57,7 +57,7 @@ const Section: React.FC<SectionProps> = ({
             )}
           </div>
         )}
-        <div className="flex-grow flex flex-col items-center justify-center w-full">
+        <div className="flex-grow flex flex-col items-center justify-start w-full">
           {children}
         </div>
       </div>
