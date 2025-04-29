@@ -32,6 +32,11 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  // Add effect to scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const navLinks = [
     { name: 'HOME', path: '/' },
     { name: 'SERVICE & PRICING', path: '/services' },
@@ -40,6 +45,19 @@ const Header: React.FC = () => {
     { name: 'ABOUT', path: '/about' },
     { name: 'CONTACT US', path: '/contact' },
   ];
+
+  const handleNavLinkClick = () => {
+    // Close mobile menu if it's open
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
+    
+    // Scroll to top of the page
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   return (
     <header 
@@ -50,7 +68,7 @@ const Header: React.FC = () => {
     >
       <div className="container-custom py-4 flex justify-between items-center relative">
         {/* Logo on the left */}
-        <Link to="/" className="flex items-center ml-[-20px]">
+        <Link to="/" className="flex items-center ml-[-20px]" onClick={handleNavLinkClick}>
           {isMobile ? (
             // Stacked logo for mobile
             <div className="flex flex-col items-center">
@@ -81,6 +99,12 @@ const Header: React.FC = () => {
               onClick={(e) => {
                 if (isActive(link.path)) {
                   e.preventDefault();
+                  window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                  });
+                } else {
+                  handleNavLinkClick();
                 }
               }}
               className={cn(
@@ -97,7 +121,7 @@ const Header: React.FC = () => {
 
         {/* Login button on the right */}
         <div className="flex items-center">
-          <Link to="/login" className="hidden lg:block">
+          <Link to="/login" className="hidden lg:block" onClick={handleNavLinkClick}>
             <Button 
               variant="ghost" 
               size="sm" 
@@ -108,7 +132,7 @@ const Header: React.FC = () => {
           </Link>
           
           <div className="flex lg:hidden space-x-4 items-center">
-            <Link to="/login">
+            <Link to="/login" onClick={handleNavLinkClick}>
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -139,8 +163,13 @@ const Header: React.FC = () => {
                 onClick={(e) => {
                   if (isActive(link.path)) {
                     e.preventDefault();
-                  } else {
+                    window.scrollTo({
+                      top: 0,
+                      behavior: 'smooth'
+                    });
                     setIsMenuOpen(false);
+                  } else {
+                    handleNavLinkClick();
                   }
                 }}
                 className={cn(
