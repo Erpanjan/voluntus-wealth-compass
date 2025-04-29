@@ -11,7 +11,6 @@ import ForgotPasswordForm from '@/components/login/ForgotPasswordForm';
 
 const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [exitAnimation, setExitAnimation] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -22,15 +21,13 @@ const Login = () => {
     }
   }, [navigate]);
 
-  // Handle demo account login with smooth transition
+  // Handle demo account login
   const handleDemoLogin = () => {
     setIsSubmitting(true);
     
-    // Start exit animation
-    setExitAnimation(true);
-    
     setTimeout(() => {
       localStorage.setItem('isAuthenticated', 'true');
+      navigate('/onboarding');
       
       toast({
         title: "Demo Account Activated",
@@ -38,26 +35,13 @@ const Login = () => {
         duration: 5000,
       });
       
-      navigate('/onboarding');
       setIsSubmitting(false);
-    }, 500); // Match animation duration
-  };
-  
-  // Handle regular login with smooth transition
-  const handleLogin = () => {
-    setIsSubmitting(true);
-    setExitAnimation(true);
-    
-    setTimeout(() => {
-      localStorage.setItem('isAuthenticated', 'true');
-      navigate('/dashboard');
-      setIsSubmitting(false);
-    }, 500);
+    }, 1000);
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-opacity duration-500 ${exitAnimation ? 'opacity-0' : 'opacity-100'}`}>
-      <div className="max-w-md w-full bg-white rounded-lg shadow-sm overflow-hidden animate-fade-in">
+    <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-sm overflow-hidden">
         {/* Header with Logo */}
         <div className="py-5 text-center mb-4">
           <Link to="/" className="inline-block mb-2">
@@ -87,7 +71,7 @@ const Login = () => {
 
           {/* Login Tab */}
           <TabsContent value="login" className="p-6">
-            <LoginForm onDemoLogin={handleDemoLogin} onRegularLogin={handleLogin} />
+            <LoginForm onDemoLogin={handleDemoLogin} />
           </TabsContent>
 
           {/* Register Tab */}
