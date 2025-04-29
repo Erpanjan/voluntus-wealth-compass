@@ -64,10 +64,11 @@ const App = () => (
             </Routes>
           </main>
           
-          {/* Footer only on non-dashboard/non-onboarding pages */}
+          {/* Footer only on non-dashboard/non-onboarding/non-login pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
+            <Route path="/login" element={null} />
             <Route path="*" element={<Footer />} />
           </Routes>
         </div>
