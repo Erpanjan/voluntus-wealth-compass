@@ -25,8 +25,27 @@ const Onboarding = () => {
   const steps = [
     { name: 'Welcome', component: <Welcome /> },
     { name: 'Profile', component: <ProfileCreation /> },
-    { name: 'Questionnaire', component: <Questionnaire setCompleted={setCompleteQuestionnaire} /> },
-    { name: 'Consultation', component: <ConsultationScheduling setCompleted={setCompleteConsultation} /> },
+    { 
+      name: 'Next Steps', 
+      component: (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="border rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-4">Financial Questionnaire</h3>
+            <p className="text-gray-600 mb-6">
+              Help us understand your financial situation and goals by completing our questionnaire.
+            </p>
+            <Questionnaire setCompleted={setCompleteQuestionnaire} />
+          </div>
+          <div className="border rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-4">Consultation Scheduling</h3>
+            <p className="text-gray-600 mb-6">
+              Schedule a meeting with one of our financial advisors.
+            </p>
+            <ConsultationScheduling setCompleted={setCompleteConsultation} />
+          </div>
+        </div>
+      )
+    },
     { name: 'Pending Approval', component: <PendingApproval /> },
     { name: 'Personalize AI', component: <PersonalizeAI /> }
   ];
@@ -37,15 +56,8 @@ const Onboarding = () => {
   };
 
   const handleNext = () => {
-    if (currentStep === 2 && !completeQuestionnaire) {
-      // If on questionnaire step and not completed, allow skipping but show message
-      toast({
-        title: "Questionnaire Skipped",
-        description: "You can complete the financial questionnaire later from your account settings.",
-      });
-    }
-
-    if (currentStep === 3 && !completeConsultation) {
+    // If on the questionnaire/consultation step, check if consultation is completed
+    if (currentStep === 2 && !completeConsultation) {
       // Cannot skip consultation scheduling
       toast({
         title: "Required Step",
@@ -56,16 +68,16 @@ const Onboarding = () => {
     }
 
     // If on the approval step, simulate approval after a delay
-    if (currentStep === 4) {
+    if (currentStep === 3) {
       setTimeout(() => {
-        setCurrentStep(5);
+        setCurrentStep(4);
         setProgress(calculateProgress());
       }, 2000);
       return;
     }
 
     // If this is the final step, redirect to dashboard
-    if (currentStep === 5) {
+    if (currentStep === 4) {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('onboardingComplete', 'true');
       navigate('/dashboard');
@@ -78,15 +90,15 @@ const Onboarding = () => {
   };
 
   const handleSkip = () => {
-    if (currentStep === 5) {
+    if (currentStep === 0) {
+      // Skip welcome
+      setCurrentStep(1);
+      setProgress(calculateProgress());
+    } else if (currentStep === 4) {
       // If last step (Personalize AI), skip to dashboard
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('onboardingComplete', 'true');
       navigate('/dashboard');
-    } else if (currentStep !== 3) { 
-      // Can't skip consultation
-      setCurrentStep(currentStep + 1);
-      setProgress(calculateProgress());
     }
   };
 
@@ -98,7 +110,7 @@ const Onboarding = () => {
           <Link to="/" className="flex items-center">
             <span className="font-bold text-xl">VOLUNTUS</span>
           </Link>
-          {currentStep < 4 && (
+          {currentStep < 3 && (
             <Button variant="link" onClick={() => navigate('/login')}>
               Exit Setup
             </Button>
@@ -127,7 +139,7 @@ const Onboarding = () => {
           {steps[currentStep].component}
           
           <div className="flex justify-between mt-10">
-            {currentStep > 0 && currentStep < 4 && (
+            {currentStep > 0 && currentStep < 3 && (
               <Button 
                 variant="outline"
                 onClick={() => {
@@ -139,7 +151,16 @@ const Onboarding = () => {
               </Button>
             )}
             
-            {currentStep === 5 && (
+            {currentStep === 0 && (
+              <Button 
+                variant="outline" 
+                onClick={handleSkip}
+              >
+                Skip Welcome
+              </Button>
+            )}
+
+            {currentStep === 4 && (
               <Button 
                 variant="outline" 
                 onClick={handleSkip}
