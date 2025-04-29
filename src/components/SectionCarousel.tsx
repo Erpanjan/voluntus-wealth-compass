@@ -81,15 +81,8 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
           dragFree: false,
         }}
       >
-        <CarouselContent className="h-full">
-          {sections.map((section, index) => (
-            <CarouselItem key={section.id} className="basis-full h-full flex items-center">
-              {section.content}
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-
-        <div className="absolute left-0 bottom-12 w-full z-10 flex justify-center">
+        {/* Navigation dots moved to top */}
+        <div className="absolute left-0 top-12 w-full z-10 flex justify-center">
           <div className="flex gap-3 items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2">
             {sections.map((section, index) => (
               <Button
@@ -108,6 +101,14 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
             ))}
           </div>
         </div>
+        
+        <CarouselContent className="h-full">
+          {sections.map((section, index) => (
+            <CarouselItem key={section.id} className="basis-full h-full flex items-center">
+              {section.content}
+            </CarouselItem>
+          ))}
+        </CarouselContent>
 
         <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16" />
         <CarouselNext className="hidden md:flex -right-12 lg:-right-16" />
