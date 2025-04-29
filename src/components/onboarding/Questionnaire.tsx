@@ -28,6 +28,39 @@ const defaultFinancialGoals = [
   'Medical & Health'
 ];
 
+// Define a type for the behavioral biases object to ensure it's correctly typed
+interface BehavioralBiases {
+  sellOnDrop: number;
+  emotionalAttachment: number;
+  preferStability: number;
+  hopefulRecovery: number;
+  mentalAccounting: number;
+  pastInfluence: number;
+  predictability: number;
+  profitOverPlan: number;
+  valueAlignment: number;
+}
+
+// Define the type for the answers object
+interface QuestionnairAnswers {
+  // Basic Information
+  ageGroup: string;
+  incomeRange: string;
+  netWorth: string;
+  // Knowledge & Experience
+  investmentKnowledge: string;
+  investmentExperience: string;
+  // Complex Products & Investment Composition
+  complexProducts: number;
+  investmentComposition: number;
+  // Goal-specific answers
+  riskAppetite: Record<string, string>;
+  absoluteRiskTolerance: Record<string, string>;
+  // Behavioral
+  marketVolatilityResponse: string;
+  behavioralBiases: BehavioralBiases;
+}
+
 const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [progress, setProgress] = useState(0);
@@ -38,21 +71,8 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
   const [goalRisks, setGoalRisks] = useState<Record<string, number>>({});
   const [goalHorizons, setGoalHorizons] = useState<Record<string, string>>({});
   const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
-  
-  // Define a type for the behavioral biases object to ensure it's correctly typed
-  interface BehavioralBiases {
-    sellOnDrop: number;
-    emotionalAttachment: number;
-    preferStability: number;
-    hopefulRecovery: number;
-    mentalAccounting: number;
-    pastInfluence: number;
-    predictability: number;
-    profitOverPlan: number;
-    valueAlignment: number;
-  }
 
-  const [answers, setAnswers] = useState({
+  const [answers, setAnswers] = useState<QuestionnairAnswers>({
     // Basic Information
     ageGroup: '',
     incomeRange: '',
@@ -64,8 +84,8 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
     complexProducts: 3,
     investmentComposition: 3,
     // Goal-specific answers
-    riskAppetite: {} as Record<string, string>,
-    absoluteRiskTolerance: {} as Record<string, string>,
+    riskAppetite: {},
+    absoluteRiskTolerance: {},
     // Behavioral
     marketVolatilityResponse: '',
     behavioralBiases: {
@@ -78,7 +98,7 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
       predictability: 3,
       profitOverPlan: 3,
       valueAlignment: 3
-    } as BehavioralBiases
+    }
   });
   
   // Update progress when current step changes
@@ -196,28 +216,39 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
     });
   };
 
-  // Fix for the spread type error: use a type assertion to ensure TypeScript knows this is an object
+  // Fix for the spread type error with proper type handling
   const updateNestedAnswer = (section: string, subsection: string, value: any) => {
     if (section === 'behavioralBiases') {
       // Use type assertion to tell TypeScript this is a BehavioralBiases object
       const updatedBiases = {
         ...answers.behavioralBiases,
         [subsection]: value
-      } as BehavioralBiases;
+      };
 
       setAnswers({
         ...answers,
         behavioralBiases: updatedBiases
       });
-    } else {
-      // For other nested objects, handle similarly with proper type assertions
+    } else if (section === 'riskAppetite' || section === 'absoluteRiskTolerance') {
+      // Handle these record types explicitly
+      const updatedRecord = {
+        ...answers[section as 'riskAppetite' | 'absoluteRiskTolerance'],
+        [subsection]: value
+      };
+      
       setAnswers({
         ...answers,
+        [section]: updatedRecord
+      });
+    } else {
+      // This should never happen with the current structure, but keep it as a fallback
+      setAnswers(prevState => ({
+        ...prevState,
         [section]: {
-          ...answers[section as keyof typeof answers],
+          ...(prevState[section as keyof typeof prevState] as object || {}),
           [subsection]: value
         }
-      });
+      }));
     }
   };
 
