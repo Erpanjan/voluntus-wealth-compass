@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 
 // Import onboarding steps
@@ -15,7 +14,6 @@ import PersonalizeAI from '@/components/onboarding/PersonalizeAI';
 
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [progress, setProgress] = useState(0);
   const [completeQuestionnaire, setCompleteQuestionnaire] = useState(false);
   const [completeConsultation, setCompleteConsultation] = useState(false);
   const navigate = useNavigate();
@@ -50,11 +48,6 @@ const Onboarding = () => {
     { name: 'Personalize AI', component: <PersonalizeAI /> }
   ];
 
-  // Calculate progress percentage
-  const calculateProgress = () => {
-    return ((currentStep) / (steps.length - 1)) * 100;
-  };
-
   const handleNext = () => {
     // If on the questionnaire/consultation step, check if consultation is completed
     if (currentStep === 2 && !completeConsultation) {
@@ -71,7 +64,6 @@ const Onboarding = () => {
     if (currentStep === 3) {
       setTimeout(() => {
         setCurrentStep(4);
-        setProgress(calculateProgress());
       }, 2000);
       return;
     }
@@ -86,14 +78,12 @@ const Onboarding = () => {
 
     // Move to next step
     setCurrentStep(currentStep + 1);
-    setProgress(calculateProgress());
   };
 
   const handleSkip = () => {
     if (currentStep === 0) {
       // Skip welcome
       setCurrentStep(1);
-      setProgress(calculateProgress());
     } else if (currentStep === 4) {
       // If last step (Personalize AI), skip to dashboard
       localStorage.setItem('isAuthenticated', 'true');
@@ -118,22 +108,7 @@ const Onboarding = () => {
         </div>
       </header>
 
-      {/* Progress bar */}
-      <div className="container mx-auto px-6 pt-4">
-        <Progress value={progress} className="h-1" />
-        <div className="flex justify-between mt-2 text-xs text-gray-500">
-          {steps.map((step, index) => (
-            <div 
-              key={index}
-              className={`${index > currentStep ? 'opacity-50' : ''}`}
-            >
-              {step.name}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Main content */}
+      {/* Main content - Progress bar removed */}
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-3xl mx-auto">
           {steps[currentStep].component}
@@ -144,7 +119,6 @@ const Onboarding = () => {
                 variant="outline"
                 onClick={() => {
                   setCurrentStep(currentStep - 1);
-                  setProgress(calculateProgress());
                 }}
               >
                 Back
