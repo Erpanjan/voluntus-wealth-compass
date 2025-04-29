@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Linkedin, ChevronUp, Mail } from 'lucide-react';
@@ -16,28 +15,23 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-white pt-16 pb-12 border-t border-gray-100">
       <div className="container-custom">
-        {/* Logo & Main Navigation */}
+        {/* Back to Top Button - Moved to the upper part */}
+        <div className="flex justify-end mb-8">
+          <Button 
+            variant="outline"
+            onClick={scrollToTop}
+            className="rounded-full px-4 py-1 text-xs border border-gray-200 hover:bg-gray-50 flex items-center gap-2 font-light"
+          >
+            <ChevronUp size={14} />
+            <span>Back to top</span>
+          </Button>
+        </div>
+        
+        {/* Main Navigation */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-16 mb-12">
-          {/* Logo */}
+          {/* Empty column (logo removed) */}
           <div className="col-span-2 lg:col-span-1">
-            <div className="mb-6">
-              <img 
-                src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
-                alt="Voluntus Logo" 
-                className="h-14"
-              />
-            </div>
-            <p className="text-xs text-gray-500 mb-6 font-light">
-              © {new Date().getFullYear()} Voluntus Long-term Capital
-            </p>
-            <Button 
-              variant="outline"
-              onClick={scrollToTop}
-              className="rounded-full px-4 py-1 text-xs border border-gray-200 hover:bg-gray-50 flex items-center gap-2 font-light"
-            >
-              <ChevronUp size={14} />
-              <span>Back to top</span>
-            </Button>
+            {/* Logo removed as requested */}
           </div>
 
           {/* Links Columns */}
@@ -91,6 +85,13 @@ const Footer: React.FC = () => {
           </p>
           <p className="text-[10px] leading-relaxed text-gray-400 mt-3 max-w-5xl font-light">
             All advertisements and promotional materials on this website have not been reviewed by the Securities and Futures Commission of Hong Kong or any other regulatory authority.
+          </p>
+        </div>
+        
+        {/* Copyright centered at the very bottom */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-500 font-light">
+            © {new Date().getFullYear()} Voluntus Long-term Capital
           </p>
         </div>
       </div>
