@@ -15,6 +15,7 @@ import PersonalizeAI from '@/components/onboarding/PersonalizeAI';
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [completeConsultation, setCompleteConsultation] = useState(false);
+  const [showConsultationScheduling, setShowConsultationScheduling] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -37,6 +38,10 @@ const Onboarding = () => {
                     1
                   </div>
                   <h3 className="text-xl font-semibold">Financial Questionnaire</h3>
+                </div>
+                
+                <div className="bg-amber-50 text-amber-800 px-3 py-2 rounded-md text-sm my-2 w-full">
+                  This questionnaire is optional and can be completed later
                 </div>
                 
                 <p className="text-gray-600 flex-grow my-4">
@@ -65,6 +70,10 @@ const Onboarding = () => {
                   <h3 className="text-xl font-semibold">Consultation</h3>
                 </div>
                 
+                <div className="bg-blue-50 text-blue-800 px-3 py-2 rounded-md text-sm my-2 w-full">
+                  This step is required to activate your account
+                </div>
+                
                 <p className="text-gray-600 flex-grow my-4">
                   Schedule a meeting with your financial advisor to discuss your portfolio and verify your information.
                 </p>
@@ -73,12 +82,7 @@ const Onboarding = () => {
                   <Button 
                     variant="secondary"
                     className="flex items-center w-full md:w-auto"
-                    onClick={() => {
-                      const consultationComponent = document.getElementById('consultation-component');
-                      if (consultationComponent) {
-                        consultationComponent.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }}
+                    onClick={() => setShowConsultationScheduling(true)}
                   >
                     Schedule Now
                   </Button>
@@ -87,15 +91,14 @@ const Onboarding = () => {
             </div>
           </div>
           
-          <div className="border-t my-8 pt-8">
-            <h2 className="text-2xl font-semibold mb-6">Schedule Your Consultation</h2>
-            <p className="text-lg text-gray-600 mb-6">
-              This step is required to activate your account. Select a time that works for you.
-            </p>
-            <div id="consultation-component">
-              <ConsultationScheduling setCompleted={setCompleteConsultation} />
+          {showConsultationScheduling && (
+            <div className="border-t my-8 pt-8">
+              <h2 className="text-2xl font-semibold mb-6">Schedule Your Consultation</h2>
+              <div id="consultation-component">
+                <ConsultationScheduling setCompleted={setCompleteConsultation} />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )
     },
