@@ -61,8 +61,8 @@ const AdvisorChat = () => {
   return (
     <Card className="border rounded-xl shadow-sm h-[calc(100vh-48px)]">
       <CardContent className="p-0 flex flex-col h-full">
-        {/* Chat Header */}
-        <div className="border-b p-4 flex items-center">
+        {/* Chat Header - Removed border-b */}
+        <div className="p-4 flex items-center">
           <Avatar className="h-10 w-10 mr-4">
             <AvatarImage src="/placeholder.svg" />
             <AvatarFallback>VLC</AvatarFallback>
