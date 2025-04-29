@@ -59,8 +59,8 @@ const AdvisorChat = () => {
   };
 
   return (
-    <Card className="border rounded-xl shadow-sm">
-      <CardContent className="p-0">
+    <Card className="border rounded-xl shadow-sm h-[calc(100vh-48px)]">
+      <CardContent className="p-0 flex flex-col h-full">
         {/* Chat Header */}
         <div className="border-b p-4 flex items-center">
           <Avatar className="h-10 w-10 mr-4">
@@ -74,7 +74,7 @@ const AdvisorChat = () => {
         </div>
         
         {/* Messages Container */}
-        <div className="h-[60vh] overflow-y-auto p-4 flex flex-col gap-4">
+        <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
           {messages.map((message) => (
             <div 
               key={message.id}
@@ -125,31 +125,30 @@ const AdvisorChat = () => {
         <form onSubmit={handleSendMessage} className="border-t p-4 flex gap-2">
           <Input 
             type="text" 
-            placeholder="Type your message..." 
+            placeholder="Ask anything" 
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            className="flex-1"
+            className="flex-1 bg-gray-50 border-0 shadow-none"
           />
           
-          <Button type="button" variant="outline" size="icon">
-            <Paperclip size={20} />
+          <Button type="button" variant="ghost" size="icon" className="rounded-full">
+            <Paperclip size={18} />
           </Button>
           
-          <Button type="button" variant="outline" size="icon">
-            <Image size={20} />
+          <Button type="button" variant="ghost" size="icon" className="rounded-full">
+            <Image size={18} />
           </Button>
           
-          <Button type="button" variant="outline" size="icon">
-            <Mic size={20} />
+          <Button type="button" variant="ghost" size="icon" className="rounded-full">
+            <Mic size={18} />
           </Button>
           
-          <Button type="button" variant="outline" size="icon">
-            <Video size={20} />
+          <Button type="button" variant="ghost" size="icon" className="rounded-full">
+            <Video size={18} />
           </Button>
           
-          <Button type="submit">
-            <Send size={20} />
-            <span className="sr-only">Send message</span>
+          <Button type="submit" variant="default" size="icon" className="rounded-full">
+            <Send size={18} />
           </Button>
         </form>
       </CardContent>
