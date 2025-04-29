@@ -39,7 +39,7 @@ const Section: React.FC<SectionProps> = ({
       bgClasses[background],
       className
     )}>
-      <div className={cn("container-custom", carouselItem && "h-full")}>
+      <div className={cn("container-custom flex flex-col justify-center h-full", carouselItem && "h-full")}>
         {(title || subtitle) && (
           <div className={cn(
             'mb-20', 

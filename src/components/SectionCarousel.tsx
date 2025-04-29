@@ -65,7 +65,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
 
   return (
     <div 
-      className="relative"
+      className="relative h-full"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleMouseEnter}
@@ -73,7 +73,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
     >
       <Carousel
         setApi={setApi}
-        className="w-full"
+        className="w-full h-full"
         opts={{
           align: "start",
           loop: true,
@@ -81,9 +81,9 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
           dragFree: false,
         }}
       >
-        <CarouselContent>
+        <CarouselContent className="h-full">
           {sections.map((section, index) => (
-            <CarouselItem key={section.id} className="basis-full">
+            <CarouselItem key={section.id} className="basis-full h-full flex items-center">
               {section.content}
             </CarouselItem>
           ))}
