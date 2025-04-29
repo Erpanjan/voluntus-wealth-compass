@@ -3,18 +3,17 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { Calendar } from "lucide-react";
 
 // Import onboarding steps
 import Welcome from '@/components/onboarding/Welcome';
 import ProfileCreation from '@/components/onboarding/ProfileCreation';
-import Questionnaire from '@/components/onboarding/Questionnaire';
 import ConsultationScheduling from '@/components/onboarding/ConsultationScheduling';
 import PendingApproval from '@/components/onboarding/PendingApproval';
 import PersonalizeAI from '@/components/onboarding/PersonalizeAI';
 
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [completeQuestionnaire, setCompleteQuestionnaire] = useState(false);
   const [completeConsultation, setCompleteConsultation] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -26,19 +25,91 @@ const Onboarding = () => {
     { 
       name: 'Next Steps', 
       component: (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-8">
+          <h1 className="text-3xl font-semibold mb-6">Complete Your Onboarding</h1>
+          
+          {/* Financial Questionnaire Card */}
           <div className="border rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-4">Financial Questionnaire</h3>
-            <p className="text-gray-600 mb-6">
-              Help us understand your financial situation and goals by completing our questionnaire.
-            </p>
-            <Questionnaire setCompleted={setCompleteQuestionnaire} />
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 bg-black text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">
+                1
+              </div>
+              <div className="flex-grow">
+                <h3 className="text-xl font-semibold">Complete Financial Questionnaire</h3>
+                <p className="text-gray-600 mb-4">
+                  This helps us understand your financial goals and create a personalized investment strategy.
+                </p>
+                <Button 
+                  variant="secondary"
+                  className="flex items-center"
+                  onClick={() => navigate('/questionnaire')}
+                >
+                  Start Questionnaire
+                </Button>
+              </div>
+            </div>
           </div>
+          
+          {/* Consultation Scheduling Card */}
           <div className="border rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-4">Consultation Scheduling</h3>
-            <p className="text-gray-600 mb-6">
-              Schedule a meeting with one of our financial advisors.
-            </p>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 bg-black text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">
+                2
+              </div>
+              <div className="flex-grow">
+                <h3 className="text-xl font-semibold">Schedule a Consultation</h3>
+                <p className="text-gray-600 mb-4">
+                  Meet with your financial advisor to discuss your portfolio and verify your information.
+                </p>
+                
+                <div className="bg-gray-200 rounded-md p-4">
+                  <h4 className="font-medium mb-4">Consultation Options</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="bg-white rounded-md p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={20} />
+                        <span>Online Meeting</span>
+                      </div>
+                      <Button 
+                        variant="secondary" 
+                        size="sm"
+                        onClick={() => {
+                          const consultationComponent = document.getElementById('consultation-component');
+                          if (consultationComponent) {
+                            consultationComponent.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }}
+                      >
+                        Select Time
+                      </Button>
+                    </div>
+                    
+                    <div className="bg-white rounded-md p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={20} />
+                        <span>In-Person Meeting</span>
+                      </div>
+                      <Button 
+                        variant="secondary" 
+                        size="sm"
+                        onClick={() => {
+                          const consultationComponent = document.getElementById('consultation-component');
+                          if (consultationComponent) {
+                            consultationComponent.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }}
+                      >
+                        Select Time
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div id="consultation-component" className="mt-10 pt-4 border-t">
             <ConsultationScheduling setCompleted={setCompleteConsultation} />
           </div>
         </div>

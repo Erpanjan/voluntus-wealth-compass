@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
+import Questionnaire from "./pages/Questionnaire";
 
 const queryClient = new QueryClient();
 
@@ -32,10 +33,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <div className="flex flex-col min-h-screen">
-          {/* Header only on non-dashboard/non-onboarding pages */}
+          {/* Header only on non-dashboard/non-onboarding/non-questionnaire pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
+            <Route path="/questionnaire" element={null} />
             <Route path="*" element={<Header />} />
           </Routes>
           
@@ -60,15 +62,24 @@ const App = () => (
                 path="/onboarding" 
                 element={<Onboarding />} 
               />
+              <Route 
+                path="/questionnaire" 
+                element={
+                  <PrivateRoute>
+                    <Questionnaire />
+                  </PrivateRoute>
+                } 
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           
-          {/* Footer only on non-dashboard/non-onboarding/non-login pages */}
+          {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
             <Route path="/login" element={null} />
+            <Route path="/questionnaire" element={null} />
             <Route path="*" element={<Footer />} />
           </Routes>
         </div>
