@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -740,3 +741,338 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
                         onValueChange={(value) => updateAnswer('complexProducts', value[0])}
                         className="w-full"
                       />
+                      
+                      <div className="flex justify-between mt-2 text-xs text-gray-500">
+                        <span>Strongly Disagree</span>
+                        <span>Strongly Agree</span>
+                      </div>
+                      
+                      <div className="text-center mt-4 font-medium">
+                        {getLikertScale(answers.complexProducts)}
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 15: Behavioral Biases */}
+        {currentStep === 15 && (
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(15)} text-white flex items-center justify-center font-bold`}>15</div>
+                  <h2 className="text-xl font-semibold">Behavioral Biases</h2>
+                </div>
+                
+                <p className="text-gray-600 text-sm">
+                  Respond to the following statements using the slider to indicate your level of agreement.
+                </p>
+
+                <Accordion type="single" collapsible className="w-full">
+                  {/* SellOnDrop */}
+                  <AccordionItem value="sellOnDrop" className="border-b">
+                    <AccordionTrigger className="hover:no-underline py-4 text-sm">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Selling on a Drop</span>
+                        <span className="text-xs text-gray-500 font-normal">
+                          {getLikertScale(answers.behavioralBiases.sellOnDrop)}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-700">
+                          "I would sell an investment if it dropped 25% in value within the first six months, even if there is a chance it could recover in the future."
+                        </p>
+                        <Slider 
+                          value={[answers.behavioralBiases.sellOnDrop]} 
+                          min={1}
+                          max={5}
+                          step={1}
+                          onValueChange={(value) => updateNestedAnswer('behavioralBiases', 'sellOnDrop', value[0])}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Strongly Disagree</span>
+                          <span>Strongly Agree</span>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                  
+                  {/* Emotional Attachment */}
+                  <AccordionItem value="emotionalAttachment" className="border-b">
+                    <AccordionTrigger className="hover:no-underline py-4 text-sm">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Emotional Attachment</span>
+                        <span className="text-xs text-gray-500 font-normal">
+                          {getLikertScale(answers.behavioralBiases.emotionalAttachment)}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-700">
+                          "I tend to feel emotionally attached to my investments, making it difficult to part with them even if it's the rational choice."
+                        </p>
+                        <Slider 
+                          value={[answers.behavioralBiases.emotionalAttachment]} 
+                          min={1}
+                          max={5}
+                          step={1}
+                          onValueChange={(value) => updateNestedAnswer('behavioralBiases', 'emotionalAttachment', value[0])}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Strongly Disagree</span>
+                          <span>Strongly Agree</span>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Stability Preference */}
+                  <AccordionItem value="preferStability" className="border-b">
+                    <AccordionTrigger className="hover:no-underline py-4 text-sm">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Stability Preference</span>
+                        <span className="text-xs text-gray-500 font-normal">
+                          {getLikertScale(answers.behavioralBiases.preferStability)}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-700">
+                          "I prefer to maintain my existing investments rather than frequently buying and selling assets."
+                        </p>
+                        <Slider 
+                          value={[answers.behavioralBiases.preferStability]} 
+                          min={1}
+                          max={5}
+                          step={1}
+                          onValueChange={(value) => updateNestedAnswer('behavioralBiases', 'preferStability', value[0])}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Strongly Disagree</span>
+                          <span>Strongly Agree</span>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Hopeful Recovery */}
+                  <AccordionItem value="hopefulRecovery" className="border-b">
+                    <AccordionTrigger className="hover:no-underline py-4 text-sm">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Hopeful Recovery</span>
+                        <span className="text-xs text-gray-500 font-normal">
+                          {getLikertScale(answers.behavioralBiases.hopefulRecovery)}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-700">
+                          "I would hesitate to sell a stock that I purchased at $50, even if it dropped to $40, hoping it will return to its original price."
+                        </p>
+                        <Slider 
+                          value={[answers.behavioralBiases.hopefulRecovery]} 
+                          min={1}
+                          max={5}
+                          step={1}
+                          onValueChange={(value) => updateNestedAnswer('behavioralBiases', 'hopefulRecovery', value[0])}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Strongly Disagree</span>
+                          <span>Strongly Agree</span>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Mental Accounting */}
+                  <AccordionItem value="mentalAccounting" className="border-b">
+                    <AccordionTrigger className="hover:no-underline py-4 text-sm">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Mental Accounting</span>
+                        <span className="text-xs text-gray-500 font-normal">
+                          {getLikertScale(answers.behavioralBiases.mentalAccounting)}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-700">
+                          "I tend to allocate my money into different categories based on specific financial goals rather than looking at my overall financial picture."
+                        </p>
+                        <Slider 
+                          value={[answers.behavioralBiases.mentalAccounting]} 
+                          min={1}
+                          max={5}
+                          step={1}
+                          onValueChange={(value) => updateNestedAnswer('behavioralBiases', 'mentalAccounting', value[0])}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Strongly Disagree</span>
+                          <span>Strongly Agree</span>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Past Influence */}
+                  <AccordionItem value="pastInfluence" className="border-b">
+                    <AccordionTrigger className="hover:no-underline py-4 text-sm">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Past Investment Influence</span>
+                        <span className="text-xs text-gray-500 font-normal">
+                          {getLikertScale(answers.behavioralBiases.pastInfluence)}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-700">
+                          "Past investment mistakes strongly influence my current investment decisions, making me overly cautious about taking risks."
+                        </p>
+                        <Slider 
+                          value={[answers.behavioralBiases.pastInfluence]} 
+                          min={1}
+                          max={5}
+                          step={1}
+                          onValueChange={(value) => updateNestedAnswer('behavioralBiases', 'pastInfluence', value[0])}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Strongly Disagree</span>
+                          <span>Strongly Agree</span>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Predictability */}
+                  <AccordionItem value="predictability" className="border-b">
+                    <AccordionTrigger className="hover:no-underline py-4 text-sm">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Market Predictability</span>
+                        <span className="text-xs text-gray-500 font-normal">
+                          {getLikertScale(answers.behavioralBiases.predictability)}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-700">
+                          "I believe that investment outcomes are predictable if enough information is available."
+                        </p>
+                        <Slider 
+                          value={[answers.behavioralBiases.predictability]} 
+                          min={1}
+                          max={5}
+                          step={1}
+                          onValueChange={(value) => updateNestedAnswer('behavioralBiases', 'predictability', value[0])}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Strongly Disagree</span>
+                          <span>Strongly Agree</span>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Profit Over Plan */}
+                  <AccordionItem value="profitOverPlan" className="border-b">
+                    <AccordionTrigger className="hover:no-underline py-4 text-sm">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Profit Over Plan</span>
+                        <span className="text-xs text-gray-500 font-normal">
+                          {getLikertScale(answers.behavioralBiases.profitOverPlan)}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-700">
+                          "The most important thing about my investments is that they make money, even if it means not following a structured plan."
+                        </p>
+                        <Slider 
+                          value={[answers.behavioralBiases.profitOverPlan]} 
+                          min={1}
+                          max={5}
+                          step={1}
+                          onValueChange={(value) => updateNestedAnswer('behavioralBiases', 'profitOverPlan', value[0])}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Strongly Disagree</span>
+                          <span>Strongly Agree</span>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Value Alignment */}
+                  <AccordionItem value="valueAlignment" className="border-b">
+                    <AccordionTrigger className="hover:no-underline py-4 text-sm">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Value Alignment</span>
+                        <span className="text-xs text-gray-500 font-normal">
+                          {getLikertScale(answers.behavioralBiases.valueAlignment)}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-700">
+                          "I prefer to invest in companies that align with my personal values, such as environmental, social, or governance principles."
+                        </p>
+                        <Slider 
+                          value={[answers.behavioralBiases.valueAlignment]} 
+                          min={1}
+                          max={5}
+                          step={1}
+                          onValueChange={(value) => updateNestedAnswer('behavioralBiases', 'valueAlignment', value[0])}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Strongly Disagree</span>
+                          <span>Strongly Agree</span>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </motion.div>
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-between mt-8">
+        <Button
+          variant="outline"
+          onClick={handlePrevStep}
+          disabled={currentStep === 1}
+        >
+          Previous
+        </Button>
+        <Button onClick={handleNextStep}>
+          {currentStep === 15 ? "Complete" : "Next"}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default Questionnaire;
