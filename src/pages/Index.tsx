@@ -34,7 +34,7 @@ const Index = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-black hover:bg-black/90 text-white transition-all duration-300 mt-8"
+                className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-8"
               >
                 <Link to="/services" className="inline-flex items-center">
                   How We Can Help <ArrowRight size={18} className="ml-2" />
@@ -67,7 +67,7 @@ const Index = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-black hover:bg-black/90 text-white transition-all duration-300"
+                className="bg-black/80 hover:bg-black text-white transition-all duration-300"
               >
                 <Link to="/services" className="inline-flex items-center">
                   How We Can Help <ArrowRight size={18} className="ml-2" />
@@ -100,7 +100,7 @@ const Index = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-black hover:bg-black/90 text-white transition-all duration-300"
+                className="bg-black/80 hover:bg-black text-white transition-all duration-300"
               >
                 <Link to="/services" className="inline-flex items-center">
                   How We Can Help <ArrowRight size={18} className="ml-2" />
@@ -133,7 +133,7 @@ const Index = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-black hover:bg-black/90 text-white transition-all duration-300"
+                className="bg-black/80 hover:bg-black text-white transition-all duration-300"
               >
                 <Link to="/services" className="inline-flex items-center">
                   How We Can Help <ArrowRight size={18} className="ml-2" />
@@ -158,7 +158,7 @@ const Index = () => {
           <Button 
             asChild 
             size="lg"
-            className="bg-black hover:bg-black/90 text-white transition-all duration-300"
+            className="bg-black/80 hover:bg-black text-white transition-all duration-300"
           >
             <Link to="/services" className="inline-flex items-center">
               Our Services <ArrowRight size={18} className="ml-2" />
