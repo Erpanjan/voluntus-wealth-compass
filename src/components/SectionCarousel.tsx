@@ -89,7 +89,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
           ))}
         </CarouselContent>
 
-        <div className="absolute left-0 bottom-20 w-full z-10 flex justify-center">
+        <div className="absolute left-0 bottom-12 w-full z-10 flex justify-center">
           <div className="flex gap-3 items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2">
             {sections.map((section, index) => (
               <Button
