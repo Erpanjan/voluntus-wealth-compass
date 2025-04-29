@@ -5,13 +5,13 @@ import { Separator } from "@/components/ui/separator";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-white pt-8 pb-6 border-t border-gray-100">
+    <footer className="bg-white pt-4 pb-3 border-t border-gray-100">
       <div className="container-custom">
         {/* Links section with horizontal layout */}
-        <div className="grid grid-cols-3 gap-8 mb-10">
+        <div className="grid grid-cols-3 gap-6 mb-6">
           {/* Company Links */}
           <div className="flex flex-col">
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 gap-2">
               <Link to="/about" className="text-xs text-gray-500 hover:text-black transition-colors font-light">ABOUT</Link>
               <Link to="/services" className="text-xs text-gray-500 hover:text-black transition-colors font-light">SERVICES</Link>
               <Link to="/insight" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSIGHT</Link>
@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
 
           {/* Social Links */}
           <div className="flex flex-col">
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 gap-2">
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">LINKEDIN</a>
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSTAGRAM</a>
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">FACEBOOK</a>
@@ -33,7 +33,7 @@ const Footer: React.FC = () => {
 
           {/* Legal Links */}
           <div className="flex flex-col">
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 gap-2">
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">TERMS OF USE</a>
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRIVACY & COOKIES</a>
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRESS</a>
@@ -41,10 +41,10 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <Separator className="my-4 bg-gray-100" />
+        <Separator className="my-3 bg-gray-100" />
         
         {/* Footer Bottom Section */}
-        <div className="flex justify-between items-center pt-3">
+        <div className="flex justify-between items-center pt-2">
           <p className="text-xs text-gray-500 font-light">
             © {new Date().getFullYear()} Voluntus Long-term Capital
           </p>
@@ -58,11 +58,11 @@ const Footer: React.FC = () => {
         </div>
         
         {/* Full disclaimer on mobile - hidden on larger screens */}
-        <div className="mt-6 pt-4 md:hidden">
+        <div className="mt-4 pt-2 md:hidden">
           <p className="text-[10px] leading-relaxed text-gray-400 max-w-5xl font-light">
             This website is owned and operated by Voluntus Long-term Capital, a Hong Kong-based wealth advisory firm. Our services are only available to Hong Kong-based investors, excluding U.S. Persons.
           </p>
-          <p className="text-[10px] leading-relaxed text-gray-400 mt-3 max-w-5xl font-light">
+          <p className="text-[10px] leading-relaxed text-gray-400 mt-2 max-w-5xl font-light">
             Unless otherwise stated, all return figures shown are for illustrative purposes only, do not represent actual client or model returns, and are not indicative of future performance.
           </p>
         </div>
