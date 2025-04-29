@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -48,41 +49,30 @@ const Header: React.FC = () => {
       )}
     >
       <div className="container-custom py-4 flex justify-between items-center">
-        {/* Desktop: Logo in center with navigation on both sides */}
-        <div className="hidden lg:flex items-center flex-1 justify-start">
-          {navLinks.slice(0, Math.floor(navLinks.length / 2)).map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              onClick={(e) => {
-                if (isActive(link.path)) {
-                  e.preventDefault();
-                }
-              }}
-              className={cn(
-                "px-5 py-2 text-xs tracking-wide transition-all duration-300",
-                isActive(link.path) 
-                  ? 'font-semibold text-black' 
-                  : 'font-normal text-[#9F9EA1] hover:text-black'
-              )}
-            >
-              {link.name}
-            </Link>
-          ))}
-        </div>
-        
-        {/* Centered Logo for both mobile and desktop */}
-        <Link to="/" className="flex items-center justify-center">
-          <img 
-            src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
-            alt="Voluntus Logo" 
-            className="h-16" 
-          />
+        <Link to="/" className="flex items-center ml-[-20px]">
+          {isMobile ? (
+            // Stacked logo for mobile
+            <div className="flex flex-col items-center">
+              <img 
+                src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
+                alt="Voluntus Logo" 
+                className="h-16" 
+              />
+            </div>
+          ) : (
+            // Horizontal logo for desktop
+            <div className="flex items-center">
+              <img 
+                src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
+                alt="Voluntus Logo" 
+                className="h-16" 
+              />
+            </div>
+          )}
         </Link>
-        
-        {/* Desktop: Right side navigation */}
-        <div className="hidden lg:flex items-center flex-1 justify-end">
-          {navLinks.slice(Math.floor(navLinks.length / 2)).map((link) => (
+
+        <nav className="hidden lg:flex items-center">
+          {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.path}
@@ -111,9 +101,8 @@ const Header: React.FC = () => {
               LOGIN
             </Button>
           </Link>
-        </div>
+        </nav>
 
-        {/* Mobile: Login button and menu toggle */}
         <div className="flex items-center lg:hidden space-x-4">
           <Link to="/login">
             <Button 
@@ -135,7 +124,6 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isMenuOpen && (
         <div className="container-custom lg:hidden pb-6 animate-fade-in">
           <nav className="flex flex-col space-y-4">
