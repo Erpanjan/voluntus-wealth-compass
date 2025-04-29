@@ -15,29 +15,10 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-white pt-16 pb-12 border-t border-gray-100">
+    <footer className="bg-white pt-12 pb-12 border-t border-gray-100">
       <div className="container-custom">
-        {/* Logo at the top left */}
-        <div className="flex justify-between items-start mb-16">
-          <div>
-            <img 
-              src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
-              alt="Voluntus Logo" 
-              className="h-8"
-            />
-          </div>
-          <Button 
-            variant="outline"
-            onClick={scrollToTop}
-            className="rounded-full px-4 py-1 text-xs border border-gray-200 hover:bg-gray-50 flex items-center gap-2 font-light"
-          >
-            <ChevronUp size={14} />
-            <span>Back to top</span>
-          </Button>
-        </div>
-        
-        {/* Links section with horizontal layout */}
-        <div className="grid grid-cols-3 gap-8 mb-20">
+        {/* Columns section with more compact spacing */}
+        <div className="grid grid-cols-4 gap-8 mb-16">
           {/* Company Links */}
           <div className="flex flex-col space-y-6">
             <p className="text-xs uppercase text-gray-400 font-semibold">Company</p>
@@ -69,6 +50,21 @@ const Footer: React.FC = () => {
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">TERMS OF USE</a>
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRIVACY & COOKIES</a>
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRESS</a>
+            </div>
+          </div>
+          
+          {/* Back to Top button aligned with other headers */}
+          <div className="flex flex-col space-y-6">
+            <p className="text-xs uppercase text-gray-400 font-semibold invisible">Action</p>
+            <div className="grid grid-cols-1">
+              <Button 
+                variant="outline"
+                onClick={scrollToTop}
+                className="rounded-full px-4 py-1 text-xs border border-gray-200 hover:bg-gray-50 flex items-center gap-2 font-light w-fit"
+              >
+                <ChevronUp size={14} />
+                <span>Back to top</span>
+              </Button>
             </div>
           </div>
         </div>
