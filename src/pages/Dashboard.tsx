@@ -41,57 +41,57 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {/* Right Sidebar with Navigation Tabs */}
-      <div className="w-64 bg-gray-100 border-l min-h-screen flex flex-col">
-        <div className="p-4 border-b">
-          <h2 className="text-lg font-semibold">Financial Dashboard</h2>
-          <p className="text-xs text-gray-500">Client Portal</p>
+      {/* Right Sidebar with Navigation Tabs - Updated styling to match screenshots */}
+      <div className="w-64 bg-[#F9F9F9] border-l min-h-screen flex flex-col">
+        <div className="p-6 border-b">
+          <h2 className="text-lg font-medium text-[#333333]">Financial Dashboard</h2>
+          <p className="text-xs text-[#9F9EA1] mt-1">Client Portal</p>
         </div>
         
-        {/* Navigation Menu */}
-        <div className="flex-1 py-6">
-          <nav className="space-y-1 px-2">
+        {/* Navigation Menu - Updated to match minimalist style in screenshot */}
+        <div className="flex-1 py-8">
+          <nav className="space-y-6 px-6">
             <button 
               onClick={() => setActiveTab('advisor')}
-              className={`w-full text-left px-3 py-2 transition-colors ${
+              className={`w-full text-left transition-all ${
                 activeTab === 'advisor' 
-                  ? 'font-semibold text-black' 
-                  : 'font-normal text-gray-600 hover:text-black'
+                  ? 'font-medium text-[#333333] tracking-wide' 
+                  : 'font-normal text-[#9F9EA1] hover:text-[#333333] tracking-wide'
               }`}
             >
-              Advisor Interface
+              ADVISOR INTERFACE
             </button>
             
             <button 
               onClick={() => setActiveTab('policy')}
-              className={`w-full text-left px-3 py-2 transition-colors ${
+              className={`w-full text-left transition-all ${
                 activeTab === 'policy' 
-                  ? 'font-semibold text-black' 
-                  : 'font-normal text-gray-600 hover:text-black'
+                  ? 'font-medium text-[#333333] tracking-wide' 
+                  : 'font-normal text-[#9F9EA1] hover:text-[#333333] tracking-wide'
               }`}
             >
-              Policy Review
+              POLICY REVIEW
             </button>
             
             <button 
               onClick={() => setActiveTab('account')}
-              className={`w-full text-left px-3 py-2 transition-colors ${
+              className={`w-full text-left transition-all ${
                 activeTab === 'account' 
-                  ? 'font-semibold text-black' 
-                  : 'font-normal text-gray-600 hover:text-black'
+                  ? 'font-medium text-[#333333] tracking-wide' 
+                  : 'font-normal text-[#9F9EA1] hover:text-[#333333] tracking-wide'
               }`}
             >
-              Account Management
+              ACCOUNT MANAGEMENT
             </button>
           </nav>
         </div>
         
         {/* Footer/Logout Section */}
-        <div className="p-4 border-t">
+        <div className="p-6 border-t">
           <Button 
             variant="outline" 
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 text-[#9F9EA1] hover:text-[#333333]"
           >
             <LogOut size={16} />
             Logout
