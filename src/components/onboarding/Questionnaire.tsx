@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,6 +38,20 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
   const [goalRisks, setGoalRisks] = useState<Record<string, number>>({});
   const [goalHorizons, setGoalHorizons] = useState<Record<string, string>>({});
   const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
+  
+  // Define a type for the behavioral biases object to ensure it's correctly typed
+  interface BehavioralBiases {
+    sellOnDrop: number;
+    emotionalAttachment: number;
+    preferStability: number;
+    hopefulRecovery: number;
+    mentalAccounting: number;
+    pastInfluence: number;
+    predictability: number;
+    profitOverPlan: number;
+    valueAlignment: number;
+  }
+
   const [answers, setAnswers] = useState({
     // Basic Information
     ageGroup: '',
@@ -65,7 +78,7 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
       predictability: 3,
       profitOverPlan: 3,
       valueAlignment: 3
-    }
+    } as BehavioralBiases
   });
   
   // Update progress when current step changes
@@ -183,14 +196,29 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
     });
   };
 
+  // Fix for the spread type error: use a type assertion to ensure TypeScript knows this is an object
   const updateNestedAnswer = (section: string, subsection: string, value: any) => {
-    setAnswers({
-      ...answers,
-      [section]: {
-        ...answers[section as keyof typeof answers],
+    if (section === 'behavioralBiases') {
+      // Use type assertion to tell TypeScript this is a BehavioralBiases object
+      const updatedBiases = {
+        ...answers.behavioralBiases,
         [subsection]: value
-      }
-    });
+      } as BehavioralBiases;
+
+      setAnswers({
+        ...answers,
+        behavioralBiases: updatedBiases
+      });
+    } else {
+      // For other nested objects, handle similarly with proper type assertions
+      setAnswers({
+        ...answers,
+        [section]: {
+          ...answers[section as keyof typeof answers],
+          [subsection]: value
+        }
+      });
+    }
   };
 
   // Update goal-specific answer
