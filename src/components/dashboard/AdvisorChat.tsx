@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Send, Paperclip, Image, Mic, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -61,16 +60,12 @@ const AdvisorChat = () => {
   return (
     <Card className="border rounded-xl shadow-sm h-[calc(100vh-48px)]">
       <CardContent className="p-0 flex flex-col h-full">
-        {/* Chat Header - Removed border-b */}
+        {/* Simplified Chat Header */}
         <div className="p-4 flex items-center">
-          <Avatar className="h-10 w-10 mr-4">
+          <Avatar className="h-10 w-10">
             <AvatarImage src="/placeholder.svg" />
             <AvatarFallback>VLC</AvatarFallback>
           </Avatar>
-          <div>
-            <h3 className="font-medium">Your Financial Advisor</h3>
-            <p className="text-sm text-gray-500">Online</p>
-          </div>
         </div>
         
         {/* Messages Container */}
