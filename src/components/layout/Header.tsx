@@ -55,7 +55,7 @@ const Header: React.FC = () => {
               <img 
                 src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
                 alt="Voluntus Logo" 
-                className="h-12" 
+                className="h-16" 
               />
             </div>
           ) : (
@@ -64,7 +64,7 @@ const Header: React.FC = () => {
               <img 
                 src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
                 alt="Voluntus Logo" 
-                className="h-10" 
+                className="h-16" 
               />
             </div>
           )}
