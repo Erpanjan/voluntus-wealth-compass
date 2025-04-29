@@ -69,7 +69,7 @@ const ConsultationScheduling = ({ setCompleted }: ConsultationSchedulingProps) =
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold mb-6">Schedule a Consultation</h1>
+      <h1 className="text-2xl font-semibold mb-6">Schedule a Consultation</h1>
       <p className="text-lg mb-8">
         Meet with one of our advisors to discuss your financial goals and investment strategy. This step is required to activate your account.
       </p>
