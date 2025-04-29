@@ -29,7 +29,7 @@ const Questionnaire = () => {
             <span className="font-bold text-xl">VOLUNTUS</span>
           </Link>
           <Button variant="link" onClick={() => navigate('/onboarding')}>
-            Back to Onboarding
+            Return to Onboarding
           </Button>
         </div>
       </header>
@@ -40,8 +40,8 @@ const Questionnaire = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-semibold mb-4">Financial Questionnaire</h1>
             <p className="text-lg">
-              This questionnaire will help us understand your financial situation and goals better. 
-              Your answers will be used to create a personalized investment strategy tailored to your needs.
+              Help us understand your financial goals and create a personalized investment strategy 
+              tailored to your needs. This questionnaire is optional but highly recommended.
             </p>
           </div>
 
@@ -52,7 +52,7 @@ const Questionnaire = () => {
               variant="outline" 
               onClick={() => navigate('/onboarding')}
             >
-              Skip for Now
+              Skip Questionnaire
             </Button>
             
             <Button 
