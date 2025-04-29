@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
               <img 
                 src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
                 alt="Voluntus Logo" 
-                className="h-14" // Increased from h-10 to h-14
+                className="h-14"
               />
             </div>
             <p className="text-xs text-gray-500 mb-6 font-light">
@@ -44,11 +44,11 @@ const Footer: React.FC = () => {
           <div className="col-span-2 lg:col-span-1">
             <p className="text-xs uppercase text-gray-400 mb-5 font-semibold">Company</p>
             <nav className="flex flex-col space-y-3">
-              <Link to="/about" className="text-sm text-gray-500 hover:text-black transition-colors font-light">ABOUT</Link>
-              <Link to="/services" className="text-sm text-gray-500 hover:text-black transition-colors font-light">SERVICES</Link>
-              <Link to="/insight" className="text-sm text-gray-500 hover:text-black transition-colors font-light">INSIGHT</Link>
-              <Link to="/event" className="text-sm text-gray-500 hover:text-black transition-colors font-light">EVENT</Link>
-              <Link to="/contact" className="text-sm text-gray-500 hover:text-black transition-colors font-light">CONTACT US</Link>
+              <Link to="/about" className="text-xs text-gray-500 hover:text-black transition-colors font-light">ABOUT</Link>
+              <Link to="/services" className="text-xs text-gray-500 hover:text-black transition-colors font-light">SERVICES</Link>
+              <Link to="/insight" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSIGHT</Link>
+              <Link to="/event" className="text-xs text-gray-500 hover:text-black transition-colors font-light">EVENT</Link>
+              <Link to="/contact" className="text-xs text-gray-500 hover:text-black transition-colors font-light">CONTACT US</Link>
             </nav>
           </div>
 
@@ -56,11 +56,11 @@ const Footer: React.FC = () => {
           <div className="col-span-1">
             <p className="text-xs uppercase text-gray-400 mb-5 font-semibold">Social</p>
             <div className="flex flex-col space-y-3">
-              <a href="#" className="text-sm text-gray-500 hover:text-black transition-colors font-light">LINKEDIN</a>
-              <a href="#" className="text-sm text-gray-500 hover:text-black transition-colors font-light">INSTAGRAM</a>
-              <a href="#" className="text-sm text-gray-500 hover:text-black transition-colors font-light">FACEBOOK</a>
-              <a href="#" className="text-sm text-gray-500 hover:text-black transition-colors font-light">X</a>
-              <a href="#" className="text-sm text-gray-500 hover:text-black transition-colors font-light">WECHAT</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">LINKEDIN</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSTAGRAM</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">FACEBOOK</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">X</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">WECHAT</a>
             </div>
           </div>
 
@@ -68,9 +68,9 @@ const Footer: React.FC = () => {
           <div className="col-span-1">
             <p className="text-xs uppercase text-gray-400 mb-5 font-semibold">Legal</p>
             <div className="flex flex-col space-y-3">
-              <a href="#" className="text-sm text-gray-500 hover:text-black transition-colors font-light">TERMS OF USE</a>
-              <a href="#" className="text-sm text-gray-500 hover:text-black transition-colors font-light">PRIVACY & COOKIES</a>
-              <a href="#" className="text-sm text-gray-500 hover:text-black transition-colors font-light">PRESS</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">TERMS OF USE</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRIVACY & COOKIES</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRESS</a>
             </div>
           </div>
         </div>
