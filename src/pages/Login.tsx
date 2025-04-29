@@ -26,12 +26,12 @@ const Login = () => {
     setIsSubmitting(true);
     
     setTimeout(() => {
-      // For demo accounts, direct to onboarding instead of dashboard
-      navigate('/onboarding');
+      localStorage.setItem('isAuthenticated', 'true');
+      navigate('/dashboard');
       
       toast({
         title: "Demo Account Activated",
-        description: "Welcome to Voluntus! Please complete the onboarding process.",
+        description: "You are now using a demo account to explore the platform.",
         duration: 5000,
       });
       
@@ -42,14 +42,10 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-sm overflow-hidden">
-        {/* Header with Logo */}
+        {/* Header */}
         <div className="py-5 text-center mb-4">
           <Link to="/" className="inline-block mb-2">
-            <img 
-              src="/lovable-uploads/f02f35c5-3319-4467-ac99-5ee97c405c11.png" 
-              alt="Voluntus" 
-              className="h-24 mx-auto" 
-            />
+            <img src="/logo.png" alt="Voluntus" className="h-18 mx-auto" />
           </Link>
           <h1 className="text-lg font-medium">Client Portal</h1>
         </div>
@@ -77,6 +73,13 @@ const Login = () => {
             <ForgotPasswordForm />
           </TabsContent>
         </Tabs>
+
+        {/* Footer */}
+        <div className="px-6 pb-6 pt-2 text-center">
+          <p className="text-sm text-gray-500">
+            Need help? <Link to="/contact" className="text-black hover:underline">Contact support</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
