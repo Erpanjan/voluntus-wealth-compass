@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, UserRound } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -93,8 +93,11 @@ const Header: React.FC = () => {
           ))}
 
           <Link to="/login" className="ml-5">
-            <Button variant="ghost" size="sm" className="text-[#9F9EA1] hover:text-black flex items-center gap-1 text-xs tracking-wide">
-              <UserRound size={18} />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-[#9F9EA1] hover:text-black text-xs tracking-wide border border-[#9F9EA1] rounded-full px-4 py-1"
+            >
               LOGIN
             </Button>
           </Link>
@@ -102,8 +105,11 @@ const Header: React.FC = () => {
 
         <div className="flex items-center lg:hidden space-x-4">
           <Link to="/login">
-            <Button variant="ghost" size="sm" className="text-[#9F9EA1] hover:text-black flex items-center gap-1 text-xs">
-              <UserRound size={18} />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-[#9F9EA1] hover:text-black text-xs border border-[#9F9EA1] rounded-full px-4 py-1"
+            >
               LOGIN
             </Button>
           </Link>
