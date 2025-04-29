@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Linkedin, ChevronUp, Mail } from 'lucide-react';
@@ -28,14 +29,9 @@ const Footer: React.FC = () => {
         </div>
         
         {/* Main Navigation */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-16 mb-12">
-          {/* Empty column (logo removed) */}
-          <div className="col-span-2 lg:col-span-1">
-            {/* Logo removed as requested */}
-          </div>
-
+        <div className="grid grid-cols-3 lg:grid-cols-3 gap-8 lg:gap-16 mb-12">
           {/* Links Columns */}
-          <div className="col-span-2 lg:col-span-1">
+          <div className="col-span-1">
             <p className="text-xs uppercase text-gray-400 mb-5 font-semibold">Company</p>
             <nav className="flex flex-col space-y-3">
               <Link to="/about" className="text-xs text-gray-500 hover:text-black transition-colors font-light">ABOUT</Link>
