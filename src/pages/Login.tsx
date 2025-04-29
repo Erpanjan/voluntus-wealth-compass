@@ -42,10 +42,21 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-sm overflow-hidden">
-        {/* Header */}
+        {/* Header with Logo */}
         <div className="py-5 text-center mb-4">
           <Link to="/" className="inline-block mb-2">
-            <img src="/logo.png" alt="Voluntus" className="h-18 mx-auto" />
+            <div className="flex items-center justify-center">
+              <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M120 40C100 70 80 140 60 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
+                <path d="M80 40C100 70 120 140 140 170" stroke="black" strokeWidth="10" strokeLinecap="round"/>
+                <circle cx="100" cy="170" r="5" fill="black"/>
+              </svg>
+              <div className="h-10 w-px bg-black mx-4"></div>
+              <div className="flex flex-col">
+                <span className="font-bold text-lg leading-tight text-black">VOLUNTUS</span>
+                <span className="text-xs tracking-wider leading-tight text-black">LONG-TERM CAPITAL</span>
+              </div>
+            </div>
           </Link>
           <h1 className="text-lg font-medium">Client Portal</h1>
         </div>
