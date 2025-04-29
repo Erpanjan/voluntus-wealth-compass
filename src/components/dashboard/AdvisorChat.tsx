@@ -59,14 +59,6 @@ const AdvisorChat = () => {
 
   return (
     <div className="bg-white h-[calc(100vh-48px)] flex flex-col">
-      {/* Simplified Header */}
-      <div className="p-4 flex items-center">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src="/placeholder.svg" />
-          <AvatarFallback>VLC</AvatarFallback>
-        </Avatar>
-      </div>
-      
       {/* Messages Container */}
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
         {messages.map((message) => (
