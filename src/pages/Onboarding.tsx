@@ -2,22 +2,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 // Import onboarding steps
 import Welcome from '@/components/onboarding/Welcome';
 import ProfileCreation from '@/components/onboarding/ProfileCreation';
-import Questionnaire from '@/components/onboarding/Questionnaire';
 import ConsultationScheduling from '@/components/onboarding/ConsultationScheduling';
-import PendingApproval from '@/components/onboarding/PendingApproval';
-import PersonalizeAI from '@/components/onboarding/PersonalizeAI';
+import { ArrowRight } from 'lucide-react';
 
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [completeQuestionnaire, setCompleteQuestionnaire] = useState(false);
-  const [completeConsultation, setCompleteConsultation] = useState(false);
+  const [schedulingComplete, setSchedulingComplete] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -26,39 +22,25 @@ const Onboarding = () => {
     { name: 'Welcome', component: <Welcome /> },
     { name: 'Profile', component: <ProfileCreation /> },
     { 
-      name: 'Next Steps', 
-      component: (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="border rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-4">Financial Questionnaire</h3>
-            <p className="text-gray-600 mb-6">
-              Help us understand your financial situation and goals by completing our questionnaire.
-            </p>
-            <Questionnaire setCompleted={setCompleteQuestionnaire} />
-          </div>
-          <div className="border rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-4">Consultation Scheduling</h3>
-            <p className="text-gray-600 mb-6">
-              Schedule a meeting with one of our financial advisors.
-            </p>
-            <ConsultationScheduling setCompleted={setCompleteConsultation} />
-          </div>
-        </div>
-      )
-    },
-    { name: 'Pending Approval', component: <PendingApproval /> },
-    { name: 'Personalize AI', component: <PersonalizeAI /> }
+      name: 'Required Steps',
+      component: <AccountActivationSteps 
+                  setSchedulingComplete={setSchedulingComplete} 
+                  navigate={navigate} 
+                />
+    }
   ];
 
-  // Calculate progress percentage
-  const calculateProgress = () => {
-    return ((currentStep) / (steps.length - 1)) * 100;
-  };
-
   const handleNext = () => {
-    // If on the questionnaire/consultation step, check if consultation is completed
-    if (currentStep === 2 && !completeConsultation) {
-      // Cannot skip consultation scheduling
+    // If on the final step with scheduling completed, redirect to dashboard
+    if (currentStep === 2 && schedulingComplete) {
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('onboardingComplete', 'true');
+      navigate('/dashboard');
+      return;
+    }
+    
+    // If on the final step without scheduling, show warning
+    if (currentStep === 2 && !schedulingComplete) {
       toast({
         title: "Required Step",
         description: "Please schedule a consultation to proceed.",
@@ -67,38 +49,14 @@ const Onboarding = () => {
       return;
     }
 
-    // If on the approval step, simulate approval after a delay
-    if (currentStep === 3) {
-      setTimeout(() => {
-        setCurrentStep(4);
-        setProgress(calculateProgress());
-      }, 2000);
-      return;
-    }
-
-    // If this is the final step, redirect to dashboard
-    if (currentStep === 4) {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('onboardingComplete', 'true');
-      navigate('/dashboard');
-      return;
-    }
-
     // Move to next step
     setCurrentStep(currentStep + 1);
-    setProgress(calculateProgress());
   };
 
   const handleSkip = () => {
     if (currentStep === 0) {
       // Skip welcome
       setCurrentStep(1);
-      setProgress(calculateProgress());
-    } else if (currentStep === 4) {
-      // If last step (Personalize AI), skip to dashboard
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('onboardingComplete', 'true');
-      navigate('/dashboard');
     }
   };
 
@@ -108,9 +66,13 @@ const Onboarding = () => {
       <header className="border-b py-4">
         <div className="container mx-auto px-6 flex justify-between items-center">
           <Link to="/" className="flex items-center">
-            <span className="font-bold text-xl">VOLUNTUS</span>
+            <img 
+              src="/lovable-uploads/f02f35c5-3319-4467-ac99-5ee97c405c11.png" 
+              alt="Voluntus" 
+              className="h-10" 
+            />
           </Link>
-          {currentStep < 3 && (
+          {currentStep < 2 && (
             <Button variant="link" onClick={() => navigate('/login')}>
               Exit Setup
             </Button>
@@ -118,33 +80,17 @@ const Onboarding = () => {
         </div>
       </header>
 
-      {/* Progress bar */}
-      <div className="container mx-auto px-6 pt-4">
-        <Progress value={progress} className="h-1" />
-        <div className="flex justify-between mt-2 text-xs text-gray-500">
-          {steps.map((step, index) => (
-            <div 
-              key={index}
-              className={`${index > currentStep ? 'opacity-50' : ''}`}
-            >
-              {step.name}
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Main content */}
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-3xl mx-auto">
           {steps[currentStep].component}
           
           <div className="flex justify-between mt-10">
-            {currentStep > 0 && currentStep < 3 && (
+            {currentStep > 0 && currentStep < 2 && (
               <Button 
                 variant="outline"
                 onClick={() => {
                   setCurrentStep(currentStep - 1);
-                  setProgress(calculateProgress());
                 }}
               >
                 Back
@@ -159,20 +105,77 @@ const Onboarding = () => {
                 Skip Welcome
               </Button>
             )}
-
-            {currentStep === 4 && (
+            
+            {currentStep < 2 && (
               <Button 
-                variant="outline" 
-                onClick={handleSkip}
+                onClick={handleNext}
+                className="ml-auto"
               >
-                Skip for now
+                Continue
               </Button>
             )}
-            
-            <div className="ml-auto">
-              <Button onClick={handleNext}>
-                {currentStep === steps.length - 1 ? 'Complete Setup' : 'Continue'}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// New component for account activation steps
+const AccountActivationSteps = ({ setSchedulingComplete, navigate }) => {
+  return (
+    <div>
+      <div className="text-center mb-12">
+        <Avatar className="h-20 w-20 mx-auto mb-4">
+          <AvatarFallback className="bg-gray-200">
+            VP
+          </AvatarFallback>
+        </Avatar>
+        <h1 className="text-2xl font-semibold mb-2">Account Opening in Progress</h1>
+        <p className="text-gray-600">
+          Welcome to Voluntus! Please complete the following steps to activate your account.
+        </p>
+      </div>
+
+      <h2 className="text-xl font-bold mb-6">Required Steps</h2>
+
+      {/* Financial Questionnaire - Non-mandatory but recommended */}
+      <div className="border rounded-lg mb-6 overflow-hidden">
+        <div className="p-6">
+          <div className="flex items-start">
+            <div className="bg-black text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">
+              <span>1</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">Complete Financial Questionnaire</h3>
+              <p className="text-gray-600 mb-4">
+                This helps us understand your financial goals and create a personalized investment strategy.
+              </p>
+              <Button 
+                variant="outline" 
+                className="flex items-center"
+                onClick={() => navigate('/questionnaire')}
+              >
+                Start Questionnaire <ArrowRight className="ml-2" size={16} />
               </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Consultation Scheduling - Mandatory */}
+      <div className="border rounded-lg overflow-hidden">
+        <div className="p-6">
+          <div className="flex items-start">
+            <div className="bg-black text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">
+              <span>2</span>
+            </div>
+            <div className="w-full">
+              <h3 className="text-lg font-semibold">Schedule a Consultation</h3>
+              <p className="text-gray-600 mb-4">
+                Meet with your financial advisor to discuss your portfolio and verify your information.
+              </p>
+              <ConsultationScheduling setCompleted={setSchedulingComplete} />
             </div>
           </div>
         </div>
