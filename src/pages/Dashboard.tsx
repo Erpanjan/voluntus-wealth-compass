@@ -48,12 +48,12 @@ const Dashboard = () => {
           <p className="text-xs text-[#9F9EA1] mt-1">Client Portal</p>
         </div>
         
-        {/* Navigation Menu - Updated to match minimalist style in screenshot */}
+        {/* Navigation Menu - Updated with smaller font size */}
         <div className="flex-1 py-8">
           <nav className="space-y-6 px-6">
             <button 
               onClick={() => setActiveTab('advisor')}
-              className={`w-full text-left transition-all ${
+              className={`w-full text-left transition-all text-xs ${
                 activeTab === 'advisor' 
                   ? 'font-medium text-[#333333] tracking-wide' 
                   : 'font-normal text-[#9F9EA1] hover:text-[#333333] tracking-wide'
@@ -64,7 +64,7 @@ const Dashboard = () => {
             
             <button 
               onClick={() => setActiveTab('policy')}
-              className={`w-full text-left transition-all ${
+              className={`w-full text-left transition-all text-xs ${
                 activeTab === 'policy' 
                   ? 'font-medium text-[#333333] tracking-wide' 
                   : 'font-normal text-[#9F9EA1] hover:text-[#333333] tracking-wide'
@@ -75,7 +75,7 @@ const Dashboard = () => {
             
             <button 
               onClick={() => setActiveTab('account')}
-              className={`w-full text-left transition-all ${
+              className={`w-full text-left transition-all text-xs ${
                 activeTab === 'account' 
                   ? 'font-medium text-[#333333] tracking-wide' 
                   : 'font-normal text-[#9F9EA1] hover:text-[#333333] tracking-wide'
