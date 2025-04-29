@@ -35,19 +35,30 @@ const Questionnaire = () => {
       </header>
 
       {/* Main content */}
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-3xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-semibold mb-4">Financial Questionnaire</h1>
-            <p className="text-lg">
-              Help us understand your financial goals and create a personalized investment strategy 
-              tailored to your needs. This questionnaire is optional but highly recommended.
-            </p>
+      <div className="container mx-auto px-6 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-6">
+            <div className="flex items-center mb-4">
+              <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-6 h-6">
+                  <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm0 8.625a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25zM15.375 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0zM8.625 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <h1 className="text-2xl font-semibold">Financial Questionnaire</h1>
+            </div>
+            
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+              <p className="text-amber-700">
+                This questionnaire will help us understand your financial situation and recommend the best investment 
+                strategy for you. Your answers are confidential and will only be used to customize our advice.
+                Remember that this questionnaire is optional and you can skip it if you prefer.
+              </p>
+            </div>
           </div>
 
           <QuestionnaireComponent setCompleted={setIsCompleted} />
 
-          <div className="flex justify-between mt-10">
+          <div className="flex justify-between mt-8">
             <Button 
               variant="outline" 
               onClick={() => navigate('/onboarding')}
