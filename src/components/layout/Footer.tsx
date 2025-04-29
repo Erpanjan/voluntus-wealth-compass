@@ -15,65 +15,87 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-white py-12 border-t border-gray-100">
+    <footer className="bg-white pt-16 pb-12 border-t border-gray-100">
       <div className="container-custom">
-        {/* New compact layout */}
-        <div className="grid grid-cols-4 gap-8 mb-12">
-          {/* Column 1 - Logo or icon */}
-          <div className="flex items-start">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 4L20 20" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M20 4L4 20" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
+        {/* Logo at the top left */}
+        <div className="flex justify-between items-start mb-16">
+          <div>
+            <img 
+              src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
+              alt="Voluntus Logo" 
+              className="h-8"
+            />
           </div>
-
-          {/* Column 2 - Company Links */}
-          <div className="flex flex-col space-y-5">
-            <p className="text-xs uppercase text-gray-400 font-semibold">Company</p>
-            <Link to="/about" className="text-xs text-gray-500 hover:text-black transition-colors font-light">ABOUT</Link>
-            <Link to="/services" className="text-xs text-gray-500 hover:text-black transition-colors font-light">SERVICES</Link>
-            <Link to="/insight" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSIGHT</Link>
-            <Link to="/event" className="text-xs text-gray-500 hover:text-black transition-colors font-light">EVENT</Link>
-            <Link to="/contact" className="text-xs text-gray-500 hover:text-black transition-colors font-light">CONTACT US</Link>
-          </div>
-
-          {/* Column 3 - Social Links */}
-          <div className="flex flex-col space-y-5">
-            <p className="text-xs uppercase text-gray-400 font-semibold">Social</p>
-            <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">LINKEDIN</a>
-            <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSTAGRAM</a>
-            <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">FACEBOOK</a>
-            <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">X</a>
-            <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">WECHAT</a>
-          </div>
-
-          {/* Column 4 - Legal Links + Back to top */}
-          <div className="flex flex-col space-y-5">
-            <p className="text-xs uppercase text-gray-400 font-semibold">Legal</p>
-            <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">TERMS OF USE</a>
-            <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRIVACY & COOKIES</a>
-            <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRESS</a>
-            <Button 
-              variant="outline"
-              onClick={scrollToTop}
-              className="mt-auto rounded-full px-4 py-1 text-xs border border-gray-200 hover:bg-gray-50 flex items-center gap-2 font-light w-fit ml-auto"
-            >
-              <ChevronUp size={14} />
-              <span>Back to top</span>
-            </Button>
-          </div>
+          <Button 
+            variant="outline"
+            onClick={scrollToTop}
+            className="rounded-full px-4 py-1 text-xs border border-gray-200 hover:bg-gray-50 flex items-center gap-2 font-light"
+          >
+            <ChevronUp size={14} />
+            <span>Back to top</span>
+          </Button>
         </div>
         
-        <Separator className="bg-gray-100" />
+        {/* Links section with horizontal layout */}
+        <div className="grid grid-cols-3 gap-8 mb-20">
+          {/* Company Links */}
+          <div className="flex flex-col space-y-6">
+            <p className="text-xs uppercase text-gray-400 font-semibold">Company</p>
+            <div className="grid grid-cols-1 gap-5">
+              <Link to="/about" className="text-xs text-gray-500 hover:text-black transition-colors font-light">ABOUT</Link>
+              <Link to="/services" className="text-xs text-gray-500 hover:text-black transition-colors font-light">SERVICES</Link>
+              <Link to="/insight" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSIGHT</Link>
+              <Link to="/event" className="text-xs text-gray-500 hover:text-black transition-colors font-light">EVENT</Link>
+              <Link to="/contact" className="text-xs text-gray-500 hover:text-black transition-colors font-light">CONTACT US</Link>
+            </div>
+          </div>
+
+          {/* Social Links */}
+          <div className="flex flex-col space-y-6">
+            <p className="text-xs uppercase text-gray-400 font-semibold">Social</p>
+            <div className="grid grid-cols-1 gap-5">
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">LINKEDIN</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSTAGRAM</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">FACEBOOK</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">X</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">WECHAT</a>
+            </div>
+          </div>
+
+          {/* Legal Links */}
+          <div className="flex flex-col space-y-6">
+            <p className="text-xs uppercase text-gray-400 font-semibold">Legal</p>
+            <div className="grid grid-cols-1 gap-5">
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">TERMS OF USE</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRIVACY & COOKIES</a>
+              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRESS</a>
+            </div>
+          </div>
+        </div>
+
+        <Separator className="my-8 bg-gray-100" />
         
-        {/* Compact bottom section */}
+        {/* Footer Bottom Section */}
         <div className="flex justify-between items-center pt-4">
           <p className="text-xs text-gray-500 font-light">
             © {new Date().getFullYear()} Voluntus Long-term Capital
           </p>
 
-          <p className="text-[10px] text-gray-400 font-light max-w-md text-right">
-            This website is owned and operated by Voluntus Long-term Capital, a Hong Kong-based wealth advisory firm.
+          {/* Disclaimer Text - Hidden in smaller screens, visible in larger ones */}
+          <div className="hidden md:block max-w-3xl">
+            <p className="text-[10px] text-gray-400 font-light">
+              This website is owned and operated by Voluntus Long-term Capital, a Hong Kong-based wealth advisory firm.
+            </p>
+          </div>
+        </div>
+        
+        {/* Full disclaimer on mobile - hidden on larger screens */}
+        <div className="mt-12 pt-8 md:hidden">
+          <p className="text-[10px] leading-relaxed text-gray-400 max-w-5xl font-light">
+            This website is owned and operated by Voluntus Long-term Capital, a Hong Kong-based wealth advisory firm. Our services are only available to Hong Kong-based investors, excluding U.S. Persons.
+          </p>
+          <p className="text-[10px] leading-relaxed text-gray-400 mt-3 max-w-5xl font-light">
+            Unless otherwise stated, all return figures shown are for illustrative purposes only, do not represent actual client or model returns, and are not indicative of future performance.
           </p>
         </div>
       </div>
