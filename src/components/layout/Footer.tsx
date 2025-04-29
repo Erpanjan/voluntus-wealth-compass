@@ -10,8 +10,7 @@ const Footer: React.FC = () => {
         {/* Links section with horizontal layout */}
         <div className="grid grid-cols-3 gap-8 mb-10">
           {/* Company Links */}
-          <div className="flex flex-col space-y-4">
-            <p className="text-xs uppercase text-gray-400 font-semibold">Company</p>
+          <div className="flex flex-col">
             <div className="grid grid-cols-1 gap-3">
               <Link to="/about" className="text-xs text-gray-500 hover:text-black transition-colors font-light">ABOUT</Link>
               <Link to="/services" className="text-xs text-gray-500 hover:text-black transition-colors font-light">SERVICES</Link>
@@ -22,8 +21,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Social Links */}
-          <div className="flex flex-col space-y-4">
-            <p className="text-xs uppercase text-gray-400 font-semibold">Social</p>
+          <div className="flex flex-col">
             <div className="grid grid-cols-1 gap-3">
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">LINKEDIN</a>
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSTAGRAM</a>
@@ -34,8 +32,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Legal Links */}
-          <div className="flex flex-col space-y-4">
-            <p className="text-xs uppercase text-gray-400 font-semibold">Legal</p>
+          <div className="flex flex-col">
             <div className="grid grid-cols-1 gap-3">
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">TERMS OF USE</a>
               <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRIVACY & COOKIES</a>
