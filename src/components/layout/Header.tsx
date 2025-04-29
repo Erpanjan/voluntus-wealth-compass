@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, UserRound } from 'lucide-react';
@@ -48,7 +49,7 @@ const Header: React.FC = () => {
       )}
     >
       <div className="container-custom py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center">
+        <Link to="/" className="flex items-center ml-[-20px]">
           {isMobile ? (
             // Stacked logo for mobile
             <div className="flex flex-col items-center">
