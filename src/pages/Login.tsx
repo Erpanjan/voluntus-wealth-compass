@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,14 +30,14 @@ const Login = () => {
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
-  const history = useHistory();
+  const navigate = useNavigate();
   
   // Check if user is already logged in
   useEffect(() => {
     if (localStorage.getItem('isAuthenticated') === 'true') {
-      history.push('/dashboard');
+      navigate('/dashboard');
     }
-  }, [history]);
+  }, [navigate]);
 
   // Handle login form change
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +85,7 @@ const Login = () => {
       });
       
       // Redirect to dashboard
-      history.push('/dashboard');
+      navigate('/dashboard');
       
     } catch (error) {
       toast({
@@ -127,7 +127,7 @@ const Login = () => {
       });
 
       // Redirect to onboarding
-      history.push('/onboarding');
+      navigate('/onboarding');
       
     } catch (error) {
       toast({
@@ -178,7 +178,7 @@ const Login = () => {
     
     setTimeout(() => {
       localStorage.setItem('isAuthenticated', 'true');
-      history.push('/dashboard');
+      navigate('/dashboard');
       
       toast({
         title: "Demo Account Activated",

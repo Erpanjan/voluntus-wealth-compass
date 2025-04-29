@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AdvisorChat from '@/components/dashboard/AdvisorChat';
 import PolicyReview from '@/components/dashboard/PolicyReview';
 import AccountManagement from '@/components/dashboard/AccountManagement';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
@@ -14,7 +14,7 @@ const Dashboard = () => {
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
-    return <Redirect to="/login" />;
+    return <Navigate to="/login" />;
   }
 
   return (
