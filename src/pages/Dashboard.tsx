@@ -1,19 +1,29 @@
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { LogOut, LayoutDashboard, FileText, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import AdvisorChat from '@/components/dashboard/AdvisorChat';
 import PolicyReview from '@/components/dashboard/PolicyReview';
 import AccountManagement from '@/components/dashboard/AccountManagement';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
+import { 
+  SidebarProvider, 
+  Sidebar, 
+  SidebarContent, 
+  SidebarHeader,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton
+} from '@/components/ui/sidebar';
 
 const Dashboard = () => {
   // In a real app, this would check authentication status from a context or API
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = React.useState('advisor');
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
@@ -30,50 +40,81 @@ const Dashboard = () => {
     navigate('/login');
   };
 
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Header Section */}
-      <div className="bg-gradient-to-r from-[#F1F1F1] to-white py-16 px-6">
-        <div className="container mx-auto max-w-7xl flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-semibold mb-4">Welcome to Your Financial Dashboard</h1>
-            <p className="text-lg text-gray-700">
-              Access your personalized investment solutions and connect with your advisor.
-            </p>
-          </div>
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2"
-            onClick={handleLogout}
-          >
-            <LogOut size={16} />
-            Logout
-          </Button>
-        </div>
-      </div>
+  // Function to render the active content based on tab
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'advisor':
+        return <AdvisorChat />;
+      case 'policy':
+        return <PolicyReview />;
+      case 'account':
+        return <AccountManagement />;
+      default:
+        return <AdvisorChat />;
+    }
+  };
 
-      {/* Main Content */}
-      <div className="container mx-auto max-w-7xl px-6 py-12">
-        <Tabs defaultValue="advisor" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="advisor">Advisor Interface</TabsTrigger>
-            <TabsTrigger value="policy">Policy Review</TabsTrigger>
-            <TabsTrigger value="account">Account Management</TabsTrigger>
-          </TabsList>
+  return (
+    <div className="min-h-screen bg-white flex w-full">
+      <SidebarProvider defaultOpen={true}>
+        <Sidebar variant="inset">
+          <SidebarHeader className="p-4 border-b">
+            <h2 className="text-xl font-semibold">Financial Dashboard</h2>
+            <p className="text-sm text-gray-500">Welcome to your portal</p>
+          </SidebarHeader>
           
-          <TabsContent value="advisor" className="mt-8">
-            <AdvisorChat />
-          </TabsContent>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  isActive={activeTab === 'advisor'} 
+                  onClick={() => setActiveTab('advisor')}
+                >
+                  <LayoutDashboard className="mr-2" />
+                  <span>Advisor Interface</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  isActive={activeTab === 'policy'} 
+                  onClick={() => setActiveTab('policy')}
+                >
+                  <FileText className="mr-2" />
+                  <span>Policy Review</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  isActive={activeTab === 'account'} 
+                  onClick={() => setActiveTab('account')}
+                >
+                  <User className="mr-2" />
+                  <span>Account Management</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarContent>
           
-          <TabsContent value="policy" className="mt-8">
-            <PolicyReview />
-          </TabsContent>
-          
-          <TabsContent value="account" className="mt-8">
-            <AccountManagement />
-          </TabsContent>
-        </Tabs>
-      </div>
+          <SidebarFooter className="border-t p-4">
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center gap-2 justify-center"
+              onClick={handleLogout}
+            >
+              <LogOut size={16} />
+              Logout
+            </Button>
+          </SidebarFooter>
+        </Sidebar>
+        
+        <div className="flex-1 p-6 overflow-auto">
+          <div className="container mx-auto max-w-6xl">
+            {renderContent()}
+          </div>
+        </div>
+      </SidebarProvider>
     </div>
   );
 };
