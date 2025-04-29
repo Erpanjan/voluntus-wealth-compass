@@ -11,6 +11,7 @@ interface SectionProps {
   className?: string;
   titleCentered?: boolean;
   background?: 'white' | 'light' | 'dark';
+  carouselItem?: boolean; // New prop for carousel context
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -20,7 +21,8 @@ const Section: React.FC<SectionProps> = ({
   children, 
   className,
   titleCentered = false,
-  background = 'white'
+  background = 'white',
+  carouselItem = false
 }) => {
   const isMobile = useIsMobile();
   
@@ -33,10 +35,11 @@ const Section: React.FC<SectionProps> = ({
   return (
     <section id={id} className={cn(
       'min-h-screen flex flex-col justify-center py-24 md:py-32 overflow-hidden relative',
+      carouselItem ? 'h-full w-full flex-shrink-0' : '',
       bgClasses[background],
       className
     )}>
-      <div className="container-custom">
+      <div className={cn("container-custom", carouselItem && "h-full")}>
         {(title || subtitle) && (
           <div className={cn(
             'mb-20', 
