@@ -27,7 +27,7 @@ const Login = () => {
     
     setTimeout(() => {
       localStorage.setItem('isAuthenticated', 'true');
-      navigate('/dashboard');
+      navigate('/onboarding');
       
       toast({
         title: "Demo Account Activated",
@@ -73,13 +73,6 @@ const Login = () => {
             <ForgotPasswordForm />
           </TabsContent>
         </Tabs>
-
-        {/* Footer */}
-        <div className="px-6 pb-6 pt-2 text-center">
-          <p className="text-sm text-gray-500">
-            Need help? <Link to="/contact" className="text-black hover:underline">Contact support</Link>
-          </p>
-        </div>
       </div>
     </div>
   );
