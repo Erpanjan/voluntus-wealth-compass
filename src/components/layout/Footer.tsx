@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Linkedin, ChevronUp, Mail } from 'lucide-react';
@@ -20,10 +19,12 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-16 mb-12">
           {/* Logo */}
           <div className="col-span-2 lg:col-span-1">
-            <div className="flex items-center mb-6">
-              <div className="text-2xl font-bold">
-                <span className="text-voluntus-blue">V</span>
-              </div>
+            <div className="mb-6">
+              <img 
+                src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
+                alt="Voluntus Logo" 
+                className="h-10" 
+              />
             </div>
             <p className="text-xs text-gray-500 mb-6">
               © {new Date().getFullYear()} Voluntus Long-term Capital
@@ -73,7 +74,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Disclaimer Text - Redesigned with smaller font */}
+        {/* Disclaimer Text */}
         <div className="mt-12 pt-8 border-t border-gray-100">
           <p className="text-[10px] leading-relaxed text-gray-400 max-w-5xl">
             This website is owned and operated by Voluntus Long-term Capital, a Hong Kong-based wealth advisory firm. Our services are only available to Hong Kong-based investors, excluding U.S. Persons.
