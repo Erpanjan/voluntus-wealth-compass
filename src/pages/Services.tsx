@@ -117,16 +117,23 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* Pricing Section - Fixed alignment to match Roadmap section styling */}
-      <Section id="policy-fee" title="Our Pricing" background="white">
+      {/* Pricing Section - Fixed alignment and styling to match Roadmap section */}
+      <Section 
+        id="policy-fee" 
+        background="white"
+        title={null} // Remove the title from the Section component
+      >
         <div className="grid md:grid-cols-1 gap-8 items-start max-w-3xl mx-auto">
           <div className="space-y-8">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight">
+              Our Pricing
+            </h2>
             <div className="space-y-6 text-lg font-light">
               <p className="text-voluntus-text-secondary">
                 This is a subscription service with policy fee is charged periodically, with the amount depending on the complexity of your financial needs and the duration of the policy.
               </p>
               <p className="text-voluntus-text-secondary">
-                We DO NOT charge based on investment vehicle selected or size of the investment.
+                We <span className="font-normal">DO NOT</span> charge based on investment vehicle selected or size of the investment.
               </p>
             </div>
             <Button
