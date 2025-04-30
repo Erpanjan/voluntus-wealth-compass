@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 
 interface LoginFormProps {
   onDemoLogin: () => void;
@@ -15,7 +14,7 @@ interface LoginFormProps {
 
 const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) => {
   const [loginData, setLoginData] = useState({
-    email: '',
+    accountName: '',
     password: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,13 +36,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
     setIsSubmitting(true);
 
     try {
-      // Sign in with Supabase
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: loginData.email,
-        password: loginData.password,
-      });
-
-      if (error) throw error;
+      // Simulating login request
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Set authentication flag in localStorage
       localStorage.setItem('isAuthenticated', 'true');
@@ -62,10 +56,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
         navigate('/dashboard');
       }
       
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Login failed",
-        description: error.message || "Invalid email or password. Please try again.",
+        description: "Invalid account name or password. Please try again.",
         variant: "destructive",
         duration: 5000,
       });
@@ -77,14 +71,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
   return (
     <form onSubmit={handleLoginSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="email" className="text-gray-600 font-light">Email</Label>
+        <Label htmlFor="accountName" className="text-gray-600 font-light">Account Name</Label>
         <Input
-          id="email"
-          name="email"
-          type="email"
-          value={loginData.email}
+          id="accountName"
+          name="accountName"
+          value={loginData.accountName}
           onChange={handleLoginChange}
-          placeholder="Enter your email address"
+          placeholder="Enter your account name"
           required
           className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
         />

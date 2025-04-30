@@ -4,11 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/lib/supabase';
 
 const ForgotPasswordForm = () => {
   const [forgotData, setForgotData] = useState({
-    email: '',
+    contact: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -26,30 +25,23 @@ const ForgotPasswordForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Send password reset email with Supabase
-      const { data, error } = await supabase.auth.resetPasswordForEmail(
-        forgotData.email,
-        {
-          redirectTo: `${window.location.origin}/login`,
-        }
-      );
-
-      if (error) throw error;
+      // Simulating forgot password request
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       toast({
         title: "Reset link sent",
-        description: "If an account exists with this email, you'll receive a password reset link.",
+        description: "If an account exists with this contact, you'll receive a password reset link.",
         duration: 5000,
       });
 
       // Reset form
       setForgotData({
-        email: '',
+        contact: '',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Request failed",
-        description: error.message || "There was an error processing your request. Please try again later.",
+        description: "There was an error processing your request. Please try again later.",
         variant: "destructive",
         duration: 5000,
       });
@@ -61,14 +53,14 @@ const ForgotPasswordForm = () => {
   return (
     <form onSubmit={handleForgotSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="email" className="text-gray-600 font-light">Email</Label>
+        <Label htmlFor="forgot-contact" className="text-gray-600 font-light">Email or Phone Number</Label>
         <Input
-          id="email"
-          name="email"
-          type="email"
-          value={forgotData.email}
+          id="forgot-contact"
+          name="contact"
+          type="text"
+          value={forgotData.contact}
           onChange={handleForgotChange}
-          placeholder="Enter your registered email"
+          placeholder="Enter your registered email or phone"
           required
           className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
         />

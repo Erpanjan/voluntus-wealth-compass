@@ -6,11 +6,11 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 
 const RegisterForm = () => {
   const [registerData, setRegisterData] = useState({
-    email: '',
+    contactType: 'email',
+    contact: '',
     password: '',
     confirmPassword: '',
   });
@@ -47,37 +47,22 @@ const RegisterForm = () => {
     }
 
     try {
-      // Register with Supabase
-      const { data, error } = await supabase.auth.signUp({
-        email: registerData.email,
-        password: registerData.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/login`,
-        }
-      });
-
-      if (error) throw error;
-
+      // Simulating registration request
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       toast({
         title: "Registration successful",
-        description: "Please check your email to verify your account.",
+        description: "Your account has been created. Let's complete your profile setup.",
         duration: 5000,
       });
 
-      // Clear form
-      setRegisterData({
-        email: '',
-        password: '',
-        confirmPassword: '',
-      });
-
-      // Redirect to verification page or onboarding
-      navigate('/login');
+      // Redirect to onboarding
+      navigate('/onboarding');
       
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Registration failed",
-        description: error.message || "There was an error registering your account. Please try again.",
+        description: "There was an error registering your account. Please try again.",
         variant: "destructive",
         duration: 5000,
       });
@@ -89,14 +74,30 @@ const RegisterForm = () => {
   return (
     <form onSubmit={handleRegisterSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="email" className="text-gray-600 font-light">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          value={registerData.email}
+        <Label htmlFor="contactType" className="text-gray-600 font-light">Contact Type</Label>
+        <select
+          id="contactType"
+          name="contactType"
+          value={registerData.contactType}
           onChange={handleRegisterChange}
-          placeholder="name@example.com"
+          className="w-full border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light bg-transparent"
+        >
+          <option value="email">Email</option>
+          <option value="phone">Phone Number</option>
+        </select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="contact" className="text-gray-600 font-light">
+          {registerData.contactType === 'email' ? 'Email' : 'Phone Number'}
+        </Label>
+        <Input
+          id="contact"
+          name="contact"
+          type={registerData.contactType === 'email' ? 'email' : 'tel'}
+          value={registerData.contact}
+          onChange={handleRegisterChange}
+          placeholder={registerData.contactType === 'email' ? 'name@example.com' : '+852 XXXX XXXX'}
           required
           className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
         />
