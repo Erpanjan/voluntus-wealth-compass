@@ -112,13 +112,30 @@
   }
 
   /* Scroll snap for vertical carousel */
-  .scroll-snap-y {
-    scroll-snap-type: y mandatory;
-    -webkit-overflow-scrolling: touch;
+  .scroll-snap-container {
+    position: relative;
   }
   
-  .scroll-snap-item {
-    scroll-snap-align: start;
+  /* Smooth section transitions */
+  .section-transition {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  
+  /* Ensure smooth scroll behavior for the entire page */
+  html.smooth-scroll {
+    scroll-behavior: smooth;
+  }
+  
+  /* Special class for the active section in carousel */
+  .section-active {
+    z-index: 10;
+    opacity: 1;
+  }
+  
+  .section-inactive {
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
   }
 }
 

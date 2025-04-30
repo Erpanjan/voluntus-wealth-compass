@@ -41,11 +41,14 @@ const Section: React.FC<SectionProps> = ({
   return (
     <section id={id} className={cn(
       'min-h-screen flex flex-col justify-center py-20 md:py-28 overflow-hidden relative',
-      carouselItem ? 'h-full w-full' : '',
+      carouselItem ? 'h-screen w-full' : '',
       bgClasses[background],
       className
     )}>
-      <div className={cn("container-custom flex flex-col justify-center h-full", carouselItem && "h-full")}>
+      <div className={cn(
+        "container-custom flex flex-col justify-center h-full transition-all duration-500",
+        carouselItem && "h-full"
+      )}>
         {(title || subtitle) && (
           <div 
             className={cn(
@@ -78,7 +81,11 @@ const Section: React.FC<SectionProps> = ({
             )}
           </div>
         )}
-        <div className={cn("flex-grow flex flex-col items-center justify-start w-full", contentClassName)} data-section-content="true">
+        <div className={cn(
+          "flex-grow flex flex-col items-center justify-start w-full animate-fade-in", 
+          contentClassName
+        )} 
+        data-section-content="true">
           {children}
         </div>
       </div>

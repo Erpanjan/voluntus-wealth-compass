@@ -24,51 +24,68 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
   const sectionRefs = useRef<Array<HTMLDivElement | null>>(sections.map(() => null));
   const isMobile = useIsMobile();
   const [isScrolling, setIsScrolling] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  // Initialize scroll behavior
+  useEffect(() => {
+    if (!hasInitialized) {
+      setTimeout(() => {
+        setHasInitialized(true);
+      }, 1000); // Allow time for the page to render
+    }
+  }, [hasInitialized]);
 
   // Handle scroll detection and section changes
   useEffect(() => {
+    if (!hasInitialized) return;
+    
     const handleScroll = () => {
       if (isScrolling || !containerRef.current) return;
 
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const containerCenter = containerRect.top + containerRect.height / 2;
+      const scrollPosition = window.scrollY;
+      const containerTop = containerRef.current.offsetTop;
+      const containerHeight = containerRef.current.offsetHeight;
+      const viewportHeight = window.innerHeight;
       
-      // Determine which section is most visible based on its position relative to the viewport
-      let minDistance = Infinity;
-      let newIndex = currentIndex;
+      // Check if we're within the container
+      const isWithinContainer = 
+        scrollPosition + viewportHeight / 2 >= containerTop && 
+        scrollPosition < containerTop + containerHeight;
       
-      sectionRefs.current.forEach((sectionRef, index) => {
-        if (!sectionRef) return;
+      if (isWithinContainer) {
+        // Calculate which section to display based on scroll position
+        const sectionHeight = viewportHeight; // Each section is viewport height
+        const relativeScroll = scrollPosition - containerTop;
+        const sectionIndex = Math.min(
+          Math.floor(relativeScroll / sectionHeight),
+          sections.length - 1
+        );
         
-        const sectionRect = sectionRef.getBoundingClientRect();
-        const sectionCenter = sectionRect.top + sectionRect.height / 2;
-        const distance = Math.abs(containerCenter - sectionCenter);
-        
-        if (distance < minDistance) {
-          minDistance = distance;
-          newIndex = index;
+        if (sectionIndex !== currentIndex && sectionIndex >= 0) {
+          setCurrentIndex(sectionIndex);
         }
-      });
-      
-      if (newIndex !== currentIndex) {
-        setCurrentIndex(newIndex);
       }
     };
 
     window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial check
+    
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [currentIndex, isScrolling]);
+  }, [currentIndex, isScrolling, sections.length, hasInitialized]);
 
   // Scroll to selected section
   const scrollToSection = useCallback((index: number) => {
     setIsScrolling(true);
     
-    if (sectionRefs.current[index]) {
-      const yOffset = -100; // Offset to account for any headers
-      const sectionTop = sectionRefs.current[index]?.getBoundingClientRect().top ?? 0;
-      const y = sectionTop + window.scrollY + yOffset;
+    if (containerRef.current) {
+      const containerTop = containerRef.current.offsetTop;
+      const viewportHeight = window.innerHeight;
+      const offsetY = index * viewportHeight;
       
-      window.scrollTo({ top: y, behavior: 'smooth' });
+      window.scrollTo({
+        top: containerTop + offsetY,
+        behavior: 'smooth'
+      });
       
       // Set new active index and reset scrolling flag
       setTimeout(() => {
@@ -79,10 +96,14 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
   }, []);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div 
+      ref={containerRef} 
+      className="relative scroll-snap-container" 
+      style={{ height: `${sections.length * 100}vh` }}
+    >
       {/* Navigation dots */}
-      <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-10 ml-4 lg:ml-8">
-        <div className="flex flex-col gap-3 items-center bg-white/80 backdrop-blur-sm rounded-full px-2 py-4">
+      <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-20 ml-4 lg:ml-8">
+        <div className="flex flex-col gap-3 items-center bg-white/80 backdrop-blur-sm rounded-full px-2 py-4 shadow-md">
           {sections.map((section, index) => (
             <Button
               key={section.id}
@@ -102,22 +123,15 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
       </div>
       
       {/* Section content */}
-      <div className="min-h-screen">
+      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden">
         {sections.map((section, index) => (
           <div 
             key={section.id} 
             ref={el => sectionRefs.current[index] = el}
             className={cn(
-              "min-h-screen transition-opacity duration-500",
-              index === currentIndex ? "opacity-100" : "opacity-0"
+              "absolute top-0 left-0 w-full h-screen transition-opacity duration-500",
+              index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
             )}
-            style={{ 
-              position: index === currentIndex ? 'relative' : 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              zIndex: index === currentIndex ? 10 : -1
-            }}
           >
             {section.content}
           </div>
