@@ -34,7 +34,7 @@ const Section: React.FC<SectionProps> = ({
 
   return (
     <section id={id} className={cn(
-      'min-h-screen flex flex-col justify-center py-24 md:py-32 overflow-hidden relative',
+      'min-h-screen flex flex-col justify-center py-20 md:py-28 overflow-hidden relative',
       carouselItem ? 'h-full w-full flex-shrink-0' : '',
       bgClasses[background],
       className
@@ -42,7 +42,7 @@ const Section: React.FC<SectionProps> = ({
       <div className={cn("container-custom flex flex-col justify-center h-full", carouselItem && "h-full")}>
         {(title || subtitle) && (
           <div className={cn(
-            'mb-20', 
+            'mb-16', 
             titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
           )}>
             {title && (
