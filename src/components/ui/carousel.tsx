@@ -1,8 +1,9 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, ChevronUp, ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -85,15 +86,25 @@ const Carousel = React.forwardRef<
 
     const handleKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === "ArrowLeft") {
-          event.preventDefault()
-          scrollPrev()
-        } else if (event.key === "ArrowRight") {
-          event.preventDefault()
-          scrollNext()
+        if (orientation === "horizontal") {
+          if (event.key === "ArrowLeft") {
+            event.preventDefault()
+            scrollPrev()
+          } else if (event.key === "ArrowRight") {
+            event.preventDefault()
+            scrollNext()
+          }
+        } else {
+          if (event.key === "ArrowUp") {
+            event.preventDefault()
+            scrollPrev()
+          } else if (event.key === "ArrowDown") {
+            event.preventDefault()
+            scrollNext()
+          }
         }
       },
-      [scrollPrev, scrollNext]
+      [scrollPrev, scrollNext, orientation]
     )
 
     React.useEffect(() => {
@@ -155,12 +166,11 @@ const CarouselContent = React.forwardRef<
   const { carouselRef, orientation } = useCarousel()
 
   return (
-    <div ref={carouselRef} className="overflow-hidden">
+    <div ref={carouselRef} className="overflow-hidden h-full">
       <div
         ref={ref}
         className={cn(
-          "flex",
-          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
+          orientation === "horizontal" ? "flex -ml-4" : "-mt-4 flex-col",
           className
         )}
         {...props}
@@ -204,17 +214,21 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute  h-8 w-8 rounded-full",
+        "absolute h-8 w-8 rounded-full",
         orientation === "horizontal"
           ? "-left-12 top-1/2 -translate-y-1/2"
-          : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+          : "-top-12 left-1/2 -translate-x-1/2",
         className
       )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft className="h-4 w-4" />
+      {orientation === "horizontal" ? (
+        <ArrowLeft className="h-4 w-4" />
+      ) : (
+        <ChevronUp className="h-4 w-4" />
+      )}
       <span className="sr-only">Previous slide</span>
     </Button>
   )
@@ -236,14 +250,18 @@ const CarouselNext = React.forwardRef<
         "absolute h-8 w-8 rounded-full",
         orientation === "horizontal"
           ? "-right-12 top-1/2 -translate-y-1/2"
-          : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+          : "-bottom-12 left-1/2 -translate-x-1/2",
         className
       )}
       disabled={!canScrollNext}
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight className="h-4 w-4" />
+      {orientation === "horizontal" ? (
+        <ArrowRight className="h-4 w-4" />
+      ) : (
+        <ChevronDown className="h-4 w-4" />
+      )}
       <span className="sr-only">Next slide</span>
     </Button>
   )
