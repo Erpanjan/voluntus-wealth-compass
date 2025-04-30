@@ -81,7 +81,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
           dragFree: false,
         }}
       >
-        {/* Navigation dots moved to top */}
+        {/* Navigation numbers moved to top */}
         <div className="absolute left-0 top-12 w-full z-10 flex justify-center">
           <div className="flex gap-3 items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2">
             {sections.map((section, index) => (
@@ -90,14 +90,16 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  "w-2.5 h-2.5 rounded-full p-0 transition-all duration-300 ease-in-out",
+                  "min-w-8 h-8 rounded-full p-0 transition-all duration-300 ease-in-out",
                   current === index 
-                    ? "bg-black w-8" 
-                    : "bg-gray-300 hover:bg-gray-400"
+                    ? "bg-black text-white" 
+                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                 )}
                 onClick={() => scrollToSection(index)}
                 aria-label={`Go to section ${index + 1}`}
-              />
+              >
+                {index + 1}
+              </Button>
             ))}
           </div>
         </div>
