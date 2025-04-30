@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Mail, Phone, MessageSquare } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -29,8 +30,20 @@ const ContactForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulating form submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Insert the form data into Supabase
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          contact_type: formData.contactType,
+          contact_info: formData.contact,
+          message: formData.message,
+        });
+        
+      if (error) {
+        throw error;
+      }
       
       // Show success toast
       toast({
@@ -48,6 +61,7 @@ const ContactForm: React.FC = () => {
         message: '',
       });
     } catch (error) {
+      console.error('Error submitting form:', error);
       // Show error toast
       toast({
         title: "Error",
