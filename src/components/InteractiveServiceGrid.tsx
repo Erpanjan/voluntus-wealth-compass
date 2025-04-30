@@ -33,6 +33,7 @@ const InteractiveServiceGrid: React.FC<InteractiveServiceGridProps> = ({ service
             )}
             aria-selected={activeService === service.id}
             role="tab"
+            type="button"
           >
             {service.title}
             {activeService === service.id && (
@@ -56,18 +57,20 @@ const InteractiveServiceGrid: React.FC<InteractiveServiceGridProps> = ({ service
             className={activeService === service.id ? "block" : "hidden"}
             role="tabpanel"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ 
-                opacity: 1,
-                y: 0
-              }}
-              transition={{ duration: 0.3 }}
-            >
-              <p className="text-black/80 leading-relaxed text-lg">
-                {service.content}
-              </p>
-            </motion.div>
+            {activeService === service.id && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: 1,
+                  y: 0
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="text-black/80 leading-relaxed text-lg">
+                  {service.content}
+                </p>
+              </motion.div>
+            )}
           </div>
         ))}
       </div>

@@ -33,6 +33,7 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
             )}
             aria-selected={activeTab === tab.id}
             role="tab"
+            type="button"
           >
             {tab.label}
             {activeTab === tab.id && (
@@ -56,16 +57,18 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
             className={activeTab === tab.id ? "block" : "hidden"}
             role="tabpanel"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ 
-                opacity: 1,
-                y: 0
-              }}
-              transition={{ duration: 0.3 }}
-            >
-              {tab.content}
-            </motion.div>
+            {activeTab === tab.id && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: 1,
+                  y: 0
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                {tab.content}
+              </motion.div>
+            )}
           </div>
         ))}
       </div>
