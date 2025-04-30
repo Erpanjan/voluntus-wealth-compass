@@ -37,7 +37,7 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
                 type="button"
                 className={cn(
                   "text-base px-1 py-4 bg-transparent relative text-gray-500 hover:text-black transition-colors font-poppins",
-                  "data-[state=active]:text-black data-[state=active]:font-semibold",
+                  "data-[state=active]:text-black data-[state=active]:font-semibold data-[state=active]:bg-transparent",
                   "min-h-[56px] flex-1 text-center" // Fixed height and even distribution
                 )}
               >
@@ -75,7 +75,7 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
                 {tab.subtitle && (
                   <p className="text-lg font-poppins">{tab.subtitle}</p>
                 )}
-                <p className="text-gray-600 leading-relaxed font-inter">{tab.description}</p>
+                <p className="text-gray-700 leading-relaxed font-inter text-base">{tab.description}</p>
               </motion.div>
             </TabsContent>
           ))}

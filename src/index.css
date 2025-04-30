@@ -98,7 +98,7 @@
 
 /* Custom tab styles */
 [data-state="active"] {
-  @apply relative font-medium;
+  @apply relative font-medium bg-transparent;
 }
 
 /* Smooth transition for tab navigation */
@@ -120,6 +120,7 @@
 [role="tablist"] {
   @apply relative z-10 flex w-full;
   height: auto !important;
+  background-color: transparent !important;
 }
 
 /* Fixed height tab triggers to prevent layout shift */
@@ -130,6 +131,7 @@
   position: relative;
   flex: 1;
   text-align: center;
+  background-color: transparent !important;
 }
 
 /* Improve tab content styling */
@@ -143,3 +145,7 @@
   transform-origin: left;
 }
 
+/* Ensure all tabs have transparent backgrounds */
+.tabs-content-bg {
+  background-color: transparent !important;
+}

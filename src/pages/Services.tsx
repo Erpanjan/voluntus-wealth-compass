@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
@@ -110,9 +111,10 @@ const Services = () => {
         subtitle="What sets us apart" 
         titleCentered
         background="light"
+        contentClassName="bg-transparent"
       >
-        <div className="max-w-4xl mx-auto w-full">
-          <TabContent tabs={valuePropositionTabs} />
+        <div className="max-w-4xl mx-auto w-full bg-transparent">
+          <TabContent tabs={valuePropositionTabs} className="bg-transparent" />
         </div>
       </Section>
 
