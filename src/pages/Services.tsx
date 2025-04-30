@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
@@ -105,6 +106,7 @@ const Services = () => {
         title="Our Value Propositions" 
         subtitle="What sets us apart" 
         titleCentered
+        background="light"
       >
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {valuePropositions.map((value, index) => (
