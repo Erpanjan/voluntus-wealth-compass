@@ -92,15 +92,25 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
             </p>
           </div>
           <div className="text-center">
-            <span className="text-[12rem] font-light text-white transition-all duration-500">
-              {activeIndex + 1}
-            </span>
+            {propositions.map((_, index) => (
+              <span 
+                key={`number-${index}`} 
+                className={cn(
+                  "absolute text-[12rem] font-light transition-all duration-500",
+                  activeIndex === index 
+                    ? "opacity-100 translate-y-0 text-white" 
+                    : "opacity-0 translate-y-12 pointer-events-none text-white/30"
+                )}
+              >
+                {index + 1}
+              </span>
+            ))}
           </div>
         </div>
         
-        {/* Right side with content - updated to match left-side transition effect */}
+        {/* Right side with content - improved to match left-side number styling */}
         <div className="flex-1 bg-white flex items-center justify-center">
-          <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl relative h-full flex items-center justify-center">
+          <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl relative flex items-center justify-center h-full">
             {propositions.map((proposition, index) => (
               <div
                 key={proposition.id}
