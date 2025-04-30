@@ -42,7 +42,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-inter font-light tracking-tight text-black;
+    @apply font-inter font-semibold tracking-tight text-black;
   }
 
   .btn {
