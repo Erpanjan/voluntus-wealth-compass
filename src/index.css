@@ -116,3 +116,20 @@
   @apply transition-opacity duration-300;
 }
 
+/* Enhanced tab styling */
+[role="tablist"] {
+  @apply relative z-10;
+  height: auto !important;
+}
+
+/* Fixed height tab triggers to prevent layout shift */
+[role="tab"] {
+  height: auto !important;
+  min-height: 56px;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Improve tab content styling */
+[role="tabpanel"] {
+  font-family: 'Poppins', sans-serif;
+}

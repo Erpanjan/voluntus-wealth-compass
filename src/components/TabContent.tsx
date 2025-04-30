@@ -34,16 +34,18 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
+                type="button"
                 className={cn(
-                  "text-lg px-1 pb-4 pt-2 bg-transparent relative text-gray-500 hover:text-black transition-colors",
-                  "data-[state=active]:text-black data-[state=active]:font-medium"
+                  "text-base px-1 py-4 bg-transparent relative text-gray-500 hover:text-black transition-colors font-poppins",
+                  "data-[state=active]:text-black data-[state=active]:font-semibold",
+                  "min-h-[56px]" // Fixed height to prevent layout shift
                 )}
               >
                 {tab.title}
                 {activeTab === tab.id && (
                   <motion.div
                     className="absolute bottom-0 left-0 right-0 h-0.5 bg-black"
-                    layoutId="activeTabIndicator"
+                    layoutId="tabContentIndicator"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
@@ -67,11 +69,11 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
                 transition={{ duration: 0.3 }}
                 className="space-y-6"
               >
-                <h3 className="text-2xl font-semibold">{tab.title}</h3>
+                <h3 className="text-2xl font-semibold font-poppins">{tab.title}</h3>
                 {tab.subtitle && (
-                  <p className="text-lg text-voluntus-text-secondary">{tab.subtitle}</p>
+                  <p className="text-lg font-poppins">{tab.subtitle}</p>
                 )}
-                <p className="text-voluntus-text-secondary leading-relaxed">{tab.description}</p>
+                <p className="text-gray-600 leading-relaxed font-poppins">{tab.description}</p>
               </motion.div>
             </TabsContent>
           ))}

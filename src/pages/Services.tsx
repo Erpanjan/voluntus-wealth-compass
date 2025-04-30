@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
@@ -103,7 +104,7 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* Value Propositions - Using the new TabContent component */}
+      {/* Value Propositions - Using the TabContent component with enhanced styling */}
       <Section 
         id="principles" 
         title="Our Value Propositions" 
