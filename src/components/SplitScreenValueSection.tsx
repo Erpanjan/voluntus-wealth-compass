@@ -57,16 +57,6 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
   
   return (
     <section className="bg-white">
-      {/* Title and subtitle centered at the top */}
-      <div className="text-center py-16 max-w-3xl mx-auto">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-8">
-          {title}
-        </h2>
-        <p className="text-lg md:text-xl text-gray-600">
-          {subtitle}
-        </p>
-      </div>
-      
       {/* Propositions with split screen design */}
       {propositions.map((proposition, index) => (
         <div
