@@ -2,11 +2,12 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface Tab {
   id: string;
   label: string;
-  content: string;
+  content: React.ReactNode;
 }
 
 interface TabContentProps {
@@ -18,36 +19,55 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
   const [activeTab, setActiveTab] = useState(tabs[0]?.id || '');
 
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn("w-full max-w-4xl mx-auto", className)}>
       {/* Tab Navigation */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-8 border-b border-gray-200 mb-8">
         {tabs.map((tab) => (
-          <Button
+          <button
             key={tab.id}
-            variant={activeTab === tab.id ? 'default' : 'outline'}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              "rounded-full",
-              activeTab === tab.id ? 'bg-voluntus-blue text-white' : 'bg-white'
+              "text-md md:text-lg font-normal py-3 transition-all relative whitespace-nowrap",
+              activeTab === tab.id 
+                ? "text-black font-medium" 
+                : "text-gray-400 hover:text-black/70"
             )}
+            aria-selected={activeTab === tab.id}
+            role="tab"
           >
             {tab.label}
-          </Button>
+            {activeTab === tab.id && (
+              <motion.div 
+                className="absolute bottom-0 left-0 w-full h-0.5 bg-black"
+                layoutId="valueTabUnderline"
+                initial={{ width: 0 }}
+                animate={{ width: '100%' }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              />
+            )}
+          </button>
         ))}
       </div>
       
       {/* Tab Content */}
-      <div className="bg-white rounded-xl p-8 shadow-sm min-h-[200px]">
+      <div className="min-h-[300px] px-2">
         {tabs.map((tab) => (
-          <div 
-            key={tab.id} 
+          <motion.div
+            key={tab.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ 
+              opacity: activeTab === tab.id ? 1 : 0,
+              y: activeTab === tab.id ? 0 : 20,
+            }}
+            transition={{ duration: 0.3 }}
             className={cn(
-              'transition-opacity duration-300',
-              activeTab === tab.id ? 'block opacity-100' : 'hidden opacity-0'
+              "w-full",
+              activeTab === tab.id ? "block" : "hidden"
             )}
+            role="tabpanel"
           >
-            <p className="text-voluntus-text-secondary leading-relaxed">{tab.content}</p>
-          </div>
+            {tab.content}
+          </motion.div>
         ))}
       </div>
     </div>

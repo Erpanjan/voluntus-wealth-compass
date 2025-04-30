@@ -3,7 +3,7 @@ import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import InteractiveServiceGrid from '@/components/InteractiveServiceGrid';
-import ValueCard from '@/components/ValueCard';
+import TabContent from '@/components/TabContent';
 import ContactForm from '@/components/ContactForm';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
@@ -37,24 +37,56 @@ const Services = () => {
   // Value propositions
   const valuePropositions = [
     {
-      title: "We give you control",
-      subtitle: "- over your wealth, decisions, and outcomes.",
-      description: "By placing the financial planning policy at the center of our service, we empower clients with direct control over the rules, processes, and the outcome."
+      id: "control",
+      label: "We give you control",
+      content: (
+        <div className="space-y-4">
+          <h3 className="text-xl font-semibold">We give you control</h3>
+          <p className="text-sm text-gray-600 mb-3">- over your wealth, decisions, and outcomes.</p>
+          <p className="text-black/80 leading-relaxed">
+            By placing the financial planning policy at the center of our service, we empower clients with direct control over the rules, processes, and the outcome.
+          </p>
+        </div>
+      )
     },
     {
-      title: "We bear fiduciary Duty",
-      subtitle: "- with a transparent governance",
-      description: "We uphold a fiduciary duty to act in the client's best interest. This commitment is reflected in a clear plan that outlines all rules, including legal accountability. Importantly, we do not accept commissions from third party, this ensures that our interests remain aligned."
+      id: "fiduciary",
+      label: "We bear fiduciary Duty",
+      content: (
+        <div className="space-y-4">
+          <h3 className="text-xl font-semibold">We bear fiduciary Duty</h3>
+          <p className="text-sm text-gray-600 mb-3">- with a transparent governance</p>
+          <p className="text-black/80 leading-relaxed">
+            We uphold a fiduciary duty to act in the client's best interest. This commitment is reflected in a clear plan that outlines all rules, including legal accountability. Importantly, we do not accept commissions from third party, this ensures that our interests remain aligned.
+          </p>
+        </div>
+      )
     },
     {
-      title: "We value simplicity",
-      subtitle: "- over complexity",
-      description: "We aim to keep the policy and investment strategy simple. This simplicity enables client to have a clearer understanding of their investments, fostering greater confidence and maintain a healthy expectation for the outcomes. Overly complex investment strategies often yield marginal benefits at the expense of clarity and transparency."
+      id: "simplicity",
+      label: "We value simplicity",
+      content: (
+        <div className="space-y-4">
+          <h3 className="text-xl font-semibold">We value simplicity</h3>
+          <p className="text-sm text-gray-600 mb-3">- over complexity</p>
+          <p className="text-black/80 leading-relaxed">
+            We aim to keep the policy and investment strategy simple. This simplicity enables client to have a clearer understanding of their investments, fostering greater confidence and maintain a healthy expectation for the outcomes. Overly complex investment strategies often yield marginal benefits at the expense of clarity and transparency.
+          </p>
+        </div>
+      )
     },
     {
-      title: "We take accountability",
-      subtitle: "- over every advice we share",
-      description: "We take accountability by making all the advice we share measurable. At the conclusion of the policy, we will revisit all advice provided, taking responsibility and being incentivized based on the outcomes. This approach reinforces our commitment to the client's success and ensures full accountability for our actions."
+      id: "accountability",
+      label: "We take accountability",
+      content: (
+        <div className="space-y-4">
+          <h3 className="text-xl font-semibold">We take accountability</h3>
+          <p className="text-sm text-gray-600 mb-3">- over every advice we share</p>
+          <p className="text-black/80 leading-relaxed">
+            We take accountability by making all the advice we share measurable. At the conclusion of the policy, we will revisit all advice provided, taking responsibility and being incentivized based on the outcomes. This approach reinforces our commitment to the client's success and ensures full accountability for our actions.
+          </p>
+        </div>
+      )
     },
   ];
 
@@ -106,7 +138,7 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* Value Propositions - Add similar tab-style navigation */}
+      {/* Value Propositions with Tab Navigation */}
       <Section 
         id="principles" 
         title="Our Value Propositions" 
@@ -114,17 +146,7 @@ const Services = () => {
         titleCentered
         background="light"
       >
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {valuePropositions.map((value, index) => (
-            <ValueCard
-              key={index}
-              index={index}
-              title={value.title}
-              subtitle={value.subtitle}
-              description={value.description}
-            />
-          ))}
-        </div>
+        <TabContent tabs={valuePropositions} />
       </Section>
 
       {/* Pricing Section */}
