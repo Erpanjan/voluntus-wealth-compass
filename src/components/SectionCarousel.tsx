@@ -48,19 +48,23 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
       const containerHeight = containerRef.current.offsetHeight;
       const viewportHeight = window.innerHeight;
       
-      // Only show navigation when truly inside the problem statement section
-      // This ensures it doesn't show in the hero section
-      const isFullyWithinContainer = 
-        scrollPosition >= containerTop && 
-        scrollPosition < containerTop + containerHeight - viewportHeight/2;
+      // Calculate hero section height and problem statement section top position
+      // The problem statement section is the second section (after hero)
+      const heroSectionHeight = viewportHeight;  
+      const problemSectionTop = heroSectionHeight;
       
-      // Update visibility of navigation dots - ensure it's only visible within the container
-      setIsVisible(isFullyWithinContainer);
+      // Only show navigation dots when scroll is within the problem statement section bounds
+      // Show only after we've scrolled past the hero section
+      const isPastHero = scrollPosition > heroSectionHeight * 0.7;
+      const isBeforeEnd = scrollPosition < (containerTop + containerHeight - viewportHeight/2);
       
-      if (isFullyWithinContainer) {
-        // Calculate which section to display based on scroll position
+      // Update visibility - only show when we're in the problem statement section
+      setIsVisible(isPastHero && isBeforeEnd);
+      
+      if (isPastHero && isBeforeEnd) {
+        // Calculate which section to display based on relative position within container
         const sectionHeight = viewportHeight; // Each section is viewport height
-        const relativeScroll = scrollPosition - containerTop;
+        const relativeScroll = scrollPosition - heroSectionHeight;
         const sectionIndex = Math.min(
           Math.floor(relativeScroll / sectionHeight),
           sections.length - 1
@@ -83,12 +87,12 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
     setIsScrolling(true);
     
     if (containerRef.current) {
-      const containerTop = containerRef.current.offsetTop;
       const viewportHeight = window.innerHeight;
-      const offsetY = index * viewportHeight;
+      const heroSectionHeight = viewportHeight;
+      const targetY = heroSectionHeight + (index * viewportHeight);
       
       window.scrollTo({
-        top: containerTop + offsetY,
+        top: targetY,
         behavior: 'smooth'
       });
       
