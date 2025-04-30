@@ -20,6 +20,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
   sections
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<Array<HTMLDivElement | null>>(sections.map(() => null));
   const isMobile = useIsMobile();
@@ -51,6 +52,9 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
       const isWithinContainer = 
         scrollPosition + viewportHeight / 2 >= containerTop && 
         scrollPosition < containerTop + containerHeight;
+      
+      // Update visibility of navigation dots
+      setIsVisible(isWithinContainer);
       
       if (isWithinContainer) {
         // Calculate which section to display based on scroll position
@@ -101,8 +105,11 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
       className="relative scroll-snap-container" 
       style={{ height: `${sections.length * 100}vh` }}
     >
-      {/* Navigation dots */}
-      <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-20 ml-4 lg:ml-8">
+      {/* Navigation dots - only visible when within problem statements section */}
+      <div className={cn(
+        "fixed left-0 top-1/2 transform -translate-y-1/2 z-20 ml-4 lg:ml-8 transition-opacity duration-300",
+        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+      )}>
         <div className="flex flex-col gap-3 items-center bg-white/80 backdrop-blur-sm rounded-full px-2 py-4 shadow-md">
           {sections.map((section, index) => (
             <Button
