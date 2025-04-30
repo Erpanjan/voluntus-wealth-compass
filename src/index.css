@@ -113,7 +113,7 @@
 
 /* Making sure tab content has smooth transitions */
 [role="tabpanel"] {
-  @apply transition-opacity duration-300;
+  @apply transition-opacity duration-200;
 }
 
 /* Enhanced tab styling */
@@ -127,7 +127,7 @@
 [role="tab"] {
   height: auto !important;
   min-height: 56px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
   position: relative;
   flex: 1;
   text-align: center;
@@ -141,7 +141,7 @@
 
 /* Ensure smooth indicator transitions */
 [role="tab"] [data-active-indicator] {
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
   transform-origin: left;
 }
 

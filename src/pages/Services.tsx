@@ -63,7 +63,7 @@ const Services = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen font-inter">
       {/* Hero Section */}
       <Hero 
         title="A Financial Policy That Guides You From Start to End"

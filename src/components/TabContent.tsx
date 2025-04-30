@@ -36,7 +36,7 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
                 value={tab.id}
                 type="button"
                 className={cn(
-                  "text-base px-1 py-4 bg-transparent relative text-gray-500 hover:text-black transition-colors font-poppins",
+                  "text-base px-1 py-4 bg-transparent relative text-gray-500 hover:text-black transition-colors font-inter",
                   "data-[state=active]:text-black data-[state=active]:font-semibold data-[state=active]:bg-transparent",
                   "min-h-[56px] flex-1 text-center" // Fixed height and even distribution
                 )}
@@ -46,9 +46,7 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
                   <motion.div
                     className="absolute bottom-0 left-0 right-0 h-0.5 bg-black"
                     layoutId="tabContentIndicator"
-                    initial={{ opacity: 0, scaleX: 0 }}
-                    animate={{ opacity: 1, scaleX: 1 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.2 }}
                   />
                 )}
               </TabsTrigger>
@@ -56,27 +54,21 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
           </TabsList>
         </div>
 
-        {/* Tab Content */}
-        <div className="py-6">
+        {/* Tab Content with fixed height to prevent jumping */}
+        <div className="py-6 min-h-[300px]">
           {tabs.map((tab) => (
             <TabsContent 
               key={tab.id} 
               value={tab.id}
               className="focus-visible:outline-none focus-visible:ring-0"
             >
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-6"
-              >
-                <h3 className="text-2xl font-semibold font-poppins">{tab.title}</h3>
+              <div className="space-y-6">
+                <h3 className="text-2xl font-semibold font-inter">{tab.title}</h3>
                 {tab.subtitle && (
-                  <p className="text-lg font-poppins">{tab.subtitle}</p>
+                  <p className="text-lg font-inter">{tab.subtitle}</p>
                 )}
                 <p className="text-gray-700 leading-relaxed font-inter text-base">{tab.description}</p>
-              </motion.div>
+              </div>
             </TabsContent>
           ))}
         </div>
