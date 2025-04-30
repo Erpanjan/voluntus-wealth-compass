@@ -1,6 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
-import { useInView } from 'react-intersection-observer';
+import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 interface ValueProposition {
@@ -22,85 +21,110 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
   propositions
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [refs, setRefs] = useState<Array<React.RefObject<HTMLDivElement>>>([]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
   
-  // Create refs for each section
+  // Set up scroll based content changing
   useEffect(() => {
-    setRefs(propositions.map(() => React.createRef<HTMLDivElement>()));
-  }, [propositions.length]);
-  
-  // Set up intersection observers for each section
-  useEffect(() => {
-    if (refs.length === 0) return;
-    
-    const observers = refs.map((ref, index) => {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setActiveIndex(index);
-          }
-        },
-        { threshold: 0.6 } // Trigger when 60% of the element is visible
+    const handleScroll = () => {
+      if (!sectionRef.current) return;
+      
+      const sectionTop = sectionRef.current.offsetTop;
+      const sectionHeight = sectionRef.current.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      const scrollPosition = window.scrollY;
+      
+      // Calculate progress through the section (0 to 1)
+      const sectionProgress = (scrollPosition - sectionTop + viewportHeight * 0.5) / 
+        (sectionHeight - viewportHeight);
+      
+      // Determine which proposition to show based on scroll progress
+      const newIndex = Math.min(
+        Math.max(
+          Math.floor(sectionProgress * propositions.length),
+          0
+        ),
+        propositions.length - 1
       );
       
-      if (ref.current) {
-        observer.observe(ref.current);
+      if (newIndex !== activeIndex) {
+        setActiveIndex(newIndex);
       }
-      
-      return observer;
-    });
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    // Initial check
+    handleScroll();
     
     return () => {
-      observers.forEach((observer) => observer.disconnect());
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, [refs]);
+  }, [activeIndex, propositions.length]);
   
   return (
-    <section className="bg-white">
-      {/* Propositions with split screen design */}
-      {propositions.map((proposition, index) => (
-        <div
-          key={proposition.id}
-          ref={refs[index]}
-          className="min-h-[80vh] flex flex-col md:flex-row"
-        >
-          {/* Left side with number and title */}
-          <div className="flex-1 bg-[#474646] flex flex-col items-center justify-center py-20">
-            {index === 0 && (
-              <div className="mb-16 text-center">
-                <h3 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-2">
-                  Our Value Propositions
-                </h3>
-                <p className="text-xl text-white/70">
-                  What sets us apart
-                </p>
-              </div>
-            )}
-            <div className="text-center">
-              <span className="text-[12rem] font-light text-white">
-                {index + 1}
-              </span>
+    <section 
+      ref={sectionRef}
+      className="relative bg-white" 
+      style={{ height: `${100 * propositions.length}vh` }}
+    >
+      {/* Fixed position container */}
+      <div className="sticky top-0 left-0 w-full h-screen flex flex-col md:flex-row">
+        {/* Left side with number */}
+        <div className="flex-1 bg-[#474646] flex flex-col items-center justify-center py-20">
+          {activeIndex === 0 && (
+            <div className="mb-16 text-center">
+              <h3 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-2">
+                Our Value Propositions
+              </h3>
+              <p className="text-xl text-white/70">
+                What sets us apart
+              </p>
             </div>
-          </div>
-          
-          {/* Right side with content */}
-          <div className="flex-1 bg-white flex items-center justify-center p-12">
-            <div className="max-w-lg">
-              <h3 className="text-3xl font-semibold mb-4">{proposition.title}</h3>
-              <p className="text-xl text-gray-500 mb-8">- {proposition.subtitle}</p>
-              <p className="text-gray-600">{proposition.description}</p>
-            </div>
+          )}
+          <div className="text-center">
+            <span className="text-[12rem] font-light text-white transition-all duration-500">
+              {activeIndex + 1}
+            </span>
           </div>
         </div>
-      ))}
+        
+        {/* Right side with content */}
+        <div className="flex-1 bg-white flex items-center justify-center p-12">
+          <div className="max-w-lg">
+            {propositions.map((proposition, index) => (
+              <div
+                key={proposition.id}
+                ref={el => contentRefs.current[index] = el}
+                className={cn(
+                  "transition-opacity duration-500 absolute",
+                  activeIndex === index ? "opacity-100" : "opacity-0 pointer-events-none"
+                )}
+              >
+                <h3 className="text-3xl font-semibold mb-4">{proposition.title}</h3>
+                <p className="text-xl text-gray-500 mb-8">- {proposition.subtitle}</p>
+                <p className="text-gray-600">{proposition.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
       
       {/* Navigation dots */}
-      <div className="sticky bottom-8 left-0 w-full flex justify-center mb-8">
+      <div className="fixed bottom-8 left-0 w-full flex justify-center">
         <div className="flex gap-3 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
           {propositions.map((_, index) => (
             <button
               key={index}
-              onClick={() => refs[index]?.current?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => {
+                if (!sectionRef.current) return;
+                const sectionTop = sectionRef.current.offsetTop;
+                const sectionHeight = sectionRef.current.offsetHeight;
+                const targetPosition = sectionTop + (sectionHeight / propositions.length) * index;
+                window.scrollTo({
+                  top: targetPosition,
+                  behavior: 'smooth'
+                });
+              }}
               className={cn(
                 "w-2.5 h-2.5 rounded-full p-0 transition-all duration-300 ease-in-out",
                 activeIndex === index 
