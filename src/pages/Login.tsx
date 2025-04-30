@@ -63,8 +63,8 @@ const Login = () => {
             </TabsList>
           </div>
 
-          {/* Fixed height container for tab content */}
-          <div className="min-h-[400px]">
+          {/* Fixed height container for tab content - adjusted to relative positioning */}
+          <div className="min-h-[400px] relative">
             {/* Login Tab */}
             <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out absolute w-full">
               <LoginForm 
