@@ -48,15 +48,16 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
       const containerHeight = containerRef.current.offsetHeight;
       const viewportHeight = window.innerHeight;
       
-      // Check if we're within the container
-      const isWithinContainer = 
-        scrollPosition + viewportHeight / 2 >= containerTop && 
-        scrollPosition < containerTop + containerHeight;
+      // Only show navigation when truly inside the problem statement section
+      // This ensures it doesn't show in the hero section
+      const isFullyWithinContainer = 
+        scrollPosition >= containerTop && 
+        scrollPosition < containerTop + containerHeight - viewportHeight/2;
       
-      // Update visibility of navigation dots
-      setIsVisible(isWithinContainer);
+      // Update visibility of navigation dots - ensure it's only visible within the container
+      setIsVisible(isFullyWithinContainer);
       
-      if (isWithinContainer) {
+      if (isFullyWithinContainer) {
         // Calculate which section to display based on scroll position
         const sectionHeight = viewportHeight; // Each section is viewport height
         const relativeScroll = scrollPosition - containerTop;
