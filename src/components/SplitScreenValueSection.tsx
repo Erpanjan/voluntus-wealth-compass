@@ -74,8 +74,18 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
           ref={refs[index]}
           className="min-h-[80vh] flex flex-col md:flex-row"
         >
-          {/* Left side with number */}
-          <div className="flex-1 bg-[#222222] flex items-center justify-center py-20">
+          {/* Left side with number and title */}
+          <div className="flex-1 bg-[#474646] flex flex-col items-center justify-center py-20">
+            {index === 0 && (
+              <div className="mb-16 text-center">
+                <h3 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-2">
+                  Our Value Propositions
+                </h3>
+                <p className="text-xl text-white/70">
+                  What sets us apart
+                </p>
+              </div>
+            )}
             <div className="text-center">
               <span className="text-[12rem] font-light text-white">
                 {index + 1}
