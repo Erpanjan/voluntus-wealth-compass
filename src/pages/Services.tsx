@@ -66,13 +66,13 @@ const Services = () => {
       />
 
       {/* Roadmap Section */}
-      <Section id="roadmap" background="light">
+      <Section id="roadmap" background="dark">
         <div className="grid md:grid-cols-1 gap-8 items-start max-w-3xl mx-auto">
           <div className="space-y-8">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight">
               A Roadmap for your Investment Journey
             </h2>
-            <div className="space-y-6 text-[#9F9EA1] text-lg font-light">
+            <div className="space-y-6 text-white/70 text-lg font-light">
               <p>
                 The Financial Planning Policy is a personalized roadmap for managing your wealth. It outlines how your funds should be allocated to kick-start your investment journey, providing step-by-step guidance along with ongoing monitoring and plan governance.
               </p>
@@ -83,7 +83,7 @@ const Services = () => {
             <Button 
               asChild 
               size="lg"
-              className="bg-black/80 hover:bg-black text-white transition-all duration-300"
+              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
             >
               <Link to="/contact" className="inline-flex items-center">
                 Request a demo <ArrowRight size={18} className="ml-2" />
