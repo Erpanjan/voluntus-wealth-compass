@@ -42,16 +42,16 @@ const Section: React.FC<SectionProps> = ({
       <div className={cn("container-custom flex flex-col justify-center h-full", carouselItem && "h-full")}>
         {(title || subtitle) && (
           <div className={cn(
-            'mb-16', 
+            'mb-10 md:mb-12', 
             titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
           )}>
             {title && (
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-8 tracking-tight animate-fade-in-up">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-normal mb-6 tracking-tight animate-fade-in-up text-black/90">
                 {title}
               </h2>
             )}
             {subtitle && (
-              <p className="text-lg md:text-xl text-[#000006] max-w-2xl animate-fade-in-up" style={{animationDelay: '0.2s'}}> 
+              <p className="text-base md:text-lg text-[#8A898C] max-w-2xl animate-fade-in-up font-light leading-relaxed" style={{animationDelay: '0.2s'}}> 
                 {subtitle}
               </p>
             )}
