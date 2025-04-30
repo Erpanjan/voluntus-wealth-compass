@@ -73,7 +73,7 @@ const Header: React.FC = () => {
             // Stacked logo for mobile
             <div className="flex flex-col items-center">
               <img 
-                src="/lovable-uploads/f2345a65-a06d-4f7f-963f-8e1646a93e84.png" 
+                src="/lovable-uploads/e4b4f8b7-8d82-468f-b861-b6a593038f7c.png" 
                 alt="Voluntus Logo" 
                 className="h-16" 
               />
@@ -82,7 +82,7 @@ const Header: React.FC = () => {
             // Horizontal logo for desktop
             <div className="flex items-center">
               <img 
-                src="/lovable-uploads/f2345a65-a06d-4f7f-963f-8e1646a93e84.png" 
+                src="/lovable-uploads/e4b4f8b7-8d82-468f-b861-b6a593038f7c.png" 
                 alt="Voluntus Logo" 
                 className="h-16" 
               />
