@@ -11,10 +11,10 @@ interface SectionProps {
   className?: string;
   titleCentered?: boolean;
   background?: 'white' | 'light' | 'dark';
-  carouselItem?: boolean; // New prop for carousel context
-  titleClassName?: string; // New prop for custom title styling
-  subtitleClassName?: string; // New prop for custom subtitle styling
-  contentClassName?: string; // New prop for custom content styling
+  carouselItem?: boolean;
+  titleClassName?: string;
+  subtitleClassName?: string;
+  contentClassName?: string;
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -41,7 +41,7 @@ const Section: React.FC<SectionProps> = ({
   return (
     <section id={id} className={cn(
       'min-h-screen flex flex-col justify-center py-20 md:py-28 overflow-hidden relative',
-      carouselItem ? 'h-full w-full flex-shrink-0' : '',
+      carouselItem ? 'h-full w-full' : '',
       bgClasses[background],
       className
     )}>
@@ -52,7 +52,7 @@ const Section: React.FC<SectionProps> = ({
               'mb-16', 
               titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
             )}
-            data-section-header="true" // Add a data attribute to make it easier to target
+            data-section-header="true"
           >
             {title && (
               <h2 

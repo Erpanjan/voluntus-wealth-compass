@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -167,10 +166,8 @@ const Index = () => {
         </div>
       </Hero>
 
-      {/* Carousel Sections */}
-      <div className="min-h-screen">
-        <SectionCarousel sections={carouselSections} />
-      </div>
+      {/* Carousel Sections - now with vertical scrolling */}
+      <SectionCarousel sections={carouselSections} />
 
       {/* Contact Form Section */}
       <Section id="contact" background="light">
