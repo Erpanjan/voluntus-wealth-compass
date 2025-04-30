@@ -9,6 +9,7 @@ import Footer from "./components/layout/Footer";
 import Index from "./pages/Index";
 import Services from "./pages/Services";
 import Insight from "./pages/Insight";
+import ArticleDetail from "./pages/ArticleDetail";
 import Event from "./pages/Event";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/services" element={<Services />} />
               <Route path="/insight" element={<Insight />} />
+              <Route path="/insight/:id" element={<ArticleDetail />} />
               <Route path="/event" element={<Event />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
