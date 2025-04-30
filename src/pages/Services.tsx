@@ -1,9 +1,11 @@
+
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import InteractiveServiceGrid from '@/components/InteractiveServiceGrid';
 import TabContent from '@/components/TabContent';
 import ContactForm from '@/components/ContactForm';
+import SplitScreenValueSection from '@/components/SplitScreenValueSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -33,8 +35,8 @@ const Services = () => {
     },
   ];
 
-  // Value propositions - formatted for TabContent component
-  const valuePropositionTabs = [
+  // Value propositions
+  const valuePropositionItems = [
     {
       id: "control",
       title: "We give you control",
@@ -103,21 +105,16 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* Value Propositions - Using the TabContent component with even spacing */}
-      <Section 
-        id="principles" 
-        title="Our Value Propositions" 
-        subtitle="What sets us apart" 
-        titleCentered
-        background="light"
-        contentClassName="bg-transparent"
-      >
-        <div className="max-w-4xl mx-auto w-full bg-transparent">
-          <TabContent tabs={valuePropositionTabs} className="bg-transparent" />
-        </div>
-      </Section>
+      {/* Value Propositions - Using the new SplitScreenValueSection component */}
+      <div id="principles">
+        <SplitScreenValueSection 
+          title="Our Value Propositions" 
+          subtitle="What sets us apart" 
+          propositions={valuePropositionItems}
+        />
+      </div>
 
-      {/* Pricing Section - Now with dark background */}
+      {/* Pricing Section */}
       <Section 
         id="policy-fee" 
         background="dark"
