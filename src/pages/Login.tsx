@@ -47,8 +47,8 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
-        {/* Fixed position header with title */}
-        <div className="py-8 text-center">
+        {/* Fixed position header with title - adding consistent height */}
+        <div className="h-24 flex items-center justify-center">
           <h1 className="text-3xl font-bold">Client Portal</h1>
         </div>
 
@@ -63,10 +63,10 @@ const Login = () => {
             </TabsList>
           </div>
 
-          {/* Fixed height container for tab content - adjusted to relative positioning */}
-          <div className="min-h-[400px] relative">
+          {/* Content container with fixed height to prevent layout shifts */}
+          <div className="h-[450px] relative overflow-hidden">
             {/* Login Tab */}
-            <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out absolute w-full">
+            <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
               <LoginForm 
                 onDemoLogin={handleDemoLogin} 
                 onRegularLogin={handleRegularLogin}
@@ -74,12 +74,12 @@ const Login = () => {
             </TabsContent>
 
             {/* Register Tab */}
-            <TabsContent value="register" className="p-6 transition-all duration-300 ease-in-out absolute w-full">
+            <TabsContent value="register" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
               <RegisterForm />
             </TabsContent>
 
             {/* Forgot Password Tab */}
-            <TabsContent value="forgot" className="p-6 transition-all duration-300 ease-in-out absolute w-full">
+            <TabsContent value="forgot" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
               <ForgotPasswordForm />
             </TabsContent>
           </div>

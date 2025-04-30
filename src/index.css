@@ -128,20 +128,22 @@
   transform: translateX(200%);
 }
 
-/* Tab content positioning and transitions - improved positioning */
+/* Tab content positioning and transitions - enhanced for smooth transitions */
 .custom-tabs [role="tabpanel"] {
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-  visibility: hidden; /* Hide panels when not active */
-  height: 0; /* Collapse height when not active */
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
 }
 
 .custom-tabs [role="tabpanel"][data-state="active"] {
   opacity: 1;
   transform: translateY(0);
-  visibility: visible; /* Show active panel */
-  height: auto; /* Restore height for active panel */
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* Making sure tab content has smooth transitions */
