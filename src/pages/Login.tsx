@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { isSupabaseConfigured } from '@/lib/supabase';
 
 // Import login components
 import LoginForm from '@/components/login/LoginForm';
@@ -11,6 +13,7 @@ import ForgotPasswordForm from '@/components/login/ForgotPasswordForm';
 
 const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [supabaseReady, setSupabaseReady] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -19,7 +22,19 @@ const Login = () => {
     if (localStorage.getItem('isAuthenticated') === 'true') {
       navigate('/dashboard');
     }
-  }, [navigate]);
+    
+    // Check if Supabase is configured
+    setSupabaseReady(isSupabaseConfigured());
+    
+    if (!isSupabaseConfigured()) {
+      toast({
+        title: "Supabase Configuration Missing",
+        description: "Please ensure your Supabase URL and anon key are correctly set.",
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
+  }, [navigate, toast]);
 
   // Handle demo account login
   const handleDemoLogin = () => {

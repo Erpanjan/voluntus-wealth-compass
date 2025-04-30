@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { LogOut } from 'lucide-react';
@@ -7,26 +7,60 @@ import { Button } from '@/components/ui/button';
 import AdvisorChat from '@/components/dashboard/AdvisorChat';
 import PolicyReview from '@/components/dashboard/PolicyReview';
 import AccountManagement from '@/components/dashboard/AccountManagement';
+import { auth, isSupabaseConfigured } from '@/lib/supabase';
 
 const Dashboard = () => {
-  // In a real app, this would check authentication status from a context or API
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  // Use local state for authentication status
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    localStorage.getItem('isAuthenticated') === 'true'
+  );
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState('advisor');
+
+  // Subscribe to auth state changes if Supabase is configured
+  useEffect(() => {
+    if (isSupabaseConfigured()) {
+      const { data: authListener } = auth.onAuthStateChange((event, session) => {
+        const currentAuthStatus = session !== null;
+        setIsAuthenticated(currentAuthStatus);
+        
+        if (currentAuthStatus) {
+          localStorage.setItem('isAuthenticated', 'true');
+        } else {
+          localStorage.removeItem('isAuthenticated');
+          localStorage.removeItem('onboardingComplete');
+        }
+      });
+
+      // Cleanup subscription
+      return () => {
+        if (authListener && authListener.subscription) {
+          authListener.subscription.unsubscribe();
+        }
+      };
+    }
+  }, []);
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Try to logout from Supabase if configured
+    if (isSupabaseConfigured()) {
+      await auth.signOut();
+    }
+    
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('onboardingComplete');
+    
     toast({
       title: "Logged out successfully",
       description: "You have been logged out of your account."
     });
+    
     navigate('/login');
   };
 
