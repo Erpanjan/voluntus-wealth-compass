@@ -46,13 +46,13 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
-      <div className="max-w-md w-full bg-white overflow-hidden">
-        {/* Header with Title - Updated positioning and styling */}
+      <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
+        {/* Fixed position header with title */}
         <div className="py-8 text-center">
           <h1 className="text-3xl font-bold">Client Portal</h1>
         </div>
 
-        {/* Tabs with custom styling for moving indicator */}
+        {/* Fixed height tabs container */}
         <Tabs defaultValue="login" className="w-full custom-tabs">
           <div className="px-6">
             <TabsList className="grid grid-cols-3 w-full bg-transparent p-0 h-12 relative">
@@ -63,9 +63,10 @@ const Login = () => {
             </TabsList>
           </div>
 
-          <div className="min-h-[320px]"> {/* Fixed minimum height container to prevent jumping */}
+          {/* Fixed height container for tab content */}
+          <div className="min-h-[400px]">
             {/* Login Tab */}
-            <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out">
+            <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out absolute w-full">
               <LoginForm 
                 onDemoLogin={handleDemoLogin} 
                 onRegularLogin={handleRegularLogin}
@@ -73,12 +74,12 @@ const Login = () => {
             </TabsContent>
 
             {/* Register Tab */}
-            <TabsContent value="register" className="p-6 transition-all duration-300 ease-in-out">
+            <TabsContent value="register" className="p-6 transition-all duration-300 ease-in-out absolute w-full">
               <RegisterForm />
             </TabsContent>
 
             {/* Forgot Password Tab */}
-            <TabsContent value="forgot" className="p-6 transition-all duration-300 ease-in-out">
+            <TabsContent value="forgot" className="p-6 transition-all duration-300 ease-in-out absolute w-full">
               <ForgotPasswordForm />
             </TabsContent>
           </div>
