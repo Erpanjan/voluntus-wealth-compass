@@ -93,20 +93,20 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* What's Included Section */}
+      {/* What's Included Section - More prominent now */}
       <Section 
         id="whats-included" 
-        title="What's included?" 
+        title="What's included in our service?" 
         background="white" 
-        titleClassName="text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight"
+        titleClassName="text-4xl md:text-5xl font-medium tracking-tight mb-12"
         className="py-16 md:py-24"
       >
-        <div className="w-full max-w-6xl mx-auto">
+        <div className="w-full mx-auto">
           <InteractiveServiceGrid services={serviceItems} />
         </div>
       </Section>
 
-      {/* Value Propositions */}
+      {/* Value Propositions - Add similar tab-style navigation */}
       <Section 
         id="principles" 
         title="Our Value Propositions" 
