@@ -94,4 +94,22 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-black to-[#9F9EA1];
   }
+  
+  /* Tabs styling for service grid */
+  .service-tab {
+    @apply relative cursor-pointer transition-colors duration-300;
+  }
+  
+  .service-tab::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300;
+  }
+  
+  .service-tab.active::after {
+    @apply w-full;
+  }
+  
+  .service-tab.active {
+    @apply text-black font-medium;
+  }
 }

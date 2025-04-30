@@ -15,7 +15,7 @@ const Services = () => {
     {
       id: 'investment',
       title: 'Investment Solution',
-      content: "Many believe building a diversified investment portfolio requires substantial wealth and expertise, limiting it to a small set of investors—but this isn't true. Our Financial Planning Policy provides personalized investment strategies offering effective global diversification, empowering clients to navigate market volatility confidently. Moreover, our portfolios are designed to be cost-effective, lowering upfront investment expenses. Regular updates ensure the strategies remain aligned with each client's evolving goals and market conditions, maintaining a robust financial plan aimed at achieving long-term success."
+      content: "Many believe building a diversified investment portfolio requires substantial wealth and expertise, limiting it to high-net-worth individuals—but this isn't true. Our Financial Planning Policy provides personalized investment strategies offering effective global diversification, empowering clients to navigate market volatility confidently. Moreover, our portfolios are designed to be cost-effective, lowering upfront investment expenses. Regular updates ensure the strategies remain aligned with each client's evolving goals and market conditions, maintaining a robust financial plan aimed at achieving long-term success."
     },
     {
       id: 'advisor',
@@ -94,8 +94,14 @@ const Services = () => {
       </Section>
 
       {/* What's Included Section */}
-      <Section id="whats-included" title="What's included?" background="white">
-        <div className="w-full">
+      <Section 
+        id="whats-included" 
+        title="What's included?" 
+        background="white" 
+        titleClassName="text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight"
+        className="py-16 md:py-24"
+      >
+        <div className="w-full max-w-6xl mx-auto">
           <InteractiveServiceGrid services={serviceItems} />
         </div>
       </Section>
