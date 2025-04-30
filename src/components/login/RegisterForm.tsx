@@ -6,11 +6,13 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const RegisterForm = () => {
   const [registerData, setRegisterData] = useState({
     contactType: 'email',
-    contact: '',
+    email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   });
@@ -47,22 +49,37 @@ const RegisterForm = () => {
     }
 
     try {
-      // Simulating registration request
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Determine if using email or phone for registration
+      const contact = registerData.contactType === 'email' 
+        ? { email: registerData.email } 
+        : { phone: registerData.phone };
+      
+      // Attempt to sign up with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        ...contact,
+        password: registerData.password,
+        options: {
+          emailRedirectTo: window.location.origin + '/dashboard',
+        }
+      });
+      
+      if (error) throw error;
       
       toast({
         title: "Registration successful",
-        description: "Your account has been created. Let's complete your profile setup.",
+        description: registerData.contactType === 'email' 
+          ? "Please check your email for a confirmation link."
+          : "Please check your phone for a verification code.",
         duration: 5000,
       });
 
       // Redirect to onboarding
       navigate('/onboarding');
       
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Registration failed",
-        description: "There was an error registering your account. Please try again.",
+        description: error.message || "There was an error registering your account. Please try again.",
         variant: "destructive",
         duration: 5000,
       });
@@ -87,21 +104,35 @@ const RegisterForm = () => {
         </select>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="contact" className="text-gray-600 font-light">
-          {registerData.contactType === 'email' ? 'Email' : 'Phone Number'}
-        </Label>
-        <Input
-          id="contact"
-          name="contact"
-          type={registerData.contactType === 'email' ? 'email' : 'tel'}
-          value={registerData.contact}
-          onChange={handleRegisterChange}
-          placeholder={registerData.contactType === 'email' ? 'name@example.com' : '+852 XXXX XXXX'}
-          required
-          className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
-        />
-      </div>
+      {registerData.contactType === 'email' ? (
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-gray-600 font-light">Email</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            value={registerData.email}
+            onChange={handleRegisterChange}
+            placeholder="name@example.com"
+            required
+            className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
+          />
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <Label htmlFor="phone" className="text-gray-600 font-light">Phone Number</Label>
+          <Input
+            id="phone"
+            name="phone"
+            type="tel"
+            value={registerData.phone}
+            onChange={handleRegisterChange}
+            placeholder="+852 XXXX XXXX"
+            required
+            className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
+          />
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="reg-password" className="text-gray-600 font-light">Password</Label>

@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 // Import login components
 import LoginForm from '@/components/login/LoginForm';
@@ -13,28 +13,36 @@ import ForgotPasswordForm from '@/components/login/ForgotPasswordForm';
 
 const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [supabaseReady, setSupabaseReady] = useState(false);
+  const [session, setSession] = useState(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   
   // Check if user is already logged in
   useEffect(() => {
-    if (localStorage.getItem('isAuthenticated') === 'true') {
-      navigate('/dashboard');
-    }
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session) {
+          localStorage.setItem('isAuthenticated', 'true');
+          navigate('/dashboard');
+        }
+      }
+    );
     
-    // Check if Supabase is configured
-    setSupabaseReady(isSupabaseConfigured());
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        localStorage.setItem('isAuthenticated', 'true');
+        navigate('/dashboard');
+      }
+    });
     
-    if (!isSupabaseConfigured()) {
-      toast({
-        title: "Supabase Configuration Missing",
-        description: "Please ensure your Supabase URL and anon key are correctly set.",
-        variant: "destructive",
-        duration: 5000,
-      });
-    }
-  }, [navigate, toast]);
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+  }, [navigate]);
 
   // Handle demo account login
   const handleDemoLogin = () => {

@@ -7,61 +7,64 @@ import { Button } from '@/components/ui/button';
 import AdvisorChat from '@/components/dashboard/AdvisorChat';
 import PolicyReview from '@/components/dashboard/PolicyReview';
 import AccountManagement from '@/components/dashboard/AccountManagement';
-import { auth, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
-  // Use local state for authentication status
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    localStorage.getItem('isAuthenticated') === 'true'
-  );
+  // Use state for session management
+  const [user, setUser] = useState<any>(null);
+  const [session, setSession] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState('advisor');
 
-  // Subscribe to auth state changes if Supabase is configured
+  // Subscribe to auth state changes
   useEffect(() => {
-    if (isSupabaseConfigured()) {
-      const { data: authListener } = auth.onAuthStateChange((event, session) => {
-        const currentAuthStatus = session !== null;
-        setIsAuthenticated(currentAuthStatus);
-        
-        if (currentAuthStatus) {
-          localStorage.setItem('isAuthenticated', 'true');
-        } else {
-          localStorage.removeItem('isAuthenticated');
-          localStorage.removeItem('onboardingComplete');
-        }
-      });
-
-      // Cleanup subscription
-      return () => {
-        if (authListener && authListener.subscription) {
-          authListener.subscription.unsubscribe();
-        }
-      };
-    }
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
+    );
+    
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+    
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
   }, []);
 
   // Redirect to login if not authenticated
-  if (!isAuthenticated) {
+  if (!user && !localStorage.getItem('isAuthenticated')) {
     return <Navigate to="/login" />;
   }
 
   const handleLogout = async () => {
-    // Try to logout from Supabase if configured
-    if (isSupabaseConfigured()) {
-      await auth.signOut();
+    try {
+      await supabase.auth.signOut();
+      
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('onboardingComplete');
+      
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account."
+      });
+      
+      navigate('/login');
+    } catch (error: any) {
+      toast({
+        title: "Error logging out",
+        description: error.message || "There was a problem logging you out.",
+        variant: "destructive"
+      });
     }
-    
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('onboardingComplete');
-    
-    toast({
-      title: "Logged out successfully",
-      description: "You have been logged out of your account."
-    });
-    
-    navigate('/login');
   };
 
   return (
