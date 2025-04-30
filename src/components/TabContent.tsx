@@ -28,7 +28,7 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
         className="w-full"
       >
         {/* Custom Tab Navigation */}
-        <div className="relative border-b border-gray-200 mb-8">
+        <div className="relative border-b border-gray-200 mb-6">
           <TabsList className="flex justify-between w-full bg-transparent p-0 h-auto">
             {tabs.map((tab) => (
               <TabsTrigger
@@ -55,18 +55,18 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
         </div>
 
         {/* Tab Content with fixed height to prevent jumping */}
-        <div className="py-6 min-h-[300px]">
+        <div className="py-4 min-h-[300px]">
           {tabs.map((tab) => (
             <TabsContent 
               key={tab.id} 
               value={tab.id}
               className="focus-visible:outline-none focus-visible:ring-0"
             >
-              <div className="space-y-6">
-                <h3 className="text-2xl font-semibold font-inter">
+              <div className="space-y-4">
+                <h3 className="text-2xl md:text-3xl font-semibold font-inter">
                   {tab.title} <span className="font-semibold">{tab.subtitle}</span>
                 </h3>
-                <p className="text-gray-700 leading-relaxed font-inter text-base">{tab.description}</p>
+                <p className="text-gray-700 leading-relaxed font-inter text-base md:text-lg">{tab.description}</p>
               </div>
             </TabsContent>
           ))}
