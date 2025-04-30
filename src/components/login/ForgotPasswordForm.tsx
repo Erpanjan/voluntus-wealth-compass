@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 const ForgotPasswordForm = () => {
   const [forgotData, setForgotData] = useState({
-    contact: '',
+    email: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -25,23 +26,30 @@ const ForgotPasswordForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulating forgot password request
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Send password reset email with Supabase
+      const { data, error } = await supabase.auth.resetPasswordForEmail(
+        forgotData.email,
+        {
+          redirectTo: `${window.location.origin}/login`,
+        }
+      );
+
+      if (error) throw error;
       
       toast({
         title: "Reset link sent",
-        description: "If an account exists with this contact, you'll receive a password reset link.",
+        description: "If an account exists with this email, you'll receive a password reset link.",
         duration: 5000,
       });
 
       // Reset form
       setForgotData({
-        contact: '',
+        email: '',
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Request failed",
-        description: "There was an error processing your request. Please try again later.",
+        description: error.message || "There was an error processing your request. Please try again later.",
         variant: "destructive",
         duration: 5000,
       });
@@ -53,14 +61,14 @@ const ForgotPasswordForm = () => {
   return (
     <form onSubmit={handleForgotSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="forgot-contact" className="text-gray-600 font-light">Email or Phone Number</Label>
+        <Label htmlFor="email" className="text-gray-600 font-light">Email</Label>
         <Input
-          id="forgot-contact"
-          name="contact"
-          type="text"
-          value={forgotData.contact}
+          id="email"
+          name="email"
+          type="email"
+          value={forgotData.email}
           onChange={handleForgotChange}
-          placeholder="Enter your registered email or phone"
+          placeholder="Enter your registered email"
           required
           className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
         />

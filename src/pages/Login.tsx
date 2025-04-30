@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 // Import login components
 import LoginForm from '@/components/login/LoginForm';
@@ -11,14 +12,27 @@ import ForgotPasswordForm from '@/components/login/ForgotPasswordForm';
 
 const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
   
   // Check if user is already logged in
   useEffect(() => {
-    if (localStorage.getItem('isAuthenticated') === 'true') {
-      navigate('/dashboard');
-    }
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session) {
+          navigate('/dashboard');
+        }
+      } catch (error) {
+        console.error("Error checking auth status:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    checkAuth();
   }, [navigate]);
 
   // Handle demo account login
@@ -43,6 +57,15 @@ const Login = () => {
   const handleRegularLogin = () => {
     navigate('/dashboard');
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
