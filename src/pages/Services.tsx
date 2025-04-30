@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
@@ -118,16 +117,18 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* Pricing Section */}
-      <Section id="policy-fee" title="Our Pricing" background="light" titleCentered>
-        <div className="max-w-2xl mx-auto text-center space-y-6">
-          <p className="text-voluntus-text-secondary">
-            This is a subscription service with policy fee is charged periodically, with the amount depending on the complexity of your financial needs and the duration of the policy.
-          </p>
-          <p className="text-voluntus-text-secondary">
-            We DO NOT charge based on investment vehicle selected or size of the investment.
-          </p>
-          <div className="mt-8">
+      {/* Pricing Section - Updated to match Roadmap section styling */}
+      <Section id="policy-fee" title="Our Pricing" background="white">
+        <div className="grid md:grid-cols-1 gap-8 items-start max-w-3xl mx-auto">
+          <div className="space-y-8">
+            <div className="space-y-6 text-lg font-light">
+              <p className="text-voluntus-text-secondary">
+                This is a subscription service with policy fee is charged periodically, with the amount depending on the complexity of your financial needs and the duration of the policy.
+              </p>
+              <p className="text-voluntus-text-secondary">
+                We DO NOT charge based on investment vehicle selected or size of the investment.
+              </p>
+            </div>
             <Button
               asChild 
               size="lg"
