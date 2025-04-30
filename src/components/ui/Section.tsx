@@ -51,13 +51,13 @@ const Section: React.FC<SectionProps> = ({
               </h2>
             )}
             {subtitle && (
-              <p className="text-lg md:text-xl text-[#9F9EA1] max-w-2xl animate-fade-in-up" style={{animationDelay: '0.2s'}}> 
+              <p className="text-lg md:text-xl text-[#000006] max-w-2xl animate-fade-in-up" style={{animationDelay: '0.2s'}}> 
                 {subtitle}
               </p>
             )}
           </div>
         )}
-        <div className="flex-grow flex flex-col items-start justify-start w-full max-w-3xl">
+        <div className="flex-grow flex flex-col items-center justify-start w-full">
           {children}
         </div>
       </div>
