@@ -117,7 +117,7 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* Pricing Section - Updated to match Roadmap section styling */}
+      {/* Pricing Section - Fixed alignment to match Roadmap section styling */}
       <Section id="policy-fee" title="Our Pricing" background="white">
         <div className="grid md:grid-cols-1 gap-8 items-start max-w-3xl mx-auto">
           <div className="space-y-8">
