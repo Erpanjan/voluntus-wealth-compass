@@ -168,7 +168,7 @@ const Index = () => {
       </Hero>
 
       {/* Carousel Sections */}
-      <div className="min-h-screen">
+      <div className="relative">
         <SectionCarousel sections={carouselSections} />
       </div>
 
