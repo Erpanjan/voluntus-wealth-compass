@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
@@ -12,7 +13,7 @@ const About = () => {
       <Section>
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl md:text-3xl leading-tight text-zinc-800 text-left py-0 mx-[24px] px-0 font-light lg:text-5xl">
-            We envision a world where people are freed from the complexity of finance and truly empowered to flourish in life.
+            We envision a world where finance truly empowering people to flourish in life.
           </h2>
         </div>
       </Section>
