@@ -11,7 +11,7 @@ interface SectionProps {
   className?: string;
   titleCentered?: boolean;
   background?: 'white' | 'light' | 'dark';
-  carouselItem?: boolean; // New prop for carousel context
+  carouselItem?: boolean;
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -34,24 +34,25 @@ const Section: React.FC<SectionProps> = ({
 
   return (
     <section id={id} className={cn(
-      'min-h-screen flex flex-col justify-center py-20 md:py-28 overflow-hidden relative',
+      'py-16 md:py-20 overflow-hidden relative',
       carouselItem ? 'h-full w-full flex-shrink-0' : '',
       bgClasses[background],
       className
     )}>
-      <div className={cn("container-custom flex flex-col justify-center h-full", carouselItem && "h-full")}>
+      <div className={cn("container-custom flex flex-col h-full", carouselItem && "h-full")}>
         {(title || subtitle) && (
           <div className={cn(
-            'mb-16', 
-            titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
+            'mb-12', 
+            titleCentered ? 'text-center mx-auto' : '',
+            titleCentered ? 'max-w-4xl' : 'max-w-3xl'
           )}>
             {title && (
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-8 tracking-tight animate-fade-in-up">
+              <h2 className="text-[2.75rem] md:text-[3.5rem] font-normal text-[#333333] tracking-tight leading-[1.2] mb-8">
                 {title}
               </h2>
             )}
             {subtitle && (
-              <p className="text-lg md:text-xl text-[#000006] max-w-2xl animate-fade-in-up" style={{animationDelay: '0.2s'}}> 
+              <p className="text-lg md:text-xl text-[#999999] max-w-2xl" style={{fontWeight: 300}}> 
                 {subtitle}
               </p>
             )}
