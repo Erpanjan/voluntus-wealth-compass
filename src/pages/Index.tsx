@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import Hero from '@/components/ui/Hero';
@@ -10,15 +10,6 @@ import { Button } from '@/components/ui/button';
 import SectionCarousel from '@/components/SectionCarousel';
 
 const Index = () => {
-  // Enable smooth scroll behavior when component mounts
-  useEffect(() => {
-    document.documentElement.classList.add('smooth-scroll');
-    
-    return () => {
-      document.documentElement.classList.remove('smooth-scroll');
-    };
-  }, []);
-
   // Define the carousel sections
   const carouselSections = [
     {
@@ -176,8 +167,8 @@ const Index = () => {
         </div>
       </Hero>
 
-      {/* Carousel Sections with vertical scrolling */}
-      <div id="problem-statements" className="relative">
+      {/* Carousel Sections */}
+      <div className="min-h-screen">
         <SectionCarousel sections={carouselSections} />
       </div>
 

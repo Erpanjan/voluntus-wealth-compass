@@ -11,10 +11,10 @@ interface SectionProps {
   className?: string;
   titleCentered?: boolean;
   background?: 'white' | 'light' | 'dark';
-  carouselItem?: boolean;
-  titleClassName?: string;
-  subtitleClassName?: string;
-  contentClassName?: string;
+  carouselItem?: boolean; // New prop for carousel context
+  titleClassName?: string; // New prop for custom title styling
+  subtitleClassName?: string; // New prop for custom subtitle styling
+  contentClassName?: string; // New prop for custom content styling
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -41,21 +41,18 @@ const Section: React.FC<SectionProps> = ({
   return (
     <section id={id} className={cn(
       'min-h-screen flex flex-col justify-center py-20 md:py-28 overflow-hidden relative',
-      carouselItem ? 'h-screen w-full' : '',
+      carouselItem ? 'h-full w-full flex-shrink-0' : '',
       bgClasses[background],
       className
     )}>
-      <div className={cn(
-        "container-custom flex flex-col justify-center h-full transition-all duration-500",
-        carouselItem && "h-full"
-      )}>
+      <div className={cn("container-custom flex flex-col justify-center h-full", carouselItem && "h-full")}>
         {(title || subtitle) && (
           <div 
             className={cn(
               'mb-16', 
               titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
             )}
-            data-section-header="true"
+            data-section-header="true" // Add a data attribute to make it easier to target
           >
             {title && (
               <h2 
@@ -81,11 +78,7 @@ const Section: React.FC<SectionProps> = ({
             )}
           </div>
         )}
-        <div className={cn(
-          "flex-grow flex flex-col items-center justify-start w-full animate-fade-in", 
-          contentClassName
-        )} 
-        data-section-content="true">
+        <div className={cn("flex-grow flex flex-col items-center justify-start w-full", contentClassName)} data-section-content="true">
           {children}
         </div>
       </div>
