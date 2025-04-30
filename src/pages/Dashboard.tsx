@@ -7,11 +7,12 @@ import { Button } from '@/components/ui/button';
 import AdvisorChat from '@/components/dashboard/AdvisorChat';
 import PolicyReview from '@/components/dashboard/PolicyReview';
 import AccountManagement from '@/components/dashboard/AccountManagement';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [supabaseError, setSupabaseError] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('advisor');
@@ -19,11 +20,28 @@ const Dashboard = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Check if Supabase is configured properly
+        if (!isSupabaseConfigured()) {
+          console.error("Supabase is not configured properly");
+          setSupabaseError(true);
+          
+          // Use localStorage fallback for demo mode
+          const demoAuth = localStorage.getItem('isAuthenticated') === 'true';
+          setIsAuthenticated(demoAuth);
+          setLoading(false);
+          return;
+        }
+        
         const { data: { session } } = await supabase.auth.getSession();
         setIsAuthenticated(!!session);
       } catch (error) {
         console.error("Error checking authentication:", error);
         setIsAuthenticated(false);
+        setSupabaseError(true);
+        
+        // Fallback to localStorage for demo mode
+        const demoAuth = localStorage.getItem('isAuthenticated') === 'true';
+        setIsAuthenticated(demoAuth);
       } finally {
         setLoading(false);
       }
@@ -31,10 +49,14 @@ const Dashboard = () => {
     
     checkAuth();
     
-    // Set up auth state listener
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-    });
+    // Set up auth state listener only if Supabase is configured
+    let authListener = { subscription: { unsubscribe: () => {} } };
+    
+    if (isSupabaseConfigured()) {
+      authListener = supabase.auth.onAuthStateChange((event, session) => {
+        setIsAuthenticated(!!session);
+      });
+    }
     
     return () => {
       authListener.subscription.unsubscribe();
@@ -57,9 +79,12 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      // If Supabase is configured, use it for logout
+      if (isSupabaseConfigured()) {
+        await supabase.auth.signOut();
+      }
       
-      // Clear local storage items
+      // Always clear local storage items
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('onboardingComplete');
       
@@ -79,11 +104,33 @@ const Dashboard = () => {
     }
   };
 
+  // Show a banner if using demo mode (Supabase not configured)
+  const DemoBanner = () => (
+    supabaseError ? (
+      <div className="bg-amber-50 border-amber-200 border-l-4 p-4 mb-6">
+        <div className="flex">
+          <div className="ml-3">
+            <p className="text-sm text-amber-800">
+              Running in demo mode. Supabase authentication is not configured.
+              <button 
+                onClick={() => navigate('/login')}
+                className="font-medium underline text-amber-800 hover:text-amber-700 ml-1"
+              >
+                Configure Supabase
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    ) : null
+  );
+
   return (
     <div className="min-h-screen bg-white flex">
       {/* Main Content Area */}
       <div className="flex-1 p-6">
         <div className="container mx-auto max-w-6xl">
+          <DemoBanner />
           {activeTab === 'advisor' && <AdvisorChat />}
           {activeTab === 'policy' && <PolicyReview />}
           {activeTab === 'account' && <AccountManagement />}

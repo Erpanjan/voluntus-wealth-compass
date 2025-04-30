@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 // Import login components
 import LoginForm from '@/components/login/LoginForm';
@@ -13,6 +13,7 @@ import ForgotPasswordForm from '@/components/login/ForgotPasswordForm';
 const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [supabaseError, setSupabaseError] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -20,6 +21,13 @@ const Login = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Check if Supabase is configured
+        if (!isSupabaseConfigured()) {
+          setSupabaseError(true);
+          setLoading(false);
+          return;
+        }
+        
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session) {
@@ -27,6 +35,7 @@ const Login = () => {
         }
       } catch (error) {
         console.error("Error checking auth status:", error);
+        setSupabaseError(true);
       } finally {
         setLoading(false);
       }
@@ -63,6 +72,37 @@ const Login = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <p>Loading...</p>
+      </div>
+    );
+  }
+
+  // Show Supabase configuration error
+  if (supabaseError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white flex-col p-8">
+        <div className="max-w-md w-full bg-white p-8 border rounded-lg shadow-sm">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Supabase Configuration Error</h1>
+          <p className="mb-4">
+            Supabase environment variables are missing. Please check your configuration.
+          </p>
+          <ul className="list-disc pl-5 mb-4 text-sm space-y-2">
+            <li>Create a <code className="bg-gray-100 px-1 rounded">.env</code> file in the project root directory</li>
+            <li>Add your Supabase URL and anon key:
+              <pre className="bg-gray-100 p-2 rounded mt-2 text-xs overflow-x-auto">
+                VITE_SUPABASE_URL=your-supabase-url{"\n"}
+                VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+              </pre>
+            </li>
+            <li>Restart your development server</li>
+          </ul>
+          <Button 
+            variant="outline" 
+            onClick={handleDemoLogin}
+            className="w-full"
+          >
+            Try Demo Account Instead
+          </Button>
+        </div>
       </div>
     );
   }
