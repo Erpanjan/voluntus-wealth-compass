@@ -71,7 +71,7 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
       <div className="sticky top-0 left-0 w-full h-screen flex flex-col md:flex-row">
         {/* Left side with number */}
         <div className="flex-1 bg-[#474646] flex flex-col items-center justify-center py-20">
-          <div className="mb-16 text-center">
+          <div className="w-full text-center mb-8">
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-2">
               {title}
             </h3>
@@ -79,7 +79,7 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
               {subtitle}
             </p>
           </div>
-          <div className="text-center">
+          <div className="flex items-center justify-center flex-1 w-full">
             <span className="text-[12rem] font-light text-white transition-all duration-500">
               {activeIndex + 1}
             </span>
@@ -88,13 +88,13 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
         
         {/* Right side with content */}
         <div className="flex-1 bg-white flex items-center justify-center p-12">
-          <div className="max-w-lg">
+          <div className="max-w-lg w-full h-full flex items-center">
             {propositions.map((proposition, index) => (
               <div
                 key={proposition.id}
                 ref={el => contentRefs.current[index] = el}
                 className={cn(
-                  "transition-opacity duration-500 absolute",
+                  "transition-opacity duration-500 w-full absolute",
                   activeIndex === index ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
               >
