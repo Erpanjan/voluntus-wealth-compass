@@ -98,16 +98,18 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
           </div>
         </div>
         
-        {/* Right side with content - completely restructured for proper positioning */}
+        {/* Right side with content - updated to match left-side transition effect */}
         <div className="flex-1 bg-white flex items-center justify-center">
-          <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl">
+          <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl relative h-full flex items-center justify-center">
             {propositions.map((proposition, index) => (
               <div
                 key={proposition.id}
                 ref={el => contentRefs.current[index] = el}
                 className={cn(
-                  "transition-opacity duration-500",
-                  activeIndex === index ? "opacity-100" : "opacity-0 pointer-events-none"
+                  "absolute w-full transition-all duration-500",
+                  activeIndex === index 
+                    ? "opacity-100 translate-y-0" 
+                    : "opacity-0 translate-y-12 pointer-events-none"
                 )}
               >
                 <h3 className="text-3xl font-semibold mb-4">{proposition.title}</h3>
