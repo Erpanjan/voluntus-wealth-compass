@@ -1,9 +1,7 @@
-
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ContactForm from '@/components/ContactForm';
-import { Mail, Phone, MapPin } from 'lucide-react';
 
 const Contact = () => {
   return (
@@ -16,64 +14,10 @@ const Contact = () => {
 
       {/* Contact Information Section */}
       <Section>
-        <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid md:grid-cols-1 gap-12">
           {/* Contact Form */}
-          <div>
+          <div className="max-w-2xl mx-auto w-full">
             <ContactForm />
-          </div>
-          
-          {/* Contact Information */}
-          <div className="bg-voluntus-gray-light rounded-xl p-8">
-            <h2 className="text-2xl font-semibold mb-6">Get in Touch</h2>
-            
-            <div className="space-y-8">
-              {/* Email */}
-              <div className="flex items-start">
-                <div className="bg-white p-3 rounded-full mr-4">
-                  <Mail className="text-voluntus-blue" size={24} />
-                </div>
-                <div>
-                  <h3 className="font-medium mb-1">Email</h3>
-                  <p className="text-voluntus-text-secondary">info@voluntus-capital.com</p>
-                  <p className="text-voluntus-text-secondary">support@voluntus-capital.com</p>
-                </div>
-              </div>
-              
-              {/* Phone */}
-              <div className="flex items-start">
-                <div className="bg-white p-3 rounded-full mr-4">
-                  <Phone className="text-voluntus-blue" size={24} />
-                </div>
-                <div>
-                  <h3 className="font-medium mb-1">Phone</h3>
-                  <p className="text-voluntus-text-secondary">+852 1234 5678</p>
-                  <p className="text-voluntus-text-secondary">Mon-Fri: 9:00 AM - 6:00 PM</p>
-                </div>
-              </div>
-              
-              {/* Office */}
-              <div className="flex items-start">
-                <div className="bg-white p-3 rounded-full mr-4">
-                  <MapPin className="text-voluntus-blue" size={24} />
-                </div>
-                <div>
-                  <h3 className="font-medium mb-1">Office</h3>
-                  <p className="text-voluntus-text-secondary">
-                    123 Finance Street<br />
-                    Central District<br />
-                    Hong Kong
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Map (placeholder) */}
-            <div className="mt-8 rounded-lg overflow-hidden h-64 bg-gray-300">
-              {/* Embed map here */}
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="text-voluntus-text-secondary">Map Placeholder</p>
-              </div>
-            </div>
           </div>
         </div>
       </Section>
