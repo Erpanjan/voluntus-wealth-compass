@@ -46,21 +46,24 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-md overflow-hidden">
-        {/* Header with Title */}
-        <div className="py-7 text-center mb-4">
-          <h1 className="text-2xl font-bold">Client Portal</h1>
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
+        {/* Header with Title - Updated positioning and styling */}
+        <div className="py-8 text-center">
+          <h1 className="text-3xl font-bold">Client Portal</h1>
         </div>
 
-        {/* Tabs */}
-        <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
-            <TabsTrigger value="forgot">Reset Password</TabsTrigger>
-          </TabsList>
+        {/* Tabs with custom styling for moving indicator */}
+        <Tabs defaultValue="login" className="w-full custom-tabs">
+          <div className="px-6">
+            <TabsList className="grid grid-cols-3 w-full bg-transparent p-0 h-12 relative">
+              <TabsTrigger value="login" className="tab-button">Login</TabsTrigger>
+              <TabsTrigger value="register" className="tab-button">Register</TabsTrigger>
+              <TabsTrigger value="forgot" className="tab-button">Reset Password</TabsTrigger>
+              <div className="tab-indicator"></div>
+            </TabsList>
+          </div>
 
-          <div className="min-h-[280px]"> {/* Fixed minimum height container to prevent jumping */}
+          <div className="min-h-[320px]"> {/* Fixed minimum height container to prevent jumping */}
             {/* Login Tab */}
             <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out">
               <LoginForm 
