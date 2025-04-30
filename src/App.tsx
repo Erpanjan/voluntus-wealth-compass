@@ -29,10 +29,8 @@ const PrivateRoute = ({ children }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+    <BrowserRouter>
+      <TooltipProvider>
         <div className="flex flex-col min-h-screen">
           {/* Header only on non-dashboard/non-onboarding/non-questionnaire pages */}
           <Routes>
@@ -85,8 +83,10 @@ const App = () => (
             <Route path="*" element={<Footer />} />
           </Routes>
         </div>
-      </BrowserRouter>
-    </TooltipProvider>
+        <Toaster />
+        <Sonner />
+      </TooltipProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 
