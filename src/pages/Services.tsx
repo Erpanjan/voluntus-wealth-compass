@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
@@ -94,7 +93,7 @@ const Services = () => {
       </Section>
 
       {/* What's Included Section */}
-      <Section id="whats-included" title="What's included?" background="light">
+      <Section id="whats-included" title="What's included?" background="white">
         <div className="w-full">
           <InteractiveServiceGrid services={serviceItems} />
         </div>
