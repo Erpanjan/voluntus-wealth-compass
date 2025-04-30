@@ -69,10 +69,9 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
     >
       {/* Fixed position container */}
       <div className="sticky top-0 left-0 w-full h-screen flex flex-col md:flex-row">
-        {/* Left side with title, subtitle and number */}
-        <div className="flex-1 bg-[#474646] flex flex-col items-center justify-center relative py-20">
-          {/* Title and subtitle fixed at top */}
-          <div className="absolute top-20 left-0 right-0 text-center px-6">
+        {/* Left side with number */}
+        <div className="flex-1 bg-[#474646] flex flex-col items-center justify-center py-20">
+          <div className="mb-16 text-center">
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-2">
               {title}
             </h3>
@@ -80,9 +79,7 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
               {subtitle}
             </p>
           </div>
-          
-          {/* Number centered in the middle */}
-          <div className="flex items-center justify-center h-full">
+          <div className="text-center">
             <span className="text-[12rem] font-light text-white transition-all duration-500">
               {activeIndex + 1}
             </span>
