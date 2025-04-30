@@ -146,7 +146,9 @@ const Services = () => {
         titleCentered
         background="light"
       >
-        <TabContent tabs={valuePropositions} />
+        <div className="max-w-4xl mx-auto w-full">
+          <TabContent tabs={valuePropositions} />
+        </div>
       </Section>
 
       {/* Pricing Section */}

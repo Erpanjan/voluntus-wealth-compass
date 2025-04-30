@@ -17,15 +17,15 @@ const InteractiveServiceGrid: React.FC<InteractiveServiceGridProps> = ({ service
   const [activeService, setActiveService] = useState<string>(services[0]?.id || '');
   
   return (
-    <div className="w-full relative space-y-8 max-w-4xl mx-auto">
+    <div className="w-full relative space-y-8 max-w-4xl mx-auto" data-testid="service-grid-component">
       {/* Tab-like navigation */}
-      <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-8 border-b border-gray-200">
+      <div className="flex overflow-x-auto flex-wrap md:flex-nowrap gap-2 md:gap-8 border-b border-gray-200">
         {services.map((service) => (
           <button
             key={service.id}
             onClick={() => setActiveService(service.id)}
             className={cn(
-              "text-md md:text-lg font-normal py-3 transition-all relative",
+              "text-md md:text-lg font-normal py-3 px-4 transition-all relative",
               "whitespace-nowrap flex-grow md:flex-grow-0",
               activeService === service.id 
                 ? "text-black font-medium" 
@@ -51,24 +51,24 @@ const InteractiveServiceGrid: React.FC<InteractiveServiceGridProps> = ({ service
       {/* Content area */}
       <div className="min-h-[300px] px-2">
         {services.map((service) => (
-          <motion.div
+          <div
             key={service.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ 
-              opacity: activeService === service.id ? 1 : 0,
-              y: activeService === service.id ? 0 : 20,
-            }}
-            transition={{ duration: 0.3 }}
-            className={cn(
-              "w-full",
-              activeService === service.id ? "block" : "hidden"
-            )}
+            className={activeService === service.id ? "block" : "hidden"}
             role="tabpanel"
           >
-            <p className="text-black/80 leading-relaxed text-lg">
-              {service.content}
-            </p>
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ 
+                opacity: 1,
+                y: 0
+              }}
+              transition={{ duration: 0.3 }}
+            >
+              <p className="text-black/80 leading-relaxed text-lg">
+                {service.content}
+              </p>
+            </motion.div>
+          </div>
         ))}
       </div>
     </div>

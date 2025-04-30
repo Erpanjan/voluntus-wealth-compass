@@ -1,8 +1,7 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface Tab {
   id: string;
@@ -19,15 +18,15 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
   const [activeTab, setActiveTab] = useState(tabs[0]?.id || '');
 
   return (
-    <div className={cn("w-full max-w-4xl mx-auto", className)}>
+    <div className={cn("w-full max-w-4xl mx-auto", className)} data-testid="tab-content-component">
       {/* Tab Navigation */}
-      <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-8 border-b border-gray-200 mb-8">
+      <div className="flex overflow-x-auto flex-wrap md:flex-nowrap gap-2 md:gap-8 border-b border-gray-200 mb-8">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              "text-md md:text-lg font-normal py-3 transition-all relative whitespace-nowrap",
+              "text-md md:text-lg font-normal py-3 px-4 transition-all relative whitespace-nowrap",
               activeTab === tab.id 
                 ? "text-black font-medium" 
                 : "text-gray-400 hover:text-black/70"
@@ -52,22 +51,22 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
       {/* Tab Content */}
       <div className="min-h-[300px] px-2">
         {tabs.map((tab) => (
-          <motion.div
+          <div
             key={tab.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ 
-              opacity: activeTab === tab.id ? 1 : 0,
-              y: activeTab === tab.id ? 0 : 20,
-            }}
-            transition={{ duration: 0.3 }}
-            className={cn(
-              "w-full",
-              activeTab === tab.id ? "block" : "hidden"
-            )}
+            className={activeTab === tab.id ? "block" : "hidden"}
             role="tabpanel"
           >
-            {tab.content}
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ 
+                opacity: 1,
+                y: 0
+              }}
+              transition={{ duration: 0.3 }}
+            >
+              {tab.content}
+            </motion.div>
+          </div>
         ))}
       </div>
     </div>
