@@ -53,9 +53,13 @@ const Dashboard = () => {
     let authListener = { subscription: { unsubscribe: () => {} } };
     
     if (isSupabaseConfigured()) {
-      authListener = supabase.auth.onAuthStateChange((event, session) => {
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
         setIsAuthenticated(!!session);
       });
+      
+      if (data && data.subscription) {
+        authListener = { subscription: data.subscription };
+      }
     }
     
     return () => {

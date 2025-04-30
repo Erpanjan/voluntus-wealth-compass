@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { Button } from '@/components/ui/button';
 
 // Import login components
 import LoginForm from '@/components/login/LoginForm';
