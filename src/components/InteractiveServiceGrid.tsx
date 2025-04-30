@@ -39,14 +39,14 @@ const InteractiveServiceGrid: React.FC<InteractiveServiceGridProps> = ({ service
         onClick={() => setActiveService(null)}
       >
         <div className="space-y-6 p-12 md:p-16 lg:p-20 border border-black/80 rounded-lg bg-white">
-          <h3 className="text-3xl md:text-4xl font-medium text-black">
+          <h3 className="text-3xl md:text-4xl font-medium text-black tracking-tight font-inter">
             {service.title}
           </h3>
           <Separator className="bg-black/80" />
-          <p className="text-lg text-black leading-relaxed">
+          <p className="text-lg text-black leading-relaxed font-inter font-light">
             {service.content}
           </p>
-          <p className="text-sm text-black/60 italic mt-8">Click anywhere to go back</p>
+          <p className="text-sm text-black/60 italic mt-8 font-inter">Click anywhere to go back</p>
         </div>
       </motion.div>
     );
@@ -75,7 +75,7 @@ const InteractiveServiceGrid: React.FC<InteractiveServiceGridProps> = ({ service
             whileHover={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            <h3 className="text-2xl md:text-3xl font-medium text-black text-center">
+            <h3 className="text-2xl md:text-3xl font-medium text-black text-center tracking-tight font-inter">
               {service.title}
             </h3>
           </motion.div>
