@@ -19,38 +19,6 @@ const About = () => {
         </div>
       </Section>
 
-      {/* Our Approach Section */}
-      <Section title="Our Approach" titleCentered>
-        <div className="max-w-3xl mx-auto">
-          <p className="text-voluntus-text-secondary text-lg text-center mb-8">
-            At Voluntus Long-term Capital, we believe that wealth management should be transparent, accountable, and tailored to your unique needs.
-          </p>
-
-          <div className="space-y-8">
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-xl font-semibold mb-3">Client-Centered Philosophy</h3>
-              <p className="text-voluntus-text-secondary">
-                We place your interests at the center of everything we do. Our subscription-based model eliminates conflicts of interest that often arise from commission-based advice, ensuring that our recommendations are always aligned with your financial goals.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-xl font-semibold mb-3">Long-Term Partnership</h3>
-              <p className="text-voluntus-text-secondary">
-                We view wealth management as a journey, not a transaction. Our advisors work with you continuously, adjusting strategies as market conditions change and as your life evolves, ensuring your financial plan remains relevant and effective.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-xl font-semibold mb-3">Clarity and Simplicity</h3>
-              <p className="text-voluntus-text-secondary">
-                We demystify complex financial concepts, providing you with clear explanations and straightforward strategies. This approach empowers you to make informed decisions about your wealth with confidence.
-              </p>
-            </div>
-          </div>
-        </div>
-      </Section>
-
       {/* Contact Form */}
       <Section id="contact" background="light">
         <ContactForm />
