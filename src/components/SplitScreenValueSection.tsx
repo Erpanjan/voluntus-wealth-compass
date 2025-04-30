@@ -125,9 +125,9 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
                   )}
                 >
                   <div className="flex flex-col justify-center h-full">
-                    <h3 className="text-3xl font-semibold mb-4">{proposition.title}</h3>
-                    <p className="text-xl text-gray-500 mb-8">- {proposition.subtitle}</p>
-                    <p className="text-gray-600">{proposition.description}</p>
+                    <h3 className="text-3xl font-bold font-inter mb-4">{proposition.title}</h3>
+                    <p className="text-xl text-gray-500 mb-8 font-inter font-light">- {proposition.subtitle}</p>
+                    <p className="text-gray-600 font-inter font-normal">{proposition.description}</p>
                   </div>
                 </div>
               ))}
