@@ -108,16 +108,17 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
           </div>
         </div>
         
-        {/* Right side with content - modified to align with number animation */}
+        {/* Right side with content - fixed position content container */}
         <div className="flex-1 bg-white flex items-center justify-center">
-          <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl relative">
-            <div className="relative h-[220px]">
+          <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl">
+            {/* Fixed height container to prevent layout shifts */}
+            <div className="relative h-[350px] flex items-center">
               {propositions.map((proposition, index) => (
                 <div
                   key={proposition.id}
                   ref={el => contentRefs.current[index] = el}
                   className={cn(
-                    "absolute inset-0 transition-all duration-500",
+                    "absolute inset-0 transition-all duration-500 flex flex-col justify-center",
                     activeIndex === index 
                       ? "opacity-100 translate-y-0" 
                       : "opacity-0 translate-y-12 pointer-events-none"
