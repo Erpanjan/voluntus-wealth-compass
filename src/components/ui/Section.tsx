@@ -57,7 +57,7 @@ const Section: React.FC<SectionProps> = ({
             {title && (
               <h2 
                 className={cn(
-                  "text-3xl md:text-4xl lg:text-5xl font-semibold mb-8 tracking-tight animate-fade-in-up",
+                  "text-3xl md:text-4xl lg:text-5xl font-semibold mb-8 tracking-tight animate-fade-in",
                   titleClassName
                 )}
                 data-section-title="true"
@@ -68,10 +68,9 @@ const Section: React.FC<SectionProps> = ({
             {subtitle && (
               <p 
                 className={cn(
-                  "text-lg md:text-xl text-[#000006] max-w-2xl animate-fade-in-up",
+                  "text-lg md:text-xl text-[#000006] max-w-2xl animate-fade-in",
                   subtitleClassName
                 )}
-                style={{animationDelay: '0.2s'}}
                 data-section-subtitle="true"
               > 
                 {subtitle}
