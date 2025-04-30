@@ -88,7 +88,7 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
         
         {/* Right side with content */}
         <div className="flex-1 bg-white flex items-center">
-          <div className="max-w-lg ml-12 md:ml-20">
+          <div className="w-full max-w-lg px-8 md:px-12 lg:px-16 md:pr-24">
             {propositions.map((proposition, index) => (
               <div
                 key={proposition.id}
