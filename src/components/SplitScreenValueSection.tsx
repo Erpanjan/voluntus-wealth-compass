@@ -91,12 +91,12 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
               {subtitle}
             </p>
           </div>
-          <div className="text-center">
+          <div className="text-center relative h-[12rem]">
             {propositions.map((_, index) => (
               <span 
                 key={`number-${index}`} 
                 className={cn(
-                  "absolute text-[12rem] font-light transition-all duration-500",
+                  "absolute inset-0 flex items-center justify-center text-[12rem] font-light transition-all duration-500",
                   activeIndex === index 
                     ? "opacity-100 translate-y-0 text-white" 
                     : "opacity-0 translate-y-12 pointer-events-none text-white/30"
@@ -108,25 +108,27 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
           </div>
         </div>
         
-        {/* Right side with content - improved to match left-side number styling */}
+        {/* Right side with content - modified to align with number animation */}
         <div className="flex-1 bg-white flex items-center justify-center">
-          <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl relative flex items-center justify-center h-full">
-            {propositions.map((proposition, index) => (
-              <div
-                key={proposition.id}
-                ref={el => contentRefs.current[index] = el}
-                className={cn(
-                  "absolute w-full transition-all duration-500",
-                  activeIndex === index 
-                    ? "opacity-100 translate-y-0" 
-                    : "opacity-0 translate-y-12 pointer-events-none"
-                )}
-              >
-                <h3 className="text-3xl font-semibold mb-4">{proposition.title}</h3>
-                <p className="text-xl text-gray-500 mb-8">- {proposition.subtitle}</p>
-                <p className="text-gray-600">{proposition.description}</p>
-              </div>
-            ))}
+          <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl relative">
+            <div className="relative h-[220px]">
+              {propositions.map((proposition, index) => (
+                <div
+                  key={proposition.id}
+                  ref={el => contentRefs.current[index] = el}
+                  className={cn(
+                    "absolute inset-0 transition-all duration-500",
+                    activeIndex === index 
+                      ? "opacity-100 translate-y-0" 
+                      : "opacity-0 translate-y-12 pointer-events-none"
+                  )}
+                >
+                  <h3 className="text-3xl font-semibold mb-4">{proposition.title}</h3>
+                  <p className="text-xl text-gray-500 mb-8">- {proposition.subtitle}</p>
+                  <p className="text-gray-600">{proposition.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
