@@ -12,6 +12,9 @@ interface SectionProps {
   titleCentered?: boolean;
   background?: 'white' | 'light' | 'dark';
   carouselItem?: boolean; // New prop for carousel context
+  titleClassName?: string; // New prop for custom title styling
+  subtitleClassName?: string; // New prop for custom subtitle styling
+  contentClassName?: string; // New prop for custom content styling
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -22,7 +25,10 @@ const Section: React.FC<SectionProps> = ({
   className,
   titleCentered = false,
   background = 'white',
-  carouselItem = false
+  carouselItem = false,
+  titleClassName = '',
+  subtitleClassName = '',
+  contentClassName = ''
 }) => {
   const isMobile = useIsMobile();
   
@@ -41,23 +47,39 @@ const Section: React.FC<SectionProps> = ({
     )}>
       <div className={cn("container-custom flex flex-col justify-center h-full", carouselItem && "h-full")}>
         {(title || subtitle) && (
-          <div className={cn(
-            'mb-16', 
-            titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
-          )}>
+          <div 
+            className={cn(
+              'mb-16', 
+              titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
+            )}
+            data-section-header="true" // Add a data attribute to make it easier to target
+          >
             {title && (
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-8 tracking-tight animate-fade-in-up">
+              <h2 
+                className={cn(
+                  "text-3xl md:text-4xl lg:text-5xl font-semibold mb-8 tracking-tight animate-fade-in-up",
+                  titleClassName
+                )}
+                data-section-title="true"
+              >
                 {title}
               </h2>
             )}
             {subtitle && (
-              <p className="text-lg md:text-xl text-[#000006] max-w-2xl animate-fade-in-up" style={{animationDelay: '0.2s'}}> 
+              <p 
+                className={cn(
+                  "text-lg md:text-xl text-[#000006] max-w-2xl animate-fade-in-up",
+                  subtitleClassName
+                )}
+                style={{animationDelay: '0.2s'}}
+                data-section-subtitle="true"
+              > 
                 {subtitle}
               </p>
             )}
           </div>
         )}
-        <div className="flex-grow flex flex-col items-center justify-start w-full">
+        <div className={cn("flex-grow flex flex-col items-center justify-start w-full", contentClassName)} data-section-content="true">
           {children}
         </div>
       </div>
