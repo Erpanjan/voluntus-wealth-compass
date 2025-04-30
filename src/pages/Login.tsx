@@ -14,8 +14,19 @@ import ForgotPasswordForm from '@/components/login/ForgotPasswordForm';
 const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [session, setSession] = useState(null);
+  const [pageLoaded, setPageLoaded] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Add fade-in animation when component loads
+  useEffect(() => {
+    // Small delay to ensure the animation is visible
+    const timer = setTimeout(() => {
+      setPageLoaded(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   // Check if user is already logged in
   useEffect(() => {
@@ -68,7 +79,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
+    <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-opacity duration-700 ease-in-out ${pageLoaded ? 'opacity-100' : 'opacity-0'}`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
         {/* Fixed position header with title - adding consistent height */}
         <div className="h-24 flex items-center justify-center">

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
@@ -9,7 +9,9 @@ import { useIsMobile } from '@/hooks/use-mobile';
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   const isActive = (path: string) => {
@@ -57,6 +59,19 @@ const Header: React.FC = () => {
       top: 0,
       behavior: 'smooth'
     });
+  };
+  
+  const handleLoginClick = (e) => {
+    e.preventDefault();
+    setIsAnimating(true);
+    
+    // Add a fade-out animation to the entire page
+    document.body.classList.add('login-transition');
+    
+    // Navigate after animation completes
+    setTimeout(() => {
+      navigate('/login');
+    }, 600); // Match this with the CSS animation duration
   };
 
   return (
@@ -121,26 +136,20 @@ const Header: React.FC = () => {
 
         {/* Login button on the right */}
         <div className="flex items-center">
-          <Link to="/login" className="hidden lg:block" onClick={handleNavLinkClick}>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-[#9F9EA1] hover:text-black text-xs tracking-wide border border-[#9F9EA1] rounded-full px-4 py-1"
-            >
-              LOGIN
-            </Button>
-          </Link>
+          <button 
+            onClick={handleLoginClick} 
+            className="hidden lg:block text-[#9F9EA1] hover:text-black text-xs tracking-wide border border-[#9F9EA1] hover:border-black rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
+          >
+            LOGIN
+          </button>
           
           <div className="flex lg:hidden space-x-4 items-center">
-            <Link to="/login" onClick={handleNavLinkClick}>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-[#9F9EA1] hover:text-black text-xs border border-[#9F9EA1] rounded-full px-4 py-1"
-              >
-                LOGIN
-              </Button>
-            </Link>
+            <button 
+              onClick={handleLoginClick}
+              className="text-[#9F9EA1] hover:text-black text-xs border border-[#9F9EA1] hover:border-black rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
+            >
+              LOGIN
+            </button>
             <Button 
               variant="ghost" 
               size="icon"
