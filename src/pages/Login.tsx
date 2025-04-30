@@ -18,8 +18,11 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Add fade-in animation when component loads
+  // Enhanced fade-in animation when component loads
   useEffect(() => {
+    // Remove login-transition class from body if present
+    document.body.classList.remove('login-transition');
+    
     // Small delay to ensure the animation is visible
     const timer = setTimeout(() => {
       setPageLoaded(true);
@@ -79,7 +82,9 @@ const Login = () => {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-opacity duration-700 ease-in-out ${pageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-all duration-700 ease-in-out ${
+      pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
+    }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
         {/* Fixed position header with title - adding consistent height */}
         <div className="h-24 flex items-center justify-center">

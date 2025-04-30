@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -65,7 +64,7 @@ const Header: React.FC = () => {
     e.preventDefault();
     setIsAnimating(true);
     
-    // Add a fade-out animation to the entire page
+    // Add a fade-out animation to the entire page with scale effect
     document.body.classList.add('login-transition');
     
     // Navigate after animation completes
@@ -139,6 +138,7 @@ const Header: React.FC = () => {
           <button 
             onClick={handleLoginClick} 
             className="hidden lg:block text-[#9F9EA1] hover:text-black text-xs tracking-wide border border-[#9F9EA1] hover:border-black rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
+            aria-label="Login to client portal"
           >
             LOGIN
           </button>
@@ -147,6 +147,7 @@ const Header: React.FC = () => {
             <button 
               onClick={handleLoginClick}
               className="text-[#9F9EA1] hover:text-black text-xs border border-[#9F9EA1] hover:border-black rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
+              aria-label="Login to client portal"
             >
               LOGIN
             </button>
