@@ -63,13 +63,14 @@ const Services = () => {
       {/* Hero Section */}
       <Hero 
         title="A Financial Policy That Guides You From Start to End"
+        className="bg-white"
       />
 
       {/* Roadmap Section */}
-      <Section id="roadmap" background="dark">
+      <Section id="roadmap" background="dark" shortHeight>
         <div className="grid md:grid-cols-1 gap-8 items-start max-w-3xl mx-auto">
           <div className="space-y-8">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white tracking-tight">
               A Roadmap for your Investment Journey
             </h2>
             <div className="space-y-6 text-white/70 text-lg font-light">
@@ -83,7 +84,7 @@ const Services = () => {
             <Button 
               asChild 
               size="lg"
-              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
+              className="bg-white hover:bg-white/90 text-black transition-all duration-300 rounded-full"
             >
               <Link to="/contact" className="inline-flex items-center">
                 Request a demo <ArrowRight size={18} className="ml-2" />
@@ -94,7 +95,7 @@ const Services = () => {
       </Section>
 
       {/* What's Included Section */}
-      <Section id="whats-included" title="What's included?" background="white">
+      <Section id="whats-included" title="What's included?" background="white" shortHeight>
         <div className="w-full">
           <InteractiveServiceGrid services={serviceItems} />
         </div>
@@ -107,6 +108,7 @@ const Services = () => {
         subtitle="What sets us apart" 
         titleCentered
         background="light"
+        shortHeight
       >
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {valuePropositions.map((value, index) => (
@@ -122,19 +124,19 @@ const Services = () => {
       </Section>
 
       {/* Pricing Section */}
-      <Section id="policy-fee" title="Our Pricing" background="light" titleCentered>
+      <Section id="policy-fee" title="Our Pricing" background="light" titleCentered shortHeight>
         <div className="max-w-2xl mx-auto text-center space-y-6">
-          <p className="text-voluntus-text-secondary">
+          <p className="text-[#9F9EA1] font-light">
             This is a subscription service with policy fee is charged periodically, with the amount depending on the complexity of your financial needs and the duration of the policy.
           </p>
-          <p className="text-voluntus-text-secondary">
+          <p className="text-[#9F9EA1] font-light">
             We DO NOT charge based on investment vehicle selected or size of the investment.
           </p>
           <div className="mt-8">
             <Button
               asChild 
               size="lg"
-              className="bg-black/80 hover:bg-black text-white transition-all duration-300"
+              className="bg-black/80 hover:bg-black text-white transition-all duration-300 rounded-full"
             >
               <Link to="/contact" className="inline-flex items-center">
                 Request pricing information <ArrowRight size={18} className="ml-2" />
@@ -145,7 +147,7 @@ const Services = () => {
       </Section>
 
       {/* Contact Form */}
-      <Section id="contact">
+      <Section id="contact" shortHeight>
         <ContactForm />
       </Section>
     </div>

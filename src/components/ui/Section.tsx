@@ -12,7 +12,7 @@ interface SectionProps {
   titleCentered?: boolean;
   background?: 'white' | 'light' | 'dark';
   carouselItem?: boolean;
-  shortHeight?: boolean; // Added new prop for shorter sections
+  shortHeight?: boolean;
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -24,7 +24,7 @@ const Section: React.FC<SectionProps> = ({
   titleCentered = false,
   background = 'white',
   carouselItem = false,
-  shortHeight = false // Default to standard height
+  shortHeight = false
 }) => {
   const isMobile = useIsMobile();
   
@@ -37,7 +37,7 @@ const Section: React.FC<SectionProps> = ({
   return (
     <section id={id} className={cn(
       'flex flex-col justify-center py-20 md:py-28 overflow-hidden relative',
-      shortHeight ? 'min-h-[70vh]' : 'min-h-screen', // Reduced height when shortHeight is true
+      shortHeight ? 'min-h-[70vh]' : 'min-h-screen',
       carouselItem ? 'h-full w-full flex-shrink-0' : '',
       bgClasses[background],
       className
@@ -48,11 +48,11 @@ const Section: React.FC<SectionProps> = ({
       )}>
         {(title || subtitle) && (
           <div className={cn(
-            'mb-12', // Reduced margin from mb-16 to mb-12
+            'mb-14',
             titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
           )}>
             {title && (
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-6 tracking-tight text-black animate-fade-in-up">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light mb-8 tracking-tight text-black animate-fade-in-up">
                 {title}
               </h2>
             )}
