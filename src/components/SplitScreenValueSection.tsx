@@ -86,15 +86,15 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
           </div>
         </div>
         
-        {/* Right side with content - using a left-aligned content approach */}
-        <div className="flex-1 bg-white flex items-center">
-          <div className="w-full pl-8 md:pl-16 lg:pl-20 pr-4 md:pr-8 max-w-3xl">
+        {/* Right side with content - completely restructured for proper positioning */}
+        <div className="flex-1 bg-white flex items-center justify-center">
+          <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl">
             {propositions.map((proposition, index) => (
               <div
                 key={proposition.id}
                 ref={el => contentRefs.current[index] = el}
                 className={cn(
-                  "transition-opacity duration-500 absolute",
+                  "transition-opacity duration-500",
                   activeIndex === index ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
               >
