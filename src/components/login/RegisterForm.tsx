@@ -50,28 +50,41 @@ const RegisterForm = () => {
 
     try {
       // Determine if using email or phone for registration
-      const contact = registerData.contactType === 'email' 
-        ? { email: registerData.email } 
-        : { phone: registerData.phone };
-      
-      // Attempt to sign up with Supabase
-      const { data, error } = await supabase.auth.signUp({
-        ...contact,
-        password: registerData.password,
-        options: {
-          emailRedirectTo: window.location.origin + '/dashboard',
-        }
-      });
-      
-      if (error) throw error;
-      
-      toast({
-        title: "Registration successful",
-        description: registerData.contactType === 'email' 
-          ? "Please check your email for a confirmation link."
-          : "Please check your phone for a verification code.",
-        duration: 5000,
-      });
+      if (registerData.contactType === 'email') {
+        // Email-based signup
+        const { data, error } = await supabase.auth.signUp({
+          email: registerData.email,
+          password: registerData.password,
+          options: {
+            emailRedirectTo: window.location.origin + '/dashboard',
+          }
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Registration successful",
+          description: "Please check your email for a confirmation link.",
+          duration: 5000,
+        });
+      } else {
+        // Phone-based signup
+        const { data, error } = await supabase.auth.signUp({
+          phone: registerData.phone,
+          password: registerData.password,
+          options: {
+            channel: 'sms'
+          }
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Registration successful",
+          description: "Please check your phone for a verification code.",
+          duration: 5000,
+        });
+      }
 
       // Redirect to onboarding
       navigate('/onboarding');
