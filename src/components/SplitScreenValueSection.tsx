@@ -84,10 +84,10 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
         {/* Left side with number */}
         <div className="flex-1 bg-[#474646] flex flex-col items-center justify-center py-20">
           <div className="mb-16 text-center">
-            <h3 className="text-3xl md:text-4xl lg:text-5xl font-inter font-semibold text-white mb-2 tracking-tight">
+            <h3 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-2">
               {title}
             </h3>
-            <p className="text-xl font-inter text-white/70">
+            <p className="text-xl text-white/70">
               {subtitle}
             </p>
           </div>
@@ -96,7 +96,7 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
               <span 
                 key={`number-${index}`} 
                 className={cn(
-                  "absolute inset-0 flex items-center justify-center text-[12rem] font-inter font-light transition-all duration-500",
+                  "absolute inset-0 flex items-center justify-center text-[12rem] font-light transition-all duration-500",
                   activeIndex === index 
                     ? "opacity-100 translate-y-0 text-white" 
                     : "opacity-0 translate-y-12 pointer-events-none text-white/30"
@@ -125,9 +125,9 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
                   )}
                 >
                   <div className="flex flex-col justify-center h-full">
-                    <h3 className="text-3xl font-inter font-semibold mb-4 tracking-tight">{proposition.title}</h3>
-                    <p className="text-xl font-inter text-gray-500 mb-8">- {proposition.subtitle}</p>
-                    <p className="text-gray-600 font-inter">{proposition.description}</p>
+                    <h3 className="text-3xl font-semibold mb-4">{proposition.title}</h3>
+                    <p className="text-xl text-gray-500 mb-8">- {proposition.subtitle}</p>
+                    <p className="text-gray-600">{proposition.description}</p>
                   </div>
                 </div>
               ))}
@@ -154,15 +154,13 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
                   });
                 }}
                 className={cn(
-                  "min-w-8 h-8 rounded-full transition-all duration-300 ease-in-out",
+                  "w-2.5 h-2.5 rounded-full p-0 transition-all duration-300 ease-in-out",
                   activeIndex === index 
-                    ? "bg-black text-white w-8 font-inter" 
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300 w-2.5 font-inter"
+                    ? "bg-black w-8" 
+                    : "bg-gray-300 hover:bg-gray-400"
                 )}
                 aria-label={`Go to proposition ${index + 1}`}
-              >
-                {activeIndex === index ? index + 1 : ""}
-              </button>
+              />
             ))}
           </div>
         </div>
