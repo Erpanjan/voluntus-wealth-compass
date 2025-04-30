@@ -6,8 +6,6 @@ import TabContent from '@/components/TabContent';
 import ValueCard from '@/components/ValueCard';
 import ContactForm from '@/components/ContactForm';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 
 const Services = () => {
   // Tab content
@@ -63,41 +61,34 @@ const Services = () => {
       {/* Hero Section */}
       <Hero 
         title="A Financial Policy That Guides You From Start to End"
-        background="dark"
       />
 
       {/* Roadmap Section */}
-      <Section id="roadmap" background="darkGray">
+      <Section id="roadmap">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-white">
+            <h2 className="text-2xl md:text-3xl font-semibold mb-6">
               A Roadmap for your Investment Journey
             </h2>
-            <p className="text-gray-300 mb-8">
+            <p className="text-voluntus-text-secondary mb-8">
               The Financial Planning Policy is a personalized roadmap for managing your wealth. It outlines how your funds should be allocated to kick-start your investment journey, providing step-by-step guidance along with ongoing monitoring and plan governance. It also defines our roles and responsibilities throughout this process, ensuring the policy remains up-to-date and that you're never alone on your journey to reach your financial goals.
             </p>
-            <Button
-              asChild
-              className="rounded-full bg-white text-[#222222] hover:bg-gray-200"
-            >
-              <Link to="/contact" className="inline-flex items-center">
-                Request a demo <ArrowRight size={18} className="ml-2" />
-              </Link>
+            <Button className="btn btn-primary">
+              Request a demo
             </Button>
           </div>
-          <div className="flex items-center justify-center">
-            <div className="max-w-md">
-              <h3 className="text-xl md:text-2xl font-semibold mb-4 text-white">Strategic Investment Planning</h3>
-              <p className="text-gray-300">
-                Our approach eliminates guesswork and conflicting advice, replacing them with a strategic and systematic path to financial success.
-              </p>
-            </div>
+          <div className="rounded-xl overflow-hidden shadow-lg">
+            <img 
+              src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80" 
+              alt="Investment journey roadmap" 
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       </Section>
 
       {/* What's Included Section */}
-      <Section id="whats-included" title="What's included?" background="darkGray">
+      <Section id="whats-included" title="What's included?" background="light">
         <TabContent tabs={serviceTabs} />
       </Section>
 
@@ -107,7 +98,6 @@ const Services = () => {
         title="Our Value Propositions" 
         subtitle="What sets us apart" 
         titleCentered
-        background="darkGray"
       >
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {valuePropositions.map((value, index) => (
@@ -123,29 +113,24 @@ const Services = () => {
       </Section>
 
       {/* Pricing Section */}
-      <Section id="policy-fee" title="Our Pricing" background="darkGray" titleCentered>
+      <Section id="policy-fee" title="Our Pricing" background="light" titleCentered>
         <div className="max-w-2xl mx-auto text-center space-y-6">
-          <p className="text-gray-300">
+          <p className="text-voluntus-text-secondary">
             This is a subscription service with policy fee is charged periodically, with the amount depending on the complexity of your financial needs and the duration of the policy.
           </p>
-          <p className="text-gray-300">
+          <p className="text-voluntus-text-secondary">
             We DO NOT charge based on investment vehicle selected or size of the investment.
           </p>
           <div className="mt-8">
-            <Button
-              asChild
-              className="rounded-full bg-white text-[#222222] hover:bg-gray-200"
-            >
-              <Link to="/contact" className="inline-flex items-center">
-                Request pricing information <ArrowRight size={18} className="ml-2" />
-              </Link>
+            <Button className="btn btn-primary">
+              Request pricing information
             </Button>
           </div>
         </div>
       </Section>
 
       {/* Contact Form */}
-      <Section id="contact" background="darkGray">
+      <Section id="contact">
         <ContactForm />
       </Section>
     </div>

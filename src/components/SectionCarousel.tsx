@@ -10,7 +10,7 @@ type SectionData = {
   title: string;
   subtitle?: string; 
   content: React.ReactNode;
-  background: 'white' | 'light' | 'dark' | 'darkGray';
+  background: 'white' | 'light' | 'dark';
 };
 
 interface SectionCarouselProps {
