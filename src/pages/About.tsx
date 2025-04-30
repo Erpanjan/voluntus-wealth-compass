@@ -1,23 +1,17 @@
-
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ContactForm from '@/components/ContactForm';
 import { Button } from '@/components/ui/button';
-
 const About = () => {
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       {/* Hero Section */}
-      <Hero 
-        title="About Us"
-        subtitle="We are a Hong Kong-based wealth advisory firm dedicated to helping households secure their financial future through tailored investment planning"
-      />
+      <Hero title="About Us" subtitle="We are a Hong Kong-based wealth advisory firm dedicated to helping households secure their financial future through tailored investment planning" />
 
       {/* Vision Section */}
       <Section>
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight">
+          <h2 className="text-2xl md:text-3xl leading-tight text-zinc-800 text-left py-0 mx-[24px] px-0 font-light lg:text-5xl">
             We envision a world where people are freed from the complexity of finance and truly empowered to flourish in life.
           </h2>
         </div>
@@ -29,11 +23,7 @@ const About = () => {
           {/* Team Member 1 */}
           <div className="text-center">
             <div className="aspect-square rounded-full overflow-hidden w-40 h-40 mx-auto mb-6">
-              <img 
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80" 
-                alt="Team member" 
-                className="w-full h-full object-cover"
-              />
+              <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80" alt="Team member" className="w-full h-full object-cover" />
             </div>
             <h3 className="font-semibold text-xl mb-1">John Wei</h3>
             <p className="text-voluntus-text-secondary mb-3">Founder & CEO</p>
@@ -45,11 +35,7 @@ const About = () => {
           {/* Team Member 2 */}
           <div className="text-center">
             <div className="aspect-square rounded-full overflow-hidden w-40 h-40 mx-auto mb-6">
-              <img 
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80" 
-                alt="Team member" 
-                className="w-full h-full object-cover"
-              />
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80" alt="Team member" className="w-full h-full object-cover" />
             </div>
             <h3 className="font-semibold text-xl mb-1">Sarah Chen</h3>
             <p className="text-voluntus-text-secondary mb-3">Chief Investment Officer</p>
@@ -61,11 +47,7 @@ const About = () => {
           {/* Team Member 3 */}
           <div className="text-center">
             <div className="aspect-square rounded-full overflow-hidden w-40 h-40 mx-auto mb-6">
-              <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80" 
-                alt="Team member" 
-                className="w-full h-full object-cover"
-              />
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80" alt="Team member" className="w-full h-full object-cover" />
             </div>
             <h3 className="font-semibold text-xl mb-1">David Lam</h3>
             <p className="text-voluntus-text-secondary mb-3">Senior Financial Advisor</p>
@@ -118,8 +100,6 @@ const About = () => {
       <Section id="contact" background="light">
         <ContactForm />
       </Section>
-    </div>
-  );
+    </div>;
 };
-
 export default About;
