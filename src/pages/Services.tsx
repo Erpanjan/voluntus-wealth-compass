@@ -105,7 +105,7 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* Value Propositions */}
+      {/* Value Propositions - Using the new SplitScreenValueSection component */}
       <div id="principles">
         <SplitScreenValueSection 
           title="Our Value Propositions" 
