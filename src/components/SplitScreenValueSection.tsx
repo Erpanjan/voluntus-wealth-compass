@@ -21,10 +21,11 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
   propositions
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
   
-  // Set up scroll based content changing
+  // Set up scroll based content changing and visibility control
   useEffect(() => {
     const handleScroll = () => {
       if (!sectionRef.current) return;
@@ -34,21 +35,32 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
       const viewportHeight = window.innerHeight;
       const scrollPosition = window.scrollY;
       
-      // Calculate progress through the section (0 to 1)
-      const sectionProgress = (scrollPosition - sectionTop + viewportHeight * 0.5) / 
-        (sectionHeight - viewportHeight);
+      // Calculate if the section is in view
+      const isSectionInView = 
+        scrollPosition + viewportHeight > sectionTop && 
+        scrollPosition < sectionTop + sectionHeight;
       
-      // Determine which proposition to show based on scroll progress
-      const newIndex = Math.min(
-        Math.max(
-          Math.floor(sectionProgress * propositions.length),
-          0
-        ),
-        propositions.length - 1
-      );
+      // Update visibility state
+      setIsVisible(isSectionInView);
       
-      if (newIndex !== activeIndex) {
-        setActiveIndex(newIndex);
+      // Only calculate active index if section is visible
+      if (isSectionInView) {
+        // Calculate progress through the section (0 to 1)
+        const sectionProgress = (scrollPosition - sectionTop + viewportHeight * 0.5) / 
+          (sectionHeight - viewportHeight);
+        
+        // Determine which proposition to show based on scroll progress
+        const newIndex = Math.min(
+          Math.max(
+            Math.floor(sectionProgress * propositions.length),
+            0
+          ),
+          propositions.length - 1
+        );
+        
+        if (newIndex !== activeIndex) {
+          setActiveIndex(newIndex);
+        }
       }
     };
     
@@ -107,33 +119,35 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
         </div>
       </div>
       
-      {/* Navigation dots */}
-      <div className="fixed bottom-8 left-0 w-full flex justify-center">
-        <div className="flex gap-3 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
-          {propositions.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                if (!sectionRef.current) return;
-                const sectionTop = sectionRef.current.offsetTop;
-                const sectionHeight = sectionRef.current.offsetHeight;
-                const targetPosition = sectionTop + (sectionHeight / propositions.length) * index;
-                window.scrollTo({
-                  top: targetPosition,
-                  behavior: 'smooth'
-                });
-              }}
-              className={cn(
-                "w-2.5 h-2.5 rounded-full p-0 transition-all duration-300 ease-in-out",
-                activeIndex === index 
-                  ? "bg-black w-8" 
-                  : "bg-gray-300 hover:bg-gray-400"
-              )}
-              aria-label={`Go to proposition ${index + 1}`}
-            />
-          ))}
+      {/* Navigation dots - now with conditional rendering based on visibility */}
+      {isVisible && (
+        <div className="fixed bottom-8 left-0 w-full flex justify-center">
+          <div className="flex gap-3 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
+            {propositions.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  if (!sectionRef.current) return;
+                  const sectionTop = sectionRef.current.offsetTop;
+                  const sectionHeight = sectionRef.current.offsetHeight;
+                  const targetPosition = sectionTop + (sectionHeight / propositions.length) * index;
+                  window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                  });
+                }}
+                className={cn(
+                  "w-2.5 h-2.5 rounded-full p-0 transition-all duration-300 ease-in-out",
+                  activeIndex === index 
+                    ? "bg-black w-8" 
+                    : "bg-gray-300 hover:bg-gray-400"
+                )}
+                aria-label={`Go to proposition ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 };
