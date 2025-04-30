@@ -117,29 +117,28 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* Pricing Section - Fixed alignment and styling to match Roadmap section */}
+      {/* Pricing Section - Now with dark background */}
       <Section 
         id="policy-fee" 
-        background="white"
-        title={null} // Remove the title from the Section component
+        background="dark"
       >
         <div className="grid md:grid-cols-1 gap-8 items-start max-w-3xl mx-auto">
           <div className="space-y-8">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
               Our Pricing
             </h2>
-            <div className="space-y-6 text-lg font-light">
-              <p className="text-voluntus-text-secondary">
+            <div className="space-y-6 text-lg font-light text-white/70">
+              <p>
                 This is a subscription service with policy fee is charged periodically, with the amount depending on the complexity of your financial needs and the duration of the policy.
               </p>
-              <p className="text-voluntus-text-secondary">
+              <p>
                 We <span className="font-normal">DO NOT</span> charge based on investment vehicle selected or size of the investment.
               </p>
             </div>
             <Button
               asChild 
               size="lg"
-              className="bg-black/80 hover:bg-black text-white transition-all duration-300"
+              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
             >
               <Link to="/contact" className="inline-flex items-center">
                 Request pricing information <ArrowRight size={18} className="ml-2" />
