@@ -39,25 +39,25 @@ const Services = () => {
     {
       id: "control",
       title: "We give you control",
-      subtitle: "- over your wealth, decisions, and outcomes.",
+      subtitle: "over your wealth, decisions, and outcomes.",
       description: "By placing the financial planning policy at the center of our service, we empower clients with direct control over the rules, processes, and the outcome."
     },
     {
       id: "fiduciary",
       title: "We bear fiduciary Duty",
-      subtitle: "- with a transparent governance",
+      subtitle: "with a transparent governance",
       description: "We uphold a fiduciary duty to act in the client's best interest. This commitment is reflected in a clear plan that outlines all rules, including legal accountability. Importantly, we do not accept commissions from third party, this ensures that our interests remain aligned."
     },
     {
       id: "simplicity",
       title: "We value simplicity",
-      subtitle: "- over complexity",
+      subtitle: "over complexity",
       description: "We aim to keep the policy and investment strategy simple. This simplicity enables client to have a clearer understanding of their investments, fostering greater confidence and maintain a healthy expectation for the outcomes. Overly complex investment strategies often yield marginal benefits at the expense of clarity and transparency."
     },
     {
       id: "accountability",
       title: "We take accountability",
-      subtitle: "- over every advice we share",
+      subtitle: "over every advice we share",
       description: "We take accountability by making all the advice we share measurable. At the conclusion of the policy, we will revisit all advice provided, taking responsibility and being incentivized based on the outcomes. This approach reinforces our commitment to the client's success and ensures full accountability for our actions."
     },
   ];

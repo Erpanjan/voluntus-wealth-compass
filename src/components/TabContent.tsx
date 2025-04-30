@@ -63,10 +63,9 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
               className="focus-visible:outline-none focus-visible:ring-0"
             >
               <div className="space-y-6">
-                <h3 className="text-2xl font-semibold font-inter">{tab.title}</h3>
-                {tab.subtitle && (
-                  <p className="text-lg font-inter">{tab.subtitle}</p>
-                )}
+                <h3 className="text-2xl font-semibold font-inter">
+                  {tab.title} <span className="font-semibold">{tab.subtitle}</span>
+                </h3>
                 <p className="text-gray-700 leading-relaxed font-inter text-base">{tab.description}</p>
               </div>
             </TabsContent>
