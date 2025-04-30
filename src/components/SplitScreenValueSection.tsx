@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -86,8 +87,8 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
         </div>
         
         {/* Right side with content */}
-        <div className="flex-1 bg-white flex items-center justify-center p-12">
-          <div className="max-w-lg">
+        <div className="flex-1 bg-white flex items-center">
+          <div className="max-w-lg ml-12 md:ml-20">
             {propositions.map((proposition, index) => (
               <div
                 key={proposition.id}
