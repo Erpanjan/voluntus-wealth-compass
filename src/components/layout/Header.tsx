@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -62,6 +63,13 @@ const Header: React.FC = () => {
   
   const handleLoginClick = (e) => {
     e.preventDefault();
+    
+    // Check if user is already on the login page
+    if (location.pathname === '/login') {
+      // Do nothing if already on login page
+      return;
+    }
+    
     setIsAnimating(true);
     
     // Add a fade-out animation to the entire page with scale effect
