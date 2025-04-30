@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -95,3 +95,24 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-black to-[#9F9EA1];
   }
 }
+
+/* Custom tab styles */
+[data-state="active"] {
+  @apply relative font-medium;
+}
+
+/* Smooth transition for tab navigation */
+.tab-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Adding a hover effect for tab triggers when not active */
+[role="tab"]:hover {
+  @apply text-black transition-colors duration-200;
+}
+
+/* Making sure tab content has smooth transitions */
+[role="tabpanel"] {
+  @apply transition-opacity duration-300;
+}
+
