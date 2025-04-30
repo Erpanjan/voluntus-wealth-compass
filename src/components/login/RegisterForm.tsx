@@ -72,15 +72,15 @@ const RegisterForm = () => {
   };
 
   return (
-    <form onSubmit={handleRegisterSubmit} className="space-y-4">
+    <form onSubmit={handleRegisterSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="contactType">Contact Type</Label>
+        <Label htmlFor="contactType" className="text-gray-600 font-light">Contact Type</Label>
         <select
           id="contactType"
           name="contactType"
           value={registerData.contactType}
           onChange={handleRegisterChange}
-          className="w-full h-10 rounded-md border border-input bg-background px-3 py-2"
+          className="w-full border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light bg-transparent"
         >
           <option value="email">Email</option>
           <option value="phone">Phone Number</option>
@@ -88,7 +88,7 @@ const RegisterForm = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="contact">
+        <Label htmlFor="contact" className="text-gray-600 font-light">
           {registerData.contactType === 'email' ? 'Email' : 'Phone Number'}
         </Label>
         <Input
@@ -99,11 +99,12 @@ const RegisterForm = () => {
           onChange={handleRegisterChange}
           placeholder={registerData.contactType === 'email' ? 'name@example.com' : '+852 XXXX XXXX'}
           required
+          className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="reg-password">Password</Label>
+        <Label htmlFor="reg-password" className="text-gray-600 font-light">Password</Label>
         <div className="relative">
           <Input
             id="reg-password"
@@ -113,11 +114,12 @@ const RegisterForm = () => {
             onChange={handleRegisterChange}
             placeholder="••••••••"
             required
+            className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
           />
           <button
             type="button"
             onClick={() => setShowRegPassword(!showRegPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2"
+            className="absolute right-0 top-1/2 -translate-y-1/2"
             tabIndex={-1}
           >
             {showRegPassword ? (
@@ -130,7 +132,7 @@ const RegisterForm = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
+        <Label htmlFor="confirmPassword" className="text-gray-600 font-light">Confirm Password</Label>
         <div className="relative">
           <Input
             id="confirmPassword"
@@ -140,11 +142,12 @@ const RegisterForm = () => {
             onChange={handleRegisterChange}
             placeholder="••••••••"
             required
+            className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2"
+            className="absolute right-0 top-1/2 -translate-y-1/2"
             tabIndex={-1}
           >
             {showConfirmPassword ? (
@@ -158,7 +161,7 @@ const RegisterForm = () => {
 
       <Button 
         type="submit" 
-        className="w-full" 
+        className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors rounded" 
         disabled={isSubmitting}
       >
         {isSubmitting ? 'Registering...' : 'Register'}

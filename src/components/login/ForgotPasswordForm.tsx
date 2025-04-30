@@ -51,9 +51,9 @@ const ForgotPasswordForm = () => {
   };
 
   return (
-    <form onSubmit={handleForgotSubmit} className="space-y-4">
+    <form onSubmit={handleForgotSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="forgot-contact">Email or Phone Number</Label>
+        <Label htmlFor="forgot-contact" className="text-gray-600 font-light">Email or Phone Number</Label>
         <Input
           id="forgot-contact"
           name="contact"
@@ -62,12 +62,13 @@ const ForgotPasswordForm = () => {
           onChange={handleForgotChange}
           placeholder="Enter your registered email or phone"
           required
+          className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
         />
       </div>
 
       <Button 
         type="submit" 
-        className="w-full" 
+        className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors rounded" 
         disabled={isSubmitting}
       >
         {isSubmitting ? 'Sending...' : 'Reset Password'}

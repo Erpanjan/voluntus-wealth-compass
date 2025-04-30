@@ -9,7 +9,7 @@ import { Eye, EyeOff } from 'lucide-react';
 
 interface LoginFormProps {
   onDemoLogin: () => void;
-  onRegularLogin?: () => void; // Make this prop optional to maintain backward compatibility
+  onRegularLogin?: () => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) => {
@@ -69,9 +69,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
   };
 
   return (
-    <form onSubmit={handleLoginSubmit} className="space-y-4">
+    <form onSubmit={handleLoginSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="accountName">Account Name</Label>
+        <Label htmlFor="accountName" className="text-gray-600 font-light">Account Name</Label>
         <Input
           id="accountName"
           name="accountName"
@@ -79,11 +79,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
           onChange={handleLoginChange}
           placeholder="Enter your account name"
           required
+          className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password" className="text-gray-600 font-light">Password</Label>
         <div className="relative">
           <Input
             id="password"
@@ -93,11 +94,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
             onChange={handleLoginChange}
             placeholder="••••••••"
             required
+            className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2"
+            className="absolute right-0 top-1/2 -translate-y-1/2"
             tabIndex={-1}
           >
             {showPassword ? (
@@ -111,7 +113,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
 
       <Button 
         type="submit" 
-        className="w-full" 
+        className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors rounded" 
         disabled={isSubmitting}
       >
         {isSubmitting ? 'Logging in...' : 'Login'}
