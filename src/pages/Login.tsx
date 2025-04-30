@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -45,22 +46,13 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-sm overflow-hidden">
-        {/* Header with Logo */}
-        <div className="py-5 text-center mb-4">
-          <Link to="/" className="inline-block mb-2">
-            <div className="flex items-center justify-center">
-              <img 
-                src="/lovable-uploads/1299dda5-8505-446c-bf31-65ac3f812867.png" 
-                alt="Voluntus Logo" 
-                className="h-10" 
-              />
-            </div>
-          </Link>
-          <h1 className="text-lg font-medium">Client Portal</h1>
+      <div className="max-w-md w-full bg-white rounded-lg shadow-md overflow-hidden">
+        {/* Header with Client Portal text only */}
+        <div className="py-6 text-center mb-2">
+          <h1 className="text-2xl font-bold">Client Portal</h1>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs with fixed height content areas to prevent jumping */}
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="login">Login</TabsTrigger>
@@ -68,23 +60,26 @@ const Login = () => {
             <TabsTrigger value="forgot">Reset Password</TabsTrigger>
           </TabsList>
 
-          {/* Login Tab */}
-          <TabsContent value="login" className="p-6">
-            <LoginForm 
-              onDemoLogin={handleDemoLogin} 
-              onRegularLogin={handleRegularLogin}
-            />
-          </TabsContent>
+          {/* Use min-height to ensure consistent height across all tab contents */}
+          <div className="min-h-[320px]">
+            {/* Login Tab */}
+            <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out">
+              <LoginForm 
+                onDemoLogin={handleDemoLogin} 
+                onRegularLogin={handleRegularLogin}
+              />
+            </TabsContent>
 
-          {/* Register Tab */}
-          <TabsContent value="register" className="p-6">
-            <RegisterForm />
-          </TabsContent>
+            {/* Register Tab */}
+            <TabsContent value="register" className="p-6 transition-all duration-300 ease-in-out">
+              <RegisterForm />
+            </TabsContent>
 
-          {/* Forgot Password Tab */}
-          <TabsContent value="forgot" className="p-6">
-            <ForgotPasswordForm />
-          </TabsContent>
+            {/* Forgot Password Tab */}
+            <TabsContent value="forgot" className="p-6 transition-all duration-300 ease-in-out">
+              <ForgotPasswordForm />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </div>
