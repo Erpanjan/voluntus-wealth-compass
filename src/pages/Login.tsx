@@ -46,7 +46,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="max-w-md w-full bg-white overflow-hidden">
         {/* Header with Title - Updated positioning and styling */}
         <div className="py-8 text-center">
           <h1 className="text-3xl font-bold">Client Portal</h1>
