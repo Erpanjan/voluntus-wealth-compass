@@ -111,7 +111,7 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
         {/* Right side with content - fixed position content container */}
         <div className="flex-1 bg-white flex items-center justify-center">
           <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl h-full flex items-center">
-            {/* Fixed position content wrapper */}
+            {/* Fixed position content wrapper with absolute positioning for consistent title placement */}
             <div className="w-full relative h-[350px]">
               {propositions.map((proposition, index) => (
                 <div
@@ -124,10 +124,16 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
                       : "opacity-0 z-0"
                   )}
                 >
-                  <div className="flex flex-col justify-start h-full">
-                    <h3 className="text-3xl font-bold font-inter mb-4">{proposition.title}</h3>
-                    <p className="text-xl text-gray-500 mb-8 font-inter font-light">- {proposition.subtitle}</p>
-                    <p className="text-gray-600 font-inter font-normal">{proposition.description}</p>
+                  <div className="flex flex-col h-full">
+                    {/* Title always at the top with fixed position */}
+                    <div className="flex flex-col">
+                      <h3 className="text-3xl font-bold font-inter mb-4">{proposition.title}</h3>
+                      <p className="text-xl text-gray-500 mb-8 font-inter font-light">- {proposition.subtitle}</p>
+                    </div>
+                    {/* Description with scrollable container if needed */}
+                    <div className="flex-grow">
+                      <p className="text-gray-600 font-inter font-normal">{proposition.description}</p>
+                    </div>
                   </div>
                 </div>
               ))}
