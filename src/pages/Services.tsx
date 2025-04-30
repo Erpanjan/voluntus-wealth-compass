@@ -2,7 +2,7 @@
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
-import TabContent from '@/components/TabContent';
+import InteractiveServiceGrid from '@/components/InteractiveServiceGrid';
 import ValueCard from '@/components/ValueCard';
 import ContactForm from '@/components/ContactForm';
 import { Button } from '@/components/ui/button';
@@ -10,26 +10,26 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Services = () => {
-  // Tab content
-  const serviceTabs = [
+  // Services data
+  const serviceItems = [
     {
       id: 'investment',
-      label: 'Investment Solution',
+      title: 'Investment Solution',
       content: "Many believe building a diversified investment portfolio requires substantial wealth and expertise, limiting it to a small set of investors—but this isn't true. Our Financial Planning Policy provides personalized investment strategies offering effective global diversification, empowering clients to navigate market volatility confidently. Moreover, our portfolios are designed to be cost-effective, lowering upfront investment expenses. Regular updates ensure the strategies remain aligned with each client's evolving goals and market conditions, maintaining a robust financial plan aimed at achieving long-term success."
     },
     {
       id: 'advisor',
-      label: 'Dedicated Advisor',
+      title: 'Dedicated Advisor',
       content: "Every client is paired with a dedicated financial advisor who not only executes the policy but regularly refines your Financial Planning Policy based on market condition and your circumstances. Through proactive, insightful communication, they keep you informed and empowered—ensuring you feel confident in every investment decision you make."
     },
     {
       id: 'risk',
-      label: 'Risk Management',
+      title: 'Risk Management',
       content: "With our strong quantitative skills and deep investment expertise, we manage risk across multiple dimensions. Through vigilant, ongoing oversight, we ensure your investments stay aligned with your evolving financial circumstances and remain positioned to achieve your goals—delivering peace of mind and confidence in your investment journey."
     },
     {
       id: 'policy',
-      label: 'Policy Keeping',
+      title: 'Policy Keeping',
       content: "Your Financial Planning Policy adapts to shifting market conditions and your personal life changes, meticulously tracking all advice given and decisions made. This flexible, proactive approach brings clarity to uncertain times, keeping your investment strategy both resilient and relevant."
     },
   ];
@@ -95,7 +95,9 @@ const Services = () => {
 
       {/* What's Included Section */}
       <Section id="whats-included" title="What's included?" background="light">
-        <TabContent tabs={serviceTabs} />
+        <div className="w-full">
+          <InteractiveServiceGrid services={serviceItems} />
+        </div>
       </Section>
 
       {/* Value Propositions */}
