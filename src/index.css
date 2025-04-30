@@ -42,15 +42,9 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-inter tracking-tight text-[#333333] font-normal;
+    @apply font-inter font-semibold tracking-tight text-black;
   }
 
-  /* Update styling for headings to match the screenshot */
-  h2 {
-    @apply text-[2.75rem] md:text-[3.5rem] leading-[1.2];
-  }
-
-  /* Rest of the existing styles */
   .btn {
     @apply px-7 py-3 rounded-full font-medium transition-all duration-300 inline-flex items-center gap-2;
   }
@@ -100,10 +94,4 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-black to-[#9F9EA1];
   }
-
-  /* Add light text styling for paragraphs to match screenshot */
-  .text-light {
-    @apply text-[#999999] font-light;
-  }
 }
-
