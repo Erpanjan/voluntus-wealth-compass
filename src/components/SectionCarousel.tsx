@@ -29,8 +29,8 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
   const [isSticky, setIsSticky] = useState(false);
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
-  const sectionHeight = useRef(0);
-  const scrollThreshold = useRef(0);
+  const sectionHeight = useRef<number>(0);
+  const scrollThreshold = useRef<number>(0);
   
   // Handle scroll to selected section
   const scrollToSection = useCallback((index: number) => {
@@ -64,34 +64,63 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
     };
   }, [api]);
 
+  // Initialize section height after component mounts
+  useEffect(() => {
+    if (containerRef.current) {
+      sectionHeight.current = window.innerHeight; // Use viewport height as section height
+      
+      // Recalculate on resize
+      const handleResize = () => {
+        sectionHeight.current = window.innerHeight;
+      };
+      
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, []);
+
   // Handle sticky section scrolling behavior
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Get the initial position of the section
-    const sectionTop = containerRef.current.getBoundingClientRect().top + window.scrollY;
-    sectionHeight.current = containerRef.current.offsetHeight;
+    // Initialize dimensions after the component is mounted
+    const initializePositions = () => {
+      if (!containerRef.current) return;
+      
+      // Get the initial position of the section
+      const sectionTop = containerRef.current.getBoundingClientRect().top + window.scrollY;
+      scrollThreshold.current = sectionTop - 100; // Buffer before section starts
+      
+      // Set height of container to accommodate all sections
+      const totalSectionsHeight = sectionHeight.current * sections.length;
+      if (containerRef.current) {
+        containerRef.current.style.height = `${totalSectionsHeight}px`;
+      }
+    };
     
-    // Calculate the threshold where we should start handling our own scroll logic
-    scrollThreshold.current = sectionTop - 50; // 50px buffer before section starts
+    // Call once to initialize
+    initializePositions();
+    
+    // Also call after a short delay to ensure all elements have proper dimensions
+    setTimeout(initializePositions, 500);
     
     const handleScroll = () => {
       if (!containerRef.current) return;
       
       const currentScrollY = window.scrollY;
-      const viewportHeight = window.innerHeight;
       
       // Check if we've scrolled to the section
       if (currentScrollY >= scrollThreshold.current) {
         setIsVisible(true);
         
-        // Check if we're within the virtual height of our section carousel
-        // (sections.length slides + 1 for after the last slide)
-        const virtualHeight = sectionHeight.current * sections.length;
+        // Calculate which section we're currently viewing based on scroll position
         const relativeScroll = currentScrollY - scrollThreshold.current;
+        const totalCarouselHeight = sectionHeight.current * sections.length;
         
         // If we're within our virtual carousel height
-        if (relativeScroll < virtualHeight) {
+        if (relativeScroll < totalCarouselHeight) {
           setIsSticky(true);
           
           // Calculate which slide to show based on scroll position
@@ -105,35 +134,46 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
             scrollToSection(slideIndex);
           }
           
-          // Prevent normal scrolling by making the container sticky
-          if (containerRef.current) {
-            containerRef.current.style.position = 'sticky';
-            containerRef.current.style.top = '0';
-          }
+          containerRef.current.style.position = 'sticky';
+          containerRef.current.style.top = '0';
+          
         } else {
           // User has scrolled past our virtual section
           setIsSticky(false);
-          if (containerRef.current) {
-            containerRef.current.style.position = 'relative';
-          }
+          containerRef.current.style.position = 'relative';
         }
       } else {
         // We haven't reached the section yet
         setIsVisible(false);
         setIsSticky(false);
-        if (containerRef.current) {
-          containerRef.current.style.position = 'relative';
-        }
+        containerRef.current.style.position = 'relative';
       }
     };
     
+    // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Check on mount
     
+    // Add resize event to recalculate dimensions
+    window.addEventListener('resize', initializePositions);
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', initializePositions);
     };
   }, [sections.length, current, api, scrollToSection]);
+
+  // Manually handle scrolling to the navigation dot positions
+  const handleDotClick = (index: number) => {
+    scrollToSection(index);
+    
+    // Also scroll the window to the correct position
+    const targetScrollPosition = scrollThreshold.current + (index * sectionHeight.current) + 10;
+    window.scrollTo({
+      top: targetScrollPosition,
+      behavior: 'smooth'
+    });
+  };
 
   // Pause autoplay when interacting
   const handleMouseEnter = useCallback(() => setAutoplayPaused(true), []);
@@ -142,8 +182,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
   return (
     <div 
       ref={containerRef}
-      className="relative h-screen"
-      style={{ height: `${sections.length * 100}vh` }}
+      className="relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleMouseEnter}
@@ -165,9 +204,9 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
             axis: 'y',
           }}
         >
-          <CarouselContent className="h-full flex flex-col">
+          <CarouselContent className="h-full">
             {sections.map((section, index) => (
-              <CarouselItem key={section.id} className="basis-full h-full flex-shrink-0">
+              <CarouselItem key={section.id} className="basis-full h-full">
                 {section.content}
               </CarouselItem>
             ))}
@@ -189,14 +228,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
                       ? "bg-black h-8" 
                       : "bg-gray-300 hover:bg-gray-400"
                   )}
-                  onClick={() => {
-                    scrollToSection(index);
-                    // Also scroll the window to the correct position
-                    window.scrollTo({
-                      top: scrollThreshold.current + (index * sectionHeight.current) + 10,
-                      behavior: 'smooth'
-                    });
-                  }}
+                  onClick={() => handleDotClick(index)}
                   aria-label={`Go to section ${index + 1}`}
                 />
               ))}
