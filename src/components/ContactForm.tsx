@@ -3,11 +3,20 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { Mail, Phone, MessageSquare } from 'lucide-react';
 
 const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    contactType: '',
     contact: '',
     message: '',
   });
@@ -19,6 +28,13 @@ const ContactForm: React.FC = () => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleSelectChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      contactType: value,
     }));
   };
 
@@ -41,6 +57,7 @@ const ContactForm: React.FC = () => {
       setFormData({
         firstName: '',
         lastName: '',
+        contactType: '',
         contact: '',
         message: '',
       });
@@ -54,6 +71,22 @@ const ContactForm: React.FC = () => {
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Helper function to get the appropriate placeholder text based on contact type
+  const getContactPlaceholder = () => {
+    switch (formData.contactType) {
+      case 'email':
+        return 'Your email address';
+      case 'phone':
+        return 'Your phone number';
+      case 'wechat':
+        return 'Your WeChat ID';
+      case 'whatsapp':
+        return 'Your WhatsApp number';
+      default:
+        return 'Your contact information';
     }
   };
 
@@ -98,11 +131,29 @@ const ContactForm: React.FC = () => {
         </div>
 
         <div className="space-y-1.5">
+          <Select 
+            value={formData.contactType} 
+            onValueChange={handleSelectChange}
+            required
+          >
+            <SelectTrigger className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+              <SelectValue placeholder="Preferred contact avenue" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="email">Email</SelectItem>
+              <SelectItem value="phone">Phone</SelectItem>
+              <SelectItem value="wechat">WeChat</SelectItem>
+              <SelectItem value="whatsapp">WhatsApp</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
           <Input
             id="contact"
             name="contact"
             type="text"
-            placeholder="Your preferred contact - Email, WeChat, WhatsApp..."
+            placeholder={getContactPlaceholder()}
             value={formData.contact}
             onChange={handleChange}
             required
