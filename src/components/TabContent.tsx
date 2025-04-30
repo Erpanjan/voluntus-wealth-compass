@@ -29,7 +29,7 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
       >
         {/* Custom Tab Navigation */}
         <div className="relative border-b border-gray-200 mb-8">
-          <TabsList className="flex justify-start space-x-8 bg-transparent p-0 h-auto w-auto overflow-x-auto">
+          <TabsList className="flex justify-between w-full bg-transparent p-0 h-auto">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}
@@ -38,7 +38,7 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
                 className={cn(
                   "text-base px-1 py-4 bg-transparent relative text-gray-500 hover:text-black transition-colors font-poppins",
                   "data-[state=active]:text-black data-[state=active]:font-semibold",
-                  "min-h-[56px]" // Fixed height to prevent layout shift
+                  "min-h-[56px] flex-1 text-center" // Fixed height and even distribution
                 )}
               >
                 {tab.title}
@@ -46,7 +46,9 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
                   <motion.div
                     className="absolute bottom-0 left-0 right-0 h-0.5 bg-black"
                     layoutId="tabContentIndicator"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ opacity: 1, scaleX: 1 }}
+                    transition={{ duration: 0.3 }}
                   />
                 )}
               </TabsTrigger>
@@ -73,7 +75,7 @@ const TabContent: React.FC<TabContentProps> = ({ tabs, className }) => {
                 {tab.subtitle && (
                   <p className="text-lg font-poppins">{tab.subtitle}</p>
                 )}
-                <p className="text-gray-600 leading-relaxed font-poppins">{tab.description}</p>
+                <p className="text-gray-600 leading-relaxed font-inter">{tab.description}</p>
               </motion.div>
             </TabsContent>
           ))}

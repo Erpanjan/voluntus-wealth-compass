@@ -118,7 +118,7 @@
 
 /* Enhanced tab styling */
 [role="tablist"] {
-  @apply relative z-10;
+  @apply relative z-10 flex w-full;
   height: auto !important;
 }
 
@@ -127,9 +127,19 @@
   height: auto !important;
   min-height: 56px;
   font-family: 'Poppins', sans-serif;
+  position: relative;
+  flex: 1;
+  text-align: center;
 }
 
 /* Improve tab content styling */
 [role="tabpanel"] {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
+
+/* Ensure smooth indicator transitions */
+[role="tab"] [data-active-indicator] {
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+
