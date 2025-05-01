@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FileText, Users, BarChart2, LogOut, Settings } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Smartphone, LogOut, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -26,9 +26,9 @@ const AdminSidebar = () => {
   const navItems = [
     { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/admin/articles', label: 'Articles', icon: FileText },
-    { path: '/admin/authors', label: 'Authors', icon: Users },
-    { path: '/admin/analytics', label: 'Analytics', icon: BarChart2 },
-    { path: '/admin/settings', label: 'Settings', icon: Settings },
+    { path: '/admin/contact', label: 'Contact Us', icon: Phone },
+    { path: '/admin/user-account', label: 'User Account', icon: Users },
+    { path: '/admin/client-app', label: 'Client Application', icon: Smartphone },
   ];
 
   return (

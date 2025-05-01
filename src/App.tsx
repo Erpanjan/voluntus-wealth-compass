@@ -21,7 +21,9 @@ import Questionnaire from "./pages/Questionnaire";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ArticlesManagement from "./pages/admin/ArticlesManagement";
 import ArticleEditor from "./pages/admin/ArticleEditor";
-import AuthorManagement from "./pages/admin/AuthorManagement";
+import ContactManagement from "./pages/admin/ContactManagement";
+import UserAccountManagement from "./pages/admin/UserAccountManagement";
+import ClientAppManagement from "./pages/admin/ClientAppManagement";
 
 const queryClient = new QueryClient();
 
@@ -118,10 +120,26 @@ const App = () => (
                 } 
               />
               <Route 
-                path="/admin/authors" 
+                path="/admin/contact" 
                 element={
                   <AdminRoute>
-                    <AuthorManagement />
+                    <ContactManagement />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/user-account" 
+                element={
+                  <AdminRoute>
+                    <UserAccountManagement />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/client-app" 
+                element={
+                  <AdminRoute>
+                    <ClientAppManagement />
                   </AdminRoute>
                 } 
               />
