@@ -16,7 +16,7 @@ import {
   Redo,
   Type,
   Highlighter,
-  LineHeight,
+  TextSelect,
   Palette
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -376,7 +376,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
                 className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
                 title="Line Height"
               >
-                <LineHeight size={16} />
+                <TextSelect size={16} />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-40">
