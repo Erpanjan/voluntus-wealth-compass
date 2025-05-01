@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -128,10 +127,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
 
       <Button 
         type="submit" 
-        className={`w-full ${isAdminMode ? 'bg-black' : 'bg-black/80'} hover:bg-black text-white font-normal py-6 rounded-none`} 
+        className="w-full bg-black/80 hover:bg-black text-white font-normal py-6 rounded-none" 
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Logging in...' : isAdminMode ? 'Login to Admin' : 'Login'}
+        {isSubmitting ? 'Logging in...' : 'Login'}
       </Button>
       
       <div className="text-center">
