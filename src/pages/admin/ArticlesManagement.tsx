@@ -45,8 +45,13 @@ const ArticlesManagement = () => {
   
   // Filter articles based on search term and filters
   const filteredArticles = articles.filter(article => {
-    // Search term filter
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase());
+    // Search term filter - search in title, content and author names
+    const matchesSearch = searchTerm === '' || 
+      article.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      article.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (article.authors && article.authors.some((author: any) => 
+        author.name.toLowerCase().includes(searchTerm.toLowerCase())
+      ));
     
     // Category filter
     const matchesCategory = filters.category === '' || article.category === filters.category;
@@ -94,14 +99,14 @@ const ArticlesManagement = () => {
       <Card className="border-none shadow-sm">
         <CardContent className="p-0">
           <div className="p-4 border-b">
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col gap-4">
               <div className="w-full">
                 <ArticleSearch 
                   value={searchTerm}
                   onChange={setSearchTerm}
                 />
               </div>
-              <div className="flex-shrink-0">
+              <div>
                 <ArticleFilters 
                   filters={filters}
                   setFilters={setFilters}

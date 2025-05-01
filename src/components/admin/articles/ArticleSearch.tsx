@@ -18,6 +18,9 @@ const ArticleSearch: React.FC<ArticleSearchProps> = ({ value, onChange }) => {
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
+      <div className="mt-1 text-xs text-gray-500">
+        Search across titles, content, and author names
+      </div>
     </div>
   );
 };
