@@ -29,6 +29,7 @@ export const useArticleDetail = (slug: string) => {
             .eq('article_id', data.id);
           
           if (!reportsError && reports) {
+            console.log("Reports fetched:", reports);
             data.reports = reports;
           } else if (reportsError) {
             console.error('Error fetching article attachments:', reportsError);
@@ -38,6 +39,7 @@ export const useArticleDetail = (slug: string) => {
         }
       }
       
+      console.log("Complete article data:", data);
       setArticle(data);
     } catch (err) {
       console.error('Error fetching article details:', err);

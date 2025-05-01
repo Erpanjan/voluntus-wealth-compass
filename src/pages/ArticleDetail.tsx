@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ArrowLeft, Calendar, Download } from 'lucide-react';
+import { ArrowLeft, Calendar, FileDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -38,7 +38,7 @@ const ArticleDetail = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="container mx-auto max-w-5xl px-4 py-12 mt-20">
+      <div className="container mx-auto max-w-6xl px-4 py-12 mt-20">
         <div className="mb-8">
           <Skeleton className="h-10 w-3/4 mb-4" />
           <Skeleton className="h-6 w-1/2" />
@@ -84,9 +84,11 @@ const ArticleDetail = () => {
     return <p>{article.description}</p>;
   };
 
+  console.log("Article reports:", article.reports);
+
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="container mx-auto max-w-5xl px-4 py-8">
+    <div className="min-h-screen bg-gray-50 pt-28">
+      <div className="container mx-auto max-w-6xl px-6 py-8">
         {/* Back button */}
         <Button variant="ghost" asChild className="mb-8 hover:bg-gray-100 group">
           <Link to="/insight">
@@ -156,7 +158,7 @@ const ArticleDetail = () => {
                       download
                       className="flex items-center"
                     >
-                      <Download size={16} className="mr-2" />
+                      <FileDown size={16} className="mr-2" />
                       Download
                     </a>
                   </Button>
@@ -167,7 +169,7 @@ const ArticleDetail = () => {
         )}
         
         {/* Bottom back link */}
-        <div className="mt-12 mb-8 text-center">
+        <div className="mt-16 mb-12 text-center">
           <Button variant="outline" asChild size="lg" className="hover:bg-gray-100">
             <Link to="/insight" className="flex items-center">
               <ArrowLeft size={18} className="mr-2" />
