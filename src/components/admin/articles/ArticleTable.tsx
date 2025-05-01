@@ -6,7 +6,9 @@ import {
   Edit, 
   Trash2, 
   Eye, 
-  FileText
+  FileText,
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
 import { 
   Table, 
@@ -19,6 +21,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +35,7 @@ interface ArticleTableProps {
   onEdit: (id: string) => void;
   onView: (slug: string) => void;
   onDelete: (id: string) => void;
+  onTogglePublish: (id: string, isPublished: boolean) => void;
 }
 
 const ArticleTable: React.FC<ArticleTableProps> = ({ 
@@ -39,7 +43,8 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
   loading,
   onEdit,
   onView, 
-  onDelete 
+  onDelete,
+  onTogglePublish
 }) => {
   if (loading) {
     return (
@@ -94,11 +99,15 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
                   <Badge variant="outline" className="bg-gray-50">{article.category}</Badge>
                 </TableCell>
                 <TableCell>
-                  {isPublished ? (
-                    <Badge className="bg-green-500 hover:bg-green-600 text-white">Published</Badge>
-                  ) : (
-                    <Badge variant="outline" className="border-gray-300 text-gray-700">Draft</Badge>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    <Switch 
+                      checked={isPublished}
+                      onCheckedChange={() => onTogglePublish(article.id, isPublished)}
+                    />
+                    <span className="text-sm text-gray-700">
+                      {isPublished ? 'Published' : 'Draft'}
+                    </span>
+                  </div>
                 </TableCell>
                 <TableCell>
                   {format(new Date(article.published_at), 'MMM dd, yyyy')}

@@ -3,18 +3,27 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
-import { Plus, Filter } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus } from 'lucide-react';
 import ArticleTable from '@/components/admin/articles/ArticleTable';
 import ArticleSearch from '@/components/admin/articles/ArticleSearch';
 import DatabaseNotice from '@/components/admin/articles/DatabaseNotice';
 import { useArticles } from '@/hooks/useArticles';
 import { Card, CardContent } from '@/components/ui/card';
+import ArticleFilters from '@/components/admin/articles/ArticleFilters';
 
 const ArticlesManagement = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const { articles, loading, deleteArticle } = useArticles();
+  const [filters, setFilters] = useState({
+    category: '',
+    status: '',
+    dateRange: {
+      from: undefined,
+      to: undefined
+    },
+    author: ''
+  });
+  const { articles, loading, deleteArticle, updateArticleStatus } = useArticles();
   
   const handleCreateNew = () => {
     navigate('/admin/articles/create');
@@ -32,9 +41,41 @@ const ArticlesManagement = () => {
     await deleteArticle(id);
   };
   
-  const filteredArticles = articles.filter(article => 
-    article.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleTogglePublish = async (id: string, currentStatus: boolean) => {
+    await updateArticleStatus(id, !currentStatus);
+  };
+  
+  // Filter articles based on search term and filters
+  const filteredArticles = articles.filter(article => {
+    // Search term filter
+    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Category filter
+    const matchesCategory = filters.category === '' || article.category === filters.category;
+    
+    // Status filter
+    const isPublished = new Date(article.published_at) <= new Date();
+    const matchesStatus = filters.status === '' || 
+      (filters.status === 'published' && isPublished) || 
+      (filters.status === 'draft' && !isPublished);
+    
+    // Date range filter
+    let matchesDateRange = true;
+    if (filters.dateRange.from) {
+      matchesDateRange = new Date(article.published_at) >= new Date(filters.dateRange.from);
+    }
+    if (filters.dateRange.to && matchesDateRange) {
+      matchesDateRange = new Date(article.published_at) <= new Date(filters.dateRange.to);
+    }
+    
+    // Author filter
+    const matchesAuthor = filters.author === '' || 
+      (article.authors && article.authors.some((author: any) => 
+        author.id === filters.author || author.name.toLowerCase().includes(filters.author.toLowerCase())
+      ));
+    
+    return matchesSearch && matchesCategory && matchesStatus && matchesDateRange && matchesAuthor;
+  });
   
   return (
     <AdminLayout>
@@ -54,55 +95,32 @@ const ArticlesManagement = () => {
       
       <Card className="border-none shadow-sm">
         <CardContent className="p-0">
-          <Tabs defaultValue="all" className="w-full">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border-b">
-              <TabsList className="mb-4 md:mb-0">
-                <TabsTrigger value="all" className="px-4">All Articles</TabsTrigger>
-                <TabsTrigger value="published" className="px-4">Published</TabsTrigger>
-                <TabsTrigger value="drafts" className="px-4">Drafts</TabsTrigger>
-              </TabsList>
-              
-              <div className="flex items-center w-full md:w-auto space-x-2">
+          <div className="p-4 border-b">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="w-full">
                 <ArticleSearch 
                   value={searchTerm}
                   onChange={setSearchTerm}
                 />
-                <Button variant="outline" size="icon" className="hidden md:flex">
-                  <Filter size={16} />
-                </Button>
+              </div>
+              <div className="flex-shrink-0">
+                <ArticleFilters 
+                  filters={filters}
+                  setFilters={setFilters}
+                  articles={articles}
+                />
               </div>
             </div>
-            
-            <TabsContent value="all" className="m-0 p-0">
-              <ArticleTable 
-                articles={filteredArticles}
-                loading={loading}
-                onEdit={handleEdit}
-                onView={handleView}
-                onDelete={handleDelete}
-              />
-            </TabsContent>
-            
-            <TabsContent value="published" className="m-0 p-0">
-              <ArticleTable 
-                articles={filteredArticles.filter(article => new Date(article.published_at) <= new Date())}
-                loading={loading}
-                onEdit={handleEdit}
-                onView={handleView}
-                onDelete={handleDelete}
-              />
-            </TabsContent>
-            
-            <TabsContent value="drafts" className="m-0 p-0">
-              <ArticleTable 
-                articles={filteredArticles.filter(article => new Date(article.published_at) > new Date())}
-                loading={loading}
-                onEdit={handleEdit}
-                onView={handleView}
-                onDelete={handleDelete}
-              />
-            </TabsContent>
-          </Tabs>
+          </div>
+          
+          <ArticleTable 
+            articles={filteredArticles}
+            loading={loading}
+            onEdit={handleEdit}
+            onView={handleView}
+            onDelete={handleDelete}
+            onTogglePublish={handleTogglePublish}
+          />
         </CardContent>
       </Card>
     </AdminLayout>
