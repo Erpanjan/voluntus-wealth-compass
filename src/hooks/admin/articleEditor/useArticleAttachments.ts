@@ -11,7 +11,7 @@ export interface Attachment {
   file_url?: string;
   file?: File;
   created_at?: string;
-  name?: string;
+  name: string; // Changed from optional to required
   size?: number;
   type?: string;
   url?: string;
@@ -43,7 +43,7 @@ export const useArticleAttachments = (isEditMode: boolean) => {
           description: item.description || '',
           file_url: item.file_url,
           created_at: item.created_at,
-          name: item.title,
+          name: item.title, // Ensure name is always set to title
           size: 0, // We don't have the size from the database
           type: item.file_url?.split('.').pop() || '',
           url: item.file_url

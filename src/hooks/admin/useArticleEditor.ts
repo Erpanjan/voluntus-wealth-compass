@@ -8,6 +8,7 @@ import {
   useArticlePreview,
   useArticleActions
 } from './articleEditor';
+import { Attachment } from './articleEditor/useArticleAttachments';
 
 export const useArticleEditor = () => {
   const { form, isEditMode, loadArticleData } = useArticleBasicInfo();
