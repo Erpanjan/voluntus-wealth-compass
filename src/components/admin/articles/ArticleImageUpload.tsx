@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Trash2, Upload } from 'lucide-react';
+import { Trash2, Upload, FileImage, CheckCircle } from 'lucide-react';
 import { FormDescription, FormLabel } from '@/components/ui/form';
 
 interface ArticleImageUploadProps {
@@ -25,18 +25,28 @@ const ArticleImageUpload: React.FC<ArticleImageUploadProps> = ({
       </FormDescription>
       
       {imagePreview ? (
-        <div className="relative rounded-md overflow-hidden border border-gray-200 mb-2">
-          <img 
-            src={imagePreview} 
-            alt="Article feature" 
-            className="w-full h-48 object-cover"
-          />
+        <div className="flex items-center gap-4 p-4 border border-gray-200 rounded-md bg-gray-50">
+          <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
+            <img 
+              src={imagePreview} 
+              alt="Article feature" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex-grow">
+            <div className="flex items-center">
+              <FileImage className="mr-2 text-gray-500" size={16} />
+              <span className="text-sm font-medium">Image uploaded</span>
+              <CheckCircle size={16} className="ml-2 text-green-500" />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Click upload button to change</p>
+          </div>
           <Button
             type="button"
             variant="destructive"
             size="sm"
-            className="absolute top-2 right-2"
             onClick={handleRemoveImage}
+            className="flex-shrink-0"
           >
             <Trash2 size={16} />
           </Button>
