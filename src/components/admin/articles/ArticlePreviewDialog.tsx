@@ -2,7 +2,8 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import EditorStyles from './editor/EditorStyles';
-import { File, Download } from 'lucide-react';
+import { File, Download, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface Author {
   id?: string;
@@ -64,14 +65,24 @@ const ArticlePreviewDialog: React.FC<ArticlePreviewDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Article Preview</DialogTitle>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white p-0">
+        <DialogHeader className="sticky top-0 z-10 bg-white p-6 border-b">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-2xl">Article Preview</DialogTitle>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full"
+              onClick={() => setOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </DialogHeader>
         
-        <div className="space-y-6">
+        <div className="p-6 space-y-8">
           {imagePreview && (
-            <div className="relative w-full h-64 overflow-hidden rounded-lg">
+            <div className="relative w-full h-72 rounded-xl overflow-hidden shadow-md">
               <img
                 src={imagePreview}
                 alt={title}
@@ -81,18 +92,18 @@ const ArticlePreviewDialog: React.FC<ArticlePreviewDialogProps> = ({
           )}
           
           <div>
-            <h1 className="text-2xl font-bold">{title}</h1>
-            <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-              {category && <span>{category}</span>}
+            <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+            <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
+              {category && <span className="px-3 py-1 bg-gray-100 rounded-full">{category}</span>}
               {getFormattedAuthorNames() && (
-                <span>By {getFormattedAuthorNames()}</span>
+                <span className="flex items-center">By {getFormattedAuthorNames()}</span>
               )}
             </div>
           </div>
           
-          <p className="text-gray-700">{description}</p>
+          <p className="text-lg text-gray-700 leading-relaxed">{description}</p>
           
-          <div className="rich-text-editor">
+          <div className="rich-text-editor prose max-w-none">
             <div
               className="content"
               dangerouslySetInnerHTML={{ __html: content }}
@@ -100,31 +111,39 @@ const ArticlePreviewDialog: React.FC<ArticlePreviewDialogProps> = ({
           </div>
           
           {attachments && attachments.length > 0 && (
-            <div className="border-t pt-4 mt-6">
-              <h3 className="font-medium mb-2">Attachments</h3>
-              <div className="space-y-2">
+            <div className="border-t pt-6 mt-8">
+              <h3 className="font-medium text-lg mb-4">Attachments</h3>
+              <div className="grid gap-3">
                 {attachments.map((attachment) => (
                   <div 
                     key={attachment.id}
-                    className="flex items-center justify-between p-3 border rounded-md"
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
                   >
-                    <div className="flex items-center space-x-3">
-                      <File className="h-5 w-5 text-muted-foreground" />
+                    <div className="flex items-center space-x-4">
+                      <div className="bg-gray-100 p-3 rounded-lg">
+                        <File className="h-6 w-6 text-gray-500" />
+                      </div>
                       <div>
-                        <p className="text-sm font-medium">{attachment.name}</p>
+                        <p className="font-medium">{attachment.name}</p>
                         <p className="text-xs text-muted-foreground">{formatFileSize(attachment.size)}</p>
                       </div>
                     </div>
                     {attachment.url && (
-                      <a 
-                        href={attachment.url} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        asChild
+                        className="gap-2"
                       >
-                        <Download className="h-4 w-4" />
-                        Download
-                      </a>
+                        <a 
+                          href={attachment.url} 
+                          target="_blank" 
+                          rel="noreferrer"
+                        >
+                          <Download className="h-4 w-4" />
+                          Download
+                        </a>
+                      </Button>
                     )}
                   </div>
                 ))}

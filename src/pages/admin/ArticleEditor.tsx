@@ -40,48 +40,50 @@ const ArticleEditor = () => {
 
   return (
     <AdminLayout>
-      <ArticleEditorToolbar 
-        isEditMode={isEditMode}
-        submitting={submitting}
-        onBack={navigateBack}
-        onPreview={openPreview}
-        onSaveDraft={saveDraft}
-        onPublish={publishArticle}
-      />
-      
-      <div className="space-y-6">
-        <ArticleInfoSection
-          form={form}
-          selectedAuthors={selectedAuthors}
-          setSelectedAuthors={setSelectedAuthors}
-          imagePreview={imagePreview}
-          setImagePreview={setImagePreview}
-          setImageFile={setImageFile}
-          fileInputRef={fileInputRef}
-          handleImageChange={handleImageChange}
-          handleRemoveImage={handleRemoveImage}
+      <div className="max-w-5xl mx-auto">
+        <ArticleEditorToolbar 
+          isEditMode={isEditMode}
+          submitting={submitting}
+          onBack={navigateBack}
+          onPreview={openPreview}
+          onSaveDraft={saveDraft}
+          onPublish={publishArticle}
         />
         
-        <ArticleContentSection form={form} />
-        
-        <ArticleAttachmentsSection 
-          form={form}
+        <div className="space-y-8">
+          <ArticleInfoSection
+            form={form}
+            selectedAuthors={selectedAuthors}
+            setSelectedAuthors={setSelectedAuthors}
+            imagePreview={imagePreview}
+            setImagePreview={setImagePreview}
+            setImageFile={setImageFile}
+            fileInputRef={fileInputRef}
+            handleImageChange={handleImageChange}
+            handleRemoveImage={handleRemoveImage}
+          />
+          
+          <ArticleContentSection form={form} />
+          
+          <ArticleAttachmentsSection 
+            form={form}
+            attachments={attachments}
+            setAttachments={setAttachments}
+          />
+        </div>
+
+        <ArticlePreviewDialog
+          open={previewOpen}
+          setOpen={setPreviewOpen}
+          title={form.getValues().title}
+          description={form.getValues().description}
+          content={form.getValues().content}
+          imagePreview={imagePreview}
+          category={form.getValues().category}
+          authors={selectedAuthors}
           attachments={attachments}
-          setAttachments={setAttachments}
         />
       </div>
-
-      <ArticlePreviewDialog
-        open={previewOpen}
-        setOpen={setPreviewOpen}
-        title={form.getValues().title}
-        description={form.getValues().description}
-        content={form.getValues().content}
-        imagePreview={imagePreview}
-        category={form.getValues().category}
-        authors={selectedAuthors}
-        attachments={attachments}
-      />
     </AdminLayout>
   );
 };
