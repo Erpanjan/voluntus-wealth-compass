@@ -5,6 +5,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Mail, Phone, MessageSquare } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { ContactSubmission } from '@/types/supabase';
 
 interface ContactFormData {
   firstName: string;
@@ -39,15 +40,17 @@ const ContactForm: React.FC = () => {
 
     try {
       // Insert the form data into Supabase
-      const { error } = await supabase
-        .from('contact_submissions')
+      // Explicitly casting the supabase call to any to work around type issues
+      // since the types.ts doesn't include our custom tables yet
+      const { error } = await (supabase
+        .from('contact_submissions') as any)
         .insert({
           first_name: formData.firstName,
           last_name: formData.lastName,
           contact_type: formData.contactType,
           contact_info: formData.contact,
           message: formData.message,
-        });
+        } as ContactSubmission);
         
       if (error) {
         throw error;

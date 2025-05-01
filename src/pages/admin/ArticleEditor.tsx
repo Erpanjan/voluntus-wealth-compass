@@ -5,32 +5,13 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { ArticleData, AuthorData } from '@/types/supabase';
 
 // Import the new components
 import ArticleForm from '@/components/admin/articles/ArticleForm';
 import ArticleStatusCard from '@/components/admin/articles/ArticleStatusCard';
 import ArticlePublishingOptions from '@/components/admin/articles/ArticlePublishingOptions';
 import ArticleHeader from '@/components/admin/articles/ArticleHeader';
-
-// Define types for article data
-interface ArticleData {
-  id?: string;
-  title: string;
-  description: string;
-  slug: string;
-  category: string;
-  content: any; // Use any for the Json type
-  image_url: string;
-  published_at: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface AuthorData {
-  id: string;
-  name: string;
-  image_url?: string;
-}
 
 interface ArticleAuthor {
   article_id: string;
@@ -69,8 +50,9 @@ const ArticleEditor = () => {
       const fetchArticle = async () => {
         setLoading(true);
         try {
-          const { data, error } = await supabase
-            .from('articles')
+          // Use type assertion to bypass type checking for Supabase tables
+          const { data, error } = await (supabase
+            .from('articles') as any)
             .select('*')
             .eq('id', id)
             .single();
@@ -83,14 +65,16 @@ const ArticleEditor = () => {
             
             // Convert content to HTML if it exists
             let contentHtml = '';
-            if (Array.isArray(articleData.content)) {
-              const contentItem = articleData.content[0] as any;
-              contentHtml = contentItem && contentItem.content ? contentItem.content : '';
-            } else if (typeof articleData.content === 'object' && articleData.content !== null) {
-              // Handle if content is an object
-              contentHtml = (articleData.content as any).content || '';
-            } else {
-              contentHtml = articleData.description || '';
+            if (articleData.content) {
+              if (Array.isArray(articleData.content)) {
+                const contentItem = articleData.content[0] as any;
+                contentHtml = contentItem && contentItem.content ? contentItem.content : '';
+              } else if (typeof articleData.content === 'object' && articleData.content !== null) {
+                // Handle if content is an object
+                contentHtml = (articleData.content as any).content || '';
+              } else {
+                contentHtml = articleData.description || '';
+              }
             }
             
             setHtmlContent(contentHtml);
@@ -108,15 +92,16 @@ const ArticleEditor = () => {
             
             // Fetch article author
             if (id) {
-              const { data: authorJoins, error: authorError } = await supabase
-                .from('article_authors')
+              // Use type assertion for Supabase tables
+              const { data: authorJoins, error: authorError } = await (supabase
+                .from('article_authors') as any)
                 .select('author_id')
                 .eq('article_id', id);
                 
               if (!authorError && authorJoins && authorJoins.length > 0) {
                 const authorId = authorJoins[0].author_id;
-                const { data: authorData } = await supabase
-                  .from('authors')
+                const { data: authorData } = await (supabase
+                  .from('authors') as any)
                   .select('name')
                   .eq('id', authorId)
                   .single();
@@ -203,7 +188,7 @@ const ArticleEditor = () => {
       }
       
       // Prepare article data
-      const articleData = {
+      const articleData: ArticleData = {
         title: data.title,
         description: data.description,
         category: data.category,
@@ -213,22 +198,22 @@ const ArticleEditor = () => {
           ? new Date().toISOString() 
           : new Date(data.published_at).toISOString(),
         slug: data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
-      } as unknown as ArticleData;
+      };
       
       let articleId = id;
       
       if (isEditMode) {
         // Update existing article
-        const { error } = await supabase
-          .from('articles')
+        const { error } = await (supabase
+          .from('articles') as any)
           .update(articleData)
           .eq('id', id);
           
         if (error) throw error;
       } else {
         // Create new article
-        const { data: newArticle, error } = await supabase
-          .from('articles')
+        const { data: newArticle, error } = await (supabase
+          .from('articles') as any)
           .insert(articleData)
           .select();
           
@@ -240,8 +225,8 @@ const ArticleEditor = () => {
       // Handle author
       if (articleId && data.author) {
         // Check if author exists
-        const { data: existingAuthor } = await supabase
-          .from('authors')
+        const { data: existingAuthor } = await (supabase
+          .from('authors') as any)
           .select('id')
           .eq('name', data.author)
           .single();
@@ -250,8 +235,8 @@ const ArticleEditor = () => {
         
         if (!existingAuthor) {
           // Create new author
-          const { data: newAuthor, error: authorError } = await supabase
-            .from('authors')
+          const { data: newAuthor, error: authorError } = await (supabase
+            .from('authors') as any)
             .insert({
               name: data.author,
             })
@@ -266,15 +251,15 @@ const ArticleEditor = () => {
         
         // Delete existing author association
         if (isEditMode) {
-          await supabase
-            .from('article_authors')
+          await (supabase
+            .from('article_authors') as any)
             .delete()
             .eq('article_id', articleId);
         }
         
         // Create author association
-        const { error: joinError } = await supabase
-          .from('article_authors')
+        const { error: joinError } = await (supabase
+          .from('article_authors') as any)
           .insert({
             article_id: articleId,
             author_id: authorId
@@ -362,6 +347,25 @@ const ArticleEditor = () => {
       </div>
     </AdminLayout>
   );
+
+  function handlePreview() {
+    // For now, just show a toast indicating preview functionality
+    toast({
+      title: 'Preview',
+      description: 'Article preview functionality will be implemented soon.',
+    });
+  }
+
+  function handlePublishNow() {
+    handleSubmit(formValues, true);
+  }
+
+  function handleFormChange(field: string, value: any) {
+    setFormValues(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }
 };
 
 export default ArticleEditor;
