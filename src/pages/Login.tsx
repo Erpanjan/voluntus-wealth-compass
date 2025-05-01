@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -132,7 +131,7 @@ const Login = () => {
                 onCheckedChange={setIsAdminMode}
               />
               <Label htmlFor="admin-mode" className="text-sm text-gray-600">
-                Admin Portal
+                
               </Label>
             </div>
           </div>
