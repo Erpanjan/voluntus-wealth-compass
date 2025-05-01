@@ -76,6 +76,12 @@ const ArticleEditorContent: React.FC<ArticleEditorContentProps> = ({
           <ArticleContentEditor htmlContent={htmlContent} setHtmlContent={setHtmlContent} />
         </CardContent>
       </Card>
+      
+      {/* Optional feature info */}
+      <div className="text-center text-sm text-muted-foreground">
+        <p>Use keyboard shortcuts like Ctrl+B for bold, Ctrl+I for italic to enhance your writing experience.</p>
+        <p>The article editor includes word count and reading time estimation to help plan your content.</p>
+      </div>
     </div>
   );
 };

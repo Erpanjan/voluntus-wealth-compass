@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { ArticleData } from '@/types/supabase';
 import { ArticleFormValues } from './useArticleForm';
-import { fetchArticleById, saveArticle, extractContentHtml } from '@/services/articleService';
-import { getAuthorByArticleId } from '@/services/authorService';
+import { fetchArticleById, saveArticle, extractContentHtml } from '@/services/mockArticleService';
+import { getAuthorByArticleId } from '@/services/mockAuthorService';
 import { format } from 'date-fns';
 
 export const useArticleData = (id?: string) => {
@@ -30,11 +30,11 @@ export const useArticleData = (id?: string) => {
         
         const formData = {
           title: articleData.title,
-          description: articleData.description,
+          description: articleData.description || '',
           category: articleData.category || '',
           author: '', // Will be populated below
           image_url: articleData.image_url || '',
-          published_at: format(new Date(articleData.published_at), 'yyyy-MM-dd'),
+          published_at: format(new Date(articleData.published_at || new Date()), 'yyyy-MM-dd'),
         };
         
         // Fetch article author

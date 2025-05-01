@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { v4 as uuidv4 } from 'uuid';
 
 export const useImageUpload = () => {
   const { toast } = useToast();
@@ -29,23 +29,14 @@ export const useImageUpload = () => {
     try {
       setUploadingImage(true);
       
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-article.${fileExt}`;
-      const filePath = `article-images/${fileName}`;
+      // In a real app, this would upload to a storage service
+      // For now, we'll just simulate a delay and return a mock URL
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Upload file
-      const { error: uploadError } = await supabase.storage
-        .from('article-images')
-        .upload(filePath, file);
-        
-      if (uploadError) throw uploadError;
+      // Generate a mock image URL
+      const mockImageUrl = `https://picsum.photos/seed/${uuidv4()}/800/400`;
       
-      // Get public URL
-      const { data } = supabase.storage
-        .from('article-images')
-        .getPublicUrl(filePath);
-        
-      return data.publicUrl;
+      return mockImageUrl;
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
