@@ -11,13 +11,25 @@ interface AdminLayoutProps {
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const { toast } = useToast();
   
   // Check if user is authenticated and in admin mode
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // First check if we already have a valid admin session in localStorage
+        const isAdminMode = localStorage.getItem('isAdminMode') === 'true';
+        const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+        
+        if (isAuthenticated && isAdminMode) {
+          setIsAuthorized(true);
+          setInitialLoading(false);
+          return;
+        }
+        
+        // If not, verify with Supabase
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
@@ -42,7 +54,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         // User is authenticated and is an admin
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('isAdminMode', 'true');
-        setLoading(false);
+        setIsAuthorized(true);
+        setInitialLoading(false);
       } catch (error) {
         console.error('Authentication error:', error);
         
@@ -62,7 +75,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     checkAuth();
   }, [navigate, toast]);
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
@@ -72,12 +85,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     );
   }
 
+  // Once authorized, the layout will remain consistent during tab navigation
   return (
     <div className="flex h-screen bg-gray-50">
       <AdminSidebar />
       <div className="flex-1 overflow-auto">
         <div className="container mx-auto px-4 py-6">
-          {children}
+          {isAuthorized ? children : null}
         </div>
       </div>
     </div>
