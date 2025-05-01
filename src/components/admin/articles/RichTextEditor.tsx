@@ -49,6 +49,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
         className="content p-5 min-h-[400px] focus:outline-none prose max-w-none"
         contentEditable
         onInput={editor.handleContentChange}
+        onPaste={editor.handlePaste}
         onBlur={editor.handleContentBlur}
         suppressContentEditableWarning={true}
         dir="ltr"
