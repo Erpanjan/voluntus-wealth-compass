@@ -10,6 +10,7 @@ import DatabaseNotice from '@/components/admin/articles/DatabaseNotice';
 import { useArticles } from '@/hooks/useArticles';
 import { Card, CardContent } from '@/components/ui/card';
 import ArticleFilters from '@/components/admin/articles/ArticleFilters';
+import { DateRange } from 'react-day-picker';
 
 const ArticlesManagement = () => {
   const navigate = useNavigate();
@@ -17,10 +18,7 @@ const ArticlesManagement = () => {
   const [filters, setFilters] = useState({
     category: '',
     status: '',
-    dateRange: {
-      from: undefined,
-      to: undefined
-    },
+    dateRange: undefined as DateRange | undefined,
     author: ''
   });
   const { articles, loading, deleteArticle, updateArticleStatus } = useArticles();
@@ -61,10 +59,10 @@ const ArticlesManagement = () => {
     
     // Date range filter
     let matchesDateRange = true;
-    if (filters.dateRange.from) {
+    if (filters.dateRange?.from) {
       matchesDateRange = new Date(article.published_at) >= new Date(filters.dateRange.from);
     }
-    if (filters.dateRange.to && matchesDateRange) {
+    if (filters.dateRange?.to && matchesDateRange) {
       matchesDateRange = new Date(article.published_at) <= new Date(filters.dateRange.to);
     }
     

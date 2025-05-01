@@ -20,17 +20,13 @@ import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-
-interface DateRange {
-  from: Date | undefined;
-  to: Date | undefined;
-}
+import { DateRange } from 'react-day-picker';
 
 interface ArticleFiltersProps {
   filters: {
     category: string;
     status: string;
-    dateRange: DateRange;
+    dateRange: DateRange | undefined;
     author: string;
   };
   setFilters: (filters: any) => void;
@@ -75,7 +71,7 @@ const ArticleFilters: React.FC<ArticleFiltersProps> = ({
     setFilters({ ...filters, status });
   };
   
-  const handleDateRangeSelect = (dateRange: DateRange) => {
+  const handleDateRangeSelect = (dateRange: DateRange | undefined) => {
     setFilters({ ...filters, dateRange });
   };
   
@@ -87,7 +83,7 @@ const ArticleFilters: React.FC<ArticleFiltersProps> = ({
     setFilters({
       category: '',
       status: '',
-      dateRange: { from: undefined, to: undefined },
+      dateRange: undefined,
       author: ''
     });
   };
@@ -96,7 +92,7 @@ const ArticleFilters: React.FC<ArticleFiltersProps> = ({
   const activeFiltersCount = [
     filters.category, 
     filters.status, 
-    filters.dateRange.from || filters.dateRange.to,
+    (filters.dateRange && (filters.dateRange.from || filters.dateRange.to)),
     filters.author
   ].filter(Boolean).length;
   
@@ -207,10 +203,10 @@ const ArticleFilters: React.FC<ArticleFiltersProps> = ({
           <Button
             variant="outline"
             size="sm"
-            className={`h-10 px-4 text-left ${filters.dateRange.from ? 'text-black' : 'text-gray-500'}`}
+            className={`h-10 px-4 text-left ${filters.dateRange?.from ? 'text-black' : 'text-gray-500'}`}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {filters.dateRange.from ? (
+            {filters.dateRange?.from ? (
               filters.dateRange.to ? (
                 <>
                   {format(filters.dateRange.from, "MMM dd, yyyy")} - {format(filters.dateRange.to, "MMM dd, yyyy")}
@@ -226,18 +222,16 @@ const ArticleFilters: React.FC<ArticleFiltersProps> = ({
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="range"
-            selected={{
-              from: filters.dateRange.from,
-              to: filters.dateRange.to,
-            }}
-            onSelect={(range) => handleDateRangeSelect(range || { from: undefined, to: undefined })}
+            selected={filters.dateRange}
+            onSelect={(range) => handleDateRangeSelect(range)}
             initialFocus
+            className="p-3 pointer-events-auto"
           />
           <div className="p-3 border-t border-border flex justify-between">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleDateRangeSelect({ from: undefined, to: undefined })}
+              onClick={() => handleDateRangeSelect(undefined)}
               className="text-xs"
             >
               Clear Dates
