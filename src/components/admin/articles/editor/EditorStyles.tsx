@@ -3,7 +3,7 @@ import React from 'react';
 
 const EditorStyles: React.FC = () => {
   return (
-    <style jsx global>{`
+    <style dangerouslySetInnerHTML={{ __html: `
       /* Editor content styling */
       .rich-text-editor .content {
         min-height: 300px;
@@ -141,7 +141,7 @@ const EditorStyles: React.FC = () => {
         margin-top: 0.25em;
         margin-bottom: 0.5em;
       }
-    `}</style>
+    `}} />
   );
 };
 
