@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ArrowLeft, Calendar, FileDown } from 'lucide-react';
+import { ArrowLeft, Calendar, FileDown, RefreshCcw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -11,12 +12,22 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { article, loading, error } = useArticleDetail(id || '');
+  const { article, loading, error, refetch } = useArticleDetail(id || '');
+  const [contentRenderAttempted, setContentRenderAttempted] = useState(false);
 
   // Scroll to top on component mount
   useEffect(() => {
     window.scrollTo(0, 0);
+    console.log("ArticleDetail mounted, params:", id);
   }, []);
+
+  // Track render attempts
+  useEffect(() => {
+    if (article && !contentRenderAttempted) {
+      console.log("First render attempt with article data:", article);
+      setContentRenderAttempted(true);
+    }
+  }, [article]);
 
   // Handle missing article ID
   if (!id) {
@@ -59,36 +70,54 @@ const ArticleDetail = () => {
     return (
       <div className="container mx-auto px-4 py-16 text-center mt-20">
         <h1 className="text-2xl font-semibold text-red-600">Article Not Found</h1>
-        <p className="mt-4">The article you are looking for does not exist or has been removed.</p>
-        <Button asChild className="mt-6">
-          <Link to="/insight">
-            <ArrowLeft size={18} className="mr-2" />
-            Back to Insights
-          </Link>
-        </Button>
+        <p className="mt-4">
+          {error ? `Error: ${error.message}` : 'The article you are looking for does not exist or has been removed.'}
+        </p>
+        <div className="mt-6 space-x-4">
+          <Button variant="outline" onClick={() => refetch()} className="mr-4">
+            <RefreshCcw size={18} className="mr-2" />
+            Try Again
+          </Button>
+          <Button asChild>
+            <Link to="/insight">
+              <ArrowLeft size={18} className="mr-2" />
+              Back to Insights
+            </Link>
+          </Button>
+        </div>
       </div>
     );
   }
 
-  // Render content
+  // Render content with better error handling
   const renderContent = () => {
-    if (typeof article.content === 'string') {
-      return <div dangerouslySetInnerHTML={{ __html: article.content }} />;
-    } else if (article.content && typeof article.content === 'object') {
-      // For rich text content stored as JSON, we need a more sophisticated renderer
-      // For now, we'll just display it as formatted text
-      return <div dangerouslySetInnerHTML={{ __html: JSON.stringify(article.content) }} />;
-    }
+    console.log("Rendering content, type:", typeof article.content);
     
-    return <p>{article.description}</p>;
+    try {
+      // Handle string content (description or HTML)
+      if (typeof article.content === 'string') {
+        console.log("Rendering string content");
+        return <div dangerouslySetInnerHTML={{ __html: article.content }} />;
+      } 
+      // Handle object content (JSON)
+      else if (article.content && typeof article.content === 'object') {
+        console.log("Rendering object content");
+        // For rich text content stored as JSON, implement a more sophisticated renderer
+        // For now, we'll just display it as formatted text
+        return (
+          <div className="prose max-w-none">
+            <p className="text-lg">{article.description}</p>
+          </div>
+        );
+      }
+      // Fallback to description
+      return <p>{article.description}</p>;
+    } catch (e) {
+      console.error("Error rendering content:", e);
+      return <p className="text-red-600">There was an error displaying this article's content. {article.description}</p>;
+    }
   };
 
-  // Log attachment data for debugging
-  console.log("Article reports:", article.reports);
-
-  // Check if reports exist and have items
-  const hasAttachments = Array.isArray(article.reports) && article.reports.length > 0;
-  
   // Get file type from URL
   const getFileTypeFromUrl = (url: string) => {
     const extension = url.split('.').pop()?.toLowerCase() || '';
@@ -97,7 +126,6 @@ const ArticleDetail = () => {
   
   // Get icon based on file type
   const getFileIcon = (url: string) => {
-    const fileType = getFileTypeFromUrl(url);
     // Can be expanded with different icons based on fileType
     return <FileDown size={16} className="mr-2" />;
   };
@@ -116,6 +144,10 @@ const ArticleDetail = () => {
       return segments[segments.length - 1];
     }
   };
+
+  // Check if reports exist and have items
+  const hasAttachments = Array.isArray(article.reports) && article.reports.length > 0;
+  console.log("Has attachments:", hasAttachments, article.reports);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28">
