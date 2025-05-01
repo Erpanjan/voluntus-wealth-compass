@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
@@ -46,7 +47,7 @@ const ContactForm: React.FC = () => {
           contact_type: formData.contactType,
           contact_info: formData.contact,
           message: formData.message,
-        } as any); // Using 'as any' temporarily until types are regenerated
+        });
         
       if (error) {
         throw error;

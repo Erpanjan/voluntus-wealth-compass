@@ -1,10 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { Json } from '@/integrations/supabase/types';
 
 // Import the new components
 import ArticleForm from '@/components/admin/articles/ArticleForm';
@@ -19,7 +19,7 @@ interface ArticleData {
   description: string;
   slug: string;
   category: string;
-  content: Json;
+  content: any; // Use any for the Json type
   image_url: string;
   published_at: string;
   created_at?: string;
@@ -78,7 +78,7 @@ const ArticleEditor = () => {
           if (error) throw error;
           
           if (data) {
-            const articleData = data as unknown as ArticleData;
+            const articleData = data as ArticleData;
             setArticle(articleData);
             
             // Convert content to HTML if it exists
@@ -111,7 +111,7 @@ const ArticleEditor = () => {
               const { data: authorJoins, error: authorError } = await supabase
                 .from('article_authors')
                 .select('author_id')
-                .eq('article_id', id) as { data: ArticleAuthor[] | null, error: any };
+                .eq('article_id', id);
                 
               if (!authorError && authorJoins && authorJoins.length > 0) {
                 const authorId = authorJoins[0].author_id;
@@ -119,7 +119,7 @@ const ArticleEditor = () => {
                   .from('authors')
                   .select('name')
                   .eq('id', authorId)
-                  .single() as { data: AuthorData | null, error: any };
+                  .single();
                   
                 if (authorData) {
                   setFormValues(prev => ({
@@ -207,7 +207,7 @@ const ArticleEditor = () => {
         title: data.title,
         description: data.description,
         category: data.category,
-        content: [{ type: 'html', content: htmlContent }] as Json,
+        content: [{ type: 'html', content: htmlContent }],
         image_url: imageUrl,
         published_at: publish 
           ? new Date().toISOString() 
@@ -221,7 +221,7 @@ const ArticleEditor = () => {
         // Update existing article
         const { error } = await supabase
           .from('articles')
-          .update(articleData as any)
+          .update(articleData)
           .eq('id', id);
           
         if (error) throw error;
@@ -229,7 +229,7 @@ const ArticleEditor = () => {
         // Create new article
         const { data: newArticle, error } = await supabase
           .from('articles')
-          .insert(articleData as any)
+          .insert(articleData)
           .select();
           
         if (error) throw error;
@@ -244,7 +244,7 @@ const ArticleEditor = () => {
           .from('authors')
           .select('id')
           .eq('name', data.author)
-          .single() as { data: AuthorData | null, error: any };
+          .single();
           
         let authorId;
         
@@ -254,7 +254,7 @@ const ArticleEditor = () => {
             .from('authors')
             .insert({
               name: data.author,
-            } as any)
+            })
             .select();
             
           if (authorError) throw authorError;
@@ -278,7 +278,7 @@ const ArticleEditor = () => {
           .insert({
             article_id: articleId,
             author_id: authorId
-          } as any);
+          });
           
         if (joinError) throw joinError;
       }
