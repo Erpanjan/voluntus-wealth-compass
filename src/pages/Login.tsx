@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -137,39 +138,58 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Fixed height tabs container */}
-        <Tabs defaultValue="login" className="w-full custom-tabs">
-          <div className="px-6">
-            <TabsList className="grid grid-cols-3 w-full bg-transparent p-0 h-12 relative">
-              <TabsTrigger value="login" className="tab-button">Login</TabsTrigger>
-              <TabsTrigger value="register" className="tab-button">Register</TabsTrigger>
-              <TabsTrigger value="forgot" className="tab-button">Reset Password</TabsTrigger>
-              <div className="tab-indicator"></div>
-            </TabsList>
-          </div>
+        {/* Tabs container - conditionally render based on admin mode */}
+        {isAdminMode ? (
+          // Admin mode - Single login tab
+          <Tabs defaultValue="login" className="w-full custom-tabs">
+            <div className="px-6">
+              <TabsList className="grid grid-cols-1 w-full bg-transparent p-0 h-12 relative">
+                <TabsTrigger value="login" className="tab-button">Login</TabsTrigger>
+                <div className="tab-indicator"></div>
+              </TabsList>
+            </div>
 
-          {/* Content container with fixed height to prevent layout shifts */}
-          <div className="h-[450px] relative overflow-hidden">
-            {/* Login Tab */}
-            <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
-              <LoginForm 
-                onDemoLogin={handleDemoLogin} 
-                onRegularLogin={handleRegularLogin}
-                isAdminMode={isAdminMode}
-              />
-            </TabsContent>
+            <div className="h-[450px] relative overflow-hidden">
+              <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
+                <LoginForm 
+                  onDemoLogin={handleDemoLogin} 
+                  onRegularLogin={handleRegularLogin}
+                  isAdminMode={isAdminMode}
+                />
+              </TabsContent>
+            </div>
+          </Tabs>
+        ) : (
+          // Client mode - All three tabs
+          <Tabs defaultValue="login" className="w-full custom-tabs">
+            <div className="px-6">
+              <TabsList className="grid grid-cols-3 w-full bg-transparent p-0 h-12 relative">
+                <TabsTrigger value="login" className="tab-button">Login</TabsTrigger>
+                <TabsTrigger value="register" className="tab-button">Register</TabsTrigger>
+                <TabsTrigger value="forgot" className="tab-button">Reset Password</TabsTrigger>
+                <div className="tab-indicator"></div>
+              </TabsList>
+            </div>
 
-            {/* Register Tab */}
-            <TabsContent value="register" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
-              <RegisterForm isAdminMode={isAdminMode} />
-            </TabsContent>
+            <div className="h-[450px] relative overflow-hidden">
+              <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
+                <LoginForm 
+                  onDemoLogin={handleDemoLogin} 
+                  onRegularLogin={handleRegularLogin}
+                  isAdminMode={isAdminMode}
+                />
+              </TabsContent>
 
-            {/* Forgot Password Tab */}
-            <TabsContent value="forgot" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
-              <ForgotPasswordForm />
-            </TabsContent>
-          </div>
-        </Tabs>
+              <TabsContent value="register" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
+                <RegisterForm isAdminMode={isAdminMode} />
+              </TabsContent>
+
+              <TabsContent value="forgot" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
+                <ForgotPasswordForm />
+              </TabsContent>
+            </div>
+          </Tabs>
+        )}
       </div>
     </div>
   );

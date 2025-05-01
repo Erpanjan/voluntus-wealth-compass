@@ -145,19 +145,28 @@
 
 .custom-tabs .tab-indicator {
   @apply absolute bottom-0 left-0 h-0.5 bg-black transition-all duration-300 ease-in-out;
+  width: 100%; /* This makes the indicator fill the whole width of its container */
+}
+
+/* Specific positioning for grid column modes */
+.custom-tabs .grid-cols-3 button:nth-child(1)[data-state="active"] ~ .tab-indicator {
+  transform: translateX(0%);
   width: 33.333%;
 }
 
-.custom-tabs button:nth-child(1)[data-state="active"] ~ .tab-indicator {
-  transform: translateX(0%);
-}
-
-.custom-tabs button:nth-child(2)[data-state="active"] ~ .tab-indicator {
+.custom-tabs .grid-cols-3 button:nth-child(2)[data-state="active"] ~ .tab-indicator {
   transform: translateX(100%);
+  width: 33.333%;
 }
 
-.custom-tabs button:nth-child(3)[data-state="active"] ~ .tab-indicator {
+.custom-tabs .grid-cols-3 button:nth-child(3)[data-state="active"] ~ .tab-indicator {
   transform: translateX(200%);
+  width: 33.333%;
+}
+
+.custom-tabs .grid-cols-1 button:nth-child(1)[data-state="active"] ~ .tab-indicator {
+  transform: translateX(0%);
+  width: 100%;
 }
 
 /* Tab content positioning and transitions - enhanced for smooth transitions */
