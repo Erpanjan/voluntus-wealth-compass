@@ -53,8 +53,24 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       // Set authentication flag in localStorage
       localStorage.setItem('isAuthenticated', 'true');
       
-      // Set admin mode in localStorage if applicable
       if (isAdminMode) {
+        // Check if user is an admin
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', data.user.id)
+          .single();
+        
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          throw new Error('Could not verify admin status');
+        }
+        
+        if (!profileData?.is_admin) {
+          throw new Error('Your account does not have admin privileges');
+        }
+        
+        // Set admin mode in localStorage if user is an admin
         localStorage.setItem('isAdminMode', 'true');
       } else {
         localStorage.removeItem('isAdminMode');
@@ -69,9 +85,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       // Call the onRegularLogin prop if it exists
       if (onRegularLogin) {
         onRegularLogin();
-      } else {
-        // Redirect to admin dashboard or client dashboard based on mode
-        navigate(isAdminMode ? '/admin/dashboard' : '/dashboard');
       }
       
     } catch (error: any) {

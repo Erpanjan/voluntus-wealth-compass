@@ -72,6 +72,17 @@ const Login = () => {
           onDemoLogin={handleDemoLogin}
           onRegularLogin={handleRegularLogin}
         />
+        
+        {/* Admin mode notice */}
+        {isAdminMode && (
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500">
+              Admin access requires special privileges. 
+              <br />
+              Contact your system administrator if you need access.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 export const useAuth = (isAdminMode: boolean) => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -14,29 +15,30 @@ export const useAuth = (isAdminMode: boolean) => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         console.log('Auth state changed:', event, session);
+        
         if (session) {
           localStorage.setItem('isAuthenticated', 'true');
           
           // Check if the user is an admin by querying the profiles table
           if (isAdminMode) {
-            checkIfAdmin(session.user.id).then(isAdmin => {
-              if (isAdmin) {
-                localStorage.setItem('isAdminMode', 'true');
-                navigate('/admin/dashboard');
-              } else {
-                toast({
-                  title: "Access Denied",
-                  description: "Your account does not have admin privileges.",
-                  variant: "destructive",
-                  duration: 5000,
-                });
-                // Redirect to regular dashboard if not an admin
-                localStorage.removeItem('isAdminMode');
-                navigate('/dashboard');
-              }
-            });
+            const isAdmin = await checkIfAdmin(session.user.id);
+            if (isAdmin) {
+              localStorage.setItem('isAdminMode', 'true');
+              setIsAdmin(true);
+              navigate('/admin/dashboard');
+            } else {
+              toast({
+                title: "Access Denied",
+                description: "Your account does not have admin privileges.",
+                variant: "destructive",
+                duration: 5000,
+              });
+              // Redirect to regular dashboard if not an admin
+              localStorage.removeItem('isAdminMode');
+              navigate('/dashboard');
+            }
           } else {
             localStorage.removeItem('isAdminMode');
             navigate('/dashboard');
@@ -48,23 +50,30 @@ export const useAuth = (isAdminMode: boolean) => {
     );
     
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       console.log('Initial session check:', session);
+      
       if (session) {
         localStorage.setItem('isAuthenticated', 'true');
         
         // Check localStorage for admin mode
         const adminMode = localStorage.getItem('isAdminMode') === 'true';
         
-        if (adminMode) {
-          checkIfAdmin(session.user.id).then(isAdmin => {
-            if (isAdmin) {
-              navigate('/admin/dashboard');
-            } else {
-              // If not an admin but trying to access admin routes,
-              // redirect to regular dashboard
-              localStorage.removeItem('isAdminMode');
-              navigate('/dashboard');
+        if (adminMode || isAdminMode) {
+          const isAdminUser = await checkIfAdmin(session.user.id);
+          setIsAdmin(isAdminUser);
+          
+          if (isAdminUser) {
+            localStorage.setItem('isAdminMode', 'true');
+            navigate('/admin/dashboard');
+          } else {
+            // If not an admin but trying to access admin routes,
+            // redirect to regular dashboard
+            localStorage.removeItem('isAdminMode');
+            navigate('/dashboard');
+            
+            if (isAdminMode) {
               toast({
                 title: "Access Denied",
                 description: "Your account does not have admin privileges.",
@@ -72,14 +81,17 @@ export const useAuth = (isAdminMode: boolean) => {
                 duration: 5000,
               });
             }
-          });
+          }
         } else {
           navigate('/dashboard');
         }
       }
+      
       setSession(session);
       setLoading(false);
-    });
+    };
+    
+    checkSession();
     
     return () => {
       if (subscription) {
@@ -97,7 +109,10 @@ export const useAuth = (isAdminMode: boolean) => {
         .eq('id', userId)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+      }
       
       return data?.is_admin === true;
     } catch (error) {
@@ -113,6 +128,7 @@ export const useAuth = (isAdminMode: boolean) => {
     // Set admin mode in localStorage if toggle is on
     if (isAdminMode) {
       localStorage.setItem('isAdminMode', 'true');
+      setIsAdmin(true);
       navigate('/admin/dashboard');
     } else {
       localStorage.removeItem('isAdminMode');
@@ -135,6 +151,8 @@ export const useAuth = (isAdminMode: boolean) => {
 
   return {
     loading,
+    isAdmin,
+    session,
     handleDemoLogin,
     handleRegularLogin
   };
