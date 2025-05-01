@@ -15,6 +15,9 @@ const ArticleEditor = () => {
     selectedAuthors,
     setSelectedAuthors,
     imagePreview,
+    setImagePreview,
+    imageFile,
+    setImageFile,
     fileInputRef,
     previewOpen,
     setPreviewOpen,
@@ -49,6 +52,8 @@ const ArticleEditor = () => {
           selectedAuthors={selectedAuthors}
           setSelectedAuthors={setSelectedAuthors}
           imagePreview={imagePreview}
+          setImagePreview={setImagePreview}
+          setImageFile={setImageFile}
           fileInputRef={fileInputRef}
           handleImageChange={handleImageChange}
           handleRemoveImage={handleRemoveImage}
