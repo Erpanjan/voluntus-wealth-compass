@@ -1,0 +1,47 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%; /* White */
+    --foreground: 0 0% 0%; /* Black */
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 0 0% 0%; /* Black */
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 0 0% 0%; /* Black */
+    --primary: 0 0% 0%; /* Black */
+    --primary-foreground: 0 0% 100%; /* White */
+    --secondary: 220 14% 96%; /* Light Gray/Beige */
+    --secondary-foreground: 0 0% 0%; /* Black */
+    --muted: 220 14% 96%; /* Light Gray/Beige */
+    --muted-foreground: 0 0% 62%; /* Light Gray */
+    --accent: 220 14% 96%; /* Light Gray/Beige */
+    --accent-foreground: 0 0% 0%; /* Black */
+    --destructive: 0 84.2% 60.2%; /* Keep the destructive color */
+    --destructive-foreground: 0 0% 100%; /* White */
+    --border: 220 13% 91%; /* Light Gray */
+    --input: 220 13% 91%; /* Light Gray */
+    --ring: 0 0% 0%; /* Black */
+    --radius: 1.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-black font-inter antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-inter font-semibold tracking-tight text-black;
+  }
+}
