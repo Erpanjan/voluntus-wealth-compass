@@ -1,3 +1,4 @@
+
 import { useState, useRef, useCallback, RefObject } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { insertImageIntoEditor } from '@/utils/imageUtils';
@@ -30,12 +31,19 @@ export const useRichTextEditor = ({ initialValue, onChange }: UseRichTextEditorP
     editorRef.current?.focus();
   }, [onChange]);
 
-  // Handle content change
+  // Handle content change - modified to fix cursor position issues
   const handleContentChange = useCallback(() => {
     if (editorRef.current) {
       const newContent = editorRef.current.innerHTML;
       setEditorState(newContent);
       onChange(newContent);
+    }
+  }, [onChange]);
+
+  // Handle content blur - separated from handleContentChange
+  const handleContentBlur = useCallback(() => {
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML);
     }
   }, [onChange]);
 
@@ -186,6 +194,7 @@ export const useRichTextEditor = ({ initialValue, onChange }: UseRichTextEditorP
     setLineHeightPopoverOpen,
     applyFormat,
     handleContentChange,
+    handleContentBlur,
     handleLinkInsertion,
     handleImageUrlInsertion,
     handleImageUpload,

@@ -48,9 +48,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
         ref={editor.editorRef}
         className="content p-5 min-h-[400px] focus:outline-none prose max-w-none"
         contentEditable
-        dangerouslySetInnerHTML={{ __html: editor.editorState }}
-        onBlur={editor.handleContentChange}
         onInput={editor.handleContentChange}
+        onBlur={editor.handleContentBlur}
+        suppressContentEditableWarning={true}
         dir="ltr"
         style={{
           fontSize: '16px',
