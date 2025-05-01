@@ -28,8 +28,8 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
       <Accordion
         type="single" 
         collapsible 
-        defaultValue="article-content"
         className="border-none"
+        defaultValue="article-content"
       >
         <AccordionItem value="article-content" className="border-none">
           <AccordionTrigger className="px-6 py-4 hover:no-underline">
@@ -37,7 +37,7 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
               <h2 className="text-xl font-semibold">Article Content</h2>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="px-6 pb-6">
+          <AccordionContent forceMount className="px-6 pb-6 data-[state=closed]:hidden">
             <FormField
               control={form.control}
               name="content"
