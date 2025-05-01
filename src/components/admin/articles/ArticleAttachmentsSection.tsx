@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -147,7 +146,7 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
                           </a>
                         )}
                         <button 
-                          onClick={() => handleRemoveAttachment(attachment.id || '')}
+                          onClick={() => handleRemoveAttachment(attachment.id)}
                           className="p-2 hover:bg-red-50 rounded-full text-red-500 hover:text-red-600 transition-colors"
                         >
                           <X className="h-4 w-4" />

@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
+import { Json } from '@/integrations/supabase/types';
 
 // Types for our article operations
 export interface Author {
@@ -48,7 +49,13 @@ export const articleService = {
       // Process the data to ensure correct typing
       const processedData: Article[] = data?.map((item: any) => ({
         ...item,
-        authors: Array.isArray(item.authors) ? item.authors : []
+        authors: Array.isArray(item.authors) 
+          ? item.authors.map((author: any) => ({
+              id: author.id,
+              name: author.name,
+              image_url: author.image_url
+            })) 
+          : []
       })) || [];
       
       return processedData;
@@ -71,7 +78,13 @@ export const articleService = {
       // Process the data to ensure correct typing
       const processedData: Article[] = data?.map((item: any) => ({
         ...item,
-        authors: Array.isArray(item.authors) ? item.authors : []
+        authors: Array.isArray(item.authors) 
+          ? item.authors.map((author: any) => ({
+              id: author.id,
+              name: author.name,
+              image_url: author.image_url
+            })) 
+          : []
       })) || [];
       
       // Filter to only return published articles (where published_at is in the past)
@@ -101,8 +114,22 @@ export const articleService = {
         // Process the data to ensure correct typing
         const article: Article = {
           ...data[0],
-          authors: Array.isArray(data[0].authors) ? data[0].authors : [],
-          reports: Array.isArray(data[0].reports) ? data[0].reports : []
+          authors: Array.isArray(data[0].authors) 
+            ? data[0].authors.map((author: any) => ({
+                id: author.id,
+                name: author.name,
+                image_url: author.image_url
+              })) 
+            : [],
+          reports: Array.isArray(data[0].reports) 
+            ? data[0].reports.map((report: any) => ({
+                id: report.id,
+                title: report.title,
+                description: report.description,
+                file_url: report.file_url,
+                created_at: report.created_at
+              })) 
+            : []
         };
         return article;
       }
@@ -192,12 +219,16 @@ export const articleService = {
         return updatedArticle?.slug || '';
       } else {
         // Create new article with auto-generated slug
+        const slugifiedTitle = article.title 
+          ? article.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') 
+          : uuidv4();
+        
         const { data: newArticle, error: insertError } = await supabase
           .from('articles')
           .insert({
             id: articleId,
             ...articleData,
-            slug: article.title ? article.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') : uuidv4()
+            slug: slugifiedTitle
           })
           .select('slug')
           .single();
@@ -272,7 +303,23 @@ export const articleService = {
           }
           
           // Create or update the report
-          if (attachment.id) {
+          if (attachment.id && attachment.id.startsWith('attachment-')) {
+            // This is a new attachment that was just created in the UI
+            // It has a temporary ID that starts with 'attachment-'
+            const { error: reportError } = await supabase
+              .from('reports')
+              .insert({
+                article_id: articleId,
+                title: attachment.title,
+                description: attachment.description,
+                file_url: fileUrl || ''
+              });
+            
+            if (reportError) {
+              console.error('Error creating report:', reportError);
+              throw reportError;
+            }
+          } else if (attachment.id) {
             // Update existing report
             const { error: reportError } = await supabase
               .from('reports')
@@ -295,7 +342,7 @@ export const articleService = {
                 article_id: articleId,
                 title: attachment.title,
                 description: attachment.description,
-                file_url: fileUrl
+                file_url: fileUrl || ''
               });
             
             if (reportError) {
@@ -326,8 +373,6 @@ export const articleService = {
         console.error('Error deleting article:', error);
         throw error;
       }
-      
-      // TODO: Clean up storage files if needed
       
       return true;
     } catch (error) {
