@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ArrowLeft, Calendar, Download } from 'lucide-react';
@@ -14,10 +14,15 @@ const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { article, loading, error } = useArticleDetail(id || '');
 
+  // Scroll to top on component mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Handle missing article ID
   if (!id) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
+      <div className="container mx-auto px-4 py-16 text-center mt-20">
         <h1 className="text-2xl font-semibold text-red-600">Error</h1>
         <p className="mt-4">Article ID is missing. Please go back and try again.</p>
         <Button asChild className="mt-6">
@@ -33,7 +38,7 @@ const ArticleDetail = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="container mx-auto max-w-4xl px-4 py-12">
+      <div className="container mx-auto max-w-5xl px-4 py-12 mt-20">
         <div className="mb-8">
           <Skeleton className="h-10 w-3/4 mb-4" />
           <Skeleton className="h-6 w-1/2" />
@@ -53,7 +58,7 @@ const ArticleDetail = () => {
   // Error state
   if (error || !article) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
+      <div className="container mx-auto px-4 py-16 text-center mt-20">
         <h1 className="text-2xl font-semibold text-red-600">Article Not Found</h1>
         <p className="mt-4">The article you are looking for does not exist or has been removed.</p>
         <Button asChild className="mt-6">
@@ -80,12 +85,12 @@ const ArticleDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto max-w-4xl px-4 py-12">
+    <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="container mx-auto max-w-5xl px-4 py-8">
         {/* Back button */}
-        <Button variant="ghost" asChild className="mb-8 hover:bg-gray-100">
+        <Button variant="ghost" asChild className="mb-8 hover:bg-gray-100 group">
           <Link to="/insight">
-            <ArrowLeft size={18} className="mr-2" />
+            <ArrowLeft size={18} className="mr-2 group-hover:transform group-hover:-translate-x-1 transition-transform" />
             Back to Insights
           </Link>
         </Button>
@@ -132,11 +137,11 @@ const ArticleDetail = () => {
         
         {/* Attachments section */}
         {article.reports && article.reports.length > 0 && (
-          <div className="mt-12">
+          <div className="mt-12 mb-8">
             <h3 className="text-xl font-semibold mb-4">Attachments</h3>
             <div className="grid gap-4 md:grid-cols-2">
               {article.reports.map((report) => (
-                <Card key={report.id} className="p-4 flex justify-between items-center hover:bg-gray-50">
+                <Card key={report.id} className="p-4 flex justify-between items-center hover:bg-gray-50 transition-all">
                   <div>
                     <h4 className="font-medium">{report.title}</h4>
                     {report.description && (
@@ -144,7 +149,13 @@ const ArticleDetail = () => {
                     )}
                   </div>
                   <Button variant="outline" asChild>
-                    <a href={report.file_url} target="_blank" rel="noopener noreferrer">
+                    <a 
+                      href={report.file_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      download
+                      className="flex items-center"
+                    >
                       <Download size={16} className="mr-2" />
                       Download
                     </a>
@@ -154,6 +165,16 @@ const ArticleDetail = () => {
             </div>
           </div>
         )}
+        
+        {/* Bottom back link */}
+        <div className="mt-12 mb-8 text-center">
+          <Button variant="outline" asChild size="lg" className="hover:bg-gray-100">
+            <Link to="/insight" className="flex items-center">
+              <ArrowLeft size={18} className="mr-2" />
+              Back to Insights
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );
