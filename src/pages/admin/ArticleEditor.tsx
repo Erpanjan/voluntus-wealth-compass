@@ -31,7 +31,6 @@ const ArticleEditor = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
-  const [authors, setAuthors] = useState<any[]>([]);
   const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -51,32 +50,11 @@ const ArticleEditor = () => {
   });
   
   useEffect(() => {
-    // Fetch authors for the dropdown (currently placeholder)
-    const fetchAuthors = async () => {
-      // This would normally fetch from the authors table
-      // const { data, error } = await supabase.from('authors').select('*');
-      
-      // For now, use sample data
-      setAuthors([
-        { id: '1', name: 'John Smith' },
-        { id: '2', name: 'Jane Doe' },
-        { id: '3', name: 'Robert Johnson' }
-      ]);
-    };
-
-    fetchAuthors();
-    
     // If in edit mode, fetch the article data
     if (isEditMode) {
       const fetchArticle = async () => {
         try {
           // This would normally fetch from the articles table
-          // const { data, error } = await supabase
-          //   .from('articles')
-          //   .select('*')
-          //   .eq('id', id)
-          //   .single();
-          
           // For now, use sample data
           const data = SAMPLE_ARTICLE;
           
@@ -94,14 +72,8 @@ const ArticleEditor = () => {
               setImagePreview(data.image_url);
             }
             
-            // Fetch article authors
-            // const { data: authorData, error: authorError } = await supabase
-            //   .from('article_authors')
-            //   .select('author_id')
-            //   .eq('article_id', id);
-            
             // For now, assume these authors for the sample article
-            setSelectedAuthors(['1', '2']);
+            setSelectedAuthors(['John Smith', 'Jane Doe']);
           }
         } catch (error) {
           console.error('Error fetching article:', error);
@@ -125,71 +97,13 @@ const ArticleEditor = () => {
       // When you create the articles table in your database,
       // you can implement the actual save functionality here
       
-      // Example of how it would work with proper tables:
-      // If editing an existing article
-      // if (isEditMode) {
-      //   const { error } = await supabase
-      //     .from('articles')
-      //     .update({
-      //       title: data.title,
-      //       description: data.description,
-      //       category: data.category,
-      //       content: data.content,
-      //       image_url: data.image_url,
-      //       published_at: new Date(data.published_at).toISOString(),
-      //       slug: slugify(data.title),
-      //     })
-      //     .eq('id', id);
-      //
-      //   // Handle author associations
-      //   await supabase
-      //     .from('article_authors')
-      //     .delete()
-      //     .eq('article_id', id);
-      //
-      //   for (const authorId of selectedAuthors) {
-      //     await supabase
-      //       .from('article_authors')
-      //       .insert({
-      //         article_id: id,
-      //         author_id: authorId
-      //       });
-      //   }
-      // } 
-      // // If creating a new article
-      // else {
-      //   const { data: newArticle, error } = await supabase
-      //     .from('articles')
-      //     .insert({
-      //       title: data.title,
-      //       description: data.description,
-      //       category: data.category,
-      //       content: data.content,
-      //       image_url: data.image_url,
-      //       published_at: new Date(data.published_at).toISOString(),
-      //       slug: slugify(data.title),
-      //     })
-      //     .select()
-      //     .single();
-      //
-      //   // Handle author associations
-      //   for (const authorId of selectedAuthors) {
-      //     await supabase
-      //       .from('article_authors')
-      //       .insert({
-      //         article_id: newArticle.id,
-      //         author_id: authorId
-      //       });
-      //   }
-      // }
-      
       // For now, just simulate a successful operation
       setTimeout(() => {
         toast({
           title: isEditMode ? 'Article Updated' : 'Article Created',
           description: isEditMode 
-            ? 'The article has been updated successfully.' 
-            : 'The article has been created successfully.',
+            ? `The article has been updated successfully with ${selectedAuthors.length} author(s).` 
+            : `The article has been created successfully with ${selectedAuthors.length} author(s).`,
         });
         
         navigate('/admin/articles');
@@ -204,16 +118,6 @@ const ArticleEditor = () => {
     } finally {
       setSubmitting(false);
     }
-  };
-  
-  const handleAuthorChange = (authorId: string) => {
-    setSelectedAuthors(current => {
-      if (current.includes(authorId)) {
-        return current.filter(id => id !== authorId);
-      } else {
-        return [...current, authorId];
-      }
-    });
   };
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -256,14 +160,12 @@ const ArticleEditor = () => {
       <div className="space-y-6">
         <ArticleInfoSection
           form={form}
-          authors={authors}
           selectedAuthors={selectedAuthors}
           setSelectedAuthors={setSelectedAuthors}
           imagePreview={imagePreview}
           setImagePreview={setImagePreview}
           setImageFile={setImageFile}
           fileInputRef={fileInputRef}
-          handleAuthorChange={handleAuthorChange}
           handleImageChange={handleImageChange}
           handleRemoveImage={handleRemoveImage}
         />

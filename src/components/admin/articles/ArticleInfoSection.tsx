@@ -2,7 +2,7 @@
 import React, { useRef, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Trash2, Upload, User } from 'lucide-react';
+import { Calendar, Trash2, Upload, X, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -15,62 +15,55 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { UseFormReturn } from 'react-hook-form';
-import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Card } from '@/components/ui/card';
-
-// Available categories for selection
-const CATEGORIES = [
-  'Finance',
-  'Investing',
-  'Planning',
-  'Markets',
-  'Analysis',
-  'Retirement',
-  'Taxes',
-  'Estate Planning'
-];
-
-interface Author {
-  id: string;
-  name: string;
-}
+import { UseFormReturn } from 'react-hook-form';
 
 interface ArticleInfoSectionProps {
   form: UseFormReturn<any>;
-  authors: Author[];
   selectedAuthors: string[];
   setSelectedAuthors: React.Dispatch<React.SetStateAction<string[]>>;
   imagePreview: string | null;
   setImagePreview: React.Dispatch<React.SetStateAction<string | null>>;
   setImageFile: React.Dispatch<React.SetStateAction<File | null>>;
   fileInputRef: React.RefObject<HTMLInputElement>;
-  handleAuthorChange: (authorId: string) => void;
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleRemoveImage: () => void;
 }
 
 const ArticleInfoSection: React.FC<ArticleInfoSectionProps> = ({
   form,
-  authors,
   selectedAuthors,
-  handleAuthorChange,
+  setSelectedAuthors,
   imagePreview,
   fileInputRef,
   handleImageChange,
   handleRemoveImage
 }) => {
+  const [newAuthor, setNewAuthor] = useState('');
+
+  const handleAddAuthor = () => {
+    if (newAuthor.trim()) {
+      setSelectedAuthors(prev => [...prev, newAuthor.trim()]);
+      setNewAuthor('');
+    }
+  };
+
+  const handleRemoveAuthor = (authorToRemove: string) => {
+    setSelectedAuthors(prev => prev.filter(author => author !== authorToRemove));
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddAuthor();
+    }
+  };
+
   return (
     <Card>
       <Accordion
@@ -136,23 +129,12 @@ const ArticleInfoSection: React.FC<ArticleInfoSectionProps> = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {CATEGORIES.map(category => (
-                              <SelectItem key={category} value={category}>
-                                {category}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <Input 
+                            placeholder="Enter article category" 
+                            {...field} 
+                          />
+                        </FormControl>
                         <FormDescription>
                           Category of your article (e.g. Finance, Investing)
                         </FormDescription>
@@ -189,39 +171,44 @@ const ArticleInfoSection: React.FC<ArticleInfoSectionProps> = ({
                 <div>
                   <FormLabel>Authors</FormLabel>
                   <FormDescription className="mb-3">
-                    Select one or multiple authors for this article
+                    Add one or multiple authors for this article
                   </FormDescription>
-                  <div className="space-y-2">
-                    {authors.map(author => (
-                      <div 
-                        key={author.id}
-                        className={`flex items-center p-3 rounded-md border ${
-                          selectedAuthors.includes(author.id) 
-                            ? 'border-primary bg-primary/5' 
-                            : 'border-gray-200 hover:bg-gray-50'
-                        } transition-colors cursor-pointer`}
-                        onClick={() => handleAuthorChange(author.id)}
+                  
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {selectedAuthors.map((author, index) => (
+                      <Badge 
+                        key={`${author}-${index}`} 
+                        variant="secondary"
+                        className="flex items-center gap-1 px-3 py-1.5"
                       >
-                        <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
-                          <User size={16} />
-                        </div>
-                        <div className="flex-grow">
-                          <p className="font-medium">{author.name}</p>
-                        </div>
-                        <div>
-                          {selectedAuthors.includes(author.id) && (
-                            <Badge variant="outline" className="bg-primary text-white border-primary">
-                              Selected
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
+                        {author}
+                        <button 
+                          type="button"
+                          className="ml-1 hover:bg-gray-200 rounded-full p-1"
+                          onClick={() => handleRemoveAuthor(author)}
+                        >
+                          <X size={14} />
+                        </button>
+                      </Badge>
                     ))}
-                    {authors.length === 0 && (
-                      <p className="text-gray-500 text-sm">
-                        No authors available. Add authors in the Author Management section.
-                      </p>
-                    )}
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Input
+                      value={newAuthor}
+                      onChange={(e) => setNewAuthor(e.target.value)}
+                      onKeyDown={handleKeyPress}
+                      placeholder="Enter author name"
+                      className="flex-grow"
+                    />
+                    <Button 
+                      type="button" 
+                      onClick={handleAddAuthor}
+                      variant="outline"
+                    >
+                      <Plus size={16} className="mr-2" />
+                      Add
+                    </Button>
                   </div>
                 </div>
                 
