@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, X } from 'lucide-react';
 import { FormDescription, FormLabel } from '@/components/ui/form';
+import { useToast } from '@/hooks/use-toast';
 
 interface ArticleAuthorsSectionProps {
   selectedAuthors: string[];
@@ -16,12 +17,26 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
   setSelectedAuthors
 }) => {
   const [newAuthor, setNewAuthor] = useState('');
+  const { toast } = useToast();
 
   const handleAddAuthor = () => {
-    if (newAuthor.trim()) {
-      setSelectedAuthors(prev => [...prev, newAuthor.trim()]);
-      setNewAuthor('');
+    const trimmedAuthor = newAuthor.trim();
+    if (!trimmedAuthor) {
+      return;
     }
+    
+    // Check if author already exists to avoid duplicates
+    if (selectedAuthors.includes(trimmedAuthor)) {
+      toast({
+        title: "Author already exists",
+        description: `"${trimmedAuthor}" is already in the authors list.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setSelectedAuthors(prev => [...prev, trimmedAuthor]);
+    setNewAuthor(''); // Clear the input after adding
   };
 
   const handleRemoveAuthor = (authorToRemove: string) => {
@@ -73,6 +88,7 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
           type="button" 
           onClick={handleAddAuthor}
           variant="outline"
+          disabled={!newAuthor.trim()}
         >
           <Plus size={16} className="mr-2" />
           Add

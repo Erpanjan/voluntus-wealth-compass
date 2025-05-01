@@ -97,6 +97,13 @@ const ArticleEditor = () => {
       // When you create the articles table in your database,
       // you can implement the actual save functionality here
       
+      // Log the data being submitted including authors
+      console.log("Submitting article data:", {
+        ...data,
+        authors: selectedAuthors,
+        image: imageFile ? "Image file present" : "No image"
+      });
+      
       // For now, just simulate a successful operation
       setTimeout(() => {
         toast({
