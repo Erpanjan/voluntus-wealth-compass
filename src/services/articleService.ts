@@ -1,14 +1,15 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
-import { Article, Author, ArticleInput } from '@/types/article.types';
+import { Article, Author, ArticleInput, Report } from '@/types/article.types';
 import { createUniqueSlug } from '@/utils/articleUtils';
 import { reportService } from './reportService';
 import { authorService } from './authorService';
 
-export { Author } from '@/types/article.types';
-export { Article } from '@/types/article.types';
-export { Report } from '@/types/article.types';
+// Fix re-exports using 'export type' syntax
+export type { Author } from '@/types/article.types';
+export type { Article } from '@/types/article.types';
+export type { Report } from '@/types/article.types';
 
 export const articleService = {
   /**
