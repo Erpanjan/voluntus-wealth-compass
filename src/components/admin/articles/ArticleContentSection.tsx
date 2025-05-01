@@ -3,12 +3,6 @@ import React from 'react';
 import { 
   Card,
 } from '@/components/ui/card';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { UseFormReturn } from 'react-hook-form';
 import RichTextEditor from './RichTextEditor';
 import {
@@ -55,22 +49,27 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
           </CollapsibleTrigger>
         </div>
         
-        <CollapsibleContent className="px-6 pb-6">
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <RichTextEditor 
-                    value={field.value} 
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <CollapsibleContent 
+          className="px-6 pb-6"
+          forceMount
+        >
+          <div className={`${isOpen ? 'block' : 'hidden'}`}>
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <RichTextEditor 
+                      value={field.value} 
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </CollapsibleContent>
       </Collapsible>
     </Card>
