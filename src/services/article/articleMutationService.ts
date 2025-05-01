@@ -31,15 +31,10 @@ export const articleMutationService = {
       console.log("Authors:", authorIds);
       console.log("Attachments:", attachments?.length || 0);
       
-      // Ensure the storage bucket exists
-      await reportService.ensureStorageBucketExists();
-      
       // 1. Upload image if provided
       let imageUrl = article.image_url;
       if (imageFile) {
         const imagePath = `articles/${articleId}/${uuidv4()}`;
-        console.log("Uploading image to path:", imagePath);
-        
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('article-assets')
           .upload(imagePath, imageFile, {
@@ -148,24 +143,7 @@ export const articleMutationService = {
         
         for (const attachment of attachments) {
           console.log("Processing attachment:", attachment.id, attachment.title);
-          try {
-            await reportService.saveReport(articleId, attachment, attachment.file);
-          } catch (error) {
-            console.error('Error processing attachment:', error);
-            // Continue with other attachments
-          }
-        }
-        
-        // Check if reports were created
-        const { data: reports, error: reportsError } = await supabase
-          .from('reports')
-          .select('*')
-          .eq('article_id', articleId);
-          
-        if (reportsError) {
-          console.error('Error checking reports:', reportsError);
-        } else {
-          console.log(`Article has ${reports?.length || 0} reports in database after processing`);
+          await reportService.saveReport(articleId, attachment, attachment.file);
         }
       }
       
