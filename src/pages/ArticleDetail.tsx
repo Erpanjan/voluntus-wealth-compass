@@ -84,7 +84,11 @@ const ArticleDetail = () => {
     return <p>{article.description}</p>;
   };
 
+  // Log attachment data for debugging
   console.log("Article reports:", article.reports);
+
+  // Check if reports exist and have items
+  const hasAttachments = Array.isArray(article.reports) && article.reports.length > 0;
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28">
@@ -138,7 +142,7 @@ const ArticleDetail = () => {
         </div>
         
         {/* Attachments section */}
-        {article.reports && article.reports.length > 0 && (
+        {hasAttachments && (
           <div className="mt-12 mb-8">
             <h3 className="text-xl font-semibold mb-4">Attachments</h3>
             <div className="grid gap-4 md:grid-cols-2">
