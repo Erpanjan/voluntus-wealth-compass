@@ -2,17 +2,8 @@
 import React, { RefObject } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Type, Text } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-// Import toolbar components
+// Import toolbar components from tools directory
 import TextFormattingTools from './tools/TextFormattingTools';
 import ColorPopover from './tools/ColorPopover';
 import LineHeightPopover from './tools/LineHeightPopover';

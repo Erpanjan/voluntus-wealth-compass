@@ -74,4 +74,3 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
 };
 
 export default RichTextEditor;
-
