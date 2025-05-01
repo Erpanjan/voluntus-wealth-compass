@@ -50,34 +50,56 @@ export const insertImageIntoEditor = (
     // Focus the editor
     editorRef.current.focus();
     
-    // Insert the image at cursor position with responsive styling
-    const imgHtml = `<img src="${imageUrl}" alt="Article image" style="max-width: 100%; height: auto; margin: 1rem 0; border-radius: 8px;" />`;
-    
-    // Use modern execCommand while it's still supported
-    if (document.queryCommandSupported('insertHTML')) {
-      document.execCommand('insertHTML', false, imgHtml);
-    } else {
-      // Fallback for browsers that might not support insertHTML
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const imgElement = document.createElement('div');
-        imgElement.innerHTML = imgHtml;
-        range.deleteContents();
-        range.insertNode(imgElement.firstChild as Node);
+    // Get natural dimensions of the image to store for resize operations
+    const img = new Image();
+    img.onload = () => {
+      const naturalWidth = img.width;
+      const naturalHeight = img.height;
+      
+      // Insert the image at cursor position with responsive styling
+      const imgHtml = `<img 
+        src="${imageUrl}" 
+        alt="Article image" 
+        style="max-width: 100%; height: auto; margin: 1rem 0; border-radius: 8px;" 
+        data-initial-width="${naturalWidth}"
+        data-initial-height="${naturalHeight}"
+        class="resizable-image"
+      />`;
+      
+      // Use modern execCommand while it's still supported
+      if (document.queryCommandSupported('insertHTML')) {
+        document.execCommand('insertHTML', false, imgHtml);
+      } else {
+        // Fallback for browsers that might not support insertHTML
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          const imgElement = document.createElement('div');
+          imgElement.innerHTML = imgHtml;
+          range.deleteContents();
+          range.insertNode(imgElement.firstChild as Node);
+        }
       }
-    }
-    
-    // Update form value
-    if (onChange && typeof onChange === 'function') {
-      onChange(editorRef.current.innerHTML);
-    }
-    
-    // Provide feedback to user
-    toast({
-      title: "Success",
-      description: "Image inserted successfully",
-    });
+      
+      // Update form value
+      if (onChange && typeof onChange === 'function') {
+        onChange(editorRef.current!.innerHTML);
+      }
+      
+      // Provide feedback to user
+      toast({
+        title: "Success",
+        description: "Image inserted successfully. Right-click on the image to resize it.",
+      });
+    };
+    img.onerror = () => {
+      toast({
+        title: "Error",
+        description: "Failed to load the image. Please try another URL.",
+        variant: "destructive",
+      });
+    };
+    img.src = imageUrl;
   }
 };
 

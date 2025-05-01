@@ -2,8 +2,17 @@
 import React, { RefObject } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Type, TextSize } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import TextFormattingTools from './TextFormattingTools';
-import FontOptionsPopover from './FontOptionsPopover';
 import ColorPopover from './ColorPopover';
 import LineHeightPopover from './LineHeightPopover';
 import HeadingDropdown from './HeadingDropdown';
@@ -94,8 +103,6 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
   handleImageUrlInsertion,
   handleImageUpload,
   fileInputRef,
-  fontOptionsOpen,
-  setFontOptionsOpen,
   colorPopoverOpen,
   setColorPopoverOpen,
   lineHeightPopoverOpen,
@@ -112,14 +119,39 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
         
         <Separator orientation="vertical" className="mx-1 h-6" />
         
-        <FontOptionsPopover
-          fontOptionsOpen={fontOptionsOpen}
-          setFontOptionsOpen={setFontOptionsOpen}
-          handleFontFamilyChange={handleFontFamilyChange}
-          handleFontSizeChange={handleFontSizeChange}
-          fontFamilies={fontFamilies}
-          fontSizes={fontSizes}
-        />
+        {/* Font Family Control - Separated from Font Size */}
+        <div className="flex items-center mr-1">
+          <Type size={16} className="mr-1" />
+          <Select onValueChange={handleFontFamilyChange}>
+            <SelectTrigger className="h-8 w-[120px] text-xs">
+              <SelectValue placeholder="Font Family" />
+            </SelectTrigger>
+            <SelectContent>
+              {fontFamilies.map((font) => (
+                <SelectItem key={font.value} value={font.value}>
+                  <span style={{ fontFamily: font.value }}>{font.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Font Size Control - Separated from Font Family */}
+        <div className="flex items-center mr-1">
+          <TextSize size={16} className="mr-1" />
+          <Select onValueChange={handleFontSizeChange}>
+            <SelectTrigger className="h-8 w-[110px] text-xs">
+              <SelectValue placeholder="Font Size" />
+            </SelectTrigger>
+            <SelectContent>
+              {fontSizes.map((size) => (
+                <SelectItem key={size.value} value={size.value}>
+                  <span style={{ fontSize: size.label === "Normal" ? "14px" : "14px" }}>{size.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         
         <ColorPopover
           colorPopoverOpen={colorPopoverOpen}
