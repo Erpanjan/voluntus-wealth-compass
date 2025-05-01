@@ -7,6 +7,7 @@ import ArticleContentSection from '@/components/admin/articles/ArticleContentSec
 import ArticleAttachmentsSection from '@/components/admin/articles/ArticleAttachmentsSection';
 import ArticleEditorToolbar from '@/components/admin/articles/ArticleEditorToolbar';
 import ArticlePreviewDialog from '@/components/admin/articles/ArticlePreviewDialog';
+import { Attachment } from '@/hooks/admin/articleEditor/useArticleAttachments';
 
 const ArticleEditor = () => {
   const {
@@ -67,8 +68,8 @@ const ArticleEditor = () => {
           
           <ArticleAttachmentsSection 
             form={form}
-            attachments={attachments}
-            setAttachments={setAttachments}
+            attachments={attachments as Attachment[]}
+            setAttachments={setAttachments as React.Dispatch<React.SetStateAction<Attachment[]>>}
           />
         </div>
 

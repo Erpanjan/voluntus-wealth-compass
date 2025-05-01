@@ -40,12 +40,12 @@ export const useArticleEditor = () => {
   // Wrap saveDraft and publishArticle to get data from their respective hooks
   const handleSaveDraft = async () => {
     const formData = form.getValues();
-    await saveDraft(formData, selectedAuthors, imageFile, attachments);
+    await saveDraft(formData, selectedAuthors, imageFile, attachments as Attachment[]);
   };
 
   const handlePublishArticle = async () => {
     const formData = form.getValues();
-    await publishArticle(formData, selectedAuthors, imageFile, attachments);
+    await publishArticle(formData, selectedAuthors, imageFile, attachments as Attachment[]);
   };
 
   return {

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -131,7 +130,7 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
                         <div>
                           <p className="text-sm font-medium text-gray-800">{attachment.name || attachment.title}</p>
                           <p className="text-xs text-gray-500 mt-1">
-                            {attachment.size ? formatFileSize(attachment.size) : 'Unknown size'}
+                            {formatFileSize(attachment.size)}
                           </p>
                         </div>
                       </div>

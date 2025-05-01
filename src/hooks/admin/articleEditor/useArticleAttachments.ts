@@ -11,9 +11,9 @@ export interface Attachment {
   file_url?: string;
   file?: File;
   created_at?: string;
-  name: string; // Changed from optional to required
-  size?: number;
-  type?: string;
+  name: string; // Required property
+  size: number; // Changed from optional to required
+  type: string; // Changed from optional to required
   url?: string;
 }
 
@@ -44,8 +44,8 @@ export const useArticleAttachments = (isEditMode: boolean) => {
           file_url: item.file_url,
           created_at: item.created_at,
           name: item.title, // Ensure name is always set to title
-          size: 0, // We don't have the size from the database
-          type: item.file_url?.split('.').pop() || '',
+          size: item.size || 0, // Default to 0 if size is not available
+          type: item.file_url?.split('.').pop() || 'unknown', // Default to 'unknown' if type can't be determined
           url: item.file_url
         }));
         

@@ -1,100 +1,119 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { articleService } from '@/services/articleService';
+import { Author } from '@/services/articleService';
+import { Attachment } from './useArticleAttachments';
 
 export const useArticleActions = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
-  
-  // Navigation functions
+  const { toast } = useToast();
+
+  // Navigate back to article management
   const navigateBack = () => {
     navigate('/admin/articles');
   };
 
-  // Save as draft function
-  const saveDraft = async (formData: any, authorIds: string[], imageFile: File | null, attachments: any[]) => {
+  // Save article as draft
+  const saveDraft = async (formData: any, selectedAuthors: Author[], imageFile: File | null, attachments: Attachment[]) => {
     setSubmitting(true);
-    
+
     try {
-      const slug = await articleService.saveArticle(
+      const result = await articleService.saveArticle(
         {
-          ...formData,
-          published_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(), // 30 days future
+          id: id,
+          title: formData.title,
+          description: formData.description,
+          content: formData.content,
+          category: formData.category,
+          // For drafts, set published_at to a future date
+          published_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(), // 30 days from now
         },
-        authorIds,
+        selectedAuthors.map(author => author.id),
         imageFile,
         attachments
       );
-      
-      if (!slug) {
-        throw new Error("Failed to save draft");
+
+      if (!result) {
+        throw new Error('Failed to save article draft');
       }
-      
+
       toast({
-        title: 'Draft Saved',
-        description: 'Your article draft has been saved.',
+        title: 'Draft saved',
+        description: 'Your article draft has been saved successfully.',
       });
-      
-      return true;
-    } catch (error: any) {
-      console.error('Error:', error);
+
+      // If this is a new article (no ID), redirect to the edit page
+      if (!id && result) {
+        navigate(`/admin/articles/edit/${result}`);
+      }
+    } catch (error) {
+      console.error('Error saving draft:', error);
       toast({
         title: 'Error',
-        description: 'An error occurred while saving the draft.',
+        description: 'Failed to save article draft.',
         variant: 'destructive',
       });
-      return false;
     } finally {
       setSubmitting(false);
     }
   };
-  
-  // Publish function
-  const publishArticle = async (formData: any, authorIds: string[], imageFile: File | null, attachments: any[]) => {
+
+  // Publish article
+  const publishArticle = async (formData: any, selectedAuthors: Author[], imageFile: File | null, attachments: Attachment[]) => {
     setSubmitting(true);
-    
+
     try {
-      const slug = await articleService.saveArticle(
+      // Validate required fields
+      if (!formData.title || !formData.description || !formData.category || !formData.content) {
+        throw new Error('Please fill out all required fields');
+      }
+
+      const result = await articleService.saveArticle(
         {
-          ...formData,
-          published_at: new Date().toISOString(), // Publish immediately
+          id: id,
+          title: formData.title,
+          description: formData.description,
+          content: formData.content,
+          category: formData.category,
+          // For published articles, set published_at to now
+          published_at: new Date().toISOString(),
         },
-        authorIds,
+        selectedAuthors.map(author => author.id),
         imageFile,
         attachments
       );
-      
-      if (!slug) {
-        throw new Error("Failed to publish article");
+
+      if (!result) {
+        throw new Error('Failed to publish article');
       }
-      
+
       toast({
-        title: 'Article Published',
-        description: `The article has been published successfully.`,
+        title: 'Article published',
+        description: 'Your article has been published successfully.',
       });
-      
+
+      // Redirect to article management
       navigate('/admin/articles');
-      return true;
     } catch (error: any) {
-      console.error('Error:', error);
+      console.error('Error publishing article:', error);
       toast({
         title: 'Error',
-        description: 'An error occurred while publishing the article.',
+        description: error.message || 'Failed to publish article.',
         variant: 'destructive',
       });
-      return false;
     } finally {
       setSubmitting(false);
     }
   };
-  
+
   return {
     submitting,
     navigateBack,
     saveDraft,
-    publishArticle
+    publishArticle,
   };
 };
