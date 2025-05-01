@@ -32,7 +32,7 @@ const ArticleEditorContent: React.FC<ArticleEditorContentProps> = ({
   handleImageChange,
   loading
 }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false); // Closed by default to focus on the editor
   const form = useForm({
     defaultValues: formValues
   });
@@ -41,11 +41,18 @@ const ArticleEditorContent: React.FC<ArticleEditorContentProps> = ({
     <div className="w-full space-y-6">
       {/* Article Information Section - Collapsible */}
       <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
-        <Card>
+        <Card className="border-dashed">
           <div className="flex items-center justify-between p-4 cursor-pointer">
             <CollapsibleTrigger className="flex items-center justify-between w-full">
               <h3 className="text-lg font-semibold">Article Information</h3>
-              <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? '' : 'transform rotate-180'}`} />
+              <div className="flex items-center text-sm text-muted-foreground">
+                {!isOpen && (
+                  <span className="mr-2">
+                    {formValues.title ? `Title: ${formValues.title}` : 'No title set'}
+                  </span>
+                )}
+                <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? 'transform rotate-180' : ''}`} />
+              </div>
             </CollapsibleTrigger>
           </div>
           
@@ -64,8 +71,8 @@ const ArticleEditorContent: React.FC<ArticleEditorContentProps> = ({
       </Collapsible>
 
       {/* Article Content Editor - Always Visible */}
-      <Card>
-        <CardContent className="pt-6">
+      <Card className="shadow-sm">
+        <CardContent className="pt-6 pb-6">
           <ArticleContentEditor htmlContent={htmlContent} setHtmlContent={setHtmlContent} />
         </CardContent>
       </Card>
