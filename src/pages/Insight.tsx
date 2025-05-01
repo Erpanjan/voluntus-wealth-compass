@@ -1,84 +1,60 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ArticleCard from '@/components/ArticleCard';
 import ContactForm from '@/components/ContactForm';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { supabase } from '@/integrations/supabase/client';
-import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useQuery } from '@tanstack/react-query';
-import { Json } from '@/integrations/supabase/types';
-
-interface Author {
-  id: string;
-  name: string;
-  image_url?: string;
-}
-
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  content: any;
-  category: string;
-  image_url?: string;
-  published_at: string;
-  authors: Author[];
-}
-
-interface RawArticleResponse {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  content: Json;
-  category: string;
-  image_url: string;
-  published_at: string;
-  created_at: string;
-  updated_at: string;
-  authors: Json;
-}
-
-const fetchArticles = async (): Promise<Article[]> => {
-  const { data, error } = await supabase.rpc('get_articles_with_authors');
-  
-  if (error) {
-    throw new Error(error.message);
-  }
-  
-  // Transform the response into the Article type
-  const articles: Article[] = (data as RawArticleResponse[]).map(item => ({
-    ...item,
-    authors: Array.isArray(item.authors) ? item.authors as unknown as Author[] : []
-  }));
-  
-  return articles;
-};
 
 const Insight = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const articlesPerPage = 4;
-  
-  const { data: articles, isLoading, error } = useQuery({
-    queryKey: ['articles'],
-    queryFn: fetchArticles
-  });
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  };
-
-  // Calculate pagination
-  const indexOfLastArticle = currentPage * articlesPerPage;
-  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
-  const currentArticles = articles?.slice(indexOfFirstArticle, indexOfLastArticle) || [];
-  const totalPages = articles ? Math.ceil(articles.length / articlesPerPage) : 0;
+  // Sample articles
+  const articles = [
+    {
+      id: "green-energy-transition",
+      title: "Is the Green Energy Transition Dead?",
+      date: "March 19, 2025",
+      category: "RESEARCH & INSIGHTS",
+      authors: ["Karen Karniol-Tambour", "Carsten Stendevad", "Daniel Hochman", "Jeremy Ng"],
+      image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
+      description: "Policy has shifted to prioritize energy security and industrial competitiveness over climate leadership. This will steer investment to the most economical energy sources, driving continued growth in renewables and fossil fuels—but slower decarbonization."
+    },
+    {
+      id: "outlook-threats-portfolios",
+      title: "Our Outlook and the Threats We See to Portfolios, with Co-CIO Karen Karniol-Tambour",
+      date: "April 21, 2025",
+      category: "RESEARCH & INSIGHTS",
+      authors: ["Karen Karniol-Tambour", "Jim Haskel"],
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
+      description: "In this edited version of our Q1 CIO call, Co-CIO Karen Karniol-Tambour describes how we are processing today's radically different economic and market environment."
+    },
+    {
+      id: "new-york-times-trade-war",
+      title: "The New York Times: This Is Who Loses in a Trade War",
+      date: "March 10, 2025",
+      category: "IN THE NEWS",
+      authors: ["Karen Karniol-Tambour"],
+      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+      description: "For decades, America has consumed much more than it produces, financing persistent trade deficits with debt that foreign investors are happy to buy. President Trump is unwilling to accept this state of affairs. In a guest essay for the New York Times, co-CIO Karen Karniol-Tambour describes what this shift means for Europe's economic and security paradigm, the changes that are needed, and the barriers to reform."
+    },
+    {
+      id: "barrons-influential-women",
+      title: "Co-CIO Karen Karniol-Tambour Recognized on Barron's 100 Most Influential Women in U.S. Finance List",
+      date: "March 14, 2025",
+      category: "PEOPLE",
+      authors: ["Karen Karniol-Tambour"],
+      image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
+      description: "For the sixth consecutive year, Barron's has recognized Karen for her expertise, influence, and leadership in the financial services industry."
+    },
+    {
+      id: "gold-all-time-highs",
+      title: "Gold Hits All-Time Highs: Assessing the Rally and Gold's Role in Portfolios",
+      date: "March 4, 2025",
+      category: "RESEARCH & INSIGHTS",
+      authors: ["Hudson Attar", "Alex Smith", "Jim Haskel"],
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+      description: "Daily Observations editor Jim Haskel sits down with head of contra-currencies Hudson Attar and portfolio strategist Alex Smith to discuss the recent gold rally and the type of diversification gold can provide."
+    },
+  ];
 
   return (
     <div className="min-h-screen">
@@ -91,76 +67,41 @@ const Insight = () => {
 
       {/* Latest Research Section */}
       <Section title="Latest Research" titleCentered={true}>
-        {error ? (
-          <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Error loading articles. Please try again later.
-            </AlertDescription>
-          </Alert>
-        ) : isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-            {Array(4).fill(0).map((_, index) => (
-              <div key={index} className="flex flex-col space-y-3">
-                <Skeleton className="h-48 w-full rounded-xl" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
-              {currentArticles.map((article) => (
-                <ArticleCard
-                  key={article.id}
-                  id={article.slug}
-                  title={article.title}
-                  date={formatDate(article.published_at)}
-                  description={article.description}
-                  category={article.category}
-                  authors={article.authors?.map(a => a.name) || []}
-                  image={article.image_url || "https://images.unsplash.com/photo-1460925895917-afdab827c52f"}
-                />
-              ))}
-            </div>
-            
-            {totalPages > 1 && (
-              <div className="mt-12">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} 
-                      />
-                    </PaginationItem>
-                    
-                    {Array.from({ length: totalPages }).map((_, i) => (
-                      <PaginationItem key={i}>
-                        <PaginationLink 
-                          onClick={() => setCurrentPage(i + 1)}
-                          isActive={currentPage === i + 1}
-                          className="cursor-pointer"
-                        >
-                          {i + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    
-                    <PaginationItem>
-                      <PaginationNext 
-                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} 
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
+          {articles.slice(0, 4).map((article) => (
+            <ArticleCard
+              key={article.id}
+              id={article.id}
+              title={article.title}
+              date={article.date}
+              description={article.description}
+              category={article.category}
+              authors={article.authors}
+              image={article.image}
+            />
+          ))}
+        </div>
+        <div className="mt-12">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious href="#" />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href="#" isActive>1</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href="#">2</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href="#">3</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext href="#" />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </Section>
 
       {/* Contact Form */}

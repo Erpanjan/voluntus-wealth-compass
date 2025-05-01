@@ -9,105 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      article_authors: {
-        Row: {
-          article_id: string
-          author_id: string
-          created_at: string
-          id: string
-        }
-        Insert: {
-          article_id: string
-          author_id: string
-          created_at?: string
-          id?: string
-        }
-        Update: {
-          article_id?: string
-          author_id?: string
-          created_at?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "article_authors_article_id_fkey"
-            columns: ["article_id"]
-            isOneToOne: false
-            referencedRelation: "articles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "article_authors_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "authors"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      articles: {
-        Row: {
-          category: string
-          content: Json
-          created_at: string
-          description: string
-          id: string
-          image_url: string | null
-          published_at: string
-          slug: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          category: string
-          content: Json
-          created_at?: string
-          description: string
-          id?: string
-          image_url?: string | null
-          published_at?: string
-          slug: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          category?: string
-          content?: Json
-          created_at?: string
-          description?: string
-          id?: string
-          image_url?: string | null
-          published_at?: string
-          slug?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      authors: {
-        Row: {
-          bio: string | null
-          created_at: string
-          id: string
-          image_url: string | null
-          name: string
-        }
-        Insert: {
-          bio?: string | null
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          name: string
-        }
-        Update: {
-          bio?: string | null
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          name?: string
-        }
-        Relationships: []
-      }
       contact_submissions: {
         Row: {
           contact_info: string
@@ -138,83 +39,12 @@ export type Database = {
         }
         Relationships: []
       }
-      reports: {
-        Row: {
-          article_id: string | null
-          created_at: string
-          description: string | null
-          file_url: string
-          id: string
-          title: string
-        }
-        Insert: {
-          article_id?: string | null
-          created_at?: string
-          description?: string | null
-          file_url: string
-          id?: string
-          title: string
-        }
-        Update: {
-          article_id?: string | null
-          created_at?: string
-          description?: string | null
-          file_url?: string
-          id?: string
-          title?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reports_article_id_fkey"
-            columns: ["article_id"]
-            isOneToOne: false
-            referencedRelation: "articles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      get_article_by_slug: {
-        Args: { slug_param: string }
-        Returns: {
-          id: string
-          title: string
-          slug: string
-          description: string
-          content: Json
-          category: string
-          image_url: string
-          published_at: string
-          created_at: string
-          updated_at: string
-          authors: Json
-          reports: Json
-        }[]
-      }
-      get_articles_with_authors: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          id: string
-          title: string
-          slug: string
-          description: string
-          content: Json
-          category: string
-          image_url: string
-          published_at: string
-          created_at: string
-          updated_at: string
-          authors: Json
-        }[]
-      }
-      slugify: {
-        Args: { "": string }
-        Returns: string
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

@@ -18,11 +18,6 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import Questionnaire from "./pages/Questionnaire";
-import ArticleManagement from "./pages/admin/ArticleManagement";
-import ArticleEditor from "./pages/admin/ArticleEditor";
-import AdminDashboard from "./pages/admin/Dashboard";
-import AuthorManagement from "./pages/admin/AuthorManagement";
-import AdminLayout from "./components/layout/AdminLayout";
 
 const queryClient = new QueryClient();
 
@@ -32,24 +27,16 @@ const PrivateRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
-// Admin route component for React Router v6
-const AdminRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
-  return isAuthenticated && isAdmin ? children : <Navigate to="/login" />;
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <TooltipProvider>
         <div className="flex flex-col min-h-screen">
-          {/* Header only on non-dashboard/non-onboarding/non-questionnaire/non-admin pages */}
+          {/* Header only on non-dashboard/non-onboarding/non-questionnaire pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
             <Route path="/questionnaire" element={null} />
-            <Route path="/admin/*" element={null} />
             <Route path="*" element={<Header />} />
           </Routes>
           
@@ -83,70 +70,16 @@ const App = () => (
                   </PrivateRoute>
                 } 
               />
-              
-              {/* Admin routes */}
-              <Route 
-                path="/admin/dashboard" 
-                element={
-                  <AdminRoute>
-                    <AdminLayout>
-                      <AdminDashboard />
-                    </AdminLayout>
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/articles" 
-                element={
-                  <AdminRoute>
-                    <AdminLayout>
-                      <ArticleManagement />
-                    </AdminLayout>
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/authors" 
-                element={
-                  <AdminRoute>
-                    <AdminLayout>
-                      <AuthorManagement />
-                    </AdminLayout>
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/articles/new" 
-                element={
-                  <AdminRoute>
-                    <AdminLayout>
-                      <ArticleEditor />
-                    </AdminLayout>
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/articles/edit/:id" 
-                element={
-                  <AdminRoute>
-                    <AdminLayout>
-                      <ArticleEditor />
-                    </AdminLayout>
-                  </AdminRoute>
-                } 
-              />
-              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           
-          {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire/non-admin pages */}
+          {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
             <Route path="/login" element={null} />
             <Route path="/questionnaire" element={null} />
-            <Route path="/admin/*" element={null} />
             <Route path="*" element={<Footer />} />
           </Routes>
         </div>
