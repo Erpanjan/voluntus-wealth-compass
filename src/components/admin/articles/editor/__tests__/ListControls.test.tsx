@@ -5,8 +5,26 @@ import { ListControls } from '../tools';
 
 // Mock Button component
 jest.mock('@/components/ui/button', () => ({
-  Button: ({ onClick, children, className, variant, size, title, type }: { onClick: (e: any) => void, children: React.ReactNode, className: string, variant: string, size: string, title: string, type: string }) => (
-    <button data-testid="button" onClick={onClick} className={className} data-variant={variant} data-size={size} title={title} type={type}>{children}</button>
+  Button: ({ onClick, children, className, variant, size, title, type }: { 
+    onClick: (e: any) => void, 
+    children: React.ReactNode, 
+    className: string, 
+    variant: string, 
+    size: string, 
+    title: string, 
+    type: "button" | "submit" | "reset" 
+  }) => (
+    <button 
+      data-testid="button" 
+      onClick={onClick} 
+      className={className} 
+      data-variant={variant} 
+      data-size={size} 
+      title={title} 
+      type={type}
+    >
+      {children}
+    </button>
   ),
 }));
 
