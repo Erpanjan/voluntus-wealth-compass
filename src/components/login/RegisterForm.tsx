@@ -63,6 +63,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ isAdminMode = false }) => {
         
         if (error) throw error;
         
+        // Remove onboarding complete flag for new users
+        localStorage.removeItem('onboardingComplete');
+        
         toast({
           title: "Registration successful",
           description: "Please check your email to verify your account.",
@@ -76,6 +79,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ isAdminMode = false }) => {
         });
         
         if (error) throw error;
+        
+        // Remove onboarding complete flag for new users
+        localStorage.removeItem('onboardingComplete');
         
         setVerificationSent(true);
         toast({

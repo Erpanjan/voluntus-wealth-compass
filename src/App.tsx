@@ -75,7 +75,11 @@ const App = () => (
               />
               <Route 
                 path="/onboarding" 
-                element={<Onboarding />} 
+                element={
+                  <PrivateRoute>
+                    <Onboarding />
+                  </PrivateRoute>
+                } 
               />
               <Route 
                 path="/questionnaire" 

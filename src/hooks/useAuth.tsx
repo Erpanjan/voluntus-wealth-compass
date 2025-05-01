@@ -49,7 +49,16 @@ export const useAuth = (isAdminMode: boolean) => {
             }
           } else {
             localStorage.removeItem('isAdminMode');
-            navigate('/dashboard');
+            
+            // Check if this is a first-time user (onboarding not complete)
+            const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+            
+            // For new users or users who haven't completed onboarding, redirect to onboarding
+            if (!onboardingComplete && event === 'SIGNED_IN') {
+              navigate('/onboarding');
+            } else {
+              navigate('/dashboard');
+            }
           }
         }
         setSession(session);
@@ -94,11 +103,23 @@ export const useAuth = (isAdminMode: boolean) => {
               });
               navigate('/login');
             } else {
-              navigate('/dashboard');
+              // Check if onboarding is complete
+              const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+              if (!onboardingComplete) {
+                navigate('/onboarding');
+              } else {
+                navigate('/dashboard');
+              }
             }
           }
         } else {
-          navigate('/dashboard');
+          // Check if onboarding is complete for regular users
+          const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+          if (!onboardingComplete) {
+            navigate('/onboarding');
+          } else {
+            navigate('/dashboard');
+          }
         }
       }
       
@@ -115,27 +136,6 @@ export const useAuth = (isAdminMode: boolean) => {
     };
   }, [navigate, isAdminMode, toast]);
 
-  // Function to check if a user is an admin
-  const checkIfAdmin = async (userId: string): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('is_admin')
-        .eq('id', userId)
-        .single();
-      
-      if (error) {
-        console.error('Error checking admin status:', error);
-        return false;
-      }
-      
-      return data?.is_admin === true;
-    } catch (error) {
-      console.error('Error checking admin status:', error);
-      return false;
-    }
-  };
-
   // Handle demo account login
   const handleDemoLogin = () => {
     localStorage.setItem('isAuthenticated', 'true');
@@ -147,6 +147,7 @@ export const useAuth = (isAdminMode: boolean) => {
       navigate('/admin/dashboard');
     } else {
       localStorage.removeItem('isAdminMode');
+      // Demo users go directly to onboarding
       navigate('/onboarding');
     }
     
