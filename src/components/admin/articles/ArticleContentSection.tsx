@@ -4,7 +4,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent
 } from '@/components/ui/card';
 import { UseFormReturn } from 'react-hook-form';
@@ -26,9 +25,6 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
     <Card>
       <CardHeader>
         <CardTitle>Article Content</CardTitle>
-        <CardDescription>
-          Write your article content using the rich text editor below. You can format text, add headings, insert images and links.
-        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2 flex-wrap text-sm text-muted-foreground">
