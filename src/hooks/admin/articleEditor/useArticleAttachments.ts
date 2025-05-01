@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { getFileExtension, getMimeTypeFromExtension } from '@/components/admin/articles/attachments/utils';
 
 export interface Attachment {
   id: string;
@@ -37,6 +38,7 @@ export const useArticleAttachments = (isEditMode: boolean) => {
         .eq('article_id', id);
       
       if (error) {
+        console.error('Error loading attachments:', error);
         throw error;
       }
       
@@ -44,8 +46,12 @@ export const useArticleAttachments = (isEditMode: boolean) => {
       
       if (data && data.length > 0) {
         const formattedAttachments = data.map(item => {
+          // Get file name from the URL
+          const urlParts = item.file_url?.split('/') || [];
+          const fileName = urlParts[urlParts.length - 1]?.split('-').slice(1).join('-') || item.title;
+          
           // Extract file extension from file_url
-          const fileExtension = item.file_url?.split('.').pop() || 'unknown';
+          const fileExtension = getFileExtension(item.file_url || '');
           const mimeType = getMimeTypeFromExtension(fileExtension);
           
           // Estimate file size if not provided (default to 100KB)
@@ -57,7 +63,7 @@ export const useArticleAttachments = (isEditMode: boolean) => {
             description: item.description || '',
             file_url: item.file_url,
             created_at: item.created_at,
-            name: item.title, // Set name to title
+            name: fileName || item.title, // Use extracted filename or fall back to title
             size: estimatedSize, // Since there's no size in the reports table, we use an estimated size
             type: mimeType, // Set type based on file extension
             url: item.file_url
@@ -87,26 +93,6 @@ export const useArticleAttachments = (isEditMode: boolean) => {
       loadAttachmentsData();
     }
   }, [isEditMode, id]);
-  
-  // Helper function to determine MIME type from file extension
-  const getMimeTypeFromExtension = (extension: string): string => {
-    const extensionMap: Record<string, string> = {
-      'pdf': 'application/pdf',
-      'doc': 'application/msword',
-      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'xls': 'application/vnd.ms-excel',
-      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'ppt': 'application/vnd.ms-powerpoint',
-      'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      'txt': 'text/plain',
-      'png': 'image/png',
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'gif': 'image/gif'
-    };
-    
-    return extensionMap[extension.toLowerCase()] || 'application/octet-stream';
-  };
   
   return {
     attachments,

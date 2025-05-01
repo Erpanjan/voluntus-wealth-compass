@@ -2,14 +2,26 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useArticleDetail } from '@/hooks/useArticleDetail';
-import { ArrowLeft, Calendar, User, FileText, Download } from 'lucide-react';
+import { ArrowLeft, Calendar, User, FileText, Download, File } from 'lucide-react';
 import { formatDistance } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { AttachmentList } from '@/components/admin/articles/attachments';
+import { getFileExtension } from '@/components/admin/articles/attachments/utils';
 
 const ArticleDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { article, loading, error } = useArticleDetail(slug || '');
+  const { article, loading, error, refetch } = useArticleDetail(slug || '');
+  
+  React.useEffect(() => {
+    // Log article data for debugging
+    if (article) {
+      console.log("Article data:", article);
+      if (article.reports && article.reports.length > 0) {
+        console.log("Article has attachments:", article.reports);
+      } else {
+        console.log("Article has no attachments");
+      }
+    }
+  }, [article]);
   
   if (loading) {
     return (
@@ -45,16 +57,42 @@ const ArticleDetail = () => {
     'Unknown date';
   
   // Convert reports to attachment format if they exist
-  const attachments = article.reports?.map(report => ({
-    id: report.id,
-    name: report.title,
-    title: report.title,
-    description: report.description || '',
-    size: 0, // We don't have size in the reports data
-    type: 'application/pdf', // Assuming PDFs for simplicity
-    file_url: report.file_url,
-    url: report.file_url
-  })) || [];
+  const hasAttachments = article.reports && article.reports.length > 0;
+  
+  // Get icon based on file extension
+  const getFileIcon = (fileUrl: string) => {
+    const extension = getFileExtension(fileUrl);
+    
+    switch(extension) {
+      case 'pdf':
+        return <FileText className="h-5 w-5 text-red-500" />;
+      case 'doc':
+      case 'docx':
+        return <FileText className="h-5 w-5 text-blue-500" />;
+      case 'xls':
+      case 'xlsx':
+        return <FileText className="h-5 w-5 text-green-500" />;
+      case 'ppt':
+      case 'pptx':
+        return <FileText className="h-5 w-5 text-orange-500" />;
+      default:
+        return <File className="h-5 w-5 text-gray-500" />;
+    }
+  };
+  
+  // Extract file name from URL
+  const getFileName = (fileUrl: string) => {
+    const urlParts = fileUrl.split('/');
+    const rawName = urlParts[urlParts.length - 1];
+    
+    // Remove UUID prefix if present (assuming format: uuid-filename.ext)
+    const parts = rawName.split('-');
+    if (parts.length > 1 && parts[0].length === 36) {
+      return parts.slice(1).join('-');
+    }
+    
+    return rawName;
+  };
   
   return (
     <div className="max-w-4xl mx-auto py-10 px-6">
@@ -117,7 +155,7 @@ const ArticleDetail = () => {
       </div>
       
       {/* Reports/Attachments section */}
-      {attachments && attachments.length > 0 && (
+      {hasAttachments && (
         <div className="mt-12 border-t pt-6">
           <h2 className="text-2xl font-semibold mb-4 flex items-center">
             <FileText className="mr-2" />
@@ -125,28 +163,32 @@ const ArticleDetail = () => {
           </h2>
           
           <div className="space-y-4">
-            {attachments.map((attachment) => (
+            {article.reports.map((attachment) => (
               <div 
                 key={attachment.id} 
                 className="flex items-center justify-between p-4 border rounded-md hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center space-x-4">
                   <div className="bg-gray-100 p-3 rounded-lg">
-                    <FileText className="h-5 w-5 text-gray-500" />
+                    {getFileIcon(attachment.file_url)}
                   </div>
                   <div>
                     <p className="font-medium">{attachment.title}</p>
                     {attachment.description && (
                       <p className="text-sm text-gray-500">{attachment.description}</p>
                     )}
+                    <p className="text-xs text-gray-400">
+                      {getFileName(attachment.file_url)}
+                    </p>
                   </div>
                 </div>
                 
                 <Button asChild variant="outline" size="sm">
                   <a 
-                    href={attachment.file_url || attachment.url} 
+                    href={attachment.file_url} 
                     target="_blank" 
                     rel="noreferrer"
+                    download={getFileName(attachment.file_url)}
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Download
@@ -155,6 +197,26 @@ const ArticleDetail = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+      
+      {/* Debug section - only visible in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mt-12 p-4 border border-gray-200 rounded-md">
+          <h3 className="text-sm font-bold mb-2">Debug Information</h3>
+          <button 
+            onClick={() => refetch()} 
+            className="text-xs bg-gray-100 px-2 py-1 rounded mb-2"
+          >
+            Refresh Data
+          </button>
+          <pre className="text-xs overflow-auto max-h-40">
+            {JSON.stringify({
+              slug,
+              hasAttachments,
+              attachments: article.reports,
+            }, null, 2)}
+          </pre>
         </div>
       )}
     </div>

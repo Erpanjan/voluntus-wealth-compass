@@ -5,6 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { UseFormReturn } from 'react-hook-form';
 import { Attachment } from '@/hooks/admin/articleEditor/useArticleAttachments';
 import { useToast } from '@/hooks/use-toast';
+import { reportService } from '@/services/reportService';
 import { AttachmentList, FileUploadArea, validateFile } from './attachments';
 
 interface ArticleAttachmentsSectionProps {
@@ -21,14 +22,21 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  React.useEffect(() => {
+    // Ensure the storage bucket exists when the component loads
+    reportService.ensureStorageBucketExists();
+  }, []);
+  
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      console.log(`Processing ${e.target.files.length} selected files`);
+      
       const newFiles = Array.from(e.target.files).map(file => {
         // Validate file size
         if (!validateFile(file)) {
           toast({
-            title: "File too large",
-            description: `${file.name} exceeds the 10MB size limit.`,
+            title: "File too large or invalid type",
+            description: `${file.name} exceeds the 10MB size limit or has an invalid file type.`,
             variant: "destructive",
           });
           return null;
@@ -136,6 +144,16 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
               attachments={attachments} 
               onRemoveAttachment={handleRemoveAttachment} 
             />
+            
+            {/* Debug information - visible only in development */}
+            {process.env.NODE_ENV === 'development' && attachments.length > 0 && (
+              <div className="mt-4 p-3 border border-gray-300 rounded-md bg-gray-50">
+                <p className="text-xs font-mono text-gray-500">Debug: {attachments.length} attachments</p>
+                <pre className="text-xs font-mono text-gray-500 mt-2 overflow-auto max-h-40">
+                  {JSON.stringify(attachments, null, 2)}
+                </pre>
+              </div>
+            )}
           </div>
         </CollapsibleContent>
       </Collapsible>
