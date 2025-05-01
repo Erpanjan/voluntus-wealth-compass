@@ -7,10 +7,16 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Eye, Send } from 'lucide-react';
 import ArticleInfoSection from '@/components/admin/articles/ArticleInfoSection';
 import ArticleContentSection from '@/components/admin/articles/ArticleContentSection';
 import { handleImageUpload, clearImageUpload } from '@/utils/imageUtils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Sample data for edit mode
 const SAMPLE_ARTICLE = {
@@ -34,6 +40,7 @@ const ArticleEditor = () => {
   const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const isEditMode = !!id;
@@ -88,29 +95,61 @@ const ArticleEditor = () => {
       fetchArticle();
     }
   }, [id, isEditMode, form, toast]);
-  
-  const onSubmit = async (data: any) => {
+
+  // Save as draft function
+  const saveDraft = async () => {
     setSubmitting(true);
     
     try {
-      // This is a placeholder for future functionality
-      // When you create the articles table in your database,
-      // you can implement the actual save functionality here
+      const formData = form.getValues();
       
-      // Log the data being submitted including authors
-      console.log("Submitting article data:", {
-        ...data,
+      // Log the data being submitted
+      console.log("Saving draft:", {
+        ...formData,
         authors: selectedAuthors,
-        image: imageFile ? "Image file present" : "No image"
+        image: imageFile ? "Image file present" : "No image",
+        status: "draft"
       });
       
       // For now, just simulate a successful operation
       setTimeout(() => {
         toast({
-          title: isEditMode ? 'Article Updated' : 'Article Created',
-          description: isEditMode 
-            ? `The article has been updated successfully with ${selectedAuthors.length} author(s).` 
-            : `The article has been created successfully with ${selectedAuthors.length} author(s).`,
+          title: 'Draft Saved',
+          description: 'Your article draft has been saved.',
+        });
+        setSubmitting(false);
+      }, 1000);
+    } catch (error: any) {
+      console.error('Error:', error);
+      toast({
+        title: 'Error',
+        description: 'An error occurred while saving the draft.',
+        variant: 'destructive',
+      });
+      setSubmitting(false);
+    }
+  };
+  
+  // Publish function
+  const publishArticle = async () => {
+    setSubmitting(true);
+    
+    try {
+      const formData = form.getValues();
+      
+      // Log the data being submitted including authors
+      console.log("Publishing article:", {
+        ...formData,
+        authors: selectedAuthors,
+        image: imageFile ? "Image file present" : "No image",
+        status: "published"
+      });
+      
+      // For now, just simulate a successful operation
+      setTimeout(() => {
+        toast({
+          title: 'Article Published',
+          description: `The article has been published successfully with ${selectedAuthors.length} author(s).`,
         });
         
         navigate('/admin/articles');
@@ -119,10 +158,9 @@ const ArticleEditor = () => {
       console.error('Error:', error);
       toast({
         title: 'Error',
-        description: 'An error occurred while trying to save the article.',
+        description: 'An error occurred while publishing the article.',
         variant: 'destructive',
       });
-    } finally {
       setSubmitting(false);
     }
   };
@@ -136,6 +174,38 @@ const ArticleEditor = () => {
   
   const handleRemoveImage = () => {
     clearImageUpload(fileInputRef, setImageFile, setImagePreview);
+  };
+
+  // Preview function
+  const openPreview = () => {
+    setPreviewOpen(true);
+  };
+
+  // Format content for preview
+  const getPreviewContent = () => {
+    const formData = form.getValues();
+    const contentHtml = formData.content || '';
+    
+    return (
+      <div className="preview-container">
+        <h1 className="text-3xl font-bold mb-4">{formData.title || 'Untitled Article'}</h1>
+        {imagePreview && (
+          <div className="mb-4">
+            <img src={imagePreview} alt={formData.title} className="w-full h-64 object-cover rounded-lg" />
+          </div>
+        )}
+        <div className="text-gray-500 mb-2 flex gap-2 items-center">
+          <span>By: {selectedAuthors.join(', ') || 'Unknown Author'}</span>
+          <span>•</span>
+          <span>Category: {formData.category || 'Uncategorized'}</span>
+        </div>
+        <p className="text-gray-700 mb-6 italic">{formData.description || 'No description provided.'}</p>
+        <div 
+          className="prose max-w-none"
+          dangerouslySetInnerHTML={{ __html: contentHtml }}
+        />
+      </div>
+    );
   };
 
   return (
@@ -155,13 +225,33 @@ const ArticleEditor = () => {
           </h1>
         </div>
         
-        <Button 
-          onClick={form.handleSubmit(onSubmit)}
-          disabled={submitting}
-        >
-          <Save size={16} className="mr-2" />
-          {submitting ? 'Saving...' : 'Save Article'}
-        </Button>
+        <div className="flex gap-3">
+          <Button 
+            onClick={openPreview}
+            variant="outline"
+            disabled={submitting}
+          >
+            <Eye size={16} className="mr-2" />
+            Preview
+          </Button>
+          
+          <Button 
+            onClick={saveDraft}
+            variant="secondary"
+            disabled={submitting}
+          >
+            <Save size={16} className="mr-2" />
+            {submitting ? 'Saving...' : 'Save Draft'}
+          </Button>
+          
+          <Button 
+            onClick={publishArticle}
+            disabled={submitting}
+          >
+            <Send size={16} className="mr-2" />
+            {submitting ? 'Publishing...' : 'Publish'}
+          </Button>
+        </div>
       </div>
       
       <div className="space-y-6">
@@ -179,6 +269,16 @@ const ArticleEditor = () => {
         
         <ArticleContentSection form={form} />
       </div>
+
+      {/* Preview Dialog */}
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Article Preview</DialogTitle>
+          </DialogHeader>
+          {getPreviewContent()}
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };
