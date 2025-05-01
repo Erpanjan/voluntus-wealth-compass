@@ -41,7 +41,11 @@ export interface Tables {
   contact_submissions: ContactSubmission;
 }
 
-// This is a type assertion helper for Supabase
+// This is a helper function to provide proper typing for Supabase queries
 export const fromTable = <T extends keyof Tables>(table: T) => {
-  return (supabase.from(table) as any) as any;
+  return supabase.from(table) as any;
 };
+
+// Re-export the supabase client to use in our hooks
+import { supabase } from '@/integrations/supabase/client';
+export { supabase };

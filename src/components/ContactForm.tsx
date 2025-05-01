@@ -23,7 +23,7 @@ const ContactForm: React.FC = () => {
     message: '',
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -33,12 +33,12 @@ const ContactForm: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitting(true);
 
     try {
-      // Use type assertion to bypass TypeScript errors with Supabase
+      // Use type assertion to fix TypeScript error
       const { error } = await (supabase
         .from('contact_submissions') as any)
         .insert({
@@ -48,11 +48,11 @@ const ContactForm: React.FC = () => {
           contact_info: formData.contact,
           message: formData.message,
         });
-        
+
       if (error) {
         throw error;
       }
-      
+
       // Show success toast
       toast({
         title: "Message sent",
@@ -78,7 +78,7 @@ const ContactForm: React.FC = () => {
         duration: 5000,
       });
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
