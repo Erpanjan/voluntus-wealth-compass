@@ -2,8 +2,9 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import EditorStyles from './editor/EditorStyles';
-import { File, Download, X } from 'lucide-react';
+import { File, Download, X, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
 
 interface Author {
   id?: string;
@@ -68,11 +69,11 @@ const ArticlePreviewDialog: React.FC<ArticlePreviewDialogProps> = ({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white p-0">
         <DialogHeader className="sticky top-0 z-10 bg-white p-6 border-b">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl">Article Preview</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold text-gray-800">Article Preview</DialogTitle>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="rounded-full"
+              className="rounded-full hover:bg-gray-100"
               onClick={() => setOpen(false)}
             >
               <X className="h-4 w-4" />
@@ -80,9 +81,9 @@ const ArticlePreviewDialog: React.FC<ArticlePreviewDialogProps> = ({
           </div>
         </DialogHeader>
         
-        <div className="p-6 space-y-8">
+        <div className="p-8 space-y-8">
           {imagePreview && (
-            <div className="relative w-full h-72 rounded-xl overflow-hidden shadow-md">
+            <div className="relative w-full h-80 rounded-xl overflow-hidden shadow-md">
               <img
                 src={imagePreview}
                 alt={title}
@@ -92,27 +93,41 @@ const ArticlePreviewDialog: React.FC<ArticlePreviewDialogProps> = ({
           )}
           
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-            <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
-              {category && <span className="px-3 py-1 bg-gray-100 rounded-full">{category}</span>}
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">{title}</h1>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
+              {category && (
+                <span className="px-3 py-1 bg-gray-100 rounded-full text-gray-700 font-medium">
+                  {category}
+                </span>
+              )}
+              
+              <span className="flex items-center">
+                <Calendar className="h-4 w-4 mr-1.5" />
+                {format(new Date(), 'MMMM d, yyyy')}
+              </span>
+              
               {getFormattedAuthorNames() && (
-                <span className="flex items-center">By {getFormattedAuthorNames()}</span>
+                <span className="flex items-center">
+                  By <span className="font-medium ml-1">{getFormattedAuthorNames()}</span>
+                </span>
               )}
             </div>
           </div>
           
-          <p className="text-lg text-gray-700 leading-relaxed">{description}</p>
+          <div className="text-lg text-gray-700 leading-relaxed bg-gray-50 p-6 rounded-lg">
+            {description}
+          </div>
           
           <div className="rich-text-editor prose max-w-none">
             <div
-              className="content"
+              className="content bg-white p-6 rounded-lg border border-gray-100"
               dangerouslySetInnerHTML={{ __html: content }}
             />
           </div>
           
           {attachments && attachments.length > 0 && (
-            <div className="border-t pt-6 mt-8">
-              <h3 className="font-medium text-lg mb-4">Attachments</h3>
+            <div className="border-t pt-8 mt-8">
+              <h3 className="font-medium text-lg mb-4 text-gray-800">Attachments</h3>
               <div className="grid gap-3">
                 {attachments.map((attachment) => (
                   <div 
@@ -124,8 +139,8 @@ const ArticlePreviewDialog: React.FC<ArticlePreviewDialogProps> = ({
                         <File className="h-6 w-6 text-gray-500" />
                       </div>
                       <div>
-                        <p className="font-medium">{attachment.name}</p>
-                        <p className="text-xs text-muted-foreground">{formatFileSize(attachment.size)}</p>
+                        <p className="font-medium text-gray-800">{attachment.name}</p>
+                        <p className="text-xs text-gray-500">{formatFileSize(attachment.size)}</p>
                       </div>
                     </div>
                     {attachment.url && (

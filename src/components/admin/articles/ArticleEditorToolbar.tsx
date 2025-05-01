@@ -21,17 +21,18 @@ const ArticleEditorToolbar: React.FC<ArticleEditorToolbarProps> = ({
   onPublish
 }) => {
   return (
-    <div className="flex justify-between items-center mb-6">
+    <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm sticky top-0 z-10">
       <div className="flex items-center">
         <Button 
           variant="ghost" 
           onClick={onBack}
-          className="mr-2"
+          className="mr-3 hover:bg-gray-100"
+          size="sm"
         >
-          <ArrowLeft size={16} className="mr-2" />
+          <ArrowLeft size={18} className="mr-2" />
           Back
         </Button>
-        <h1 className="text-2xl font-semibold">
+        <h1 className="text-2xl font-semibold text-gray-800">
           {isEditMode ? 'Edit Article' : 'Create New Article'}
         </h1>
       </div>
@@ -41,6 +42,8 @@ const ArticleEditorToolbar: React.FC<ArticleEditorToolbarProps> = ({
           onClick={onPreview}
           variant="outline"
           disabled={submitting}
+          className="hover:bg-gray-50"
+          size="sm"
         >
           <Eye size={16} className="mr-2" />
           Preview
@@ -50,6 +53,7 @@ const ArticleEditorToolbar: React.FC<ArticleEditorToolbarProps> = ({
           onClick={onSaveDraft}
           variant="secondary"
           disabled={submitting}
+          size="sm"
         >
           <Save size={16} className="mr-2" />
           {submitting ? 'Saving...' : 'Save Draft'}
@@ -58,6 +62,7 @@ const ArticleEditorToolbar: React.FC<ArticleEditorToolbarProps> = ({
         <Button 
           onClick={onPublish}
           disabled={submitting}
+          size="sm"
         >
           <Send size={16} className="mr-2" />
           {submitting ? 'Publishing...' : 'Publish'}

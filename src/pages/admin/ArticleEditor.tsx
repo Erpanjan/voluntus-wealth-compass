@@ -40,7 +40,7 @@ const ArticleEditor = () => {
 
   return (
     <AdminLayout>
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto pb-16">
         <ArticleEditorToolbar 
           isEditMode={isEditMode}
           submitting={submitting}
@@ -50,7 +50,7 @@ const ArticleEditor = () => {
           onPublish={publishArticle}
         />
         
-        <div className="space-y-8">
+        <div className="space-y-6">
           <ArticleInfoSection
             form={form}
             selectedAuthors={selectedAuthors}

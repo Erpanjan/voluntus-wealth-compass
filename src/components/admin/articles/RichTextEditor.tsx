@@ -71,7 +71,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
       
       <div
         ref={editor.editorRef}
-        className="content p-5 min-h-[400px] focus:outline-none prose max-w-none"
+        className="content p-6 min-h-[400px] focus:outline-none prose max-w-none"
         contentEditable
         onInput={editor.handleContentChange}
         onPaste={editor.handlePaste}
@@ -80,7 +80,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
         dir="ltr"
         style={{
           fontSize: '16px',
-          lineHeight: '1.6',
+          lineHeight: '1.8',
           color: '#333333',
           position: 'relative'
         }}

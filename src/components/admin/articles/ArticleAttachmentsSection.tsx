@@ -68,16 +68,16 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
   };
 
   return (
-    <Card>
+    <Card className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       <Collapsible
         open={isOpen}
         onOpenChange={setIsOpen}
         className="w-full"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="text-xl font-semibold">Article Attachments</h2>
+        <div className="flex items-center justify-between px-6 py-5 border-b bg-gray-50">
+          <h2 className="text-xl font-semibold text-gray-800">Article Attachments</h2>
           <CollapsibleTrigger asChild>
-            <button className="p-2 rounded-md hover:bg-muted">
+            <button className="p-2 rounded-md hover:bg-gray-200 transition-colors">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -88,7 +88,7 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                className={`h-4 w-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
               >
                 <polyline points="6 9 12 15 18 9" />
               </svg>
@@ -97,10 +97,10 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
         </div>
         
         <CollapsibleContent 
-          className="px-6 pb-6"
+          className="bg-white"
           forceMount
         >
-          <div className={`${isOpen ? 'block' : 'hidden'} space-y-4 pt-4`}>
+          <div className={`${isOpen ? 'block' : 'hidden'} p-6 space-y-6`}>
             <input
               type="file"
               ref={fileInputRef}
@@ -113,29 +113,31 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
             <Button 
               onClick={triggerFileInput}
               variant="outline"
-              className="w-full border-dashed border-2 p-8 flex flex-col items-center justify-center gap-2 hover:bg-muted/50"
+              className="w-full border-dashed border-2 p-8 flex flex-col items-center justify-center gap-2 hover:bg-gray-50"
             >
-              <Upload className="h-8 w-8 text-muted-foreground" />
+              <Upload className="h-10 w-10 text-gray-400 mb-2" />
               <div className="text-center">
-                <p className="font-medium">Click to upload files</p>
-                <p className="text-sm text-muted-foreground">PDF, Word, Excel, PowerPoint, Text files</p>
+                <p className="font-medium text-gray-700">Click to upload files</p>
+                <p className="text-sm text-gray-500 mt-1">PDF, Word, Excel, PowerPoint, Text files</p>
               </div>
             </Button>
             
             {attachments.length > 0 && (
-              <div className="space-y-2 mt-4">
-                <h3 className="text-sm font-medium">Uploaded Files</h3>
+              <div className="space-y-3 mt-6">
+                <h3 className="text-sm font-medium text-gray-700">Uploaded Files</h3>
                 <div className="rounded-md border divide-y">
                   {attachments.map((attachment) => (
                     <div 
                       key={attachment.id} 
-                      className="flex items-center justify-between p-3"
+                      className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
                     >
-                      <div className="flex items-center space-x-3">
-                        <File className="h-5 w-5 text-muted-foreground" />
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-gray-100 p-3 rounded-lg">
+                          <File className="h-5 w-5 text-gray-500" />
+                        </div>
                         <div>
-                          <p className="text-sm font-medium">{attachment.name}</p>
-                          <p className="text-xs text-muted-foreground">{formatFileSize(attachment.size)}</p>
+                          <p className="text-sm font-medium text-gray-800">{attachment.name}</p>
+                          <p className="text-xs text-gray-500 mt-1">{formatFileSize(attachment.size)}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -144,14 +146,14 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
                             href={attachment.url} 
                             target="_blank" 
                             rel="noreferrer"
-                            className="p-1.5 hover:bg-muted rounded-md"
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                           >
-                            <Download className="h-4 w-4" />
+                            <Download className="h-4 w-4 text-gray-600" />
                           </a>
                         )}
                         <button 
                           onClick={() => handleRemoveAttachment(attachment.id)}
-                          className="p-1.5 hover:bg-muted rounded-md text-red-500 hover:text-red-600"
+                          className="p-2 hover:bg-red-50 rounded-full text-red-500 hover:text-red-600 transition-colors"
                         >
                           <X className="h-4 w-4" />
                         </button>

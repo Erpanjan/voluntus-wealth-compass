@@ -21,16 +21,16 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
   const [isOpen, setIsOpen] = React.useState(true);
   
   return (
-    <Card>
+    <Card className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       <Collapsible
         open={isOpen}
         onOpenChange={setIsOpen}
         className="w-full"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="text-xl font-semibold">Article Content</h2>
+        <div className="flex items-center justify-between px-6 py-5 border-b bg-gray-50">
+          <h2 className="text-xl font-semibold text-gray-800">Article Content</h2>
           <CollapsibleTrigger asChild>
-            <button className="p-2 rounded-md hover:bg-muted">
+            <button className="p-2 rounded-md hover:bg-gray-200 transition-colors">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -41,7 +41,7 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                className={`h-4 w-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
               >
                 <polyline points="6 9 12 15 18 9" />
               </svg>
@@ -50,10 +50,10 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
         </div>
         
         <CollapsibleContent 
-          className="px-6 pb-6"
+          className="bg-white"
           forceMount
         >
-          <div className={`${isOpen ? 'block' : 'hidden'}`}>
+          <div className={`${isOpen ? 'block' : 'hidden'} p-6`}>
             <FormField
               control={form.control}
               name="content"

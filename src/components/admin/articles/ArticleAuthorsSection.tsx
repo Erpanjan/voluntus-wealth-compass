@@ -52,22 +52,22 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
 
   return (
     <div>
-      <FormLabel>Authors</FormLabel>
-      <FormDescription className="mb-3">
+      <FormLabel className="text-gray-700 text-base">Authors</FormLabel>
+      <FormDescription className="text-gray-500 mb-3">
         Add one or multiple authors for this article
       </FormDescription>
       
-      <div className="flex flex-wrap gap-2 mb-3">
+      <div className="flex flex-wrap gap-2 mb-4">
         {selectedAuthors.map((author, index) => (
           <Badge 
             key={`${author}-${index}`} 
             variant="secondary"
-            className="flex items-center gap-1 px-3 py-1.5"
+            className="flex items-center gap-1 px-3 py-2 bg-gray-100 hover:bg-gray-200"
           >
             {author}
             <button 
               type="button"
-              className="ml-1 hover:bg-gray-200 rounded-full p-1"
+              className="ml-1 hover:bg-gray-300 rounded-full p-1 transition-colors"
               onClick={() => handleRemoveAuthor(author)}
             >
               <X size={14} />
@@ -82,13 +82,14 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
           onChange={(e) => setNewAuthor(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder="Enter author name"
-          className="flex-grow"
+          className="flex-grow focus-visible:ring-gray-400"
         />
         <Button 
           type="button" 
           onClick={handleAddAuthor}
           variant="outline"
           disabled={!newAuthor.trim()}
+          className="hover:bg-gray-100"
         >
           <Plus size={16} className="mr-2" />
           Add
