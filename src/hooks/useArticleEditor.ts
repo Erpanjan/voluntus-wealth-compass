@@ -1,8 +1,10 @@
+
 import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { Json } from '@/integrations/supabase/types';
 
 interface Author {
   id: string;
@@ -28,7 +30,7 @@ interface FetchedArticle {
   id: string;
   title: string;
   description: string;
-  content: any;
+  content: Json;
   category: string;
   image_url: string;
   authorIds: string[];
@@ -107,11 +109,16 @@ export function useArticleEditor() {
   
   // Initialize article data when fetched
   if (existingArticle && article.id !== existingArticle.id) {
+    // Convert content to an array if necessary
+    const contentArray = existingArticle.content 
+      ? (Array.isArray(existingArticle.content) ? existingArticle.content : [existingArticle.content])
+      : [];
+      
     setArticle({
       id: existingArticle.id,
       title: existingArticle.title,
       description: existingArticle.description,
-      content: existingArticle.content || [],
+      content: contentArray,
       category: existingArticle.category,
       image_url: existingArticle.image_url
     });
@@ -248,7 +255,7 @@ export function useArticleEditor() {
       let articleId = article.id;
       
       if (isNewArticle) {
-        // Create new article - we don't specify slug as it's generated automatically by Supabase function
+        // Create new article - don't include slug as it's generated automatically by Supabase function
         const { data, error } = await supabase
           .from('articles')
           .insert({
@@ -256,7 +263,8 @@ export function useArticleEditor() {
             description: article.description,
             content: article.content,
             category: article.category,
-            image_url: article.image_url
+            image_url: article.image_url,
+            // We don't need to provide slug as our DB trigger will generate it
           })
           .select('id')
           .single();

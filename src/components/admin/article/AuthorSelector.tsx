@@ -37,7 +37,7 @@ const AuthorSelector: React.FC<AuthorSelectorProps> = ({
           key={author.id}
           className={`p-2 border rounded cursor-pointer ${
             selectedAuthorIds.includes(author.id) 
-              ? 'bg-blue-100 border-blue-500' 
+              ? 'bg-gray-100 border-gray-500' 
               : 'hover:bg-gray-50'
           }`}
           onClick={() => onAuthorSelection(author.id)}

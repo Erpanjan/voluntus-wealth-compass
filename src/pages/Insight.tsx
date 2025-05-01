@@ -54,7 +54,7 @@ const fetchArticles = async (): Promise<Article[]> => {
   // Transform the response into the Article type
   const articles: Article[] = (data as RawArticleResponse[]).map(item => ({
     ...item,
-    authors: Array.isArray(item.authors) ? item.authors as Author[] : []
+    authors: Array.isArray(item.authors) ? item.authors as unknown as Author[] : []
   }));
   
   return articles;

@@ -66,8 +66,8 @@ const fetchArticleBySlug = async (slug: string): Promise<Article | null> => {
     const rawData = data[0] as RawArticleResponse;
     return {
       ...rawData,
-      authors: Array.isArray(rawData.authors) ? rawData.authors as Author[] : [],
-      reports: Array.isArray(rawData.reports) ? rawData.reports as Report[] : []
+      authors: Array.isArray(rawData.authors) ? rawData.authors as unknown as Author[] : [],
+      reports: Array.isArray(rawData.reports) ? rawData.reports as unknown as Report[] : []
     };
   }
   
