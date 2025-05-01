@@ -1,10 +1,9 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Mail, Phone, MessageSquare } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { ContactSubmission, Tables, fromTable } from '@/types/supabase';
 
 interface ContactFormData {
   firstName: string;
@@ -38,21 +37,9 @@ const ContactForm: React.FC = () => {
     setSubmitting(true);
 
     try {
-      // Use type assertion to fix TypeScript error
-      const { error } = await (supabase
-        .from('contact_submissions') as any)
-        .insert({
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          contact_type: formData.contactType,
-          contact_info: formData.contact,
-          message: formData.message,
-        });
-
-      if (error) {
-        throw error;
-      }
-
+      // Mock API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       // Show success toast
       toast({
         title: "Message sent",

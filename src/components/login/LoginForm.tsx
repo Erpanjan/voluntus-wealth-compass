@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -5,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
 interface LoginFormProps {
   onDemoLogin: () => void;
@@ -37,14 +37,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
     setIsSubmitting(true);
 
     try {
-      // Attempt to sign in with Supabase
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: loginData.email,
-        password: loginData.password,
-      });
+      // Mock authentication delay
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      if (error) throw error;
+      // Mock validation (in a real app, this would be done on the server)
+      if (loginData.email === '' || loginData.password === '') {
+        throw new Error('Email and password are required');
+      }
       
+      // Simulate successful login
       // Set authentication flag in localStorage
       localStorage.setItem('isAuthenticated', 'true');
       

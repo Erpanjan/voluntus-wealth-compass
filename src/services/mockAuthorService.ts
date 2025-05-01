@@ -39,6 +39,27 @@ export const getAuthorById = async (id: string) => {
   return Promise.resolve(author || null);
 };
 
+export const getAuthorByArticleId = async (articleId: string) => {
+  // In our mock data, let's assume article 1 is by Jane Smith, 2 by Michael Brown, etc.
+  let authorId;
+  
+  switch(articleId) {
+    case '1':
+      authorId = '1'; // Jane Smith
+      break;
+    case '2':
+      authorId = '2'; // Michael Brown
+      break;
+    case '3':
+      authorId = '3'; // Sarah Johnson
+      break;
+    default:
+      authorId = '4'; // Default to David Wilson
+  }
+  
+  return getAuthorById(authorId);
+};
+
 export const createAuthor = async (authorData: { name: string; bio: string; image_url: string }) => {
   const newAuthor = {
     id: uuidv4(),
@@ -78,4 +99,36 @@ export const deleteAuthor = async (id: string) => {
   
   mockAuthors.splice(index, 1);
   return Promise.resolve(true);
+};
+
+export const createOrUpdateAuthorAssociation = async (articleId: string, authorName: string): Promise<string | null> => {
+  try {
+    // Check if author exists
+    const existingAuthor = mockAuthors.find(a => a.name === authorName);
+    
+    let authorId;
+    
+    if (!existingAuthor) {
+      // Create new author
+      const newAuthor = await createAuthor({
+        name: authorName,
+        bio: '',
+        image_url: ''
+      });
+      
+      if (newAuthor) {
+        authorId = newAuthor.id;
+      }
+    } else {
+      authorId = existingAuthor.id;
+    }
+    
+    // In a real implementation, we would update the article_authors table
+    // but for our mock, we can just return the authorId
+    
+    return authorId || null;
+  } catch (error) {
+    console.error('Error handling author:', error);
+    return null;
+  }
 };

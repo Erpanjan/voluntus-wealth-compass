@@ -3,7 +3,11 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { ArticleData } from '@/types/supabase';
 import { ArticleFormValues } from './useArticleForm';
-import { fetchArticleById, saveArticle, extractContentHtml } from '@/services/mockArticleService';
+import { 
+  fetchArticleById, 
+  saveArticle, 
+  extractContentHtml 
+} from '@/services/mockArticleService';
 import { getAuthorByArticleId } from '@/services/mockAuthorService';
 import { format } from 'date-fns';
 
@@ -23,7 +27,7 @@ export const useArticleData = (id?: string) => {
       const articleData = await fetchArticleById(id);
       
       if (articleData) {
-        setArticle(articleData);
+        setArticle(articleData as ArticleData);
         
         // Convert content to HTML
         const contentHtml = extractContentHtml(articleData.content);
@@ -44,7 +48,7 @@ export const useArticleData = (id?: string) => {
         }
         
         return { 
-          article: articleData, 
+          article: articleData as ArticleData, 
           formData, 
           contentHtml 
         };

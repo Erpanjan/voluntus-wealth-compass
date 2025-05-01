@@ -1,6 +1,9 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
+import { ArticleData } from '@/types/supabase';
+import { ArticleFormValues } from '@/hooks/useArticleForm';
+import { createOrUpdateAuthorAssociation } from './mockAuthorService';
 
 // Mock article data
 const mockArticles = [
@@ -59,6 +62,10 @@ export const getAllArticles = async () => {
 export const getArticleById = async (id: string) => {
   const article = mockArticles.find(a => a.id === id);
   return Promise.resolve(article || null);
+};
+
+export const fetchArticleById = async (id: string) => {
+  return getArticleById(id);
 };
 
 export const getArticleBySlug = async (slug: string) => {
@@ -122,4 +129,60 @@ export const deleteArticle = async (id: string) => {
   
   mockArticles.splice(index, 1);
   return Promise.resolve(true);
+};
+
+export const saveArticle = async (
+  formData: ArticleFormValues, 
+  htmlContent: string,
+  imageUrl: string,
+  isPublish: boolean,
+  id?: string
+): Promise<string | null> => {
+  try {
+    // Prepare article data
+    let articleId = id;
+    
+    if (id) {
+      // Update existing article
+      const result = await updateArticle(id, formData, htmlContent, imageUrl, isPublish);
+      if (!result) return null;
+    } else {
+      // Create new article
+      const result = await createArticle(formData, htmlContent, imageUrl, isPublish);
+      if (result) {
+        articleId = result.id;
+      }
+    }
+    
+    // Handle author if provided
+    if (articleId && formData.author) {
+      await createOrUpdateAuthorAssociation(articleId, formData.author);
+    }
+    
+    return articleId || null;
+  } catch (error) {
+    console.error('Error saving article:', error);
+    return null;
+  }
+};
+
+export const extractContentHtml = (content: any): string => {
+  let contentHtml = '';
+  
+  if (content) {
+    if (Array.isArray(content)) {
+      const contentItem = content[0] as any;
+      contentHtml = contentItem && contentItem.content ? contentItem.content : '';
+    } else if (typeof content === 'object' && content !== null) {
+      // Handle if content is a string
+      contentHtml = (content as any).content || content;
+    } else if (typeof content === 'string') {
+      // Direct string content
+      contentHtml = content;
+    } else {
+      contentHtml = '';
+    }
+  }
+  
+  return contentHtml;
 };

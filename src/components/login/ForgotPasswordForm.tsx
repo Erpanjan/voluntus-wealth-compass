@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 const ForgotPasswordForm = () => {
   const [forgotData, setForgotData] = useState({
@@ -26,15 +25,8 @@ const ForgotPasswordForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Send password reset email with Supabase
-      const { error } = await supabase.auth.resetPasswordForEmail(
-        forgotData.email,
-        {
-          redirectTo: window.location.origin + '/reset-password',
-        }
-      );
-      
-      if (error) throw error;
+      // Mock API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
       
       toast({
         title: "Reset link sent",

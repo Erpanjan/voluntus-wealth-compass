@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -33,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getAllArticles, deleteArticle } from '@/services/mockArticleService';
 
 const ArticlesManagement = () => {
   const navigate = useNavigate();
@@ -43,11 +43,7 @@ const ArticlesManagement = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const { data, error } = await supabase
-          .rpc('get_articles_with_authors');
-          
-        if (error) throw error;
-        
+        const data = await getAllArticles();
         setArticles(data || []);
       } catch (error) {
         console.error('Error fetching articles:', error);
@@ -74,15 +70,12 @@ const ArticlesManagement = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this article?')) {
       try {
-        const { error } = await supabase
-          .from('articles')
-          .delete()
-          .eq('id', id);
-          
-        if (error) throw error;
+        const success = await deleteArticle(id);
         
-        // Remove the deleted article from the state
-        setArticles(articles.filter(article => article.id !== id));
+        if (success) {
+          // Remove the deleted article from the state
+          setArticles(articles.filter(article => article.id !== id));
+        }
       } catch (error) {
         console.error('Error deleting article:', error);
       }
