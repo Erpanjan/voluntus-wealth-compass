@@ -13,7 +13,11 @@ import {
   AlignCenter,
   AlignRight,
   Undo,
-  Redo
+  Redo,
+  Type,
+  Highlighter,
+  LineHeight,
+  Palette
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -32,11 +36,63 @@ import { Input } from "@/components/ui/input";
 import { toast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { insertImageIntoEditor } from '@/utils/imageUtils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from '@/components/ui/label';
+import { 
+  ToggleGroup, 
+  ToggleGroupItem 
+} from "@/components/ui/toggle-group";
 
 interface RichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
 }
+
+const fontFamilies = [
+  { label: "Default", value: "inherit" },
+  { label: "Poppins", value: "'Poppins', sans-serif" },
+  { label: "Inter", value: "'Inter', sans-serif" },
+  { label: "Nunito", value: "'Nunito', sans-serif" },
+  { label: "Space", value: "'Space Grotesk', sans-serif" },
+  { label: "Manrope", value: "'Manrope', sans-serif" }
+];
+
+const fontSizes = [
+  { label: "Small", value: "12px" },
+  { label: "Normal", value: "16px" },
+  { label: "Medium", value: "18px" },
+  { label: "Large", value: "24px" },
+  { label: "X-Large", value: "32px" },
+  { label: "XX-Large", value: "48px" },
+];
+
+const lineHeights = [
+  { label: "Tight", value: "1.2" },
+  { label: "Normal", value: "1.5" },
+  { label: "Relaxed", value: "1.8" },
+  { label: "Loose", value: "2" },
+];
+
+const colorOptions = [
+  { label: "Black", value: "#000000" },
+  { label: "Dark Gray", value: "#333333" },
+  { label: "Gray", value: "#666666" },
+  { label: "Medium Gray", value: "#999999" },
+  { label: "Light Gray", value: "#CCCCCC" },
+  { label: "Primary", value: "#8B5CF6" },
+  { label: "Red", value: "#EF4444" },
+  { label: "Orange", value: "#F97316" },
+  { label: "Yellow", value: "#F59E0B" },
+  { label: "Green", value: "#10B981" },
+  { label: "Blue", value: "#3B82F6" },
+  { label: "Purple", value: "#8B5CF6" },
+];
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
   const [editorState, setEditorState] = useState(value || '');
@@ -46,6 +102,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [imagePopoverOpen, setImagePopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [fontOptionsOpen, setFontOptionsOpen] = useState(false);
+  const [colorPopoverOpen, setColorPopoverOpen] = useState(false);
+  const [lineHeightPopoverOpen, setLineHeightPopoverOpen] = useState(false);
 
   // Apply formatting to selected text
   const applyFormat = useCallback((command: string, value: string | undefined = undefined) => {
@@ -146,6 +205,57 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
     }
   }, [onChange]);
 
+  // Apply font family
+  const handleFontFamilyChange = useCallback((value: string) => {
+    applyFormat('fontName', value);
+  }, [applyFormat]);
+
+  // Apply font size
+  const handleFontSizeChange = useCallback((value: string) => {
+    applyFormat('fontSize', value === '16px' ? '3' : value === '12px' ? '1' : 
+                           value === '18px' ? '4' : value === '24px' ? '5' : 
+                           value === '32px' ? '6' : '7');
+  }, [applyFormat]);
+
+  // Apply text color
+  const handleColorChange = useCallback((color: string) => {
+    applyFormat('foreColor', color);
+    setColorPopoverOpen(false);
+  }, [applyFormat]);
+
+  // Apply line height
+  const handleLineHeightChange = useCallback((height: string) => {
+    if (editorRef.current) {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const selectedNode = range.commonAncestorContainer;
+        
+        // Find the closest block element
+        let parentElement: Element | null = null;
+        if (selectedNode.nodeType === Node.TEXT_NODE && selectedNode.parentElement) {
+          parentElement = selectedNode.parentElement;
+        } else if (selectedNode.nodeType === Node.ELEMENT_NODE) {
+          parentElement = selectedNode as Element;
+        }
+        
+        if (parentElement) {
+          // Apply line height to the parent element or paragraph
+          const blockElement = parentElement.closest('p, div, h1, h2, h3, h4, h5, h6');
+          if (blockElement) {
+            (blockElement as HTMLElement).style.lineHeight = height;
+          } else {
+            // If no block element found, apply to selection directly
+            document.execCommand('insertHTML', false, 
+              `<div style="line-height: ${height}">${range.toString()}</div>`);
+          }
+          onChange(editorRef.current.innerHTML);
+        }
+      }
+    }
+    setLineHeightPopoverOpen(false);
+  }, [onChange]);
+
   return (
     <div className="rich-text-editor border rounded-md overflow-hidden bg-white shadow-sm">
       <ScrollArea className="toolbar bg-[#F6F6F7] p-3 border-b flex flex-wrap items-center gap-1.5">
@@ -179,6 +289,114 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
           </Button>
           
           <Separator orientation="vertical" className="mx-1 h-6" />
+          
+          <Popover open={fontOptionsOpen} onOpenChange={setFontOptionsOpen}>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="h-8 flex items-center gap-1 px-2 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
+                title="Font Options"
+              >
+                <Type size={16} />
+                <span>Font</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-4 p-2">
+                <div className="space-y-2">
+                  <Label>Font Family</Label>
+                  <Select onValueChange={handleFontFamilyChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select font family" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {fontFamilies.map((font) => (
+                        <SelectItem key={font.value} value={font.value}>
+                          <span style={{ fontFamily: font.value }}>{font.label}</span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Font Size</Label>
+                  <Select onValueChange={handleFontSizeChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select font size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {fontSizes.map((size) => (
+                        <SelectItem key={size.value} value={size.value}>
+                          <span style={{ fontSize: size.label === "Normal" ? "14px" : "14px" }}>{size.label}</span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          
+          <Popover open={colorPopoverOpen} onOpenChange={setColorPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
+                title="Text Color"
+              >
+                <Palette size={16} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-60">
+              <div className="space-y-2 p-2">
+                <Label className="mb-2">Text Color</Label>
+                <div className="grid grid-cols-6 gap-1">
+                  {colorOptions.map((color) => (
+                    <Button 
+                      key={color.value} 
+                      variant="outline" 
+                      className="w-8 h-8 p-0 rounded-md border"
+                      style={{ backgroundColor: color.value }}
+                      onClick={() => handleColorChange(color.value)}
+                      title={color.label}
+                    />
+                  ))}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          
+          <Popover open={lineHeightPopoverOpen} onOpenChange={setLineHeightPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
+                title="Line Height"
+              >
+                <LineHeight size={16} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-40">
+              <div className="space-y-2 p-2">
+                <Label>Line Spacing</Label>
+                <ToggleGroup type="single" variant="outline" className="flex flex-col">
+                  {lineHeights.map((height) => (
+                    <ToggleGroupItem 
+                      key={height.value} 
+                      value={height.value} 
+                      onClick={() => handleLineHeightChange(height.value)}
+                      className="justify-start"
+                    >
+                      {height.label}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
+            </PopoverContent>
+          </Popover>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
