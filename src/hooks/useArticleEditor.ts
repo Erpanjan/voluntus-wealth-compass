@@ -47,7 +47,7 @@ export const useArticleEditor = (id?: string) => {
     };
     
     loadArticle();
-  }, [isEditMode, initialized]);
+  }, [isEditMode, initialized, fetchArticle, setFormValues, setHtmlContent]);
   
   const handleSubmit = async (data: any, publish = false) => {
     // Handle image upload if there's a new image

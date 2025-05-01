@@ -1,15 +1,13 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { ArticleData, AuthorData, Tables } from '@/types/supabase';
-import { supabase } from '@/types/supabase';
-import { format } from 'date-fns';
+import { ArticleData } from '@/types/supabase';
 import { ArticleFormValues } from './useArticleForm';
-import { PostgrestError } from '@supabase/supabase-js';
+import { fetchArticleById, saveArticle, extractContentHtml } from '@/services/articleService';
+import { getAuthorByArticleId } from '@/services/authorService';
+import { format } from 'date-fns';
 
 export const useArticleData = (id?: string) => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -18,67 +16,35 @@ export const useArticleData = (id?: string) => {
   const isEditMode = !!id;
   
   const fetchArticle = async () => {
-    if (!id) return;
+    if (!id) return null;
     
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .eq('id', id)
-        .single();
-        
-      if (error) throw error;
+      const articleData = await fetchArticleById(id);
       
-      if (data) {
-        setArticle(data as ArticleData);
+      if (articleData) {
+        setArticle(articleData);
         
-        // Convert content to HTML if it exists
-        let contentHtml = '';
-        if (data.content) {
-          if (Array.isArray(data.content)) {
-            const contentItem = data.content[0] as any;
-            contentHtml = contentItem && contentItem.content ? contentItem.content : '';
-          } else if (typeof data.content === 'object' && data.content !== null) {
-            // Handle if content is an object
-            contentHtml = (data.content as any).content || '';
-          } else {
-            contentHtml = data.description || '';
-          }
-        }
+        // Convert content to HTML
+        const contentHtml = extractContentHtml(articleData.content);
         
         const formData = {
-          title: data.title,
-          description: data.description,
-          category: data.category || '',
+          title: articleData.title,
+          description: articleData.description,
+          category: articleData.category || '',
           author: '', // Will be populated below
-          image_url: data.image_url || '',
-          published_at: format(new Date(data.published_at), 'yyyy-MM-dd'),
+          image_url: articleData.image_url || '',
+          published_at: format(new Date(articleData.published_at), 'yyyy-MM-dd'),
         };
         
         // Fetch article author
-        if (id) {
-          const { data: authorJoins, error: authorError } = await supabase
-            .from('article_authors')
-            .select('author_id')
-            .eq('article_id', id);
-            
-          if (!authorError && authorJoins && authorJoins.length > 0) {
-            const authorId = authorJoins[0].author_id;
-            const { data: authorData } = await supabase
-              .from('authors')
-              .select('name')
-              .eq('id', authorId)
-              .single();
-              
-            if (authorData) {
-              formData.author = authorData.name;
-            }
-          }
+        const authorData = await getAuthorByArticleId(id);
+        if (authorData) {
+          formData.author = authorData.name;
         }
         
         return { 
-          article: data as ArticleData, 
+          article: articleData, 
           formData, 
           contentHtml 
         };
@@ -98,64 +64,7 @@ export const useArticleData = (id?: string) => {
     }
   };
   
-  const handleAuthor = async (articleId: string, authorName: string): Promise<string | null> => {
-    try {
-      // Check if author exists
-      const { data: existingAuthor } = await supabase
-        .from('authors')
-        .select('id')
-        .eq('name', authorName)
-        .single();
-        
-      let authorId;
-      
-      if (!existingAuthor) {
-        // Create new author
-        const { data: newAuthor, error: authorError } = await supabase
-          .from('authors')
-          .insert({
-            name: authorName,
-          })
-          .select();
-          
-        if (authorError) throw authorError;
-        
-        if (newAuthor && newAuthor.length > 0) {
-          authorId = newAuthor[0].id;
-        }
-      } else {
-        authorId = existingAuthor.id;
-      }
-      
-      // Delete existing author association
-      if (isEditMode) {
-        await supabase
-          .from('article_authors')
-          .delete()
-          .eq('article_id', articleId);
-      }
-      
-      // Create author association
-      if (authorId) {
-        const { error: joinError } = await supabase
-          .from('article_authors')
-          .insert({
-            article_id: articleId,
-            author_id: authorId
-          });
-          
-        if (joinError) throw joinError;
-        return authorId;
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('Error handling author:', error);
-      return null;
-    }
-  };
-  
-  const saveArticle = async (
+  const handleSaveArticle = async (
     formData: ArticleFormValues, 
     htmlContent: string,
     imageUrl: string,
@@ -164,56 +73,20 @@ export const useArticleData = (id?: string) => {
     setSubmitting(true);
     
     try {
-      // Prepare article data
-      const articleData: ArticleData = {
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        content: [{ type: 'html', content: htmlContent }],
-        image_url: imageUrl,
-        published_at: publish 
-          ? new Date().toISOString() 
-          : new Date(formData.published_at).toISOString(),
-        slug: formData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
-      };
+      const articleId = await saveArticle(formData, htmlContent, imageUrl, publish, id);
       
-      let articleId = id;
-      
-      if (isEditMode && id) {
-        // Update existing article
-        const { error } = await supabase
-          .from('articles')
-          .update(articleData)
-          .eq('id', id);
-          
-        if (error) throw error;
-      } else {
-        // Create new article
-        const { data: newArticle, error } = await supabase
-          .from('articles')
-          .insert(articleData)
-          .select();
-          
-        if (error) throw error;
+      if (articleId) {
+        toast({
+          title: 'Success',
+          description: publish 
+            ? 'Article published successfully' 
+            : (isEditMode ? 'Article updated successfully' : 'Article saved as draft'),
+        });
         
-        if (newArticle && newArticle.length > 0) {
-          articleId = newArticle[0].id;
-        }
+        return true;
       }
       
-      // Handle author
-      if (articleId && formData.author) {
-        await handleAuthor(articleId, formData.author);
-      }
-      
-      toast({
-        title: 'Success',
-        description: publish 
-          ? 'Article published successfully' 
-          : (isEditMode ? 'Article updated successfully' : 'Article saved as draft'),
-      });
-      
-      return true;
+      throw new Error('Failed to save article');
     } catch (error: any) {
       console.error('Error saving article:', error);
       toast({
@@ -233,6 +106,6 @@ export const useArticleData = (id?: string) => {
     article,
     isEditMode,
     fetchArticle,
-    saveArticle
+    saveArticle: handleSaveArticle
   };
 };
