@@ -5,6 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 // Import login components
 import LoginForm from '@/components/login/LoginForm';
@@ -15,6 +17,7 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [session, setSession] = useState(null);
   const [pageLoaded, setPageLoaded] = useState(false);
+  const [isAdminMode, setIsAdminMode] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -38,7 +41,15 @@ const Login = () => {
       (event, session) => {
         if (session) {
           localStorage.setItem('isAuthenticated', 'true');
-          navigate('/dashboard');
+          
+          // Check if admin mode is enabled and set local storage
+          if (isAdminMode) {
+            localStorage.setItem('isAdminMode', 'true');
+            navigate('/admin/dashboard');
+          } else {
+            localStorage.removeItem('isAdminMode');
+            navigate('/dashboard');
+          }
         }
       }
     );
@@ -47,7 +58,15 @@ const Login = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         localStorage.setItem('isAuthenticated', 'true');
-        navigate('/dashboard');
+        
+        // Check localStorage for admin mode
+        const adminMode = localStorage.getItem('isAdminMode') === 'true';
+        
+        if (adminMode) {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       }
     });
     
@@ -56,7 +75,7 @@ const Login = () => {
         subscription.unsubscribe();
       }
     };
-  }, [navigate]);
+  }, [navigate, isAdminMode]);
 
   // Handle demo account login
   const handleDemoLogin = () => {
@@ -64,11 +83,21 @@ const Login = () => {
     
     setTimeout(() => {
       localStorage.setItem('isAuthenticated', 'true');
-      navigate('/onboarding');
+      
+      // Set admin mode in localStorage if toggle is on
+      if (isAdminMode) {
+        localStorage.setItem('isAdminMode', 'true');
+        navigate('/admin/dashboard');
+      } else {
+        localStorage.removeItem('isAdminMode');
+        navigate('/onboarding');
+      }
       
       toast({
-        title: "Demo Account Activated",
-        description: "You are now using a demo account to explore the platform.",
+        title: isAdminMode ? "Admin Demo Account Activated" : "Demo Account Activated",
+        description: isAdminMode 
+          ? "You are now using a demo admin account to explore the admin portal." 
+          : "You are now using a demo account to explore the platform.",
         duration: 5000,
       });
       
@@ -78,7 +107,13 @@ const Login = () => {
 
   // Handle regular login success
   const handleRegularLogin = () => {
-    navigate('/dashboard');
+    if (isAdminMode) {
+      localStorage.setItem('isAdminMode', 'true');
+      navigate('/admin/dashboard');
+    } else {
+      localStorage.removeItem('isAdminMode');
+      navigate('/dashboard');
+    }
   };
 
   return (
@@ -89,6 +124,18 @@ const Login = () => {
         {/* Fixed position header with title - adding consistent height */}
         <div className="h-24 flex items-center justify-center">
           <h1 className="text-3xl font-bold">Client Portal</h1>
+        </div>
+
+        {/* Admin mode toggle */}
+        <div className="flex items-center justify-center mb-4 space-x-2">
+          <Switch
+            id="admin-mode"
+            checked={isAdminMode}
+            onCheckedChange={setIsAdminMode}
+          />
+          <Label htmlFor="admin-mode" className="text-sm text-gray-600">
+            {isAdminMode ? 'Admin Portal' : 'Client Portal'}
+          </Label>
         </div>
 
         {/* Fixed height tabs container */}
@@ -109,12 +156,13 @@ const Login = () => {
               <LoginForm 
                 onDemoLogin={handleDemoLogin} 
                 onRegularLogin={handleRegularLogin}
+                isAdminMode={isAdminMode}
               />
             </TabsContent>
 
             {/* Register Tab */}
             <TabsContent value="register" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
-              <RegisterForm />
+              <RegisterForm isAdminMode={isAdminMode} />
             </TabsContent>
 
             {/* Forgot Password Tab */}

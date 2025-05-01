@@ -18,6 +18,10 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import Questionnaire from "./pages/Questionnaire";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ArticlesManagement from "./pages/admin/ArticlesManagement";
+import ArticleEditor from "./pages/admin/ArticleEditor";
+import AuthorManagement from "./pages/admin/AuthorManagement";
 
 const queryClient = new QueryClient();
 
@@ -27,16 +31,25 @@ const PrivateRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
+// Admin route component that checks for both authentication and admin mode
+const AdminRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const isAdminMode = localStorage.getItem('isAdminMode') === 'true';
+  
+  return isAuthenticated && isAdminMode ? children : <Navigate to="/login" />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <TooltipProvider>
         <div className="flex flex-col min-h-screen">
-          {/* Header only on non-dashboard/non-onboarding/non-questionnaire pages */}
+          {/* Header only on non-dashboard/non-onboarding/non-questionnaire/non-admin pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
             <Route path="/questionnaire" element={null} />
+            <Route path="/admin/*" element={null} />
             <Route path="*" element={<Header />} />
           </Routes>
           
@@ -70,16 +83,60 @@ const App = () => (
                   </PrivateRoute>
                 } 
               />
+              
+              {/* Admin Routes */}
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/articles" 
+                element={
+                  <AdminRoute>
+                    <ArticlesManagement />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/articles/create" 
+                element={
+                  <AdminRoute>
+                    <ArticleEditor />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/articles/edit/:id" 
+                element={
+                  <AdminRoute>
+                    <ArticleEditor />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/authors" 
+                element={
+                  <AdminRoute>
+                    <AuthorManagement />
+                  </AdminRoute>
+                } 
+              />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           
-          {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire pages */}
+          {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire/non-admin pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
             <Route path="/login" element={null} />
             <Route path="/questionnaire" element={null} />
+            <Route path="/admin/*" element={null} />
             <Route path="*" element={<Footer />} />
           </Routes>
         </div>

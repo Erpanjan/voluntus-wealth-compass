@@ -11,9 +11,10 @@ import { supabase } from '@/integrations/supabase/client';
 interface LoginFormProps {
   onDemoLogin: () => void;
   onRegularLogin?: () => void;
+  isAdminMode?: boolean;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAdminMode = false }) => {
   const [loginData, setLoginData] = useState({
     email: '',
     password: '',
@@ -48,9 +49,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
       // Set authentication flag in localStorage
       localStorage.setItem('isAuthenticated', 'true');
       
+      // Set admin mode in localStorage if applicable
+      if (isAdminMode) {
+        localStorage.setItem('isAdminMode', 'true');
+      } else {
+        localStorage.removeItem('isAdminMode');
+      }
+      
       toast({
         title: "Login successful",
-        description: "Welcome back to Voluntus Long-term Capital.",
+        description: `Welcome back to ${isAdminMode ? 'Admin' : 'Client'} Portal.`,
         duration: 5000,
       });
       
@@ -58,8 +66,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
       if (onRegularLogin) {
         onRegularLogin();
       } else {
-        // Redirect to dashboard if onRegularLogin is not provided
-        navigate('/dashboard');
+        // Redirect to admin dashboard or client dashboard based on mode
+        navigate(isAdminMode ? '/admin/dashboard' : '/dashboard');
       }
       
     } catch (error: any) {
@@ -120,10 +128,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
 
       <Button 
         type="submit" 
-        className="w-full bg-black/80 hover:bg-black text-white font-normal py-6 rounded-none" 
+        className={`w-full ${isAdminMode ? 'bg-black' : 'bg-black/80'} hover:bg-black text-white font-normal py-6 rounded-none`} 
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Logging in...' : 'Login'}
+        {isSubmitting ? 'Logging in...' : isAdminMode ? 'Login to Admin' : 'Login'}
       </Button>
       
       <div className="text-center">
@@ -133,7 +141,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
           onClick={onDemoLogin}
           disabled={isSubmitting}
         >
-          Try Demo Account
+          Try Demo {isAdminMode ? 'Admin' : 'Client'} Account
         </Button>
       </div>
     </form>
