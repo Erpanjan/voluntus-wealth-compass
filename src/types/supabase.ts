@@ -32,3 +32,11 @@ export interface ContactSubmission {
   contact_info: string;
   message: string;
 }
+
+// Define tables structure to help TypeScript understand Supabase queries
+export interface Tables {
+  articles: ArticleData;
+  authors: AuthorData;
+  article_authors: ArticleAuthor;
+  contact_submissions: ContactSubmission;
+}

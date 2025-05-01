@@ -5,18 +5,13 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { ArticleData, AuthorData } from '@/types/supabase';
+import { ArticleData, Tables } from '@/types/supabase';
 
-// Import the new components
+// Import the components
 import ArticleForm from '@/components/admin/articles/ArticleForm';
 import ArticleStatusCard from '@/components/admin/articles/ArticleStatusCard';
 import ArticlePublishingOptions from '@/components/admin/articles/ArticlePublishingOptions';
 import ArticleHeader from '@/components/admin/articles/ArticleHeader';
-
-interface ArticleAuthor {
-  article_id: string;
-  author_id: string;
-}
 
 const ArticleEditor = () => {
   const { id } = useParams();
@@ -50,9 +45,8 @@ const ArticleEditor = () => {
       const fetchArticle = async () => {
         setLoading(true);
         try {
-          // Use type assertion to bypass type checking for Supabase tables
-          const { data, error } = await (supabase
-            .from('articles') as any)
+          const { data, error } = await supabase
+            .from('articles')
             .select('*')
             .eq('id', id)
             .single();
@@ -60,48 +54,46 @@ const ArticleEditor = () => {
           if (error) throw error;
           
           if (data) {
-            const articleData = data as ArticleData;
-            setArticle(articleData);
+            setArticle(data as ArticleData);
             
             // Convert content to HTML if it exists
             let contentHtml = '';
-            if (articleData.content) {
-              if (Array.isArray(articleData.content)) {
-                const contentItem = articleData.content[0] as any;
+            if (data.content) {
+              if (Array.isArray(data.content)) {
+                const contentItem = data.content[0] as any;
                 contentHtml = contentItem && contentItem.content ? contentItem.content : '';
-              } else if (typeof articleData.content === 'object' && articleData.content !== null) {
+              } else if (typeof data.content === 'object' && data.content !== null) {
                 // Handle if content is an object
-                contentHtml = (articleData.content as any).content || '';
+                contentHtml = (data.content as any).content || '';
               } else {
-                contentHtml = articleData.description || '';
+                contentHtml = data.description || '';
               }
             }
             
             setHtmlContent(contentHtml);
-            setPreviewUrl(articleData.image_url || null);
+            setPreviewUrl(data.image_url || null);
             
             // Populate form values
             setFormValues({
-              title: articleData.title,
-              description: articleData.description,
-              category: articleData.category || '',
+              title: data.title,
+              description: data.description,
+              category: data.category || '',
               author: '', // Will be populated below
-              image_url: articleData.image_url || '',
-              published_at: format(new Date(articleData.published_at), 'yyyy-MM-dd'),
+              image_url: data.image_url || '',
+              published_at: format(new Date(data.published_at), 'yyyy-MM-dd'),
             });
             
             // Fetch article author
             if (id) {
-              // Use type assertion for Supabase tables
-              const { data: authorJoins, error: authorError } = await (supabase
-                .from('article_authors') as any)
+              const { data: authorJoins, error: authorError } = await supabase
+                .from('article_authors')
                 .select('author_id')
                 .eq('article_id', id);
                 
               if (!authorError && authorJoins && authorJoins.length > 0) {
                 const authorId = authorJoins[0].author_id;
-                const { data: authorData } = await (supabase
-                  .from('authors') as any)
+                const { data: authorData } = await supabase
+                  .from('authors')
                   .select('name')
                   .eq('id', authorId)
                   .single();
@@ -202,31 +194,33 @@ const ArticleEditor = () => {
       
       let articleId = id;
       
-      if (isEditMode) {
+      if (isEditMode && id) {
         // Update existing article
-        const { error } = await (supabase
-          .from('articles') as any)
-          .update(articleData)
+        const { error } = await supabase
+          .from('articles')
+          .update(articleData as Tables['articles'])
           .eq('id', id);
           
         if (error) throw error;
       } else {
         // Create new article
-        const { data: newArticle, error } = await (supabase
-          .from('articles') as any)
-          .insert(articleData)
+        const { data: newArticle, error } = await supabase
+          .from('articles')
+          .insert(articleData as Tables['articles'])
           .select();
           
         if (error) throw error;
         
-        articleId = newArticle[0].id;
+        if (newArticle && newArticle.length > 0) {
+          articleId = newArticle[0].id;
+        }
       }
       
       // Handle author
       if (articleId && data.author) {
         // Check if author exists
-        const { data: existingAuthor } = await (supabase
-          .from('authors') as any)
+        const { data: existingAuthor } = await supabase
+          .from('authors')
           .select('id')
           .eq('name', data.author)
           .single();
@@ -235,37 +229,41 @@ const ArticleEditor = () => {
         
         if (!existingAuthor) {
           // Create new author
-          const { data: newAuthor, error: authorError } = await (supabase
-            .from('authors') as any)
+          const { data: newAuthor, error: authorError } = await supabase
+            .from('authors')
             .insert({
               name: data.author,
-            })
+            } as Tables['authors'])
             .select();
             
           if (authorError) throw authorError;
           
-          authorId = newAuthor[0].id;
+          if (newAuthor && newAuthor.length > 0) {
+            authorId = newAuthor[0].id;
+          }
         } else {
           authorId = existingAuthor.id;
         }
         
         // Delete existing author association
-        if (isEditMode) {
-          await (supabase
-            .from('article_authors') as any)
+        if (isEditMode && articleId) {
+          await supabase
+            .from('article_authors')
             .delete()
             .eq('article_id', articleId);
         }
         
         // Create author association
-        const { error: joinError } = await (supabase
-          .from('article_authors') as any)
-          .insert({
-            article_id: articleId,
-            author_id: authorId
-          });
-          
-        if (joinError) throw joinError;
+        if (authorId) {
+          const { error: joinError } = await supabase
+            .from('article_authors')
+            .insert({
+              article_id: articleId,
+              author_id: authorId
+            } as Tables['article_authors']);
+            
+          if (joinError) throw joinError;
+        }
       }
       
       toast({
@@ -289,8 +287,8 @@ const ArticleEditor = () => {
     }
   };
 
+  // Handler functions
   const handlePreview = () => {
-    // For now, just show a toast indicating preview functionality
     toast({
       title: 'Preview',
       description: 'Article preview functionality will be implemented soon.',
@@ -347,25 +345,6 @@ const ArticleEditor = () => {
       </div>
     </AdminLayout>
   );
-
-  function handlePreview() {
-    // For now, just show a toast indicating preview functionality
-    toast({
-      title: 'Preview',
-      description: 'Article preview functionality will be implemented soon.',
-    });
-  }
-
-  function handlePublishNow() {
-    handleSubmit(formValues, true);
-  }
-
-  function handleFormChange(field: string, value: any) {
-    setFormValues(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }
 };
 
 export default ArticleEditor;
