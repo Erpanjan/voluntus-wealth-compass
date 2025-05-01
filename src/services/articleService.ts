@@ -34,6 +34,20 @@ export interface Article {
   reports?: Report[];
 }
 
+// Helper function to create a unique slug from a title
+const createUniqueSlug = (title: string): string => {
+  // Convert to lowercase, replace spaces with hyphens, and remove non-alphanumeric characters
+  const baseSlug = title
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]/g, '')
+    .replace(/-+/g, '-'); // Replace multiple hyphens with a single one
+  
+  // Add a timestamp to ensure uniqueness
+  return `${baseSlug}-${Date.now()}`;
+};
+
 // Functions to work with articles
 export const articleService = {
   // Get all articles with their authors
@@ -194,9 +208,9 @@ export const articleService = {
       // 2. Create or update the article
       const articleData = {
         title: article.title,
-        description: article.description,
+        description: article.description || '',
         content: article.content || {},
-        category: article.category,
+        category: article.category || 'Uncategorized',
         image_url: imageUrl,
         published_at: article.published_at,
         updated_at: new Date().toISOString(),
@@ -216,19 +230,17 @@ export const articleService = {
           throw updateError;
         }
         
-        return updatedArticle?.slug || '';
+        return updatedArticle?.slug || null;
       } else {
-        // Create new article with auto-generated slug
-        const slugifiedTitle = article.title 
-          ? article.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') 
-          : uuidv4();
+        // Create new article with unique slug
+        const uniqueSlug = createUniqueSlug(article.title || 'untitled');
         
         const { data: newArticle, error: insertError } = await supabase
           .from('articles')
           .insert({
             id: articleId,
             ...articleData,
-            slug: slugifiedTitle
+            slug: uniqueSlug
           })
           .select('slug')
           .single();
@@ -238,7 +250,7 @@ export const articleService = {
           throw insertError;
         }
         
-        return newArticle?.slug || '';
+        return newArticle?.slug || null;
       }
       
       // 3. Handle article-author relationships
@@ -310,8 +322,8 @@ export const articleService = {
               .from('reports')
               .insert({
                 article_id: articleId,
-                title: attachment.title,
-                description: attachment.description,
+                title: attachment.title || 'Unnamed attachment',
+                description: attachment.description || '',
                 file_url: fileUrl || ''
               });
             
@@ -324,9 +336,9 @@ export const articleService = {
             const { error: reportError } = await supabase
               .from('reports')
               .update({
-                title: attachment.title,
-                description: attachment.description,
-                file_url: fileUrl
+                title: attachment.title || 'Unnamed attachment',
+                description: attachment.description || '',
+                file_url: fileUrl || ''
               })
               .eq('id', attachment.id);
             
@@ -334,15 +346,15 @@ export const articleService = {
               console.error('Error updating report:', reportError);
               throw reportError;
             }
-          } else {
+          } else if (fileUrl) {
             // Create new report
             const { error: reportError } = await supabase
               .from('reports')
               .insert({
                 article_id: articleId,
-                title: attachment.title,
-                description: attachment.description,
-                file_url: fileUrl || ''
+                title: attachment.title || 'Unnamed attachment',
+                description: attachment.description || '',
+                file_url: fileUrl
               });
             
             if (reportError) {
@@ -356,7 +368,7 @@ export const articleService = {
       return articleId;
     } catch (error) {
       console.error('Error in saveArticle:', error);
-      return null;
+      throw error; // Rethrow to allow proper error handling
     }
   },
 

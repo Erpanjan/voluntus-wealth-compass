@@ -22,13 +22,18 @@ export const useArticleActions = () => {
     setSubmitting(true);
 
     try {
+      // Validate required fields for draft
+      if (!formData.title) {
+        throw new Error('Please provide a title for your article');
+      }
+
       const result = await articleService.saveArticle(
         {
           id: id,
           title: formData.title,
-          description: formData.description,
-          content: formData.content,
-          category: formData.category,
+          description: formData.description || '',
+          content: formData.content || '',
+          category: formData.category || 'Uncategorized',
           // For drafts, set published_at to a future date
           published_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(), // 30 days from now
         },
@@ -50,11 +55,11 @@ export const useArticleActions = () => {
       if (!id && result) {
         navigate(`/admin/articles/edit/${result}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving draft:', error);
       toast({
         title: 'Error',
-        description: 'Failed to save article draft.',
+        description: error.message || 'Failed to save article draft.',
         variant: 'destructive',
       });
     } finally {
@@ -68,8 +73,20 @@ export const useArticleActions = () => {
 
     try {
       // Validate required fields
-      if (!formData.title || !formData.description || !formData.category || !formData.content) {
-        throw new Error('Please fill out all required fields');
+      if (!formData.title) {
+        throw new Error('Please provide a title for your article');
+      }
+      if (!formData.description) {
+        throw new Error('Please provide a description for your article');
+      }
+      if (!formData.category) {
+        throw new Error('Please select a category for your article');
+      }
+      if (!formData.content || formData.content === '') {
+        throw new Error('Please add some content to your article');
+      }
+      if (selectedAuthors.length === 0) {
+        throw new Error('Please select at least one author for your article');
       }
 
       const result = await articleService.saveArticle(
