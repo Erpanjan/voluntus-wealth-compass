@@ -1,89 +1,81 @@
 
-import { AuthorData } from '@/types/supabase';
 import { v4 as uuidv4 } from 'uuid';
 
-// This is using the same mock data from mockArticleService.ts
-// In a real application, these would be separate databases or tables
-let authors: AuthorData[] = [
+// Mock author data
+const mockAuthors = [
   {
     id: '1',
     name: 'Jane Smith',
-    bio: 'Financial advisor with over 10 years of experience',
-    image_url: 'https://randomuser.me/api/portraits/women/42.jpg',
-    created_at: '2023-01-01T10:00:00Z',
-    updated_at: '2023-01-01T10:00:00Z'
+    bio: 'Certified Financial Planner with over 15 years of experience',
+    image_url: 'https://picsum.photos/seed/author1/200/200'
+  },
+  {
+    id: '2',
+    name: 'Michael Brown',
+    bio: 'Investment advisor specializing in sustainable investments',
+    image_url: 'https://picsum.photos/seed/author2/200/200'
+  },
+  {
+    id: '3',
+    name: 'Sarah Johnson',
+    bio: 'Retirement planning specialist and published author',
+    image_url: 'https://picsum.photos/seed/author3/200/200'
+  },
+  {
+    id: '4',
+    name: 'David Wilson',
+    bio: 'Tax strategy expert with a focus on small businesses',
+    image_url: 'https://picsum.photos/seed/author4/200/200'
   }
 ];
 
-// Fetch all authors
-export const fetchAuthors = async (): Promise<AuthorData[]> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  return [...authors];
+// Mock author service functions
+export const getAllAuthors = async () => {
+  return Promise.resolve(mockAuthors);
 };
 
-// Fetch an author by ID
-export const fetchAuthorById = async (id: string): Promise<AuthorData | null> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const author = authors.find(a => a.id === id);
-  return author || null;
+export const getAuthorById = async (id: string) => {
+  const author = mockAuthors.find(a => a.id === id);
+  return Promise.resolve(author || null);
 };
 
-// Fetch author by article ID
-export const getAuthorByArticleId = async (articleId: string): Promise<AuthorData | null> => {
-  // Simulate network delay and relationship lookup
-  await new Promise(resolve => setTimeout(resolve, 500));
+export const createAuthor = async (authorData: { name: string; bio: string; image_url: string }) => {
+  const newAuthor = {
+    id: uuidv4(),
+    name: authorData.name,
+    bio: authorData.bio,
+    image_url: authorData.image_url || 'https://picsum.photos/seed/default-author/200/200'
+  };
   
-  // For mock purposes, we'll just return the first author
-  // In a real database, we'd join tables or lookup the relationship
-  return authors[0] || null;
+  mockAuthors.push(newAuthor);
+  return Promise.resolve(newAuthor);
 };
 
-// Create or update an author
-export const saveAuthor = async (author: Partial<AuthorData>): Promise<string> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
+export const updateAuthor = async (id: string, authorData: { name: string; bio: string; image_url: string }) => {
+  const index = mockAuthors.findIndex(a => a.id === id);
   
-  const now = new Date().toISOString();
-  
-  if (author.id) {
-    // Update existing author
-    const index = authors.findIndex(a => a.id === author.id);
-    if (index !== -1) {
-      authors[index] = {
-        ...authors[index],
-        ...author,
-        updated_at: now
-      };
-      return author.id;
-    }
-    throw new Error('Author not found');
-  } else {
-    // Create new author
-    const newAuthor: AuthorData = {
-      id: uuidv4(),
-      name: author.name || 'Unnamed Author',
-      bio: author.bio || '',
-      image_url: author.image_url || '',
-      created_at: now,
-      updated_at: now
-    };
-    
-    authors.push(newAuthor);
-    return newAuthor.id;
+  if (index === -1) {
+    return Promise.resolve(null);
   }
+  
+  const updatedAuthor = {
+    ...mockAuthors[index],
+    name: authorData.name,
+    bio: authorData.bio,
+    image_url: authorData.image_url || mockAuthors[index].image_url
+  };
+  
+  mockAuthors[index] = updatedAuthor;
+  return Promise.resolve(updatedAuthor);
 };
 
-// Delete an author
-export const deleteAuthor = async (id: string): Promise<boolean> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+export const deleteAuthor = async (id: string) => {
+  const index = mockAuthors.findIndex(a => a.id === id);
   
-  const initialLength = authors.length;
-  authors = authors.filter(a => a.id !== id);
+  if (index === -1) {
+    return Promise.resolve(false);
+  }
   
-  return authors.length < initialLength;
+  mockAuthors.splice(index, 1);
+  return Promise.resolve(true);
 };

@@ -1,147 +1,125 @@
 
-import { ArticleData, AuthorData } from '@/types/supabase';
-import { format } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
-import { ArticleFormValues } from '@/hooks/useArticleForm';
+import { format } from 'date-fns';
 
-// Mock data storage
-let articles: ArticleData[] = [
+// Mock article data
+const mockArticles = [
   {
     id: '1',
-    title: 'Introduction to Financial Planning',
-    slug: 'introduction-to-financial-planning',
-    description: 'Learn the basics of financial planning and how to get started.',
-    content: JSON.stringify({
-      ops: [
-        { insert: 'Introduction to Financial Planning\n', attributes: { header: 1 } },
-        { insert: 'Financial planning is the process of setting goals, developing a plan to achieve them, and putting the plan into action.' },
-      ]
-    }),
-    image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&h=500',
-    published: true,
-    created_at: '2023-05-15T10:00:00Z',
-    updated_at: '2023-05-15T10:00:00Z',
-    published_at: '2023-05-15T10:00:00Z',
+    title: 'Understanding Financial Planning',
+    slug: 'understanding-financial-planning',
+    description: 'A comprehensive guide to getting started with financial planning',
+    content: '<h2>Introduction to Financial Planning</h2><p>Financial planning is the process of setting goals, developing a plan to achieve those goals, and putting the plan into action.</p>',
     category: 'Financial Planning',
-    tags: ['finance', 'planning', 'basics'],
-    author_id: '1'
-  }
-];
-
-let authors: AuthorData[] = [
+    image_url: 'https://picsum.photos/seed/finance1/800/400',
+    published_at: '2025-01-15',
+    created_at: '2024-12-20',
+    updated_at: '2025-01-10',
+    is_published: true,
+    author: 'Jane Smith',
+    authors: [{ name: 'Jane Smith', image_url: '' }]
+  },
   {
-    id: '1',
-    name: 'Jane Smith',
-    bio: 'Financial advisor with over 10 years of experience',
-    image_url: 'https://randomuser.me/api/portraits/women/42.jpg',
-    created_at: '2023-01-01T10:00:00Z',
-    updated_at: '2023-01-01T10:00:00Z'
+    id: '2',
+    title: 'Investment Strategies for Beginners',
+    slug: 'investment-strategies-beginners',
+    description: 'Learn the basics of investing and how to build a strong portfolio',
+    content: '<h2>Getting Started with Investments</h2><p>Investing can seem intimidating, but with the right approach, anyone can build wealth over time.</p>',
+    category: 'Investing',
+    image_url: 'https://picsum.photos/seed/invest1/800/400',
+    published_at: '2025-02-10',
+    created_at: '2025-01-15',
+    updated_at: '2025-02-05',
+    is_published: true,
+    author: 'Michael Brown',
+    authors: [{ name: 'Michael Brown', image_url: '' }]
+  },
+  {
+    id: '3',
+    title: 'Retirement Planning Essentials',
+    slug: 'retirement-planning-essentials',
+    description: 'How to prepare for a comfortable and secure retirement',
+    content: '<h2>Planning for Your Future</h2><p>Retirement planning is one of the most important aspects of financial management.</p>',
+    category: 'Retirement',
+    image_url: 'https://picsum.photos/seed/retire1/800/400',
+    published_at: '2025-03-01',
+    created_at: '2025-02-01',
+    updated_at: '2025-02-25',
+    is_published: false,
+    author: 'Sarah Johnson',
+    authors: [{ name: 'Sarah Johnson', image_url: '' }, { name: 'David Wilson', image_url: '' }]
   }
 ];
 
-// Helper function to create a slug from a title
-const createSlug = (title: string): string => {
-  return title
-    .toLowerCase()
-    .replace(/[^\w ]+/g, '')
-    .replace(/ +/g, '-');
+// Mock article service functions
+export const getAllArticles = async () => {
+  return Promise.resolve(mockArticles);
 };
 
-// Fetch an article by ID
-export const fetchArticleById = async (id: string): Promise<ArticleData | null> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const article = articles.find(a => a.id === id);
-  return article || null;
+export const getArticleById = async (id: string) => {
+  const article = mockArticles.find(a => a.id === id);
+  return Promise.resolve(article || null);
 };
 
-// Fetch all articles
-export const fetchArticles = async (): Promise<ArticleData[]> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  return [...articles];
+export const getArticleBySlug = async (slug: string) => {
+  const article = mockArticles.find(a => a.slug === slug);
+  return Promise.resolve(article || null);
 };
 
-// Save an article (create or update)
-export const saveArticle = async (
-  formData: ArticleFormValues, 
-  htmlContent: string,
-  imageUrl: string,
-  publish: boolean,
-  id?: string
-): Promise<string> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
+export const createArticle = async (articleData: any, htmlContent: string, imageUrl: string, publish = false) => {
+  const newArticle = {
+    id: uuidv4(),
+    title: articleData.title,
+    slug: articleData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, ''),
+    description: articleData.description,
+    content: htmlContent,
+    category: articleData.category,
+    image_url: imageUrl || 'https://picsum.photos/seed/default/800/400',
+    published_at: articleData.published_at || format(new Date(), 'yyyy-MM-dd'),
+    created_at: format(new Date(), 'yyyy-MM-dd'),
+    updated_at: format(new Date(), 'yyyy-MM-dd'),
+    is_published: publish,
+    author: articleData.author || 'Anonymous',
+    authors: [{ name: articleData.author || 'Anonymous', image_url: '' }]
+  };
   
-  const now = new Date().toISOString();
-  const slug = createSlug(formData.title);
+  mockArticles.push(newArticle);
+  return Promise.resolve(newArticle);
+};
+
+export const updateArticle = async (id: string, articleData: any, htmlContent: string, imageUrl: string, publish = false) => {
+  const index = mockArticles.findIndex(a => a.id === id);
   
-  if (id) {
-    // Update existing article
-    const index = articles.findIndex(a => a.id === id);
-    if (index !== -1) {
-      articles[index] = {
-        ...articles[index],
-        title: formData.title,
-        description: formData.description,
-        content: htmlContent,
-        image_url: imageUrl,
-        published: publish,
-        updated_at: now,
-        published_at: publish ? now : articles[index].published_at,
-        category: formData.category,
-      };
-      return id;
-    }
-    throw new Error('Article not found');
-  } else {
-    // Create new article
-    const newArticle: ArticleData = {
-      id: uuidv4(),
-      title: formData.title,
-      slug,
-      description: formData.description,
-      content: htmlContent,
-      image_url: imageUrl,
-      published: publish,
-      created_at: now,
-      updated_at: now,
-      published_at: publish ? now : null,
-      category: formData.category,
-      tags: [],
-      author_id: '1' // Default author ID
-    };
-    
-    articles.push(newArticle);
-    return newArticle.id;
+  if (index === -1) {
+    return Promise.resolve(null);
   }
+  
+  const updatedArticle = {
+    ...mockArticles[index],
+    title: articleData.title,
+    slug: articleData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, ''),
+    description: articleData.description,
+    content: htmlContent,
+    category: articleData.category,
+    image_url: imageUrl || mockArticles[index].image_url,
+    published_at: articleData.published_at,
+    updated_at: format(new Date(), 'yyyy-MM-dd'),
+    is_published: publish,
+    author: articleData.author,
+    authors: [{ name: articleData.author, image_url: '' }]
+  };
+  
+  mockArticles[index] = updatedArticle;
+  return Promise.resolve(updatedArticle);
 };
 
-// Extract HTML content from article
-export const extractContentHtml = (content: any): string => {
-  if (typeof content === 'string') {
-    try {
-      const parsed = JSON.parse(content);
-      if (parsed && parsed.ops) {
-        return content; // Already in Delta format
-      }
-      return content; // Plain HTML
-    } catch (e) {
-      return content; // Plain HTML or other format
-    }
+export const deleteArticle = async (id: string) => {
+  const index = mockArticles.findIndex(a => a.id === id);
+  
+  if (index === -1) {
+    return Promise.resolve(false);
   }
-  return '';
-};
-
-// Delete an article
-export const deleteArticle = async (id: string): Promise<boolean> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
   
-  const initialLength = articles.length;
-  articles = articles.filter(a => a.id !== id);
-  
-  return articles.length < initialLength;
+  mockArticles.splice(index, 1);
+  return Promise.resolve(true);
 };

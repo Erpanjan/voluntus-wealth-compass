@@ -7,6 +7,7 @@ import ArticleBasicInfo from '@/components/admin/articles/form/ArticleBasicInfo'
 import ArticleMetadata from '@/components/admin/articles/form/ArticleMetadata';
 import ArticleImageUpload from '@/components/admin/articles/form/ArticleImageUpload';
 import ArticleContentEditor from '@/components/admin/articles/form/ArticleContentEditor';
+import ArticlePreview from '@/components/admin/articles/ArticlePreview';
 import { Form } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 
@@ -76,6 +77,18 @@ const ArticleEditorContent: React.FC<ArticleEditorContentProps> = ({
           <ArticleContentEditor htmlContent={htmlContent} setHtmlContent={setHtmlContent} />
         </CardContent>
       </Card>
+      
+      {/* Preview Dialog */}
+      <div className="flex justify-end">
+        <ArticlePreview
+          title={formValues.title || "Untitled Article"}
+          content={htmlContent}
+          author={formValues.author || "Anonymous"}
+          category={formValues.category || "Uncategorized"}
+          imageUrl={previewUrl || formValues.image_url}
+          publishDate={formValues.published_at || "Draft"}
+        />
+      </div>
       
       {/* Optional feature info */}
       <div className="text-center text-sm text-muted-foreground">
