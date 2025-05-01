@@ -77,7 +77,7 @@ const UserAccountManagement = () => {
         return {
           id: user.id,
           email: user.email || 'No email',
-          status: user.banned ? 'Inactive' : (user.last_sign_in_at ? 'Active' : 'Pending'),
+          status: user.banned_until ? 'Inactive' : (user.last_sign_in_at ? 'Active' : 'Pending'),
           role: 'Client',
           lastLogin: user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString() : 'Never',
           verified: user.email_confirmed_at !== null,
@@ -114,7 +114,9 @@ const UserAccountManagement = () => {
       // Update user status in Supabase Auth
       const { error } = await supabase.auth.admin.updateUserById(
         selectedUser.id,
-        { banned: actionType === 'deactivate' }
+        { 
+          ban_duration: actionType === 'deactivate' ? 'infinite' : null 
+        }
       );
       
       if (error) throw error;
