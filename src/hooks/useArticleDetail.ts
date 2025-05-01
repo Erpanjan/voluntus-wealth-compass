@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { articleService, Article } from '@/services/articleService';
+import { articleService, Article } from '@/services/article';
 import { useToast } from '@/hooks/use-toast';
 
 export const useArticleDetail = (slug: string) => {

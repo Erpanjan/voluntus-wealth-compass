@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { articleService, Article } from '@/services/articleService';
+import { articleService, Article } from '@/services/article';
 
 export const useArticles = () => {
   const [articles, setArticles] = useState<Article[]>([]);
