@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { articleService, Article } from '@/services/article';
 import { useToast } from '@/hooks/use-toast';
 
@@ -9,26 +9,35 @@ export const useArticleDetail = (slug: string) => {
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
 
-  const fetchArticle = async () => {
+  const fetchArticle = useCallback(async () => {
+    if (!slug) {
+      setLoading(false);
+      return;
+    }
+    
     try {
       setLoading(true);
       setError(null);
       
+      console.log(`Fetching article with slug: ${slug}`);
+      const startTime = performance.now();
+      
       // Use the articleService to get the article by slug
-      // This function already includes the reports in its response
       const data = await articleService.getArticleBySlug(slug);
       
+      const endTime = performance.now();
+      console.log(`Article fetch completed in ${(endTime - startTime).toFixed(2)}ms`);
+      
       if (!data) {
+        console.error("Article not found for slug:", slug);
         throw new Error("Article not found");
       }
       
-      console.log("Complete article data:", data);
-      
-      if (data.reports) {
-        console.log("Article reports:", data.reports);
-      } else {
-        console.log("No reports found for this article");
-      }
+      console.log("Article data retrieved:", {
+        title: data.title,
+        hasReports: data.reports && data.reports.length > 0,
+        reportsCount: data.reports ? data.reports.length : 0
+      });
       
       setArticle(data);
     } catch (err) {
@@ -42,13 +51,23 @@ export const useArticleDetail = (slug: string) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug, toast]);
 
   useEffect(() => {
+    // Reset states when slug changes
+    setLoading(true);
+    setError(null);
+    setArticle(null);
+    
     if (slug) {
       fetchArticle();
     }
-  }, [slug]);
+  }, [slug, fetchArticle]);
 
-  return { article, loading, error, refetch: fetchArticle };
+  return { 
+    article, 
+    loading, 
+    error, 
+    refetch: fetchArticle 
+  };
 };

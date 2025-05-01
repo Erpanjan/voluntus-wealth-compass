@@ -1,37 +1,72 @@
 
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useArticleDetail } from '@/hooks/useArticleDetail';
 import { ArrowLeft, Calendar, User, FileText, Download, File } from 'lucide-react';
 import { formatDistance } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { getFileExtension } from '@/components/admin/articles/attachments/utils';
+import { useToast } from '@/hooks/use-toast';
 
 const ArticleDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { article, loading, error, refetch } = useArticleDetail(slug || '');
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
-  React.useEffect(() => {
+  useEffect(() => {
     // Log article data for debugging
     if (article) {
-      console.log("Article data:", article);
+      console.log("Article data loaded successfully:", article);
       if (article.reports && article.reports.length > 0) {
-        console.log("Article has attachments:", article.reports);
+        console.log("Article has attachments:", article.reports.length);
       } else {
         console.log("Article has no attachments");
       }
     }
   }, [article]);
+
+  useEffect(() => {
+    // Handle error with toast and logging
+    if (error) {
+      console.error("Error loading article:", error);
+      toast({
+        title: "Error loading article",
+        description: "There was a problem loading the article. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
+
+  useEffect(() => {
+    // Auto-retry loading once if there's an error
+    if (error) {
+      const timer = setTimeout(() => {
+        console.log("Attempting to refetch article data...");
+        refetch();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, refetch]);
   
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto py-10 px-6 min-h-screen animate-pulse">
-        <div className="h-8 bg-gray-200 rounded w-1/3 mb-8"></div>
-        <div className="h-80 bg-gray-200 rounded mb-8"></div>
-        <div className="space-y-4">
-          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-          <div className="h-4 bg-gray-200 rounded"></div>
-          <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+      <div className="max-w-4xl mx-auto py-10 px-6 min-h-[50vh]">
+        <div className="space-y-6">
+          <div className="flex items-center">
+            <div className="h-10 w-24 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+          <div className="h-8 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+          <div className="flex items-center space-x-4">
+            <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-5 w-24 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+          <div className="h-64 bg-gray-200 rounded animate-pulse"></div>
+          <div className="space-y-4">
+            <div className="h-4 bg-gray-200 rounded w-5/6 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-4/6 animate-pulse"></div>
+          </div>
         </div>
       </div>
     );
@@ -82,16 +117,42 @@ const ArticleDetail = () => {
   
   // Extract file name from URL
   const getFileName = (fileUrl: string) => {
-    const urlParts = fileUrl.split('/');
-    const rawName = urlParts[urlParts.length - 1];
-    
-    // Remove UUID prefix if present (assuming format: uuid-filename.ext)
-    const parts = rawName.split('-');
-    if (parts.length > 1 && parts[0].length === 36) {
-      return parts.slice(1).join('-');
+    try {
+      const urlParts = fileUrl.split('/');
+      const rawName = urlParts[urlParts.length - 1];
+      
+      // URL decode the filename
+      const decodedName = decodeURIComponent(rawName);
+      
+      // Remove UUID prefix if present (assuming format: uuid-filename.ext)
+      const parts = decodedName.split('-');
+      if (parts.length > 1 && parts[0].length === 36) {
+        return parts.slice(1).join('-');
+      }
+      
+      return decodedName;
+    } catch (error) {
+      console.error("Error extracting filename from URL:", error);
+      return "Download File";
     }
-    
-    return rawName;
+  };
+
+  // Handle attachment download with error handling
+  const handleDownload = (attachment: any) => {
+    try {
+      // Log the download attempt
+      console.log("Attempting to download:", attachment.file_url);
+      
+      // Open in new tab instead of direct download to handle potential errors
+      window.open(attachment.file_url, '_blank');
+    } catch (error) {
+      console.error("Error downloading attachment:", error);
+      toast({
+        title: "Download Error",
+        description: "Could not download the file. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
   
   return (
@@ -135,6 +196,10 @@ const ArticleDetail = () => {
             src={article.image_url} 
             alt={article.title}
             className="w-full h-auto object-cover rounded-lg"
+            onError={(e) => {
+              console.error("Error loading image:", article.image_url);
+              e.currentTarget.style.display = 'none';
+            }}
           />
         </div>
       )}
@@ -170,29 +235,26 @@ const ArticleDetail = () => {
               >
                 <div className="flex items-center space-x-4">
                   <div className="bg-gray-100 p-3 rounded-lg">
-                    {getFileIcon(attachment.file_url)}
+                    {getFileIcon(attachment.file_url || "")}
                   </div>
                   <div>
-                    <p className="font-medium">{attachment.title}</p>
+                    <p className="font-medium">{attachment.title || "Unnamed attachment"}</p>
                     {attachment.description && (
                       <p className="text-sm text-gray-500">{attachment.description}</p>
                     )}
                     <p className="text-xs text-gray-400">
-                      {getFileName(attachment.file_url)}
+                      {getFileName(attachment.file_url || "")}
                     </p>
                   </div>
                 </div>
                 
-                <Button asChild variant="outline" size="sm">
-                  <a 
-                    href={attachment.file_url} 
-                    target="_blank" 
-                    rel="noreferrer"
-                    download={getFileName(attachment.file_url)}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </a>
+                <Button 
+                  onClick={() => handleDownload(attachment)}
+                  variant="outline" 
+                  size="sm"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
                 </Button>
               </div>
             ))}
@@ -214,7 +276,7 @@ const ArticleDetail = () => {
             {JSON.stringify({
               slug,
               hasAttachments,
-              attachments: article.reports,
+              reports: article.reports,
             }, null, 2)}
           </pre>
         </div>
