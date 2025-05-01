@@ -66,7 +66,7 @@ export const articleQueryService = {
       // Filter to only return published articles (where published_at is in the past)
       const now = new Date();
       return processedData.filter((article: Article) => {
-        return new Date(article.published_at) <= now;
+        return article.published_at && new Date(article.published_at) <= now;
       });
     } catch (error) {
       console.error('Error in getPublishedArticles:', error);
@@ -81,6 +81,7 @@ export const articleQueryService = {
    */
   async getArticleBySlug(slug: string): Promise<Article | null> {
     try {
+      console.log(`Fetching article by slug: ${slug}`);
       const { data, error } = await supabase.rpc('get_article_by_slug', {
         slug_param: slug
       });
@@ -90,10 +91,14 @@ export const articleQueryService = {
         throw error;
       }
       
+      console.log('Raw article data:', data);
+      
       if (data && data.length > 0) {
         // Process the data to ensure correct typing
         const article: Article = {
           ...data[0],
+          // Parse content if it's a string but should be JSON
+          content: data[0].content,
           authors: Array.isArray(data[0].authors) 
             ? data[0].authors.map((author: any) => ({
                 id: author.id,
@@ -111,9 +116,17 @@ export const articleQueryService = {
               })) 
             : []
         };
+        
+        console.log('Processed article:', {
+          title: article.title,
+          contentType: typeof article.content,
+          hasReports: article.reports && article.reports.length > 0
+        });
+        
         return article;
       }
       
+      console.log('No article found with slug:', slug);
       return null;
     } catch (error) {
       console.error('Error in getArticleBySlug:', error);

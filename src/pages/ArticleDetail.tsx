@@ -18,8 +18,12 @@ const ArticleDetail = () => {
     // Log article data for debugging
     if (article) {
       console.log("Article data loaded successfully:", article);
+      console.log("Article content type:", typeof article.content);
+      console.log("Article content:", article.content);
+      
       if (article.reports && article.reports.length > 0) {
         console.log("Article has attachments:", article.reports.length);
+        console.log("Reports data:", article.reports);
       } else {
         console.log("Article has no attachments");
       }
@@ -213,8 +217,12 @@ const ArticleDetail = () => {
           <div dangerouslySetInnerHTML={{ __html: article.content }} />
         ) : (
           <div>
-            {/* Handle JSON content if needed */}
-            <p>Content unavailable</p>
+            {/* For JSON content, stringify and format it */}
+            {article.content && typeof article.content === 'object' ? (
+              <div dangerouslySetInnerHTML={{ __html: JSON.stringify(article.content) }} />
+            ) : (
+              <p>Content unavailable</p>
+            )}
           </div>
         )}
       </div>
@@ -276,6 +284,7 @@ const ArticleDetail = () => {
             {JSON.stringify({
               slug,
               hasAttachments,
+              contentType: typeof article.content,
               reports: article.reports,
             }, null, 2)}
           </pre>

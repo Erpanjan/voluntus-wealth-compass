@@ -20,13 +20,9 @@ export const useArticleDetail = (slug: string) => {
       setError(null);
       
       console.log(`Fetching article with slug: ${slug}`);
-      const startTime = performance.now();
       
       // Use the articleService to get the article by slug
       const data = await articleService.getArticleBySlug(slug);
-      
-      const endTime = performance.now();
-      console.log(`Article fetch completed in ${(endTime - startTime).toFixed(2)}ms`);
       
       if (!data) {
         console.error("Article not found for slug:", slug);
@@ -35,6 +31,8 @@ export const useArticleDetail = (slug: string) => {
       
       console.log("Article data retrieved:", {
         title: data.title,
+        hasContent: !!data.content,
+        contentType: typeof data.content,
         hasReports: data.reports && data.reports.length > 0,
         reportsCount: data.reports ? data.reports.length : 0
       });
