@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -121,10 +120,10 @@ const Login = () => {
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
-        {/* Title and admin mode toggle in the same row */}
-        <div className="h-24 flex items-center justify-center relative">
+        {/* Fixed height title container to prevent jumping */}
+        <div className="h-24 flex items-center justify-center">
           <div className="flex items-center space-x-4">
-            <h1 className="text-3xl font-bold">{isAdminMode ? 'Admin Portal' : 'Client Portal'}</h1>
+            <h1 className="text-3xl font-bold text-center w-[200px]">{isAdminMode ? 'Admin Portal' : 'Client Portal'}</h1>
             <div className="flex items-center space-x-2">
               <Switch
                 id="admin-mode"
