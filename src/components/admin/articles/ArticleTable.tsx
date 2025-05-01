@@ -43,9 +43,18 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className="space-y-2">
-        {[...Array(5)].map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full" />
+      <div className="p-6 space-y-4">
+        <div className="flex items-center space-x-4 mb-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Skeleton className="h-10 w-full" />
+          </div>
         ))}
       </div>
     );
@@ -53,16 +62,16 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
 
   if (articles.length === 0) {
     return (
-      <div className="text-center py-10">
+      <div className="text-center py-16">
         <FileText className="mx-auto h-12 w-12 text-gray-300" />
         <h3 className="mt-2 text-lg font-medium">No articles found</h3>
-        <p className="mt-1 text-gray-500">Create a new article to get started</p>
+        <p className="mt-1 text-gray-500">Create a new article to get started or adjust your search</p>
       </div>
     );
   }
 
   return (
-    <div className="border rounded-md">
+    <div className="overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -79,16 +88,16 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
             const isPublished = new Date(article.published_at) <= new Date();
             
             return (
-              <TableRow key={article.id}>
+              <TableRow key={article.id} className="hover:bg-gray-50">
                 <TableCell className="font-medium">{article.title}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{article.category}</Badge>
+                  <Badge variant="outline" className="bg-gray-50">{article.category}</Badge>
                 </TableCell>
                 <TableCell>
                   {isPublished ? (
-                    <Badge className="bg-green-500 text-white">Published</Badge>
+                    <Badge className="bg-green-500 hover:bg-green-600 text-white">Published</Badge>
                   ) : (
-                    <Badge variant="outline">Draft</Badge>
+                    <Badge variant="outline" className="border-gray-300 text-gray-700">Draft</Badge>
                   )}
                 </TableCell>
                 <TableCell>
@@ -98,7 +107,11 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
                   {article.authors && article.authors.length > 0 ? (
                     <div className="flex -space-x-2">
                       {article.authors.slice(0, 3).map((author: any, index: number) => (
-                        <div key={index} className="w-7 h-7 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs overflow-hidden">
+                        <div 
+                          key={index} 
+                          className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-xs bg-gray-200 overflow-hidden"
+                          title={author.name}
+                        >
                           {author.image_url ? (
                             <img src={author.image_url} alt={author.name} className="w-full h-full object-cover" />
                           ) : (
@@ -107,7 +120,7 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
                         </div>
                       ))}
                       {article.authors.length > 3 && (
-                        <div className="w-7 h-7 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs">
+                        <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs">
                           +{article.authors.length - 3}
                         </div>
                       )}
@@ -119,20 +132,23 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" className="hover:bg-gray-100">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onEdit(article.id)}>
+                    <DropdownMenuContent align="end" className="w-[160px]">
+                      <DropdownMenuItem onClick={() => onEdit(article.id)} className="cursor-pointer">
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onView(article.slug)}>
+                      <DropdownMenuItem onClick={() => onView(article.slug)} className="cursor-pointer">
                         <Eye className="mr-2 h-4 w-4" />
                         View
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onDelete(article.id)} className="text-red-600">
+                      <DropdownMenuItem 
+                        onClick={() => onDelete(article.id)} 
+                        className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                      >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                       </DropdownMenuItem>
