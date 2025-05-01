@@ -1,5 +1,4 @@
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useArticleDetail } from '@/hooks/useArticleDetail';
 import { ArrowLeft, Calendar, User, FileText, Download, File } from 'lucide-react';
@@ -13,13 +12,16 @@ const ArticleDetail = () => {
   const { article, loading, error, refetch } = useArticleDetail(slug || '');
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [renderRetries, setRenderRetries] = useState(0);
   
   useEffect(() => {
     // Log article data for debugging
     if (article) {
       console.log("Article data loaded successfully:", article);
       console.log("Article content type:", typeof article.content);
-      console.log("Article content:", article.content);
+      console.log("Article content sample:", typeof article.content === 'string' 
+        ? article.content.substring(0, 100) + '...' 
+        : 'Non-string content');
       
       if (article.reports && article.reports.length > 0) {
         console.log("Article has attachments:", article.reports.length);
@@ -52,6 +54,17 @@ const ArticleDetail = () => {
       return () => clearTimeout(timer);
     }
   }, [error, refetch]);
+  
+  // Try re-rendering the content if it's available but not showing properly
+  useEffect(() => {
+    if (article && article.content && typeof article.content === 'string' && renderRetries < 2) {
+      const timer = setTimeout(() => {
+        console.log(`Forcing content re-render attempt ${renderRetries + 1}`);
+        setRenderRetries(prev => prev + 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [article, renderRetries]);
   
   if (loading) {
     return (
@@ -159,6 +172,33 @@ const ArticleDetail = () => {
     }
   };
   
+  // Safely render content based on type and ensure it exists
+  const renderContent = () => {
+    if (!article.content) {
+      return <p className="text-gray-500">No content available for this article.</p>;
+    }
+
+    console.log(`Rendering content of type: ${typeof article.content}`);
+    
+    if (typeof article.content === 'string') {
+      // Handle HTML content
+      if (article.content.trim().startsWith('<') || article.content.includes('<p>') || article.content.includes('<div>')) {
+        return <div dangerouslySetInnerHTML={{ __html: article.content }} />;
+      }
+      
+      // Handle plain text
+      return <div className="whitespace-pre-wrap">{article.content}</div>;
+    }
+    
+    // Handle JSON object content (shouldn't happen with our normalization but just in case)
+    if (typeof article.content === 'object' && article.content !== null) {
+      return <pre className="p-4 bg-gray-50 rounded overflow-auto text-sm">{JSON.stringify(article.content, null, 2)}</pre>;
+    }
+    
+    // Fallback for unexpected content type
+    return <p className="text-gray-500">Content format not supported.</p>;
+  };
+  
   return (
     <div className="max-w-4xl mx-auto py-10 px-6">
       <div className="mb-8">
@@ -213,18 +253,7 @@ const ArticleDetail = () => {
           <p className="text-xl text-gray-700 mb-6">{article.description}</p>
         )}
         
-        {typeof article.content === 'string' ? (
-          <div dangerouslySetInnerHTML={{ __html: article.content }} />
-        ) : (
-          <div>
-            {/* For JSON content, stringify and format it */}
-            {article.content && typeof article.content === 'object' ? (
-              <div dangerouslySetInnerHTML={{ __html: JSON.stringify(article.content) }} />
-            ) : (
-              <p>Content unavailable</p>
-            )}
-          </div>
-        )}
+        {renderContent()}
       </div>
       
       {/* Reports/Attachments section */}
@@ -285,7 +314,9 @@ const ArticleDetail = () => {
               slug,
               hasAttachments,
               contentType: typeof article.content,
+              contentSample: typeof article.content === 'string' ? article.content.substring(0, 50) + '...' : null,
               reports: article.reports,
+              renderRetries
             }, null, 2)}
           </pre>
         </div>

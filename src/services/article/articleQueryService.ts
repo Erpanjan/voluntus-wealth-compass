@@ -51,9 +51,13 @@ export const articleQueryService = {
         throw error;
       }
       
+      console.log('Raw published articles data:', data);
+      
       // Process the data to ensure correct typing
       const processedData: Article[] = data?.map((item: any) => ({
         ...item,
+        // Ensure content is properly normalized
+        content: this._normalizeContent(item.content),
         authors: Array.isArray(item.authors) 
           ? item.authors.map((author: any) => ({
               id: author.id,
@@ -91,46 +95,90 @@ export const articleQueryService = {
         throw error;
       }
       
-      console.log('Raw article data:', data);
+      console.log('Raw article data from DB:', data);
       
-      if (data && data.length > 0) {
-        // Process the data to ensure correct typing
-        const article: Article = {
-          ...data[0],
-          // Parse content if it's a string but should be JSON
-          content: data[0].content,
-          authors: Array.isArray(data[0].authors) 
-            ? data[0].authors.map((author: any) => ({
-                id: author.id,
-                name: author.name,
-                image_url: author.image_url
-              })) 
-            : [],
-          reports: Array.isArray(data[0].reports) 
-            ? data[0].reports.map((report: any) => ({
-                id: report.id,
-                title: report.title,
-                description: report.description,
-                file_url: report.file_url,
-                created_at: report.created_at
-              })) 
-            : []
-        };
-        
-        console.log('Processed article:', {
-          title: article.title,
-          contentType: typeof article.content,
-          hasReports: article.reports && article.reports.length > 0
-        });
-        
-        return article;
+      if (!data || data.length === 0) {
+        console.log('No article found with slug:', slug);
+        return null;
       }
       
-      console.log('No article found with slug:', slug);
-      return null;
+      const rawArticle = data[0];
+      console.log('Content type from DB:', typeof rawArticle.content);
+      console.log('Raw content value:', rawArticle.content);
+      
+      // Process the data to ensure correct typing
+      const article: Article = {
+        ...rawArticle,
+        // Normalize content to proper format
+        content: this._normalizeContent(rawArticle.content),
+        authors: Array.isArray(rawArticle.authors) 
+          ? rawArticle.authors.map((author: any) => ({
+              id: author.id,
+              name: author.name,
+              image_url: author.image_url
+            })) 
+          : [],
+        reports: Array.isArray(rawArticle.reports) 
+          ? rawArticle.reports.map((report: any) => ({
+              id: report.id,
+              title: report.title,
+              description: report.description,
+              file_url: report.file_url,
+              created_at: report.created_at
+            })) 
+          : []
+      };
+      
+      console.log('Processed article:', {
+        title: article.title,
+        contentType: typeof article.content,
+        contentIsString: typeof article.content === 'string',
+        hasReports: article.reports && article.reports.length > 0,
+        contentSample: typeof article.content === 'string' 
+          ? article.content.substring(0, 50) + '...'
+          : 'Object content'
+      });
+      
+      return article;
     } catch (error) {
       console.error('Error in getArticleBySlug:', error);
       return null;
     }
+  },
+  
+  /**
+   * Helper function to normalize content to string if it's currently an object
+   * Handles different possible content formats from the database
+   */
+  _normalizeContent(content: any): string {
+    if (content === null || content === undefined) {
+      return '';
+    }
+    
+    // If already a string, return as is
+    if (typeof content === 'string') {
+      return content;
+    }
+    
+    // If it's an object, try to stringify it
+    if (typeof content === 'object') {
+      try {
+        // Handle Supabase RPC JSONB content that might be pre-stringified
+        // For objects, we want proper HTML if available
+        if (content.html) {
+          return content.html;
+        } else if (content.text) {
+          return content.text;
+        } else {
+          return JSON.stringify(content);
+        }
+      } catch (e) {
+        console.error('Error normalizing content:', e);
+        return JSON.stringify(content);
+      }
+    }
+    
+    // Default fallback
+    return String(content);
   }
 };
