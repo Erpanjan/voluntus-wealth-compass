@@ -128,7 +128,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
 
       <Button 
         type="submit" 
-        className="w-full bg-black hover:bg-black text-white font-normal py-6 rounded-none" 
+        className={`w-full ${isAdminMode ? 'bg-black' : 'bg-black/80'} hover:bg-black text-white font-normal py-6 rounded-none`} 
         disabled={isSubmitting}
       >
         {isSubmitting ? 'Logging in...' : isAdminMode ? 'Login to Admin' : 'Login'}
