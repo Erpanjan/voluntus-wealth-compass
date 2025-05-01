@@ -10,6 +10,14 @@ export interface Author {
   bio?: string;
 }
 
+export interface Report {
+  id: string;
+  title: string;
+  description?: string;
+  file_url: string;
+  created_at: string;
+}
+
 export interface Article {
   id: string;
   title: string;
@@ -22,14 +30,7 @@ export interface Article {
   created_at: string;
   updated_at: string;
   authors?: Author[];
-}
-
-export interface Report {
-  id: string;
-  title: string;
-  description?: string;
-  file_url: string;
-  created_at: string;
+  reports?: Report[];
 }
 
 // Functions to work with articles
@@ -44,7 +45,13 @@ export const articleService = {
         throw error;
       }
       
-      return data || [];
+      // Process the data to ensure correct typing
+      const processedData: Article[] = data?.map((item: any) => ({
+        ...item,
+        authors: Array.isArray(item.authors) ? item.authors : []
+      })) || [];
+      
+      return processedData;
     } catch (error) {
       console.error('Error in getArticles:', error);
       return [];
@@ -61,9 +68,15 @@ export const articleService = {
         throw error;
       }
       
+      // Process the data to ensure correct typing
+      const processedData: Article[] = data?.map((item: any) => ({
+        ...item,
+        authors: Array.isArray(item.authors) ? item.authors : []
+      })) || [];
+      
       // Filter to only return published articles (where published_at is in the past)
       const now = new Date();
-      return (data || []).filter((article: Article) => {
+      return processedData.filter((article: Article) => {
         return new Date(article.published_at) <= now;
       });
     } catch (error) {
@@ -84,7 +97,17 @@ export const articleService = {
         throw error;
       }
       
-      return data && data.length > 0 ? data[0] : null;
+      if (data && data.length > 0) {
+        // Process the data to ensure correct typing
+        const article: Article = {
+          ...data[0],
+          authors: Array.isArray(data[0].authors) ? data[0].authors : [],
+          reports: Array.isArray(data[0].reports) ? data[0].reports : []
+        };
+        return article;
+      }
+      
+      return null;
     } catch (error) {
       console.error('Error in getArticleBySlug:', error);
       return null;
@@ -116,7 +139,6 @@ export const articleService = {
     try {
       const isUpdate = !!article.id;
       let articleId = article.id || uuidv4();
-      let slug = '';
       
       // 1. Upload image if provided
       let imageUrl = article.image_url;
@@ -167,14 +189,15 @@ export const articleService = {
           throw updateError;
         }
         
-        slug = updatedArticle?.slug || '';
+        return updatedArticle?.slug || '';
       } else {
-        // Create new article
+        // Create new article with auto-generated slug
         const { data: newArticle, error: insertError } = await supabase
           .from('articles')
           .insert({
             id: articleId,
-            ...articleData
+            ...articleData,
+            slug: article.title ? article.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') : uuidv4()
           })
           .select('slug')
           .single();
@@ -184,7 +207,7 @@ export const articleService = {
           throw insertError;
         }
         
-        slug = newArticle?.slug || '';
+        return newArticle?.slug || '';
       }
       
       // 3. Handle article-author relationships
@@ -283,7 +306,7 @@ export const articleService = {
         }
       }
       
-      return slug;
+      return articleId;
     } catch (error) {
       console.error('Error in saveArticle:', error);
       return null;

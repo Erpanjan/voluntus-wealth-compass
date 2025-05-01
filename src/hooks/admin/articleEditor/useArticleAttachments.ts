@@ -11,6 +11,10 @@ export interface Attachment {
   file_url?: string;
   file?: File;
   created_at?: string;
+  name?: string;
+  size?: number;
+  type?: string;
+  url?: string;
 }
 
 export const useArticleAttachments = (isEditMode: boolean) => {
@@ -39,6 +43,10 @@ export const useArticleAttachments = (isEditMode: boolean) => {
           description: item.description || '',
           file_url: item.file_url,
           created_at: item.created_at,
+          name: item.title,
+          size: 0, // We don't have the size from the database
+          type: item.file_url?.split('.').pop() || '',
+          url: item.file_url
         }));
         
         setAttachments(formattedAttachments);

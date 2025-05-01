@@ -5,20 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Upload, X, File, Download } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
-
-interface AttachmentFile {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-  url?: string;
-  file?: File;
-}
+import { Attachment } from '@/hooks/admin/articleEditor/useArticleAttachments';
 
 interface ArticleAttachmentsSectionProps {
   form: UseFormReturn<any>;
-  attachments: AttachmentFile[];
-  setAttachments: React.Dispatch<React.SetStateAction<AttachmentFile[]>>;
+  attachments: Attachment[];
+  setAttachments: React.Dispatch<React.SetStateAction<Attachment[]>>;
 }
 
 const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({ 
@@ -33,6 +25,7 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
       const newFiles = Array.from(e.target.files).map(file => ({
         id: `attachment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: file.name,
+        title: file.name,
         size: file.size,
         type: file.type,
         file: file
@@ -136,14 +129,16 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
                           <File className="h-5 w-5 text-gray-500" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-800">{attachment.name}</p>
-                          <p className="text-xs text-gray-500 mt-1">{formatFileSize(attachment.size)}</p>
+                          <p className="text-sm font-medium text-gray-800">{attachment.name || attachment.title}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {attachment.size ? formatFileSize(attachment.size) : 'Unknown size'}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        {attachment.url && (
+                        {(attachment.file_url || attachment.url) && (
                           <a 
-                            href={attachment.url} 
+                            href={attachment.file_url || attachment.url} 
                             target="_blank" 
                             rel="noreferrer"
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -152,7 +147,7 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
                           </a>
                         )}
                         <button 
-                          onClick={() => handleRemoveAttachment(attachment.id)}
+                          onClick={() => handleRemoveAttachment(attachment.id || '')}
                           className="p-2 hover:bg-red-50 rounded-full text-red-500 hover:text-red-600 transition-colors"
                         >
                           <X className="h-4 w-4" />
