@@ -1,19 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, KeyboardEvent } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, X } from 'lucide-react';
 import { FormDescription, FormLabel } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue 
-} from '@/components/ui/select';
-import { articleService, Author } from '@/services/articleService';
+import { authorService } from '@/services/authorService';
+import { Author } from '@/types/article.types';
 
 interface ArticleAuthorsSectionProps {
   selectedAuthors: string[];
@@ -25,7 +19,7 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
   setSelectedAuthors
 }) => {
   const [authors, setAuthors] = useState<Author[]>([]);
-  const [selectedAuthor, setSelectedAuthor] = useState<string>('');
+  const [newAuthorName, setNewAuthorName] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -34,7 +28,7 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
     const fetchAuthors = async () => {
       setLoading(true);
       try {
-        const data = await articleService.getAuthors();
+        const data = await authorService.getAuthors();
         setAuthors(data);
       } catch (error) {
         console.error('Error fetching authors:', error);
@@ -52,20 +46,43 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
   }, [toast]);
 
   const handleAddAuthor = () => {
-    if (!selectedAuthor) return;
+    if (!newAuthorName.trim()) return;
     
     // Check if author already exists to avoid duplicates
-    if (selectedAuthors.includes(selectedAuthor)) {
+    const existingAuthor = authors.find(a => 
+      a.name.toLowerCase() === newAuthorName.trim().toLowerCase()
+    );
+    
+    if (existingAuthor) {
+      // If author exists, check if already selected
+      if (selectedAuthors.includes(existingAuthor.id)) {
+        toast({
+          title: "Author already added",
+          description: "This author is already in the list.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Add existing author
+      setSelectedAuthors(prev => [...prev, existingAuthor.id]);
+    } else {
+      // Here we would typically create a new author, but for now we'll just show a message
       toast({
-        title: "Author already added",
-        description: "This author is already in the list.",
+        title: "Author not found",
+        description: "This author doesn't exist in the system. Please select from existing authors.",
         variant: "destructive",
       });
-      return;
     }
     
-    setSelectedAuthors(prev => [...prev, selectedAuthor]);
-    setSelectedAuthor(''); // Reset selection
+    setNewAuthorName(''); // Reset input
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddAuthor();
+    }
   };
 
   const handleRemoveAuthor = (authorId: string) => {
@@ -109,28 +126,28 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
       </div>
       
       <div className="flex gap-2">
-        <Select 
-          value={selectedAuthor} 
-          onValueChange={setSelectedAuthor}
+        <Input
+          type="text"
+          placeholder="Type author name and press Enter"
+          value={newAuthorName}
+          onChange={(e) => setNewAuthorName(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="flex-grow"
           disabled={loading}
-        >
-          <SelectTrigger className="flex-grow">
-            <SelectValue placeholder="Select an author" />
-          </SelectTrigger>
-          <SelectContent>
-            {authors.map((author) => (
-              <SelectItem key={author.id} value={author.id}>
-                {author.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          list="author-suggestions"
+        />
+        
+        <datalist id="author-suggestions">
+          {authors.map(author => (
+            <option key={author.id} value={author.name} />
+          ))}
+        </datalist>
         
         <Button 
           type="button" 
           onClick={handleAddAuthor}
           variant="outline"
-          disabled={!selectedAuthor || loading}
+          disabled={!newAuthorName.trim() || loading}
           className="hover:bg-gray-100"
         >
           <Plus size={16} className="mr-2" />
