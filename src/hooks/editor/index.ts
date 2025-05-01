@@ -1,0 +1,2 @@
+
+export { useRichTextEditor } from './useRichTextEditor';

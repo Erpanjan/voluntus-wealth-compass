@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useRichTextEditor } from '@/hooks/useRichTextEditor';
+import { useRichTextEditor } from '@/hooks/editor';
 import EditorToolbar from './editor/EditorToolbar';
 import ImageHandler from './editor/ImageHandler';
 import EditorStyles from './editor/EditorStyles';
@@ -74,3 +74,4 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
 };
 
 export default RichTextEditor;
+
