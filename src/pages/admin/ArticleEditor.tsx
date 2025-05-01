@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,16 +25,22 @@ import {
 } from '@/components/ui/form';
 import { 
   Card, 
-  CardContent, 
+  CardContent,
   CardDescription, 
   CardFooter, 
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { ArrowLeft, Calendar, Save } from 'lucide-react';
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { ArrowLeft, Calendar, Save, X, ChevronDown, ChevronUp, Upload, User, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
-import type { Json } from '@/integrations/supabase/types';
+import { Badge } from '@/components/ui/badge';
 
 // Sample data for edit mode
 const SAMPLE_ARTICLE = {
@@ -50,6 +56,18 @@ const SAMPLE_ARTICLE = {
   updated_at: new Date().toISOString(),
 };
 
+// Available categories for selection
+const CATEGORIES = [
+  'Finance',
+  'Investing',
+  'Planning',
+  'Markets',
+  'Analysis',
+  'Retirement',
+  'Taxes',
+  'Estate Planning'
+];
+
 const ArticleEditor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -57,6 +75,10 @@ const ArticleEditor = () => {
   const [submitting, setSubmitting] = useState(false);
   const [authors, setAuthors] = useState<any[]>([]);
   const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [infoExpanded, setInfoExpanded] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const isEditMode = !!id;
 
@@ -110,6 +132,10 @@ const ArticleEditor = () => {
               image_url: data.image_url,
               published_at: format(new Date(data.published_at), 'yyyy-MM-dd'),
             });
+            
+            if (data.image_url) {
+              setImagePreview(data.image_url);
+            }
             
             // Fetch article authors
             // const { data: authorData, error: authorError } = await supabase
@@ -232,6 +258,38 @@ const ArticleEditor = () => {
       }
     });
   };
+  
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Check file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: 'Error',
+        description: 'Image file size must be less than 10MB',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    setImageFile(file);
+    
+    // Create a preview URL
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+  
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   return (
     <AdminLayout>
@@ -259,184 +317,236 @@ const ArticleEditor = () => {
         </Button>
       </div>
       
-      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-yellow-700">
-              <strong>Note:</strong> The article management functionality requires additional database setup. To use this feature, please set up the necessary tables in your Supabase database.
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Article Content</CardTitle>
-          <CardDescription>
-            Edit your article content and metadata
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form className="space-y-6">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="Enter article title" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Enter article description" 
-                        rows={3}
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Finance">Finance</SelectItem>
-                          <SelectItem value="Investing">Investing</SelectItem>
-                          <SelectItem value="Planning">Planning</SelectItem>
-                          <SelectItem value="Markets">Markets</SelectItem>
-                          <SelectItem value="Analysis">Analysis</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="published_at"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Publish Date</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Calendar className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-                          <Input
-                            type="date"
-                            className="pl-8"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              <FormField
-                control={form.control}
-                name="image_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Feature Image URL</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="https://example.com/image.jpg" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div>
-                <FormLabel>Authors</FormLabel>
-                <div className="grid grid-cols-2 mt-2 gap-2">
-                  {authors.map(author => (
-                    <div 
-                      key={author.id}
-                      className={`border rounded-md p-3 cursor-pointer ${
-                        selectedAuthors.includes(author.id) 
-                          ? 'bg-primary text-primary-foreground border-primary' 
-                          : 'hover:bg-muted'
-                      }`}
-                      onClick={() => handleAuthorChange(author.id)}
-                    >
-                      {author.name}
-                    </div>
-                  ))}
+      <div className="space-y-6">
+        <Card>
+          <Accordion
+            type="single" 
+            collapsible 
+            defaultValue="article-info"
+            className="border-none"
+          >
+            <AccordionItem value="article-info" className="border-none">
+              <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                <div className="flex items-center">
+                  <h2 className="text-xl font-semibold">Article Information</h2>
                 </div>
-                {authors.length === 0 && (
-                  <div className="text-sm text-muted-foreground mt-2">
-                    No authors available. Add authors in the Author Management section.
-                  </div>
-                )}
-              </div>
-              
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Content</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Write your article content here..." 
-                        rows={10}
-                        {...field} 
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-6">
+                <Form {...form}>
+                  <form className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Enter article title" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            The main title of your article
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Enter article description" 
+                              rows={3}
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            A brief summary of your article
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category</FormLabel>
+                            <Select 
+                              onValueChange={field.onChange} 
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select category" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {CATEGORIES.map(category => (
+                                  <SelectItem key={category} value={category}>
+                                    {category}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Category of your article (e.g. Finance, Investing)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter>
-          <p className="text-sm text-muted-foreground">
-            Note: The article management functionality requires additional database setup.
-          </p>
-        </CardFooter>
-      </Card>
+                      
+                      <FormField
+                        control={form.control}
+                        name="published_at"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Publish Date</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                                <Input
+                                  type="date"
+                                  className="pl-10"
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormDescription>
+                              When the article should be published
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div>
+                      <FormLabel>Authors</FormLabel>
+                      <FormDescription className="mb-3">
+                        Select one or multiple authors for this article
+                      </FormDescription>
+                      <div className="space-y-2">
+                        {authors.map(author => (
+                          <div 
+                            key={author.id}
+                            className={`flex items-center p-3 rounded-md border ${
+                              selectedAuthors.includes(author.id) 
+                                ? 'border-primary bg-primary/5' 
+                                : 'border-gray-200 hover:bg-gray-50'
+                            } transition-colors cursor-pointer`}
+                            onClick={() => handleAuthorChange(author.id)}
+                          >
+                            <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                              <User size={16} />
+                            </div>
+                            <div className="flex-grow">
+                              <p className="font-medium">{author.name}</p>
+                            </div>
+                            <div>
+                              {selectedAuthors.includes(author.id) && (
+                                <Badge variant="outline" className="bg-primary text-white border-primary">
+                                  Selected
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        {authors.length === 0 && (
+                          <p className="text-gray-500 text-sm">
+                            No authors available. Add authors in the Author Management section.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <FormLabel>Feature Image</FormLabel>
+                      <FormDescription className="mb-3">
+                        Upload an image for your article (max 10MB)
+                      </FormDescription>
+                      
+                      {imagePreview ? (
+                        <div className="relative rounded-md overflow-hidden border border-gray-200 mb-2">
+                          <img 
+                            src={imagePreview} 
+                            alt="Article feature" 
+                            className="w-full h-48 object-cover"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            className="absolute top-2 right-2"
+                            onClick={handleRemoveImage}
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div 
+                          className="border-2 border-dashed border-gray-200 rounded-md p-6 text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                          <p className="text-sm font-medium">Click to upload</p>
+                          <p className="text-xs text-gray-500 mt-1">SVG, PNG, JPG or GIF (max 10MB)</p>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleImageChange}
+                        className="hidden"
+                        accept="image/*"
+                      />
+                    </div>
+                  </form>
+                </Form>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Article Content</CardTitle>
+            <CardDescription>
+              Write your article content using the editor below
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Write your article content here..." 
+                      rows={15}
+                      className="min-h-[300px]"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </AdminLayout>
   );
 };

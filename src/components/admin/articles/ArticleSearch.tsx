@@ -6,14 +6,21 @@ import { Input } from '@/components/ui/input';
 interface ArticleSearchProps {
   value: string;
   onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
 }
 
-const ArticleSearch: React.FC<ArticleSearchProps> = ({ value, onChange }) => {
+const ArticleSearch: React.FC<ArticleSearchProps> = ({ 
+  value, 
+  onChange, 
+  placeholder = "Search by title, content, or author...",
+  className = ""
+}) => {
   return (
-    <div className="relative w-full">
+    <div className={`relative w-full ${className}`}>
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
       <Input
-        placeholder="Search by title, content, or author..."
+        placeholder={placeholder}
         className="pl-9 w-full bg-gray-50 border-gray-200 h-11"
         value={value}
         onChange={(e) => onChange(e.target.value)}
