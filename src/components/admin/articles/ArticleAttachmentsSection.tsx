@@ -1,12 +1,11 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Upload, X, File, Download } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
 import { Attachment } from '@/hooks/admin/articleEditor/useArticleAttachments';
 import { useToast } from '@/hooks/use-toast';
+import { AttachmentList, FileUploadArea, validateFile } from './attachments';
 
 interface ArticleAttachmentsSectionProps {
   form: UseFormReturn<any>;
@@ -25,8 +24,8 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files).map(file => {
-        // Validate file type and size
-        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        // Validate file size
+        if (!validateFile(file)) {
           toast({
             title: "File too large",
             description: `${file.name} exceeds the 10MB size limit.`,
@@ -87,16 +86,6 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
       fileInputRef.current.click();
     }
   };
-  
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   return (
     <Card className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow">
@@ -141,62 +130,12 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
               accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
             />
             
-            <Button 
-              onClick={triggerFileInput}
-              variant="outline"
-              className="w-full border-dashed border-2 p-8 flex flex-col items-center justify-center gap-2 hover:bg-gray-50"
-            >
-              <Upload className="h-10 w-10 text-gray-400 mb-2" />
-              <div className="text-center">
-                <p className="font-medium text-gray-700">Click to upload files</p>
-                <p className="text-sm text-gray-500 mt-1">PDF, Word, Excel, PowerPoint, Text files</p>
-              </div>
-            </Button>
+            <FileUploadArea triggerFileInput={triggerFileInput} />
             
-            {attachments.length > 0 && (
-              <div className="space-y-3 mt-6">
-                <h3 className="text-sm font-medium text-gray-700">Uploaded Files ({attachments.length})</h3>
-                <div className="rounded-md border divide-y">
-                  {attachments.map((attachment) => (
-                    <div 
-                      key={attachment.id} 
-                      className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <div className="bg-gray-100 p-3 rounded-lg">
-                          <File className="h-5 w-5 text-gray-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">{attachment.name || attachment.title}</p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {formatFileSize(attachment.size)}
-                            {attachment.type && <span className="ml-2">({attachment.type.split('/').pop()})</span>}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {(attachment.file_url || attachment.url) && (
-                          <a 
-                            href={attachment.file_url || attachment.url} 
-                            target="_blank" 
-                            rel="noreferrer"
-                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                          >
-                            <Download className="h-4 w-4 text-gray-600" />
-                          </a>
-                        )}
-                        <button 
-                          onClick={() => handleRemoveAttachment(attachment.id)}
-                          className="p-2 hover:bg-red-50 rounded-full text-red-500 hover:text-red-600 transition-colors"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <AttachmentList 
+              attachments={attachments} 
+              onRemoveAttachment={handleRemoveAttachment} 
+            />
           </div>
         </CollapsibleContent>
       </Collapsible>
