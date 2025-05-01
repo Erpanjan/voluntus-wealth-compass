@@ -19,6 +19,7 @@ const Login = () => {
   const [pageLoaded, setPageLoaded] = useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -40,6 +41,7 @@ const Login = () => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state changed:', event, session);
         if (session) {
           localStorage.setItem('isAuthenticated', 'true');
           
@@ -52,11 +54,13 @@ const Login = () => {
             navigate('/dashboard');
           }
         }
+        setLoading(false);
       }
     );
     
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session);
       if (session) {
         localStorage.setItem('isAuthenticated', 'true');
         
@@ -69,6 +73,7 @@ const Login = () => {
           navigate('/dashboard');
         }
       }
+      setLoading(false);
     });
     
     return () => {
@@ -129,6 +134,17 @@ const Login = () => {
       }, 300);
     }, 50);
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-all duration-700 ease-in-out ${

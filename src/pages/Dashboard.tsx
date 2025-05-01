@@ -16,21 +16,26 @@ const Dashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState('advisor');
+  const [loading, setLoading] = useState(true);
 
   // Subscribe to auth state changes
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state changed:', event, session);
         setSession(session);
         setUser(session?.user ?? null);
+        setLoading(false);
       }
     );
     
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session);
       setSession(session);
       setUser(session?.user ?? null);
+      setLoading(false);
     });
     
     return () => {
@@ -40,16 +45,30 @@ const Dashboard = () => {
     };
   }, []);
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Redirect to login if not authenticated
   if (!user && !localStorage.getItem('isAuthenticated')) {
+    console.log('Not authenticated, redirecting to login');
     return <Navigate to="/login" />;
   }
 
   const handleLogout = async () => {
     try {
+      console.log('Logging out...');
       await supabase.auth.signOut();
       
       localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('isAdminMode');
       localStorage.removeItem('onboardingComplete');
       
       toast({
@@ -59,6 +78,7 @@ const Dashboard = () => {
       
       navigate('/login');
     } catch (error: any) {
+      console.error('Logout error:', error);
       toast({
         title: "Error logging out",
         description: error.message || "There was a problem logging you out.",
@@ -78,14 +98,14 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {/* Right Sidebar with Navigation Tabs - Updated styling to match screenshots */}
+      {/* Right Sidebar with Navigation Tabs */}
       <div className="w-64 bg-[#F9F9F9] border-l min-h-screen flex flex-col">
         <div className="p-6 border-b">
           <h2 className="text-lg font-medium text-[#333333]">Financial Dashboard</h2>
           <p className="text-xs text-[#9F9EA1] mt-1">Client Portal</p>
         </div>
         
-        {/* Navigation Menu - Updated with smaller font size */}
+        {/* Navigation Menu */}
         <div className="flex-1 py-8">
           <nav className="space-y-6 px-6">
             <button 
@@ -133,6 +153,12 @@ const Dashboard = () => {
             <LogOut size={16} />
             Logout
           </Button>
+          
+          {user && (
+            <p className="text-xs text-center text-gray-500 mt-4">
+              Logged in as: {user.email}
+            </p>
+          )}
         </div>
       </div>
     </div>

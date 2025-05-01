@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +38,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
     setIsSubmitting(true);
 
     try {
+      console.log('Attempting to sign in with:', loginData.email);
+      
       // Attempt to sign in with Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
         email: loginData.email,
@@ -44,6 +47,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       });
       
       if (error) throw error;
+      
+      console.log('Login successful, session:', data.session);
       
       // Set authentication flag in localStorage
       localStorage.setItem('isAuthenticated', 'true');
@@ -70,6 +75,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       }
       
     } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: "Login failed",
         description: error.message || "Invalid email or password. Please try again.",
