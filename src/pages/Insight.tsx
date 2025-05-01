@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ArticleCard from '@/components/ArticleCard';
@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useQuery } from '@tanstack/react-query';
+import { Json } from '@/integrations/supabase/types';
 
 interface Author {
   id: string;
@@ -29,6 +30,20 @@ interface Article {
   authors: Author[];
 }
 
+interface RawArticleResponse {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  content: Json;
+  category: string;
+  image_url: string;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
+  authors: Json;
+}
+
 const fetchArticles = async (): Promise<Article[]> => {
   const { data, error } = await supabase.rpc('get_articles_with_authors');
   
@@ -36,7 +51,13 @@ const fetchArticles = async (): Promise<Article[]> => {
     throw new Error(error.message);
   }
   
-  return data || [];
+  // Transform the response into the Article type
+  const articles: Article[] = (data as RawArticleResponse[]).map(item => ({
+    ...item,
+    authors: Array.isArray(item.authors) ? item.authors as Author[] : []
+  }));
+  
+  return articles;
 };
 
 const Insight = () => {

@@ -1,5 +1,6 @@
+
 import React, { useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Json } from '@/integrations/supabase/types';
 
 interface Author {
   id: string;
@@ -38,6 +40,21 @@ interface Article {
   reports: Report[];
 }
 
+interface RawArticleResponse {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  content: Json;
+  category: string;
+  image_url: string;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
+  authors: Json;
+  reports: Json;
+}
+
 const fetchArticleBySlug = async (slug: string): Promise<Article | null> => {
   const { data, error } = await supabase.rpc('get_article_by_slug', { slug_param: slug });
   
@@ -45,7 +62,16 @@ const fetchArticleBySlug = async (slug: string): Promise<Article | null> => {
     throw new Error(error.message);
   }
   
-  return data && data.length > 0 ? data[0] : null;
+  if (data && data.length > 0) {
+    const rawData = data[0] as RawArticleResponse;
+    return {
+      ...rawData,
+      authors: Array.isArray(rawData.authors) ? rawData.authors as Author[] : [],
+      reports: Array.isArray(rawData.reports) ? rawData.reports as Report[] : []
+    };
+  }
+  
+  return null;
 };
 
 const ArticleDetail = () => {
@@ -95,7 +121,7 @@ const ArticleDetail = () => {
         } else if (block.type === 'list') {
           return (
             <ul key={index} className="list-disc pl-5 mb-4">
-              {block.items.map((item: string, i: number) => (
+              {block.items?.map((item: string, i: number) => (
                 <li key={i} className="mb-1">{item}</li>
               ))}
             </ul>
