@@ -12,7 +12,7 @@ const DatabaseNotice: React.FC = () => {
         </div>
         <div className="ml-3">
           <p className="text-sm text-yellow-700">
-            <strong>Note:</strong> The article management functionality requires additional database setup. To use this feature, please set up the necessary tables in your Supabase database.
+            <strong>Note:</strong> The article management functionality is now connected to your Supabase database. You need to implement the article tables to fully utilize this feature.
           </p>
         </div>
       </div>
