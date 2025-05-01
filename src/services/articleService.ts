@@ -1,56 +1,20 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
-import { Json } from '@/integrations/supabase/types';
+import { Article, Author, ArticleInput } from '@/types/article.types';
+import { createUniqueSlug } from '@/utils/articleUtils';
+import { reportService } from './reportService';
+import { authorService } from './authorService';
 
-// Types for our article operations
-export interface Author {
-  id: string;
-  name: string;
-  image_url?: string;
-  bio?: string;
-}
+export { Author } from '@/types/article.types';
+export { Article } from '@/types/article.types';
+export { Report } from '@/types/article.types';
 
-export interface Report {
-  id: string;
-  title: string;
-  description?: string;
-  file_url: string;
-  created_at: string;
-}
-
-export interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  content: any;
-  category: string;
-  image_url?: string;
-  published_at: string;
-  created_at: string;
-  updated_at: string;
-  authors?: Author[];
-  reports?: Report[];
-}
-
-// Helper function to create a unique slug from a title
-const createUniqueSlug = (title: string): string => {
-  // Convert to lowercase, replace spaces with hyphens, and remove non-alphanumeric characters
-  const baseSlug = title
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]/g, '')
-    .replace(/-+/g, '-'); // Replace multiple hyphens with a single one
-  
-  // Add a timestamp to ensure uniqueness
-  return `${baseSlug}-${Date.now()}`;
-};
-
-// Functions to work with articles
 export const articleService = {
-  // Get all articles with their authors
+  /**
+   * Get all articles with their authors
+   * @returns List of all articles with author information
+   */
   async getArticles(): Promise<Article[]> {
     try {
       const { data, error } = await supabase.rpc('get_articles_with_authors');
@@ -79,7 +43,10 @@ export const articleService = {
     }
   },
 
-  // Get published articles for public consumption
+  /**
+   * Get published articles for public consumption
+   * @returns List of published articles
+   */
   async getPublishedArticles(): Promise<Article[]> {
     try {
       const { data, error } = await supabase.rpc('get_articles_with_authors');
@@ -112,7 +79,11 @@ export const articleService = {
     }
   },
 
-  // Get a single article by slug
+  /**
+   * Get a single article by slug
+   * @param slug The article slug to fetch
+   * @returns The article with that slug or null if not found
+   */
   async getArticleBySlug(slug: string): Promise<Article | null> {
     try {
       const { data, error } = await supabase.rpc('get_article_by_slug', {
@@ -155,28 +126,28 @@ export const articleService = {
     }
   },
 
-  // Get all available authors
+  /**
+   * Get all available authors
+   * @returns List of all authors
+   */
   async getAuthors(): Promise<Author[]> {
-    try {
-      const { data, error } = await supabase
-        .from('authors')
-        .select('*')
-        .order('name');
-      
-      if (error) {
-        console.error('Error fetching authors:', error);
-        throw error;
-      }
-      
-      return data || [];
-    } catch (error) {
-      console.error('Error in getAuthors:', error);
-      return [];
-    }
+    return authorService.getAuthors();
   },
 
-  // Create or update an article
-  async saveArticle(article: Partial<Article>, authorIds: string[], imageFile?: File | null, attachments?: any[]): Promise<string | null> {
+  /**
+   * Create or update an article
+   * @param article The article data to save
+   * @param authorIds IDs of authors to associate with this article
+   * @param imageFile Optional image file to upload
+   * @param attachments Optional attachments/reports to include
+   * @returns The slug of the saved article or null on failure
+   */
+  async saveArticle(
+    article: ArticleInput, 
+    authorIds: string[], 
+    imageFile?: File | null, 
+    attachments?: any[]
+  ): Promise<string | null> {
     try {
       const isUpdate = !!article.id;
       let articleId = article.id || uuidv4();
@@ -216,6 +187,8 @@ export const articleService = {
         updated_at: new Date().toISOString(),
       };
       
+      let slug: string | null = null;
+      
       if (isUpdate) {
         // Update existing article
         const { data: updatedArticle, error: updateError } = await supabase
@@ -230,7 +203,7 @@ export const articleService = {
           throw updateError;
         }
         
-        return updatedArticle?.slug || null;
+        slug = updatedArticle?.slug || null;
       } else {
         // Create new article with unique slug
         const uniqueSlug = createUniqueSlug(article.title || 'untitled');
@@ -250,7 +223,7 @@ export const articleService = {
           throw insertError;
         }
         
-        return newArticle?.slug || null;
+        slug = newArticle?.slug || null;
       }
       
       // 3. Handle article-author relationships
@@ -287,81 +260,7 @@ export const articleService = {
       // 4. Handle attachments/reports
       if (attachments && attachments.length > 0) {
         for (const attachment of attachments) {
-          // Skip if it's an existing attachment (no file) that we don't need to update
-          if (!attachment.file && attachment.id) continue;
-          
-          // Handle file upload if there's a file
-          let fileUrl = attachment.file_url;
-          if (attachment.file) {
-            const filePath = `articles/${articleId}/attachments/${uuidv4()}-${attachment.file.name}`;
-            const { error: fileError } = await supabase.storage
-              .from('article-assets')
-              .upload(filePath, attachment.file, {
-                upsert: true,
-                contentType: attachment.file.type,
-              });
-            
-            if (fileError) {
-              console.error('Error uploading attachment:', fileError);
-              throw fileError;
-            }
-            
-            // Get public URL
-            const { data: { publicUrl } } = supabase.storage
-              .from('article-assets')
-              .getPublicUrl(filePath);
-            
-            fileUrl = publicUrl;
-          }
-          
-          // Create or update the report
-          if (attachment.id && attachment.id.startsWith('attachment-')) {
-            // This is a new attachment that was just created in the UI
-            // It has a temporary ID that starts with 'attachment-'
-            const { error: reportError } = await supabase
-              .from('reports')
-              .insert({
-                article_id: articleId,
-                title: attachment.title || 'Unnamed attachment',
-                description: attachment.description || '',
-                file_url: fileUrl || ''
-              });
-            
-            if (reportError) {
-              console.error('Error creating report:', reportError);
-              throw reportError;
-            }
-          } else if (attachment.id) {
-            // Update existing report
-            const { error: reportError } = await supabase
-              .from('reports')
-              .update({
-                title: attachment.title || 'Unnamed attachment',
-                description: attachment.description || '',
-                file_url: fileUrl || ''
-              })
-              .eq('id', attachment.id);
-            
-            if (reportError) {
-              console.error('Error updating report:', reportError);
-              throw reportError;
-            }
-          } else if (fileUrl) {
-            // Create new report
-            const { error: reportError } = await supabase
-              .from('reports')
-              .insert({
-                article_id: articleId,
-                title: attachment.title || 'Unnamed attachment',
-                description: attachment.description || '',
-                file_url: fileUrl
-              });
-            
-            if (reportError) {
-              console.error('Error creating report:', reportError);
-              throw reportError;
-            }
-          }
+          await reportService.saveReport(articleId, attachment, attachment.file);
         }
       }
       
@@ -372,7 +271,11 @@ export const articleService = {
     }
   },
 
-  // Delete an article
+  /**
+   * Delete an article
+   * @param id The ID of the article to delete
+   * @returns Success status
+   */
   async deleteArticle(id: string): Promise<boolean> {
     try {
       // Delete article (cascade will delete article_authors and reports)
@@ -393,7 +296,12 @@ export const articleService = {
     }
   },
 
-  // Toggle article publish status
+  /**
+   * Toggle article publish status
+   * @param id The ID of the article to update
+   * @param isPublished Whether the article should be published
+   * @returns Success status
+   */
   async togglePublishStatus(id: string, isPublished: boolean): Promise<boolean> {
     try {
       const publishedAt = isPublished 

@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { articleService, Author } from '@/services/articleService';
+import { articleService } from '@/services/articleService';
+import { Author } from '@/types/article.types';
 
 export const useArticleAuthors = (isEditMode: boolean) => {
   const { id } = useParams();

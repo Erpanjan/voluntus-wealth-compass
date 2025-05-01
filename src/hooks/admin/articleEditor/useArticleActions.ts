@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { articleService } from '@/services/articleService';
-import { Author } from '@/services/articleService';
+import { Author } from '@/types/article.types';
 import { Attachment } from './useArticleAttachments';
 
 export const useArticleActions = () => {
