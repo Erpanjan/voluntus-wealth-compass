@@ -100,18 +100,20 @@ const ArticlesManagement = () => {
         <CardContent className="p-0">
           <div className="p-4 border-b">
             <div className="flex flex-col gap-4">
-              <div className="w-full">
-                <ArticleSearch 
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                />
-              </div>
-              <div className="w-full">
-                <ArticleFilters 
-                  filters={filters}
-                  setFilters={setFilters}
-                  articles={articles}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                <div className="md:col-span-2">
+                  <ArticleSearch 
+                    value={searchTerm}
+                    onChange={setSearchTerm}
+                  />
+                </div>
+                <div className="md:col-span-1">
+                  <ArticleFilters 
+                    filters={filters}
+                    setFilters={setFilters}
+                    articles={articles}
+                  />
+                </div>
               </div>
             </div>
           </div>

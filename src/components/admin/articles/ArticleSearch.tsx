@@ -14,7 +14,7 @@ const ArticleSearch: React.FC<ArticleSearchProps> = ({ value, onChange }) => {
       <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
       <Input
         placeholder="Search by title, content, or author..."
-        className="pl-9 w-full bg-gray-50 border-gray-200 h-10"
+        className="pl-9 w-full bg-gray-50 border-gray-200 h-11"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
