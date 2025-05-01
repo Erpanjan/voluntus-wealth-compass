@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -100,6 +101,26 @@
     animation: fadeIn 0.8s ease-out forwards;
   }
   
+  /* Login mode transition effect */
+  .login-mode-transition {
+    animation: modeTransition 0.3s ease-in-out forwards;
+  }
+  
+  @keyframes modeTransition {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
   /* Image styling */
   .img-zoom {
     @apply transition-transform duration-700 hover:scale-105;
@@ -133,7 +154,7 @@
   @apply relative font-medium bg-transparent;
 }
 
-/* Custom tabs with moving indicator */
+/* Custom tabs with moving indicator - enhanced transitions */
 .custom-tabs .tab-button {
   @apply relative z-10 bg-transparent px-4 py-3 border-0 shadow-none text-gray-500 font-medium transition-all duration-300;
   height: auto !important;
@@ -144,36 +165,40 @@
 }
 
 .custom-tabs .tab-indicator {
-  @apply absolute bottom-0 left-0 h-0.5 bg-black transition-all duration-300 ease-in-out;
+  @apply absolute bottom-0 left-0 h-0.5 bg-black transition-all duration-500 ease-in-out;
   width: 100%; /* This makes the indicator fill the whole width of its container */
 }
 
-/* Specific positioning for grid column modes */
+/* Specific positioning for grid column modes - enhanced transitions */
 .custom-tabs .grid-cols-3 button:nth-child(1)[data-state="active"] ~ .tab-indicator {
   transform: translateX(0%);
   width: 33.333%;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .custom-tabs .grid-cols-3 button:nth-child(2)[data-state="active"] ~ .tab-indicator {
   transform: translateX(100%);
   width: 33.333%;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .custom-tabs .grid-cols-3 button:nth-child(3)[data-state="active"] ~ .tab-indicator {
   transform: translateX(200%);
   width: 33.333%;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .custom-tabs .grid-cols-1 button:nth-child(1)[data-state="active"] ~ .tab-indicator {
   transform: translateX(0%);
   width: 100%;
+  transition: width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* Tab content positioning and transitions - enhanced for smooth transitions */
+/* Enhanced tab content transitions */
 .custom-tabs [role="tabpanel"] {
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
   visibility: hidden;
   pointer-events: none;
   position: absolute;
@@ -185,6 +210,7 @@
   transform: translateY(0);
   visibility: visible;
   pointer-events: auto;
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
 }
 
 /* Making sure tab content has smooth transitions */
