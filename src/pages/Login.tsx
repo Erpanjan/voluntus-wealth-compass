@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -120,10 +121,11 @@ const Login = () => {
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
-        {/* Fixed position title container with improved positioning */}
+        {/* Title container with fixed positioning and exact height */}
         <div className="h-24 relative">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center space-x-4 w-full justify-center">
-            <h1 className="text-3xl font-bold text-center w-[200px]">{isAdminMode ? 'Admin Portal' : 'Client Portal'}</h1>
+          {/* Fixed position container that won't shift */}
+          <div className="absolute inset-x-0 flex items-center justify-center" style={{ top: '24px' }}>
+            <h1 className="text-3xl font-bold w-[200px] text-center">{isAdminMode ? 'Admin Portal' : 'Client Portal'}</h1>
             <div className="flex items-center space-x-2">
               <Switch
                 id="admin-mode"
