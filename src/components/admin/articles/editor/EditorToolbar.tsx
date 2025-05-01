@@ -2,7 +2,7 @@
 import React, { RefObject } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Type, TextSize } from 'lucide-react';
+import { Type, Text } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   Select,
@@ -138,7 +138,7 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
         
         {/* Font Size Control - Separated from Font Family */}
         <div className="flex items-center mr-1">
-          <TextSize size={16} className="mr-1" />
+          <Text size={16} className="mr-1" />
           <Select onValueChange={handleFontSizeChange}>
             <SelectTrigger className="h-8 w-[110px] text-xs">
               <SelectValue placeholder="Font Size" />
