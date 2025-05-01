@@ -23,6 +23,7 @@ import LinkPopover from './tools/LinkPopover';
 import ImagePopover from './tools/ImagePopover';
 import HistoryControls from './tools/HistoryControls';
 import FontControls from './tools/FontControls';
+import { colorOptions } from './constants/editorConstants';
 
 interface EditorToolbarProps {
   applyFormat: (command: string, value?: string) => void;
@@ -73,9 +74,6 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
   handleColorChange,
   handleLineHeightChange
 }) => {
-  // Get constants from the constants file
-  const { colorOptions } = require('./constants/editorConstants');
-
   return (
     <ScrollArea className="toolbar bg-[#F6F6F7] p-3 border-b flex flex-wrap items-center gap-1.5">
       <div className="flex items-center gap-1 flex-wrap">
