@@ -35,6 +35,7 @@ const ArticleBasicInfo = ({ form, formValues, onChange }: ArticleBasicInfoProps)
                 placeholder="Enter article title" 
                 value={formValues.title}
                 onChange={(e) => onChange('title', e.target.value)}
+                required
               />
             </FormControl>
             <FormDescription>
@@ -57,6 +58,8 @@ const ArticleBasicInfo = ({ form, formValues, onChange }: ArticleBasicInfoProps)
                 rows={3}
                 value={formValues.description}
                 onChange={(e) => onChange('description', e.target.value)}
+                className="resize-none"
+                required
               />
             </FormControl>
             <FormDescription>

@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { supabase } from '@/types/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export const useImageUpload = () => {
@@ -11,9 +11,17 @@ export const useImageUpload = () => {
   
   const handleImageChange = (file: File | null) => {
     setImageFile(file);
+    
+    // Clean up previous preview URL if it exists
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    
     if (file) {
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
+    } else {
+      setPreviewUrl(null);
     }
   };
   
@@ -51,11 +59,19 @@ export const useImageUpload = () => {
     }
   };
 
+  // Clean up when component unmounts
+  const cleanup = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+  };
+
   return {
     imageFile,
     previewUrl,
     uploadingImage,
     handleImageChange,
-    uploadImage
+    uploadImage,
+    cleanup
   };
 };

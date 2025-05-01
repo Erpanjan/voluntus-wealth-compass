@@ -24,7 +24,8 @@ const ArticleEditor = () => {
     fetchArticle,
     handleImageChange,
     handleSubmit,
-    handleFormChange
+    handleFormChange,
+    cleanup
   } = useArticleEditor(id);
 
   // Fetch existing article data if in edit mode
@@ -32,10 +33,24 @@ const ArticleEditor = () => {
     if (isEditMode) {
       fetchArticle();
     }
+    
+    // Clean up on unmount
+    return () => {
+      cleanup();
+    };
   }, [isEditMode]);
   
   // Handler functions
   const handlePreview = () => {
+    if (!formValues.title.trim()) {
+      toast({
+        title: 'Missing title',
+        description: 'Please enter a title for your article',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     toast({
       title: 'Preview',
       description: 'Article preview functionality will be implemented soon.',
@@ -43,10 +58,28 @@ const ArticleEditor = () => {
   };
 
   const handlePublishNow = () => {
+    if (!formValues.title.trim()) {
+      toast({
+        title: 'Missing title',
+        description: 'Please enter a title for your article',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     handleSubmit(formValues, true);
   };
 
   const handleSaveDraft = () => {
+    if (!formValues.title.trim()) {
+      toast({
+        title: 'Missing title',
+        description: 'Please enter a title for your article',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     handleSubmit(formValues, false);
   };
 

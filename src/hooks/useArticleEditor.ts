@@ -29,7 +29,8 @@ export const useArticleEditor = (id?: string) => {
     imageFile,
     previewUrl,
     handleImageChange,
-    uploadImage
+    uploadImage,
+    cleanup
   } = useImageUpload();
   
   // Fetch existing article data if in edit mode
@@ -77,6 +78,7 @@ export const useArticleEditor = (id?: string) => {
     fetchArticle,
     handleImageChange,
     handleSubmit,
-    handleFormChange
+    handleFormChange,
+    cleanup
   };
 };

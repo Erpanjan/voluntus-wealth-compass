@@ -43,7 +43,7 @@ export interface Tables {
 
 // This is a helper function to provide proper typing for Supabase queries
 export const fromTable = <T extends keyof Tables>(table: T) => {
-  return supabase.from(table);
+  return table;
 };
 
 // Re-export the supabase client to use in our hooks
