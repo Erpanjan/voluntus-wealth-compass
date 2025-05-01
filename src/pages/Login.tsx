@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -121,19 +120,16 @@ const Login = () => {
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
-        {/* Title and admin mode toggle in the same row */}
+        {/* Title and admin mode toggle in a fixed-height container */}
         <div className="h-24 flex items-center justify-center relative">
           <div className="flex items-center space-x-4">
-            <h1 className="text-3xl font-bold">{isAdminMode ? 'Admin Portal' : 'Client Portal'}</h1>
-            <div className="flex items-center space-x-2">
+            <h1 className="text-3xl font-bold w-44 text-center">{isAdminMode ? 'Admin Portal' : 'Client Portal'}</h1>
+            <div className="flex items-center">
               <Switch
                 id="admin-mode"
                 checked={isAdminMode}
                 onCheckedChange={setIsAdminMode}
               />
-              <Label htmlFor="admin-mode" className="text-sm text-gray-600">
-                
-              </Label>
             </div>
           </div>
         </div>
@@ -141,7 +137,7 @@ const Login = () => {
         {/* Conditional rendering based on admin mode */}
         {isAdminMode ? (
           /* Admin Portal - Login Only */
-          <div className="p-6">
+          <div className="p-6 h-[450px]">
             <LoginForm 
               onDemoLogin={handleDemoLogin} 
               onRegularLogin={handleRegularLogin}
