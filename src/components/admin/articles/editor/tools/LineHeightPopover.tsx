@@ -12,7 +12,7 @@ import {
   ToggleGroup, 
   ToggleGroupItem 
 } from "@/components/ui/toggle-group";
-import { lineHeights } from '../constants/editorConstants';
+import { lineHeightOptions } from '../constants/editorConstants';
 
 interface LineHeightPopoverProps {
   lineHeightPopoverOpen: boolean;
@@ -28,7 +28,7 @@ const LineHeightPopover: React.FC<LineHeightPopoverProps> = ({
   lineHeights: propLineHeights
 }) => {
   // Use passed lineHeights or default from constants
-  const heightOptions = propLineHeights || lineHeights;
+  const heightOptions = propLineHeights || lineHeightOptions;
   
   return (
     <Popover open={lineHeightPopoverOpen} onOpenChange={setLineHeightPopoverOpen}>
