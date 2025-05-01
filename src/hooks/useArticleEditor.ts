@@ -255,16 +255,20 @@ export function useArticleEditor() {
       let articleId = article.id;
       
       if (isNewArticle) {
-        // Create new article - don't include slug as it's generated automatically by Supabase function
+        // Create new article
+        // Generate a temporary slug for TypeScript requirements
+        // The actual slug will be created by the database trigger
+        const tempSlug = article.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        
         const { data, error } = await supabase
           .from('articles')
           .insert({
             title: article.title,
             description: article.description,
-            content: article.content,
+            content: article.content as unknown as Json,
             category: article.category,
             image_url: article.image_url,
-            // We don't need to provide slug as our DB trigger will generate it
+            slug: tempSlug // Add temporary slug to satisfy TypeScript
           })
           .select('id')
           .single();
@@ -278,7 +282,7 @@ export function useArticleEditor() {
           .update({
             title: article.title,
             description: article.description,
-            content: article.content,
+            content: article.content as unknown as Json,
             category: article.category,
             image_url: article.image_url
           })
