@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Switch } from '@/components/ui/switch';
 
 interface LoginFormProps {
   onDemoLogin: () => void;
@@ -20,6 +21,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -48,18 +50,34 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
       // Set authentication flag in localStorage
       localStorage.setItem('isAuthenticated', 'true');
       
-      toast({
-        title: "Login successful",
-        description: "Welcome back to Voluntus Long-term Capital.",
-        duration: 5000,
-      });
-      
-      // Call the onRegularLogin prop if it exists
-      if (onRegularLogin) {
-        onRegularLogin();
+      // If admin login is selected, also set admin flag
+      if (isAdminLogin) {
+        localStorage.setItem('isAdmin', 'true');
+        
+        toast({
+          title: "Admin login successful",
+          description: "Welcome to the admin portal.",
+          duration: 5000,
+        });
+        
+        // Redirect to admin dashboard
+        navigate('/admin/dashboard');
       } else {
-        // Redirect to dashboard if onRegularLogin is not provided
-        navigate('/dashboard');
+        localStorage.setItem('isAdmin', 'false');
+        
+        toast({
+          title: "Login successful",
+          description: "Welcome back to Voluntus Long-term Capital.",
+          duration: 5000,
+        });
+        
+        // Call the onRegularLogin prop if it exists
+        if (onRegularLogin) {
+          onRegularLogin();
+        } else {
+          // Redirect to dashboard if onRegularLogin is not provided
+          navigate('/dashboard');
+        }
       }
       
     } catch (error: any) {
@@ -118,24 +136,37 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin }) =>
         </div>
       </div>
 
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="admin-mode"
+          checked={isAdminLogin}
+          onCheckedChange={setIsAdminLogin}
+        />
+        <Label htmlFor="admin-mode" className="text-sm">Login as Administrator</Label>
+      </div>
+
       <Button 
         type="submit" 
-        className="w-full bg-black/80 hover:bg-black text-white font-normal py-6 rounded-none" 
+        className={`w-full hover:bg-black text-white font-normal py-6 rounded-none ${
+          isAdminLogin ? 'bg-gray-800' : 'bg-black/80'
+        }`}
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Logging in...' : 'Login'}
+        {isSubmitting ? 'Logging in...' : (isAdminLogin ? 'Admin Login' : 'Login')}
       </Button>
       
-      <div className="text-center">
-        <Button 
-          variant="link" 
-          className="text-sm" 
-          onClick={onDemoLogin}
-          disabled={isSubmitting}
-        >
-          Try Demo Account
-        </Button>
-      </div>
+      {!isAdminLogin && (
+        <div className="text-center">
+          <Button 
+            variant="link" 
+            className="text-sm" 
+            onClick={onDemoLogin}
+            disabled={isSubmitting}
+          >
+            Try Demo Account
+          </Button>
+        </div>
+      )}
     </form>
   );
 };

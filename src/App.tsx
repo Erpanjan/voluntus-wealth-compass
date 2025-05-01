@@ -20,6 +20,9 @@ import Onboarding from "./pages/Onboarding";
 import Questionnaire from "./pages/Questionnaire";
 import ArticleManagement from "./pages/admin/ArticleManagement";
 import ArticleEditor from "./pages/admin/ArticleEditor";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AuthorManagement from "./pages/admin/AuthorManagement";
+import AdminLayout from "./components/layout/AdminLayout";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +30,13 @@ const queryClient = new QueryClient();
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
+// Admin route component for React Router v6
+const AdminRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+  return isAuthenticated && isAdmin ? children : <Navigate to="/login" />;
 };
 
 const App = () => (
@@ -73,31 +83,59 @@ const App = () => (
                   </PrivateRoute>
                 } 
               />
+              
               {/* Admin routes */}
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <AdminRoute>
+                    <AdminLayout>
+                      <AdminDashboard />
+                    </AdminLayout>
+                  </AdminRoute>
+                } 
+              />
               <Route 
                 path="/admin/articles" 
                 element={
-                  <PrivateRoute>
-                    <ArticleManagement />
-                  </PrivateRoute>
+                  <AdminRoute>
+                    <AdminLayout>
+                      <ArticleManagement />
+                    </AdminLayout>
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/authors" 
+                element={
+                  <AdminRoute>
+                    <AdminLayout>
+                      <AuthorManagement />
+                    </AdminLayout>
+                  </AdminRoute>
                 } 
               />
               <Route 
                 path="/admin/articles/new" 
                 element={
-                  <PrivateRoute>
-                    <ArticleEditor />
-                  </PrivateRoute>
+                  <AdminRoute>
+                    <AdminLayout>
+                      <ArticleEditor />
+                    </AdminLayout>
+                  </AdminRoute>
                 } 
               />
               <Route 
                 path="/admin/articles/edit/:id" 
                 element={
-                  <PrivateRoute>
-                    <ArticleEditor />
-                  </PrivateRoute>
+                  <AdminRoute>
+                    <AdminLayout>
+                      <ArticleEditor />
+                    </AdminLayout>
+                  </AdminRoute>
                 } 
               />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
