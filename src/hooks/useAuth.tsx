@@ -23,21 +23,29 @@ export const useAuth = (isAdminMode: boolean) => {
           
           // Check if the user is an admin by querying the profiles table
           if (isAdminMode) {
-            const isAdmin = await checkIfAdmin(session.user.id);
-            if (isAdmin) {
-              localStorage.setItem('isAdminMode', 'true');
-              setIsAdmin(true);
-              navigate('/admin/dashboard');
-            } else {
+            const { data, error } = await supabase
+              .from('profiles')
+              .select('is_admin')
+              .eq('id', session.user.id)
+              .single();
+            
+            if (error || !data?.is_admin) {
               toast({
                 title: "Access Denied",
                 description: "Your account does not have admin privileges.",
                 variant: "destructive",
                 duration: 5000,
               });
-              // Redirect to regular dashboard if not an admin
+              
+              // Sign out if not an admin but trying to access admin portal
+              await supabase.auth.signOut();
+              localStorage.removeItem('isAuthenticated');
               localStorage.removeItem('isAdminMode');
-              navigate('/dashboard');
+              navigate('/login');
+            } else {
+              localStorage.setItem('isAdminMode', 'true');
+              setIsAdmin(true);
+              navigate('/admin/dashboard');
             }
           } else {
             localStorage.removeItem('isAdminMode');
@@ -61,17 +69,21 @@ export const useAuth = (isAdminMode: boolean) => {
         const adminMode = localStorage.getItem('isAdminMode') === 'true';
         
         if (adminMode || isAdminMode) {
-          const isAdminUser = await checkIfAdmin(session.user.id);
-          setIsAdmin(isAdminUser);
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('is_admin')
+            .eq('id', session.user.id)
+            .single();
           
-          if (isAdminUser) {
+          setIsAdmin(data?.is_admin === true);
+          
+          if (data?.is_admin === true) {
             localStorage.setItem('isAdminMode', 'true');
             navigate('/admin/dashboard');
           } else {
             // If not an admin but trying to access admin routes,
             // redirect to regular dashboard
             localStorage.removeItem('isAdminMode');
-            navigate('/dashboard');
             
             if (isAdminMode) {
               toast({
@@ -80,6 +92,9 @@ export const useAuth = (isAdminMode: boolean) => {
                 variant: "destructive",
                 duration: 5000,
               });
+              navigate('/login');
+            } else {
+              navigate('/dashboard');
             }
           }
         } else {

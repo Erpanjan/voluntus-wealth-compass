@@ -95,6 +95,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
         variant: "destructive",
         duration: 5000,
       });
+      
+      // Clear authentication flags on error
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('isAdminMode');
     } finally {
       setIsSubmitting(false);
     }

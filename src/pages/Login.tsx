@@ -28,7 +28,7 @@ const Login = () => {
   }, []);
 
   // Handle toggle animation for mode switch
-  const handleAdminToggle = (checked) => {
+  const handleAdminToggle = (checked: boolean) => {
     setIsAnimating(true);
     // Add animation class
     setTimeout(() => {
