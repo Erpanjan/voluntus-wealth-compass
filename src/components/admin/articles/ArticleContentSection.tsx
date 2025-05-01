@@ -7,14 +7,14 @@ import {
   CardDescription,
   CardContent
 } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import { UseFormReturn } from 'react-hook-form';
+import RichTextEditor from './RichTextEditor';
 import {
   FormControl,
   FormField,
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
-import { UseFormReturn } from 'react-hook-form';
 
 interface ArticleContentSectionProps {
   form: UseFormReturn<any>;
@@ -26,7 +26,7 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
       <CardHeader>
         <CardTitle>Article Content</CardTitle>
         <CardDescription>
-          Write your article content using the editor below
+          Write your article content using the rich text editor below
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -36,11 +36,9 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Textarea 
-                  placeholder="Write your article content here..." 
-                  rows={15}
-                  className="min-h-[300px]"
-                  {...field} 
+                <RichTextEditor 
+                  value={field.value} 
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />

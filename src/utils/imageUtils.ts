@@ -39,3 +39,23 @@ export const clearImageUpload = (
     fileInputRef.current.value = '';
   }
 };
+
+// Helper for inserting image into rich text editor
+export const insertImageIntoEditor = (
+  editorRef: React.RefObject<HTMLDivElement>,
+  imageUrl: string,
+  onChange: (value: string) => void
+): void => {
+  if (editorRef.current) {
+    // Focus the editor
+    editorRef.current.focus();
+    
+    // Insert the image at cursor position
+    document.execCommand('insertImage', false, imageUrl);
+    
+    // Update form value
+    if (onChange && typeof onChange === 'function') {
+      onChange(editorRef.current.innerHTML);
+    }
+  }
+};
