@@ -106,7 +106,7 @@ const ArticlesManagement = () => {
                   onChange={setSearchTerm}
                 />
               </div>
-              <div>
+              <div className="w-full">
                 <ArticleFilters 
                   filters={filters}
                   setFilters={setFilters}
