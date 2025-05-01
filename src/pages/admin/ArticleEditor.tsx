@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -13,13 +12,38 @@ import ArticleStatusCard from '@/components/admin/articles/ArticleStatusCard';
 import ArticlePublishingOptions from '@/components/admin/articles/ArticlePublishingOptions';
 import ArticleHeader from '@/components/admin/articles/ArticleHeader';
 
+// Define types for article data
+interface ArticleData {
+  id?: string;
+  title: string;
+  description: string;
+  slug: string;
+  category: string;
+  content: Json;
+  image_url: string;
+  published_at: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface AuthorData {
+  id: string;
+  name: string;
+  image_url?: string;
+}
+
+interface ArticleAuthor {
+  article_id: string;
+  author_id: string;
+}
+
 const ArticleEditor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [article, setArticle] = useState<any>(null);
+  const [article, setArticle] = useState<ArticleData | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -54,28 +78,32 @@ const ArticleEditor = () => {
           if (error) throw error;
           
           if (data) {
-            setArticle(data);
+            const articleData = data as unknown as ArticleData;
+            setArticle(articleData);
             
             // Convert content to HTML if it exists
             let contentHtml = '';
-            if (Array.isArray(data.content) && data.content.length > 0) {
-              const contentItem = data.content[0] as any;
+            if (Array.isArray(articleData.content)) {
+              const contentItem = articleData.content[0] as any;
               contentHtml = contentItem && contentItem.content ? contentItem.content : '';
+            } else if (typeof articleData.content === 'object' && articleData.content !== null) {
+              // Handle if content is an object
+              contentHtml = (articleData.content as any).content || '';
             } else {
-              contentHtml = data.description || '';
+              contentHtml = articleData.description || '';
             }
             
             setHtmlContent(contentHtml);
-            setPreviewUrl(data.image_url || null);
+            setPreviewUrl(articleData.image_url || null);
             
             // Populate form values
             setFormValues({
-              title: data.title,
-              description: data.description,
-              category: data.category || '',
+              title: articleData.title,
+              description: articleData.description,
+              category: articleData.category || '',
               author: '', // Will be populated below
-              image_url: data.image_url || '',
-              published_at: format(new Date(data.published_at), 'yyyy-MM-dd'),
+              image_url: articleData.image_url || '',
+              published_at: format(new Date(articleData.published_at), 'yyyy-MM-dd'),
             });
             
             // Fetch article author
@@ -83,7 +111,7 @@ const ArticleEditor = () => {
               const { data: authorJoins, error: authorError } = await supabase
                 .from('article_authors')
                 .select('author_id')
-                .eq('article_id', id);
+                .eq('article_id', id) as { data: ArticleAuthor[] | null, error: any };
                 
               if (!authorError && authorJoins && authorJoins.length > 0) {
                 const authorId = authorJoins[0].author_id;
@@ -91,7 +119,7 @@ const ArticleEditor = () => {
                   .from('authors')
                   .select('name')
                   .eq('id', authorId)
-                  .single();
+                  .single() as { data: AuthorData | null, error: any };
                   
                 if (authorData) {
                   setFormValues(prev => ({
@@ -185,7 +213,7 @@ const ArticleEditor = () => {
           ? new Date().toISOString() 
           : new Date(data.published_at).toISOString(),
         slug: data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
-      };
+      } as unknown as ArticleData;
       
       let articleId = id;
       
@@ -193,7 +221,7 @@ const ArticleEditor = () => {
         // Update existing article
         const { error } = await supabase
           .from('articles')
-          .update(articleData)
+          .update(articleData as any)
           .eq('id', id);
           
         if (error) throw error;
@@ -201,7 +229,7 @@ const ArticleEditor = () => {
         // Create new article
         const { data: newArticle, error } = await supabase
           .from('articles')
-          .insert(articleData)
+          .insert(articleData as any)
           .select();
           
         if (error) throw error;
@@ -216,7 +244,7 @@ const ArticleEditor = () => {
           .from('authors')
           .select('id')
           .eq('name', data.author)
-          .single();
+          .single() as { data: AuthorData | null, error: any };
           
         let authorId;
         
@@ -226,7 +254,7 @@ const ArticleEditor = () => {
             .from('authors')
             .insert({
               name: data.author,
-            })
+            } as any)
             .select();
             
           if (authorError) throw authorError;
@@ -250,7 +278,7 @@ const ArticleEditor = () => {
           .insert({
             article_id: articleId,
             author_id: authorId
-          });
+          } as any);
           
         if (joinError) throw joinError;
       }
