@@ -4,6 +4,7 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import { useArticleEditor } from '@/hooks/admin/useArticleEditor';
 import ArticleInfoSection from '@/components/admin/articles/ArticleInfoSection';
 import ArticleContentSection from '@/components/admin/articles/ArticleContentSection';
+import ArticleAttachmentsSection from '@/components/admin/articles/ArticleAttachmentsSection';
 import ArticleEditorToolbar from '@/components/admin/articles/ArticleEditorToolbar';
 import ArticlePreviewDialog from '@/components/admin/articles/ArticlePreviewDialog';
 
@@ -21,6 +22,8 @@ const ArticleEditor = () => {
     fileInputRef,
     previewOpen,
     setPreviewOpen,
+    attachments,
+    setAttachments,
     loadArticleData,
     saveDraft,
     publishArticle,
@@ -60,6 +63,12 @@ const ArticleEditor = () => {
         />
         
         <ArticleContentSection form={form} />
+        
+        <ArticleAttachmentsSection 
+          form={form}
+          attachments={attachments}
+          setAttachments={setAttachments}
+        />
       </div>
 
       <ArticlePreviewDialog
@@ -71,6 +80,7 @@ const ArticleEditor = () => {
         imagePreview={imagePreview}
         category={form.getValues().category}
         authors={selectedAuthors}
+        attachments={attachments}
       />
     </AdminLayout>
   );

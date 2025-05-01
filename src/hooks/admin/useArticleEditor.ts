@@ -20,6 +20,24 @@ const SAMPLE_ARTICLE = {
   updated_at: new Date().toISOString(),
 };
 
+// Sample attachments for edit mode
+const SAMPLE_ATTACHMENTS = [
+  {
+    id: 'attachment-1',
+    name: 'Financial Planning Guide.pdf',
+    size: 2500000, // 2.5MB
+    type: 'application/pdf',
+    url: 'https://example.com/files/financial-planning-guide.pdf'
+  },
+  {
+    id: 'attachment-2',
+    name: 'Investment Strategies.pdf',
+    size: 1800000, // 1.8MB
+    type: 'application/pdf',
+    url: 'https://example.com/files/investment-strategies.pdf'
+  }
+];
+
 export const useArticleEditor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -29,6 +47,7 @@ export const useArticleEditor = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [attachments, setAttachments] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const isEditMode = !!id;
@@ -67,6 +86,9 @@ export const useArticleEditor = () => {
           setImagePreview(data.image_url);
         }
         
+        // Load sample attachments
+        setAttachments(SAMPLE_ATTACHMENTS);
+        
         // For now, assume these authors for the sample article
         setSelectedAuthors(['John Smith', 'Jane Doe']);
       }
@@ -92,6 +114,7 @@ export const useArticleEditor = () => {
         ...formData,
         authors: selectedAuthors,
         image: imageFile ? "Image file present" : "No image",
+        attachments: attachments.length > 0 ? `${attachments.length} files attached` : "No attachments",
         status: "draft"
       });
       
@@ -121,11 +144,12 @@ export const useArticleEditor = () => {
     try {
       const formData = form.getValues();
       
-      // Log the data being submitted including authors
+      // Log the data being submitted including authors and attachments
       console.log("Publishing article:", {
         ...formData,
         authors: selectedAuthors,
         image: imageFile ? "Image file present" : "No image",
+        attachments: attachments.length > 0 ? `${attachments.length} files attached` : "No attachments",
         status: "published"
       });
       
@@ -133,7 +157,7 @@ export const useArticleEditor = () => {
       setTimeout(() => {
         toast({
           title: 'Article Published',
-          description: `The article has been published successfully with ${selectedAuthors.length} author(s).`,
+          description: `The article has been published successfully with ${selectedAuthors.length} author(s) and ${attachments.length} attachment(s).`,
         });
         
         navigate('/admin/articles');
@@ -183,6 +207,8 @@ export const useArticleEditor = () => {
     fileInputRef,
     previewOpen,
     setPreviewOpen,
+    attachments,
+    setAttachments,
     loadArticleData,
     saveDraft,
     publishArticle,
