@@ -1,33 +1,36 @@
-
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import AlignmentControls from '../AlignmentControls';
+import { render, screen } from '@testing-library/react';
+import { AlignmentControls } from '../tools';
 
 describe('AlignmentControls Component', () => {
-  const mockApplyFormat = jest.fn();
+  const applyFormat = jest.fn();
 
-  beforeEach(() => {
-    mockApplyFormat.mockClear();
+  it('renders alignment buttons', () => {
+    render(<AlignmentControls applyFormat={applyFormat} />);
+    
+    const alignLeftButton = screen.getByTitle('Align Left');
+    const alignCenterButton = screen.getByTitle('Align Center');
+    const alignRightButton = screen.getByTitle('Align Right');
+
+    expect(alignLeftButton).toBeInTheDocument();
+    expect(alignCenterButton).toBeInTheDocument();
+    expect(alignRightButton).toBeInTheDocument();
   });
 
-  it('renders alignment controls correctly', () => {
-    render(<AlignmentControls applyFormat={mockApplyFormat} />);
+  it('calls applyFormat with correct command when alignment buttons are clicked', () => {
+    render(<AlignmentControls applyFormat={applyFormat} />);
     
-    expect(screen.getByTitle('Align Left')).toBeInTheDocument();
-    expect(screen.getByTitle('Align Center')).toBeInTheDocument();
-    expect(screen.getByTitle('Align Right')).toBeInTheDocument();
-  });
+    const alignLeftButton = screen.getByTitle('Align Left');
+    const alignCenterButton = screen.getByTitle('Align Center');
+    const alignRightButton = screen.getByTitle('Align Right');
 
-  it('calls applyFormat with the correct command when buttons are clicked', () => {
-    render(<AlignmentControls applyFormat={mockApplyFormat} />);
-    
-    fireEvent.click(screen.getByTitle('Align Left'));
-    expect(mockApplyFormat).toHaveBeenCalledWith('justifyLeft');
-    
-    fireEvent.click(screen.getByTitle('Align Center'));
-    expect(mockApplyFormat).toHaveBeenCalledWith('justifyCenter');
-    
-    fireEvent.click(screen.getByTitle('Align Right'));
-    expect(mockApplyFormat).toHaveBeenCalledWith('justifyRight');
+    alignLeftButton.click();
+    expect(applyFormat).toHaveBeenCalledWith('justifyLeft');
+
+    alignCenterButton.click();
+    expect(applyFormat).toHaveBeenCalledWith('justifyCenter');
+
+    alignRightButton.click();
+    expect(applyFormat).toHaveBeenCalledWith('justifyRight');
   });
 });

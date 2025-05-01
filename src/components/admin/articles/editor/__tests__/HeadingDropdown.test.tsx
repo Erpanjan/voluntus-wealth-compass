@@ -1,7 +1,6 @@
-
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import HeadingDropdown from '../HeadingDropdown';
+import { render, screen } from '@testing-library/react';
+import { HeadingDropdown } from '../tools';
 
 // Mock DropdownMenu components
 jest.mock('@/components/ui/dropdown-menu', () => ({

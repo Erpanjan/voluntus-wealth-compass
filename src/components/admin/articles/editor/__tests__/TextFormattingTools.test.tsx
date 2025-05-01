@@ -1,7 +1,6 @@
-
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import TextFormattingTools from '../TextFormattingTools';
+import { render, screen } from '@testing-library/react';
+import { TextFormattingTools } from '../tools';
 
 describe('TextFormattingTools Component', () => {
   const mockApplyFormat = jest.fn();

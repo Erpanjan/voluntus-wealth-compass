@@ -1,7 +1,6 @@
-
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import HistoryControls from '../HistoryControls';
+import { render, screen } from '@testing-library/react';
+import { HistoryControls } from '../tools';
 
 describe('HistoryControls Component', () => {
   const mockApplyFormat = jest.fn();

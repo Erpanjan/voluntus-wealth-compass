@@ -1,7 +1,6 @@
-
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import ColorPopover from '../ColorPopover';
+import { render, screen } from '@testing-library/react';
+import { ColorPopover } from '../tools';
 
 // Mock Popover components
 jest.mock('@/components/ui/popover', () => ({
