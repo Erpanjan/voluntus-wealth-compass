@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Pencil, Trash2, UserCircle } from 'lucide-react';
 import {
@@ -10,18 +11,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  getAllAuthors, 
-  createAuthor, 
-  updateAuthor, 
-  deleteAuthor 
-} from '@/services/mockAuthorService';
 
 const AuthorManagement = () => {
   const { toast } = useToast();
@@ -39,7 +35,13 @@ const AuthorManagement = () => {
   useEffect(() => {
     const fetchAuthors = async () => {
       try {
-        const data = await getAllAuthors();
+        const { data, error } = await supabase
+          .from('authors')
+          .select('*')
+          .order('name');
+
+        if (error) throw error;
+        
         setAuthors(data || []);
       } catch (error) {
         console.error('Error fetching authors:', error);
@@ -87,17 +89,20 @@ const AuthorManagement = () => {
   const handleDeleteAuthor = async (id) => {
     if (window.confirm('Are you sure you want to delete this author?')) {
       try {
-        const success = await deleteAuthor(id);
+        const { error } = await supabase
+          .from('authors')
+          .delete()
+          .eq('id', id);
 
-        if (success) {
-          // Update local state
-          setAuthors(authors.filter(author => author.id !== id));
+        if (error) throw error;
 
-          toast({
-            title: 'Success',
-            description: 'Author deleted successfully',
-          });
-        }
+        // Update local state
+        setAuthors(authors.filter(author => author.id !== id));
+
+        toast({
+          title: 'Success',
+          description: 'Author deleted successfully',
+        });
       } catch (error) {
         console.error('Error deleting author:', error);
         toast({
@@ -113,32 +118,38 @@ const AuthorManagement = () => {
     try {
       if (editingAuthor) {
         // Update existing author
-        const updatedAuthor = await updateAuthor(editingAuthor.id, formData);
+        const { error } = await supabase
+          .from('authors')
+          .update(formData)
+          .eq('id', editingAuthor.id);
 
-        if (updatedAuthor) {
-          // Update local state
-          setAuthors(authors.map(author => 
-            author.id === editingAuthor.id ? { ...author, ...formData } : author
-          ));
+        if (error) throw error;
 
-          toast({
-            title: 'Success',
-            description: 'Author updated successfully',
-          });
-        }
+        // Update local state
+        setAuthors(authors.map(author => 
+          author.id === editingAuthor.id ? { ...author, ...formData } : author
+        ));
+
+        toast({
+          title: 'Success',
+          description: 'Author updated successfully',
+        });
       } else {
         // Create new author
-        const newAuthor = await createAuthor(formData);
+        const { data, error } = await supabase
+          .from('authors')
+          .insert(formData)
+          .select();
 
-        if (newAuthor) {
-          // Update local state
-          setAuthors([...authors, newAuthor]);
+        if (error) throw error;
 
-          toast({
-            title: 'Success',
-            description: 'Author added successfully',
-          });
-        }
+        // Update local state
+        setAuthors([...authors, data[0]]);
+
+        toast({
+          title: 'Success',
+          description: 'Author added successfully',
+        });
       }
 
       // Close dialog and reset form

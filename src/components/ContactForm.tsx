@@ -4,17 +4,10 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Mail, Phone, MessageSquare } from 'lucide-react';
-
-interface ContactFormData {
-  firstName: string;
-  lastName: string;
-  contactType: string;
-  contact: string;
-  message: string;
-}
+import { supabase } from '@/integrations/supabase/client';
 
 const ContactForm: React.FC = () => {
-  const [formData, setFormData] = useState<ContactFormData>({
+  const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     contactType: '',
@@ -22,7 +15,7 @@ const ContactForm: React.FC = () => {
     message: '',
   });
 
-  const [isSubmitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -32,13 +25,25 @@ const ContactForm: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSubmitting(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
-      // Mock API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Insert the form data into Supabase
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          contact_type: formData.contactType,
+          contact_info: formData.contact,
+          message: formData.message,
+        });
+        
+      if (error) {
+        throw error;
+      }
       
       // Show success toast
       toast({
@@ -65,7 +70,7 @@ const ContactForm: React.FC = () => {
         duration: 5000,
       });
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 

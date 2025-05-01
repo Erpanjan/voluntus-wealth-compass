@@ -1,18 +1,104 @@
 
-@layer components {
-  .tab-list {
-    @apply flex border-b space-x-4 mb-4;
-  }
+/* Custom tab styles */
+[data-state="active"] {
+  @apply relative font-medium bg-transparent;
+}
 
-  .tab {
-    @apply px-2 py-2 text-sm font-medium text-[#9F9EA1] border-b-2 border-transparent transition-colors hover:text-black;
-  }
+/* Custom tabs with moving indicator - enhanced transitions */
+.custom-tabs .tab-button {
+  @apply relative z-10 bg-transparent px-4 py-3 border-0 shadow-none text-gray-500 font-medium transition-all duration-300;
+  height: auto !important;
+}
 
-  .tab[data-state="active"] {
-    @apply text-black border-black;
-  }
+.custom-tabs .tab-button[data-state="active"] {
+  @apply text-black;
+}
 
-  .tab-content {
-    @apply mt-2 focus:outline-none;
-  }
+.custom-tabs .tab-indicator {
+  @apply absolute bottom-0 left-0 h-0.5 bg-black transition-all duration-500 ease-in-out;
+  width: 100%; /* This makes the indicator fill the whole width of its container */
+}
+
+/* Specific positioning for grid column modes - enhanced transitions */
+.custom-tabs .grid-cols-3 button:nth-child(1)[data-state="active"] ~ .tab-indicator {
+  transform: translateX(0%);
+  width: 33.333%;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.custom-tabs .grid-cols-3 button:nth-child(2)[data-state="active"] ~ .tab-indicator {
+  transform: translateX(100%);
+  width: 33.333%;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.custom-tabs .grid-cols-3 button:nth-child(3)[data-state="active"] ~ .tab-indicator {
+  transform: translateX(200%);
+  width: 33.333%;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.custom-tabs .grid-cols-1 button:nth-child(1)[data-state="active"] ~ .tab-indicator {
+  transform: translateX(0%);
+  width: 100%;
+  transition: width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Enhanced tab content transitions */
+.custom-tabs [role="tabpanel"] {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.custom-tabs [role="tabpanel"][data-state="active"] {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+/* Making sure tab content has smooth transitions */
+[role="tabpanel"] {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Enhanced tab styling */
+[role="tablist"] {
+  @apply relative z-10 flex w-full;
+  height: auto !important;
+  background-color: transparent !important;
+}
+
+/* Fixed height tab triggers to prevent layout shift */
+[role="tab"] {
+  height: auto !important;
+  min-height: 56px;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  flex: 1;
+  text-align: center;
+  background-color: transparent !important;
+}
+
+/* Improve tab content styling */
+[role="tabpanel"] {
+  font-family: 'Inter', sans-serif;
+  opacity: 1 !important; /* Prevent flickering during transitions */
+}
+
+/* Ensure smooth indicator transitions */
+[role="tab"] [data-active-indicator] {
+  transition: transform 0.2s ease;
+  transform-origin: left;
+}
+
+/* Ensure all tabs have transparent backgrounds */
+.tabs-content-bg {
+  background-color: transparent !important;
 }
