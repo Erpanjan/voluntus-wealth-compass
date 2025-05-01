@@ -51,7 +51,7 @@ export const useArticleAttachments = (isEditMode: boolean) => {
             file_url: item.file_url,
             created_at: item.created_at,
             name: item.title, // Set name to title
-            size: item.size || estimatedSize, // Use estimated size if not available
+            size: estimatedSize, // Since there's no size in the reports table, we use an estimated size
             type: fileExtension, // Set type based on file extension
             url: item.file_url
           };
