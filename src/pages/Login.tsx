@@ -121,21 +121,21 @@ const Login = () => {
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
-        {/* Fixed position header with title - adding consistent height */}
-        <div className="h-24 flex items-center justify-center">
-          <h1 className="text-3xl font-bold">Client Portal</h1>
-        </div>
-
-        {/* Admin mode toggle */}
-        <div className="flex items-center justify-center mb-4 space-x-2">
-          <Switch
-            id="admin-mode"
-            checked={isAdminMode}
-            onCheckedChange={setIsAdminMode}
-          />
-          <Label htmlFor="admin-mode" className="text-sm text-gray-600">
-            {isAdminMode ? 'Admin Portal' : 'Client Portal'}
-          </Label>
+        {/* Title and admin mode toggle in the same row */}
+        <div className="h-24 flex items-center justify-center relative">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-3xl font-bold">{isAdminMode ? 'Admin Portal' : 'Client Portal'}</h1>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="admin-mode"
+                checked={isAdminMode}
+                onCheckedChange={setIsAdminMode}
+              />
+              <Label htmlFor="admin-mode" className="text-sm text-gray-600">
+                Admin Portal
+              </Label>
+            </div>
+          </div>
         </div>
 
         {/* Fixed height tabs container */}
