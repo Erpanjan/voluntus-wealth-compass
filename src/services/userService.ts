@@ -34,23 +34,12 @@ export const useUserService = () => {
         // Skip admin users
         if (profile.is_admin) continue;
         
-        // We need to get the email from another source since it's not in the profiles table directly
-        // Let's attempt to get the user email from auth if possible, otherwise use a placeholder
-        let userEmail = 'No email';
-        try {
-          // This is a workaround to try to get the user's email, but will likely fail due to permissions
-          const { data: user } = await supabase.auth.admin.getUserById(profile.id);
-          if (user?.email) {
-            userEmail = user.email;
-          }
-        } catch (error) {
-          console.log('Could not fetch user email:', error);
-        }
+        // We'll use the email from the profile if available
+        const userEmail = profile.email || 'No email';
           
         usersWithAuth.push({
           id: profile.id,
           email: userEmail,
-          // Check if is_active exists on the profile, if not assume active
           status: profile.is_active === false ? 'Inactive' : 'Active',
           role: 'Client',
           lastLogin: 'N/A', // We can't get this info without admin access
@@ -60,22 +49,15 @@ export const useUserService = () => {
         });
       }
       
-      // Also try to get users from auth.users if we have admin permissions
-      // This will only work if the app has service_role key configured
+      // Try to get users from auth.users if we have admin permissions (this will likely fail without service role key)
       try {
-        const authResponse = await fetch(`https://${process.env.SUPABASE_PROJECT_ID || 'kikdcvyhuwrqfovlgrer'}.supabase.co/auth/v1/admin/users`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY || ''}`,
-            'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-          }
-        });
+        // This is just an attempt, we don't rely on this working
+        const { data: { users } } = await supabase.auth.admin.listUsers();
         
-        if (authResponse.ok) {
-          const authUsers = await authResponse.json();
-          console.log('Successfully retrieved auth users:', authUsers);
+        if (users && users.length > 0) {
+          console.log('Successfully retrieved auth users:', users);
           
-          // TODO: If needed, we could merge with profile data here
+          // If needed, we could merge with profile data here
         }
       } catch (authError) {
         console.log('Could not fetch auth users with admin permissions:', authError);
