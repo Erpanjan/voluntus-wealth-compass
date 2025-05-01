@@ -2,10 +2,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { ArticleData, AuthorData } from '@/types/supabase';
+import { ArticleData, AuthorData, Tables } from '@/types/supabase';
 import { supabase } from '@/types/supabase';
 import { format } from 'date-fns';
 import { ArticleFormValues } from './useArticleForm';
+import { PostgrestError } from '@supabase/supabase-js';
 
 export const useArticleData = (id?: string) => {
   const navigate = useNavigate();
@@ -21,8 +22,8 @@ export const useArticleData = (id?: string) => {
     
     setLoading(true);
     try {
-      const { data, error } = await (supabase
-        .from('articles') as any)
+      const { data, error } = await supabase
+        .from('articles')
         .select('*')
         .eq('id', id)
         .single();
@@ -57,15 +58,15 @@ export const useArticleData = (id?: string) => {
         
         // Fetch article author
         if (id) {
-          const { data: authorJoins, error: authorError } = await (supabase
-            .from('article_authors') as any)
+          const { data: authorJoins, error: authorError } = await supabase
+            .from('article_authors')
             .select('author_id')
             .eq('article_id', id);
             
           if (!authorError && authorJoins && authorJoins.length > 0) {
             const authorId = authorJoins[0].author_id;
-            const { data: authorData } = await (supabase
-              .from('authors') as any)
+            const { data: authorData } = await supabase
+              .from('authors')
               .select('name')
               .eq('id', authorId)
               .single();
@@ -100,8 +101,8 @@ export const useArticleData = (id?: string) => {
   const handleAuthor = async (articleId: string, authorName: string): Promise<string | null> => {
     try {
       // Check if author exists
-      const { data: existingAuthor } = await (supabase
-        .from('authors') as any)
+      const { data: existingAuthor } = await supabase
+        .from('authors')
         .select('id')
         .eq('name', authorName)
         .single();
@@ -110,8 +111,8 @@ export const useArticleData = (id?: string) => {
       
       if (!existingAuthor) {
         // Create new author
-        const { data: newAuthor, error: authorError } = await (supabase
-          .from('authors') as any)
+        const { data: newAuthor, error: authorError } = await supabase
+          .from('authors')
           .insert({
             name: authorName,
           })
@@ -128,16 +129,16 @@ export const useArticleData = (id?: string) => {
       
       // Delete existing author association
       if (isEditMode) {
-        await (supabase
-          .from('article_authors') as any)
+        await supabase
+          .from('article_authors')
           .delete()
           .eq('article_id', articleId);
       }
       
       // Create author association
       if (authorId) {
-        const { error: joinError } = await (supabase
-          .from('article_authors') as any)
+        const { error: joinError } = await supabase
+          .from('article_authors')
           .insert({
             article_id: articleId,
             author_id: authorId
@@ -180,16 +181,16 @@ export const useArticleData = (id?: string) => {
       
       if (isEditMode && id) {
         // Update existing article
-        const { error } = await (supabase
-          .from('articles') as any)
+        const { error } = await supabase
+          .from('articles')
           .update(articleData)
           .eq('id', id);
           
         if (error) throw error;
       } else {
         // Create new article
-        const { data: newArticle, error } = await (supabase
-          .from('articles') as any)
+        const { data: newArticle, error } = await supabase
+          .from('articles')
           .insert(articleData)
           .select();
           
