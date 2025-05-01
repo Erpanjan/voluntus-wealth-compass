@@ -33,25 +33,70 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+
+// Sample/mock data for articles
+const SAMPLE_ARTICLES = [
+  {
+    id: '1',
+    title: 'Understanding Financial Planning',
+    slug: 'understanding-financial-planning',
+    description: 'An overview of financial planning principles',
+    category: 'Finance',
+    published_at: new Date().toISOString(),
+    authors: [
+      { id: '1', name: 'John Smith', image_url: null },
+      { id: '2', name: 'Jane Doe', image_url: null }
+    ]
+  },
+  {
+    id: '2',
+    title: 'Investment Strategies for 2025',
+    slug: 'investment-strategies-2025',
+    description: 'Key investment strategies to consider for the coming year',
+    category: 'Investing',
+    published_at: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+    authors: [
+      { id: '1', name: 'John Smith', image_url: null }
+    ]
+  },
+  {
+    id: '3',
+    title: 'Retirement Planning Basics',
+    slug: 'retirement-planning-basics',
+    description: 'Essential steps for planning your retirement',
+    category: 'Planning',
+    published_at: new Date().toISOString(),
+    authors: [
+      { id: '3', name: 'Robert Johnson', image_url: null },
+      { id: '4', name: 'Mary Williams', image_url: null },
+      { id: '5', name: 'David Brown', image_url: null }
+    ]
+  }
+];
 
 const ArticlesManagement = () => {
   const navigate = useNavigate();
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const { toast } = useToast();
   
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const { data, error } = await supabase
-          .rpc('get_articles_with_authors');
-          
-        if (error) throw error;
+        // Placeholder for when the actual database tables are created
+        // This would normally be a Supabase call to fetch articles
+        // const { data, error } = await supabase
+        //   .rpc('get_articles_with_authors');
         
-        setArticles(data || []);
+        // For now, we'll use sample data
+        setTimeout(() => {
+          setArticles(SAMPLE_ARTICLES);
+          setLoading(false);
+        }, 800); // Simulate loading
       } catch (error) {
         console.error('Error fetching articles:', error);
-      } finally {
         setLoading(false);
       }
     };
@@ -74,17 +119,27 @@ const ArticlesManagement = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this article?')) {
       try {
-        const { error } = await supabase
-          .from('articles')
-          .delete()
-          .eq('id', id);
+        // Placeholder for when the actual database tables are created
+        // This would normally be a Supabase call to delete an article
+        // const { error } = await supabase
+        //   .from('articles')
+        //   .delete()
+        //   .eq('id', id);
           
-        if (error) throw error;
-        
-        // Remove the deleted article from the state
+        // For now, we'll just filter the articles array
         setArticles(articles.filter(article => article.id !== id));
+        
+        toast({
+          title: "Article deleted",
+          description: "The article has been deleted successfully.",
+        });
       } catch (error) {
         console.error('Error deleting article:', error);
+        toast({
+          title: "Error deleting article",
+          description: "An error occurred while deleting the article.",
+          variant: "destructive",
+        });
       }
     }
   };
@@ -101,6 +156,21 @@ const ArticlesManagement = () => {
           <Plus size={16} className="mr-2" />
           Create New Article
         </Button>
+      </div>
+      
+      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <p className="text-sm text-yellow-700">
+              <strong>Note:</strong> The article management functionality requires additional database setup. To use this feature, please set up the necessary tables in your Supabase database.
+            </p>
+          </div>
+        </div>
       </div>
       
       <Tabs defaultValue="all" className="w-full mb-6">

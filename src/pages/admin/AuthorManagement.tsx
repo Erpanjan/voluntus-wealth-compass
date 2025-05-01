@@ -2,170 +2,215 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Pencil, Trash2, UserCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Plus,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Users,
+} from 'lucide-react';
+import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+
+// Sample/mock data for authors
+const SAMPLE_AUTHORS = [
+  {
+    id: '1',
+    name: 'John Smith',
+    bio: 'John is a senior financial advisor with over 15 years of experience.',
+    image_url: null,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: '2',
+    name: 'Jane Doe',
+    bio: 'Jane specializes in retirement planning and investment strategies.',
+    image_url: null,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: '3',
+    name: 'Robert Johnson',
+    bio: 'Robert is an expert in market analysis and portfolio management.',
+    image_url: null,
+    created_at: new Date().toISOString(),
+  }
+];
 
 const AuthorManagement = () => {
   const { toast } = useToast();
-  const [authors, setAuthors] = useState([]);
+  const [authors, setAuthors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingAuthor, setEditingAuthor] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    bio: '',
-    image_url: '',
-  });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingAuthor, setEditingAuthor] = useState<any>(null);
+  const [name, setName] = useState('');
+  const [bio, setBio] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  // Fetch authors
   useEffect(() => {
     const fetchAuthors = async () => {
       try {
-        const { data, error } = await supabase
-          .from('authors')
-          .select('*')
-          .order('name');
-
-        if (error) throw error;
+        // This would normally fetch from the authors table in the database
+        // const { data, error } = await supabase
+        //   .from('authors')
+        //   .select('*')
+        //   .order('name');
         
-        setAuthors(data || []);
+        // For now, use sample data
+        setTimeout(() => {
+          setAuthors(SAMPLE_AUTHORS);
+          setLoading(false);
+        }, 800); // Simulate loading
       } catch (error) {
         console.error('Error fetching authors:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to load authors',
-          variant: 'destructive',
-        });
-      } finally {
         setLoading(false);
       }
     };
-
+    
     fetchAuthors();
-  }, [toast]);
+  }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const handleOpenDialog = (author?: any) => {
+    if (author) {
+      setEditingAuthor(author);
+      setName(author.name);
+      setBio(author.bio || '');
+      setImageUrl(author.image_url || '');
+    } else {
+      setEditingAuthor(null);
+      setName('');
+      setBio('');
+      setImageUrl('');
+    }
+    
+    setIsDialogOpen(true);
   };
 
-  const handleAddAuthor = () => {
-    setEditingAuthor(null);
-    setFormData({
-      name: '',
-      bio: '',
-      image_url: '',
-    });
-    setDialogOpen(true);
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
   };
 
-  const handleEditAuthor = (author) => {
-    setEditingAuthor(author);
-    setFormData({
-      name: author.name,
-      bio: author.bio || '',
-      image_url: author.image_url || '',
-    });
-    setDialogOpen(true);
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    
+    try {
+      const authorData = {
+        name,
+        bio,
+        image_url: imageUrl,
+      };
 
-  const handleDeleteAuthor = async (id) => {
-    if (window.confirm('Are you sure you want to delete this author?')) {
-      try {
-        const { error } = await supabase
-          .from('authors')
-          .delete()
-          .eq('id', id);
+      let updatedAuthors;
 
-        if (error) throw error;
+      // If editing an existing author
+      if (editingAuthor) {
+        // This would normally update an author in the database
+        // const { error } = await supabase
+        //   .from('authors')
+        //   .update(authorData)
+        //   .eq('id', editingAuthor.id);
 
-        // Update local state
-        setAuthors(authors.filter(author => author.id !== id));
+        // Update the author in the local state
+        updatedAuthors = authors.map(author =>
+          author.id === editingAuthor.id
+            ? { ...author, ...authorData }
+            : author
+        );
 
         toast({
-          title: 'Success',
-          description: 'Author deleted successfully',
+          title: "Author updated",
+          description: "The author has been updated successfully.",
+        });
+      } 
+      // If creating a new author
+      else {
+        // This would normally insert a new author in the database
+        // const { data, error } = await supabase
+        //   .from('authors')
+        //   .insert(authorData)
+        //   .select()
+        //   .single();
+
+        // Create a new author with a mock ID and add to the local state
+        const newAuthor = {
+          id: (authors.length + 1).toString(),
+          ...authorData,
+          created_at: new Date().toISOString(),
+        };
+        updatedAuthors = [...authors, newAuthor];
+
+        toast({
+          title: "Author created",
+          description: "The author has been created successfully.",
+        });
+      }
+      
+      setAuthors(updatedAuthors);
+      handleCloseDialog();
+    } catch (error: any) {
+      console.error('Error saving author:', error);
+      toast({
+        title: "Error",
+        description: "An error occurred while saving the author.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteAuthor = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this author?')) {
+      try {
+        // This would normally delete an author from the database
+        // const { error } = await supabase
+        //   .from('authors')
+        //   .delete()
+        //   .eq('id', id);
+
+        // Remove the author from the local state
+        setAuthors(authors.filter(author => author.id !== id));
+        
+        toast({
+          title: "Author deleted",
+          description: "The author has been deleted successfully.",
         });
       } catch (error) {
         console.error('Error deleting author:', error);
         toast({
-          title: 'Error',
-          description: 'Failed to delete author',
-          variant: 'destructive',
+          title: "Error deleting author",
+          description: "An error occurred while deleting the author.",
+          variant: "destructive",
         });
       }
-    }
-  };
-
-  const handleSubmit = async () => {
-    try {
-      if (editingAuthor) {
-        // Update existing author
-        const { error } = await supabase
-          .from('authors')
-          .update(formData)
-          .eq('id', editingAuthor.id);
-
-        if (error) throw error;
-
-        // Update local state
-        setAuthors(authors.map(author => 
-          author.id === editingAuthor.id ? { ...author, ...formData } : author
-        ));
-
-        toast({
-          title: 'Success',
-          description: 'Author updated successfully',
-        });
-      } else {
-        // Create new author
-        const { data, error } = await supabase
-          .from('authors')
-          .insert(formData)
-          .select();
-
-        if (error) throw error;
-
-        // Update local state
-        setAuthors([...authors, data[0]]);
-
-        toast({
-          title: 'Success',
-          description: 'Author added successfully',
-        });
-      }
-
-      // Close dialog and reset form
-      setDialogOpen(false);
-      setFormData({
-        name: '',
-        bio: '',
-        image_url: '',
-      });
-    } catch (error) {
-      console.error('Error saving author:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save author',
-        variant: 'destructive',
-      });
     }
   };
 
@@ -173,153 +218,155 @@ const AuthorManagement = () => {
     <AdminLayout>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Author Management</h1>
-        <Button onClick={handleAddAuthor}>
-          <PlusCircle size={16} className="mr-2" />
+        <Button onClick={() => handleOpenDialog()}>
+          <Plus size={16} className="mr-2" />
           Add New Author
         </Button>
       </div>
 
+      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <p className="text-sm text-yellow-700">
+              <strong>Note:</strong> The author management functionality requires additional database setup. To use this feature, please set up the necessary tables in your Supabase database.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className="h-48 w-full" />
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full" />
           ))}
         </div>
+      ) : authors.length === 0 ? (
+        <div className="text-center py-10">
+          <Users className="mx-auto h-12 w-12 text-gray-300" />
+          <h3 className="mt-2 text-lg font-medium">No authors found</h3>
+          <p className="mt-1 text-gray-500">Add an author to get started</p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {authors.map((author) => (
-            <AuthorCard
-              key={author.id}
-              author={author}
-              onEdit={() => handleEditAuthor(author)}
-              onDelete={() => handleDeleteAuthor(author.id)}
-            />
-          ))}
-
-          {authors.length === 0 && (
-            <div className="col-span-3 flex flex-col items-center justify-center py-12 text-center">
-              <UserCircle size={64} className="text-gray-300 mb-3" />
-              <h3 className="text-lg font-medium">No authors yet</h3>
-              <p className="text-gray-500 mb-4">Add your first author to get started</p>
-              <Button onClick={handleAddAuthor}>
-                <PlusCircle size={16} className="mr-2" />
-                Add Author
-              </Button>
-            </div>
-          )}
+        <div className="border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Bio</TableHead>
+                <TableHead>Image</TableHead>
+                <TableHead>Created At</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {authors.map((author) => (
+                <TableRow key={author.id}>
+                  <TableCell className="font-medium">{author.name}</TableCell>
+                  <TableCell className="max-w-md truncate">{author.bio}</TableCell>
+                  <TableCell>
+                    {author.image_url ? (
+                      <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
+                        <img src={author.image_url} alt={author.name} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs">
+                        {author.name.charAt(0)}
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell>{format(new Date(author.created_at), 'MMM dd, yyyy')}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleOpenDialog(author)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteAuthor(author.id)}
+                          className="text-red-600"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{editingAuthor ? 'Edit Author' : 'Add New Author'}</DialogTitle>
-            <DialogDescription>
-              {editingAuthor 
-                ? 'Update author information' 
-                : 'Add a new author to the platform'}
-            </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Name
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="col-span-3"
-                placeholder="Author full name"
-                required
-              />
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-4 py-4">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium">
+                  Name
+                </label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Author's full name"
+                  className="mt-1"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="bio" className="block text-sm font-medium">
+                  Bio
+                </label>
+                <Textarea
+                  id="bio"
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  placeholder="Brief biography or description"
+                  className="mt-1"
+                  rows={4}
+                />
+              </div>
+              <div>
+                <label htmlFor="image-url" className="block text-sm font-medium">
+                  Image URL
+                </label>
+                <Input
+                  id="image-url"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="https://example.com/author-image.jpg"
+                  className="mt-1"
+                />
+              </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="image_url" className="text-right">
-                Image URL
-              </Label>
-              <Input
-                id="image_url"
-                name="image_url"
-                value={formData.image_url}
-                onChange={handleInputChange}
-                className="col-span-3"
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="bio" className="text-right pt-2">
-                Bio
-              </Label>
-              <Textarea
-                id="bio"
-                name="bio"
-                value={formData.bio}
-                onChange={handleInputChange}
-                className="col-span-3"
-                placeholder="Author biography"
-                rows={4}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit}>
-              {editingAuthor ? 'Update' : 'Add'} Author
-            </Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={handleCloseDialog}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={submitting}>
+                {submitting ? 'Saving...' : 'Save Author'}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </AdminLayout>
-  );
-};
-
-interface AuthorCardProps {
-  author: any;
-  onEdit: () => void;
-  onDelete: () => void;
-}
-
-const AuthorCard: React.FC<AuthorCardProps> = ({ author, onEdit, onDelete }) => {
-  return (
-    <div className="bg-white rounded-lg border p-6 flex flex-col">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center">
-          {author.image_url ? (
-            <img 
-              src={author.image_url} 
-              alt={author.name} 
-              className="w-12 h-12 rounded-full object-cover"
-            />
-          ) : (
-            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-600 text-lg font-medium">
-                {author.name.charAt(0)}
-              </span>
-            </div>
-          )}
-          <div className="ml-4">
-            <h3 className="font-medium">{author.name}</h3>
-          </div>
-        </div>
-        <div className="flex">
-          <Button variant="ghost" size="sm" onClick={onEdit} className="h-8 w-8 p-0">
-            <Pencil size={16} />
-            <span className="sr-only">Edit</span>
-          </Button>
-          <Button variant="ghost" size="sm" onClick={onDelete} className="h-8 w-8 p-0 text-red-600">
-            <Trash2 size={16} />
-            <span className="sr-only">Delete</span>
-          </Button>
-        </div>
-      </div>
-      <div className="flex-1">
-        <p className="text-sm text-gray-500 line-clamp-3">{author.bio || 'No biography available.'}</p>
-      </div>
-    </div>
   );
 };
 
