@@ -1,25 +1,44 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import FontControls from '../tools/FontControls';
 
-// Since we removed FontOptionsPopover, this test should focus on the new font controls
-describe('Font Controls', () => {
+// We'll mock the Select component since we're not testing its internal functionality
+jest.mock('@/components/ui/select', () => ({
+  Select: ({ children, onValueChange }: any) => (
+    <div data-testid="select" onClick={() => onValueChange('test-value')}>{children}</div>
+  ),
+  SelectTrigger: ({ children, className }: any) => (
+    <div data-testid="select-trigger" className={className}>{children}</div>
+  ),
+  SelectValue: ({ placeholder }: any) => (
+    <div data-testid="select-value">{placeholder}</div>
+  ),
+  SelectContent: ({ children }: any) => (
+    <div data-testid="select-content">{children}</div>
+  ),
+  SelectItem: ({ children, value }: any) => (
+    <div data-testid="select-item" data-value={value}>{children}</div>
+  )
+}));
+
+describe('FontControls', () => {
   const mockHandleFontFamilyChange = jest.fn();
   const mockHandleFontSizeChange = jest.fn();
   
   it('renders Select components properly', () => {
     render(
-      <Select onValueChange={mockHandleFontFamilyChange}>
-        <SelectTrigger className="h-8 w-[120px] text-xs">
-          <SelectValue placeholder="Font Family" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="inherit">Default</SelectItem>
-        </SelectContent>
-      </Select>
+      <FontControls 
+        handleFontFamilyChange={mockHandleFontFamilyChange}
+        handleFontSizeChange={mockHandleFontSizeChange}
+      />
     );
     
-    expect(screen.getByText('Font Family')).toBeInTheDocument();
+    // Verify font family select exists
+    const selectValues = screen.getAllByTestId('select-value');
+    expect(selectValues[0]).toHaveTextContent('Font Family');
+    
+    // Verify font size select exists
+    expect(selectValues[1]).toHaveTextContent('Font Size');
   });
 });

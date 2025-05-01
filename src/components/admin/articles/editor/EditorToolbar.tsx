@@ -12,15 +12,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import TextFormattingTools from './TextFormattingTools';
-import ColorPopover from './ColorPopover';
-import LineHeightPopover from './LineHeightPopover';
-import HeadingDropdown from './HeadingDropdown';
-import ListControls from './ListControls';
-import AlignmentControls from './AlignmentControls';
-import LinkPopover from './LinkPopover';
-import ImagePopover from './ImagePopover';
-import HistoryControls from './HistoryControls';
+// Import toolbar components
+import TextFormattingTools from './tools/TextFormattingTools';
+import ColorPopover from './tools/ColorPopover';
+import LineHeightPopover from './tools/LineHeightPopover';
+import HeadingDropdown from './tools/HeadingDropdown';
+import ListControls from './tools/ListControls';
+import AlignmentControls from './tools/AlignmentControls';
+import LinkPopover from './tools/LinkPopover';
+import ImagePopover from './tools/ImagePopover';
+import HistoryControls from './tools/HistoryControls';
+import FontControls from './tools/FontControls';
 
 interface EditorToolbarProps {
   applyFormat: (command: string, value?: string) => void;
@@ -48,47 +50,6 @@ interface EditorToolbarProps {
   handleLineHeightChange: (height: string) => void;
 }
 
-// These constants were moved from the main component
-const fontFamilies = [
-  { label: "Default", value: "inherit" },
-  { label: "Poppins", value: "'Poppins', sans-serif" },
-  { label: "Inter", value: "'Inter', sans-serif" },
-  { label: "Nunito", value: "'Nunito', sans-serif" },
-  { label: "Space", value: "'Space Grotesk', sans-serif" },
-  { label: "Manrope", value: "'Manrope', sans-serif" }
-];
-
-const fontSizes = [
-  { label: "Small", value: "12px" },
-  { label: "Normal", value: "16px" },
-  { label: "Medium", value: "18px" },
-  { label: "Large", value: "24px" },
-  { label: "X-Large", value: "32px" },
-  { label: "XX-Large", value: "48px" },
-];
-
-const lineHeights = [
-  { label: "Tight", value: "1.2" },
-  { label: "Normal", value: "1.5" },
-  { label: "Relaxed", value: "1.8" },
-  { label: "Loose", value: "2" },
-];
-
-const colorOptions = [
-  { label: "Black", value: "#000000" },
-  { label: "Dark Gray", value: "#333333" },
-  { label: "Gray", value: "#666666" },
-  { label: "Medium Gray", value: "#999999" },
-  { label: "Light Gray", value: "#CCCCCC" },
-  { label: "Primary", value: "#8B5CF6" },
-  { label: "Red", value: "#EF4444" },
-  { label: "Orange", value: "#F97316" },
-  { label: "Yellow", value: "#F59E0B" },
-  { label: "Green", value: "#10B981" },
-  { label: "Blue", value: "#3B82F6" },
-  { label: "Purple", value: "#8B5CF6" },
-];
-
 const EditorToolbar: React.FC<EditorToolbarProps> = ({
   applyFormat,
   linkUrl,
@@ -112,6 +73,9 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
   handleColorChange,
   handleLineHeightChange
 }) => {
+  // Get constants from the constants file
+  const { colorOptions } = require('./constants/editorConstants');
+
   return (
     <ScrollArea className="toolbar bg-[#F6F6F7] p-3 border-b flex flex-wrap items-center gap-1.5">
       <div className="flex items-center gap-1 flex-wrap">
@@ -119,39 +83,10 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
         
         <Separator orientation="vertical" className="mx-1 h-6" />
         
-        {/* Font Family Control - Separated from Font Size */}
-        <div className="flex items-center mr-1">
-          <Type size={16} className="mr-1" />
-          <Select onValueChange={handleFontFamilyChange}>
-            <SelectTrigger className="h-8 w-[120px] text-xs">
-              <SelectValue placeholder="Font Family" />
-            </SelectTrigger>
-            <SelectContent>
-              {fontFamilies.map((font) => (
-                <SelectItem key={font.value} value={font.value}>
-                  <span style={{ fontFamily: font.value }}>{font.label}</span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        {/* Font Size Control - Separated from Font Family */}
-        <div className="flex items-center mr-1">
-          <Text size={16} className="mr-1" />
-          <Select onValueChange={handleFontSizeChange}>
-            <SelectTrigger className="h-8 w-[110px] text-xs">
-              <SelectValue placeholder="Font Size" />
-            </SelectTrigger>
-            <SelectContent>
-              {fontSizes.map((size) => (
-                <SelectItem key={size.value} value={size.value}>
-                  <span style={{ fontSize: size.label === "Normal" ? "14px" : "14px" }}>{size.label}</span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <FontControls 
+          handleFontFamilyChange={handleFontFamilyChange}
+          handleFontSizeChange={handleFontSizeChange}
+        />
         
         <ColorPopover
           colorPopoverOpen={colorPopoverOpen}
@@ -164,7 +99,6 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
           lineHeightPopoverOpen={lineHeightPopoverOpen}
           setLineHeightPopoverOpen={setLineHeightPopoverOpen}
           handleLineHeightChange={handleLineHeightChange}
-          lineHeights={lineHeights}
         />
         
         <HeadingDropdown applyFormat={applyFormat} />

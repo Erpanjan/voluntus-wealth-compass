@@ -4,16 +4,19 @@ import { render, screen } from '@testing-library/react';
 import EditorToolbar from '../EditorToolbar';
 
 // Mock child components
-jest.mock('../TextFormattingTools', () => () => <div data-testid="text-formatting-tools">TextFormattingTools</div>);
-jest.mock('../FontOptionsPopover', () => () => <div data-testid="font-options-popover">FontOptionsPopover</div>);
-jest.mock('../ColorPopover', () => () => <div data-testid="color-popover">ColorPopover</div>);
-jest.mock('../LineHeightPopover', () => () => <div data-testid="line-height-popover">LineHeightPopover</div>);
-jest.mock('../HeadingDropdown', () => () => <div data-testid="heading-dropdown">HeadingDropdown</div>);
-jest.mock('../ListControls', () => () => <div data-testid="list-controls">ListControls</div>);
-jest.mock('../AlignmentControls', () => () => <div data-testid="alignment-controls">AlignmentControls</div>);
-jest.mock('../LinkPopover', () => () => <div data-testid="link-popover">LinkPopover</div>);
-jest.mock('../ImagePopover', () => () => <div data-testid="image-popover">ImagePopover</div>);
-jest.mock('../HistoryControls', () => () => <div data-testid="history-controls">HistoryControls</div>);
+jest.mock('../tools/TextFormattingTools', () => () => <div data-testid="text-formatting-tools">TextFormattingTools</div>);
+jest.mock('../tools/FontControls', () => () => <div data-testid="font-controls">FontControls</div>);
+jest.mock('../tools/ColorPopover', () => () => <div data-testid="color-popover">ColorPopover</div>);
+jest.mock('../tools/LineHeightPopover', () => () => <div data-testid="line-height-popover">LineHeightPopover</div>);
+jest.mock('../tools/HeadingDropdown', () => () => <div data-testid="heading-dropdown">HeadingDropdown</div>);
+jest.mock('../tools/ListControls', () => () => <div data-testid="list-controls">ListControls</div>);
+jest.mock('../tools/AlignmentControls', () => () => <div data-testid="alignment-controls">AlignmentControls</div>);
+jest.mock('../tools/LinkPopover', () => () => <div data-testid="link-popover">LinkPopover</div>);
+jest.mock('../tools/ImagePopover', () => () => <div data-testid="image-popover">ImagePopover</div>);
+jest.mock('../tools/HistoryControls', () => () => <div data-testid="history-controls">HistoryControls</div>);
+jest.mock('../constants/editorConstants', () => ({
+  colorOptions: [{ label: 'Black', value: '#000000' }]
+}));
 
 // Mock Separator and ScrollArea
 jest.mock('@/components/ui/separator', () => ({
@@ -60,7 +63,7 @@ describe('EditorToolbar Component', () => {
     
     expect(screen.getByTestId('scroll-area')).toBeInTheDocument();
     expect(screen.getByTestId('text-formatting-tools')).toBeInTheDocument();
-    expect(screen.getByTestId('font-options-popover')).toBeInTheDocument();
+    expect(screen.getByTestId('font-controls')).toBeInTheDocument();
     expect(screen.getByTestId('color-popover')).toBeInTheDocument();
     expect(screen.getByTestId('line-height-popover')).toBeInTheDocument();
     expect(screen.getByTestId('heading-dropdown')).toBeInTheDocument();
