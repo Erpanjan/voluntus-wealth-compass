@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Undo, Redo } from 'lucide-react';
+import { Undo2, Redo2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface HistoryControlsProps {
@@ -8,26 +8,38 @@ interface HistoryControlsProps {
 }
 
 const HistoryControls: React.FC<HistoryControlsProps> = ({ applyFormat }) => {
+  const handleUndo = (e: React.MouseEvent) => {
+    e.preventDefault();
+    applyFormat('undo');
+  };
+
+  const handleRedo = (e: React.MouseEvent) => {
+    e.preventDefault();
+    applyFormat('redo');
+  };
+
   return (
     <>
       <Button 
-        onClick={() => applyFormat('undo')} 
+        onClick={handleUndo}
         variant="ghost" 
         size="sm"
         className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
         title="Undo"
+        type="button"
       >
-        <Undo size={16} />
+        <Undo2 size={16} />
       </Button>
       
       <Button 
-        onClick={() => applyFormat('redo')} 
+        onClick={handleRedo}
         variant="ghost" 
         size="sm"
         className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
         title="Redo"
+        type="button"
       >
-        <Redo size={16} />
+        <Redo2 size={16} />
       </Button>
     </>
   );

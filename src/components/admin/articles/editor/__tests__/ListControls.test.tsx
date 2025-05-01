@@ -1,16 +1,21 @@
+
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ListControls } from '../tools';
 
 // Mock Button component
 jest.mock('@/components/ui/button', () => ({
-  Button: ({ onClick, children, className, variant, size, title }: { onClick: () => void, children: React.ReactNode, className: string, variant: string, size: string, title: string }) => (
-    <button data-testid="button" onClick={onClick} className={className} data-variant={variant} data-size={size} title={title}>{children}</button>
+  Button: ({ onClick, children, className, variant, size, title, type }: { onClick: (e: any) => void, children: React.ReactNode, className: string, variant: string, size: string, title: string, type: string }) => (
+    <button data-testid="button" onClick={onClick} className={className} data-variant={variant} data-size={size} title={title} type={type}>{children}</button>
   ),
 }));
 
 describe('ListControls Component', () => {
   const mockApplyFormat = jest.fn();
+
+  beforeEach(() => {
+    mockApplyFormat.mockClear();
+  });
 
   it('renders the ListControls component with buttons', () => {
     render(<ListControls applyFormat={mockApplyFormat} />);
@@ -26,7 +31,7 @@ describe('ListControls Component', () => {
     render(<ListControls applyFormat={mockApplyFormat} />);
 
     const bulletListButton = screen.getByTitle('Bullet List');
-    bulletListButton.click();
+    fireEvent.click(bulletListButton);
 
     expect(mockApplyFormat).toHaveBeenCalledWith('insertUnorderedList');
   });
@@ -35,9 +40,8 @@ describe('ListControls Component', () => {
     render(<ListControls applyFormat={mockApplyFormat} />);
 
     const numberedListButton = screen.getByTitle('Numbered List');
-    numberedListButton.click();
+    fireEvent.click(numberedListButton);
 
     expect(mockApplyFormat).toHaveBeenCalledWith('insertOrderedList');
   });
 });
-
