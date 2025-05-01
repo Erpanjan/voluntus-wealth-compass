@@ -120,9 +120,9 @@ const Login = () => {
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
-        {/* Fixed height title container to prevent jumping */}
+        {/* Fixed position title container */}
         <div className="h-24 flex items-center justify-center">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 absolute">
             <h1 className="text-3xl font-bold text-center w-[200px]">{isAdminMode ? 'Admin Portal' : 'Client Portal'}</h1>
             <div className="flex items-center space-x-2">
               <Switch
