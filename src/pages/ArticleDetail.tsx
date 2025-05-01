@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -89,6 +88,34 @@ const ArticleDetail = () => {
 
   // Check if reports exist and have items
   const hasAttachments = Array.isArray(article.reports) && article.reports.length > 0;
+  
+  // Get file type from URL
+  const getFileTypeFromUrl = (url: string) => {
+    const extension = url.split('.').pop()?.toLowerCase() || '';
+    return extension;
+  };
+  
+  // Get icon based on file type
+  const getFileIcon = (url: string) => {
+    const fileType = getFileTypeFromUrl(url);
+    // Can be expanded with different icons based on fileType
+    return <FileDown size={16} className="mr-2" />;
+  };
+  
+  // Format file name from URL
+  const getFileNameFromUrl = (url: string) => {
+    try {
+      const urlObj = new URL(url);
+      const pathSegments = urlObj.pathname.split('/');
+      const fileName = pathSegments[pathSegments.length - 1];
+      // Remove any UUID prefixes if present
+      return decodeURIComponent(fileName.replace(/^[a-f0-9-]+-/, ''));
+    } catch (e) {
+      // If URL parsing fails, return the last segment of the URL
+      const segments = url.split('/');
+      return segments[segments.length - 1];
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28">
@@ -149,10 +176,13 @@ const ArticleDetail = () => {
               {article.reports.map((report) => (
                 <Card key={report.id} className="p-4 flex justify-between items-center hover:bg-gray-50 transition-all">
                   <div>
-                    <h4 className="font-medium">{report.title}</h4>
+                    <h4 className="font-medium">{report.title || getFileNameFromUrl(report.file_url)}</h4>
                     {report.description && (
                       <p className="text-sm text-gray-600">{report.description}</p>
                     )}
+                    <p className="text-xs text-gray-500 mt-1">
+                      {getFileTypeFromUrl(report.file_url).toUpperCase()} file
+                    </p>
                   </div>
                   <Button variant="outline" asChild>
                     <a 
@@ -161,8 +191,11 @@ const ArticleDetail = () => {
                       rel="noopener noreferrer"
                       download
                       className="flex items-center"
+                      onClick={(e) => {
+                        console.log("Downloading file:", report.file_url);
+                      }}
                     >
-                      <FileDown size={16} className="mr-2" />
+                      {getFileIcon(report.file_url)}
                       Download
                     </a>
                   </Button>

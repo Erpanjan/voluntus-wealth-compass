@@ -153,6 +153,10 @@ export const articleService = {
       const isUpdate = !!article.id;
       let articleId = article.id || uuidv4();
       
+      console.log(`${isUpdate ? 'Updating' : 'Creating'} article with ID: ${articleId}`);
+      console.log("Authors:", authorIds);
+      console.log("Attachments:", attachments?.length || 0);
+      
       // 1. Upload image if provided
       let imageUrl = article.image_url;
       if (imageFile) {
@@ -175,6 +179,7 @@ export const articleService = {
           .getPublicUrl(imagePath);
         
         imageUrl = publicUrl;
+        console.log("Uploaded image URL:", imageUrl);
       }
       
       // 2. Create or update the article
@@ -260,7 +265,10 @@ export const articleService = {
       
       // 4. Handle attachments/reports
       if (attachments && attachments.length > 0) {
+        console.log("Processing attachments:", attachments.length);
+        
         for (const attachment of attachments) {
+          console.log("Processing attachment:", attachment.id, attachment.title);
           await reportService.saveReport(articleId, attachment, attachment.file);
         }
       }

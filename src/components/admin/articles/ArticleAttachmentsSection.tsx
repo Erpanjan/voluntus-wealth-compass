@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Upload, X, File, Download } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
 import { Attachment } from '@/hooks/admin/articleEditor/useArticleAttachments';
+import { useToast } from '@/hooks/use-toast';
 
 interface ArticleAttachmentsSectionProps {
   form: UseFormReturn<any>;
@@ -18,19 +20,48 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
 }) => {
   const [isOpen, setIsOpen] = React.useState(true);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files).map(file => ({
-        id: `attachment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        name: file.name,
-        title: file.name,
-        size: file.size,
-        type: file.type,
-        file: file
-      }));
+      const newFiles = Array.from(e.target.files).map(file => {
+        // Validate file type and size
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+          toast({
+            title: "File too large",
+            description: `${file.name} exceeds the 10MB size limit.`,
+            variant: "destructive",
+          });
+          return null;
+        }
+        
+        return {
+          id: `attachment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          name: file.name,
+          title: file.name,
+          size: file.size,
+          type: file.type,
+          file: file
+        };
+      }).filter(Boolean) as Attachment[];
       
-      setAttachments((prev) => [...prev, ...newFiles]);
+      if (newFiles.length > 0) {
+        console.log("Adding new attachments:", newFiles);
+        setAttachments((prev) => [...prev, ...newFiles]);
+        
+        // Show success toast
+        if (newFiles.length === 1) {
+          toast({
+            title: "File added",
+            description: `${newFiles[0].name} has been added to attachments.`
+          });
+        } else {
+          toast({
+            title: "Files added",
+            description: `${newFiles.length} files have been added to attachments.`
+          });
+        }
+      }
       
       // Reset the file input
       if (fileInputRef.current) {
@@ -40,7 +71,15 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
   };
   
   const handleRemoveAttachment = (id: string) => {
+    const attachmentToRemove = attachments.find(att => att.id === id);
     setAttachments(attachments.filter(attachment => attachment.id !== id));
+    
+    if (attachmentToRemove) {
+      toast({
+        title: "Attachment removed",
+        description: `${attachmentToRemove.name || attachmentToRemove.title} has been removed.`
+      });
+    }
   };
   
   const triggerFileInput = () => {
@@ -116,7 +155,7 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
             
             {attachments.length > 0 && (
               <div className="space-y-3 mt-6">
-                <h3 className="text-sm font-medium text-gray-700">Uploaded Files</h3>
+                <h3 className="text-sm font-medium text-gray-700">Uploaded Files ({attachments.length})</h3>
                 <div className="rounded-md border divide-y">
                   {attachments.map((attachment) => (
                     <div 
@@ -131,6 +170,7 @@ const ArticleAttachmentsSection: React.FC<ArticleAttachmentsSectionProps> = ({
                           <p className="text-sm font-medium text-gray-800">{attachment.name || attachment.title}</p>
                           <p className="text-xs text-gray-500 mt-1">
                             {formatFileSize(attachment.size)}
+                            {attachment.type && <span className="ml-2">({attachment.type.split('/').pop()})</span>}
                           </p>
                         </div>
                       </div>
