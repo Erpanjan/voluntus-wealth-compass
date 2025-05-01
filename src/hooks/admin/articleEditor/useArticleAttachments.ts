@@ -12,8 +12,8 @@ export interface Attachment {
   file?: File;
   created_at?: string;
   name: string; // Required property
-  size: number; // Changed from optional to required
-  type: string; // Changed from optional to required
+  size: number; // Required property
+  type: string; // Required property
   url?: string;
 }
 
@@ -37,17 +37,25 @@ export const useArticleAttachments = (isEditMode: boolean) => {
       }
       
       if (data && data.length > 0) {
-        const formattedAttachments = data.map(item => ({
-          id: item.id,
-          title: item.title,
-          description: item.description || '',
-          file_url: item.file_url,
-          created_at: item.created_at,
-          name: item.title, // Ensure name is always set to title
-          size: item.size || 0, // Default to 0 if size is not available
-          type: item.file_url?.split('.').pop() || 'unknown', // Default to 'unknown' if type can't be determined
-          url: item.file_url
-        }));
+        const formattedAttachments = data.map(item => {
+          // Extract file extension from file_url
+          const fileExtension = item.file_url?.split('.').pop() || 'unknown';
+          
+          // Estimate file size if not provided (default to 100KB)
+          const estimatedSize = 102400; // 100KB in bytes
+          
+          return {
+            id: item.id,
+            title: item.title,
+            description: item.description || '',
+            file_url: item.file_url,
+            created_at: item.created_at,
+            name: item.title, // Set name to title
+            size: item.size || estimatedSize, // Use estimated size if not available
+            type: fileExtension, // Set type based on file extension
+            url: item.file_url
+          };
+        });
         
         setAttachments(formattedAttachments);
       }

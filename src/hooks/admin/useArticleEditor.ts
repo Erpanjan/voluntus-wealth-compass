@@ -9,10 +9,11 @@ import {
   useArticleActions
 } from './articleEditor';
 import { Attachment } from './articleEditor/useArticleAttachments';
+import { Author } from '@/services/articleService';
 
 export const useArticleEditor = () => {
   const { form, isEditMode, loadArticleData } = useArticleBasicInfo();
-  const { selectedAuthors, setSelectedAuthors, loadAuthorsData } = useArticleAuthors(isEditMode);
+  const { selectedAuthors, setSelectedAuthors, availableAuthors, loadAuthorsData } = useArticleAuthors(isEditMode);
   const { 
     imageFile, setImageFile, 
     imagePreview, setImagePreview, 
@@ -37,15 +38,25 @@ export const useArticleEditor = () => {
     }
   };
 
+  // Helper function to convert author IDs to Author objects
+  const getAuthorObjects = (authorIds: string[]): Author[] => {
+    return authorIds.map(id => {
+      const author = availableAuthors.find(a => a.id === id);
+      return author || { id, name: 'Unknown Author', image_url: null };
+    });
+  };
+
   // Wrap saveDraft and publishArticle to get data from their respective hooks
   const handleSaveDraft = async () => {
     const formData = form.getValues();
-    await saveDraft(formData, selectedAuthors, imageFile, attachments as Attachment[]);
+    const authorObjects = getAuthorObjects(selectedAuthors);
+    await saveDraft(formData, authorObjects, imageFile, attachments as Attachment[]);
   };
 
   const handlePublishArticle = async () => {
     const formData = form.getValues();
-    await publishArticle(formData, selectedAuthors, imageFile, attachments as Attachment[]);
+    const authorObjects = getAuthorObjects(selectedAuthors);
+    await publishArticle(formData, authorObjects, imageFile, attachments as Attachment[]);
   };
 
   return {
