@@ -1,31 +1,55 @@
 
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
-// Sample attachments for edit mode
-const SAMPLE_ATTACHMENTS = [
-  {
-    id: 'attachment-1',
-    name: 'Financial Planning Guide.pdf',
-    size: 2500000, // 2.5MB
-    type: 'application/pdf',
-    url: 'https://example.com/files/financial-planning-guide.pdf'
-  },
-  {
-    id: 'attachment-2',
-    name: 'Investment Strategies.pdf',
-    size: 1800000, // 1.8MB
-    type: 'application/pdf',
-    url: 'https://example.com/files/investment-strategies.pdf'
-  }
-];
+export interface Attachment {
+  id?: string;
+  title: string;
+  description?: string;
+  file_url?: string;
+  file?: File;
+  created_at?: string;
+}
 
 export const useArticleAttachments = (isEditMode: boolean) => {
-  const [attachments, setAttachments] = useState<any[]>([]);
+  const { id } = useParams();
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const { toast } = useToast();
   
   const loadAttachmentsData = async () => {
-    if (isEditMode) {
-      // Load sample attachments for edit mode
-      setAttachments(SAMPLE_ATTACHMENTS);
+    if (!isEditMode || !id) return;
+    
+    try {
+      // Fetch reports for the article
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*')
+        .eq('article_id', id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      if (data && data.length > 0) {
+        const formattedAttachments = data.map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.description || '',
+          file_url: item.file_url,
+          created_at: item.created_at,
+        }));
+        
+        setAttachments(formattedAttachments);
+      }
+    } catch (error) {
+      console.error('Error loading attachments:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load article attachments.',
+        variant: 'destructive',
+      });
     }
   };
   

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { articleService } from '@/services/articleService';
 
 export const useArticleActions = () => {
   const navigate = useNavigate();
@@ -14,27 +15,30 @@ export const useArticleActions = () => {
   };
 
   // Save as draft function
-  const saveDraft = async (formData: any, authors: string[], image: File | null, attachments: any[]) => {
+  const saveDraft = async (formData: any, authorIds: string[], imageFile: File | null, attachments: any[]) => {
     setSubmitting(true);
     
     try {
-      // Log the data being submitted
-      console.log("Saving draft:", {
-        ...formData,
-        authors,
-        image: image ? "Image file present" : "No image",
-        attachments: attachments.length > 0 ? `${attachments.length} files attached` : "No attachments",
-        status: "draft"
+      const slug = await articleService.saveArticle(
+        {
+          ...formData,
+          published_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(), // 30 days future
+        },
+        authorIds,
+        imageFile,
+        attachments
+      );
+      
+      if (!slug) {
+        throw new Error("Failed to save draft");
+      }
+      
+      toast({
+        title: 'Draft Saved',
+        description: 'Your article draft has been saved.',
       });
       
-      // For now, just simulate a successful operation
-      setTimeout(() => {
-        toast({
-          title: 'Draft Saved',
-          description: 'Your article draft has been saved.',
-        });
-        setSubmitting(false);
-      }, 1000);
+      return true;
     } catch (error: any) {
       console.error('Error:', error);
       toast({
@@ -42,33 +46,38 @@ export const useArticleActions = () => {
         description: 'An error occurred while saving the draft.',
         variant: 'destructive',
       });
+      return false;
+    } finally {
       setSubmitting(false);
     }
   };
   
   // Publish function
-  const publishArticle = async (formData: any, authors: string[], image: File | null, attachments: any[]) => {
+  const publishArticle = async (formData: any, authorIds: string[], imageFile: File | null, attachments: any[]) => {
     setSubmitting(true);
     
     try {
-      // Log the data being submitted including authors and attachments
-      console.log("Publishing article:", {
-        ...formData,
-        authors,
-        image: image ? "Image file present" : "No image",
-        attachments: attachments.length > 0 ? `${attachments.length} files attached` : "No attachments",
-        status: "published"
+      const slug = await articleService.saveArticle(
+        {
+          ...formData,
+          published_at: new Date().toISOString(), // Publish immediately
+        },
+        authorIds,
+        imageFile,
+        attachments
+      );
+      
+      if (!slug) {
+        throw new Error("Failed to publish article");
+      }
+      
+      toast({
+        title: 'Article Published',
+        description: `The article has been published successfully.`,
       });
       
-      // For now, just simulate a successful operation
-      setTimeout(() => {
-        toast({
-          title: 'Article Published',
-          description: `The article has been published successfully with ${authors.length} author(s) and ${attachments.length} attachment(s).`,
-        });
-        
-        navigate('/admin/articles');
-      }, 1000);
+      navigate('/admin/articles');
+      return true;
     } catch (error: any) {
       console.error('Error:', error);
       toast({
@@ -76,6 +85,8 @@ export const useArticleActions = () => {
         description: 'An error occurred while publishing the article.',
         variant: 'destructive',
       });
+      return false;
+    } finally {
       setSubmitting(false);
     }
   };

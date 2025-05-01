@@ -4,20 +4,7 @@ import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-
-// Sample data for edit mode - would normally come from the database
-const SAMPLE_ARTICLE = {
-  id: '1',
-  title: 'Understanding Financial Planning',
-  slug: 'understanding-financial-planning',
-  description: 'An overview of financial planning principles',
-  content: 'This is the content of the article. It would normally be much longer.',
-  category: 'Finance',
-  image_url: 'https://example.com/image.jpg',
-  published_at: new Date().toISOString(),
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-};
+import { articleService } from '@/services/articleService';
 
 export const useArticleBasicInfo = () => {
   const { id } = useParams();
@@ -37,25 +24,33 @@ export const useArticleBasicInfo = () => {
 
   // Load article data if in edit mode
   const loadArticleData = async () => {
-    if (!isEditMode) return;
+    if (!isEditMode || !id) return null;
     
     try {
-      // This would normally fetch from the articles table
-      // For now, use sample data
-      const data = SAMPLE_ARTICLE;
+      // Fetch articles and find the one with matching ID
+      const articles = await articleService.getArticles();
+      const article = articles.find(a => a.id === id);
       
-      if (data) {
+      if (article) {
         form.reset({
-          title: data.title,
-          description: data.description,
-          category: data.category,
-          content: data.content as string,
-          image_url: data.image_url,
-          published_at: format(new Date(data.published_at), 'yyyy-MM-dd'),
+          title: article.title,
+          description: article.description,
+          category: article.category,
+          content: article.content,
+          image_url: article.image_url || '',
+          published_at: format(new Date(article.published_at), 'yyyy-MM-dd'),
+        });
+        
+        return article;
+      } else {
+        toast({
+          title: 'Article Not Found',
+          description: 'Could not find the article you are trying to edit.',
+          variant: 'destructive',
         });
       }
       
-      return data;
+      return null;
     } catch (error) {
       console.error('Error fetching article:', error);
       toast({

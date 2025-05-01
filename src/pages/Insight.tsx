@@ -1,60 +1,46 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ArticleCard from '@/components/ArticleCard';
 import ContactForm from '@/components/ContactForm';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { usePublishedArticles } from '@/hooks/usePublishedArticles';
+import { Skeleton } from '@/components/ui/skeleton';
+import { format } from 'date-fns';
 
 const Insight = () => {
-  // Sample articles
-  const articles = [
-    {
-      id: "green-energy-transition",
-      title: "Is the Green Energy Transition Dead?",
-      date: "March 19, 2025",
-      category: "RESEARCH & INSIGHTS",
-      authors: ["Karen Karniol-Tambour", "Carsten Stendevad", "Daniel Hochman", "Jeremy Ng"],
-      image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
-      description: "Policy has shifted to prioritize energy security and industrial competitiveness over climate leadership. This will steer investment to the most economical energy sources, driving continued growth in renewables and fossil fuels—but slower decarbonization."
-    },
-    {
-      id: "outlook-threats-portfolios",
-      title: "Our Outlook and the Threats We See to Portfolios, with Co-CIO Karen Karniol-Tambour",
-      date: "April 21, 2025",
-      category: "RESEARCH & INSIGHTS",
-      authors: ["Karen Karniol-Tambour", "Jim Haskel"],
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-      description: "In this edited version of our Q1 CIO call, Co-CIO Karen Karniol-Tambour describes how we are processing today's radically different economic and market environment."
-    },
-    {
-      id: "new-york-times-trade-war",
-      title: "The New York Times: This Is Who Loses in a Trade War",
-      date: "March 10, 2025",
-      category: "IN THE NEWS",
-      authors: ["Karen Karniol-Tambour"],
-      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-      description: "For decades, America has consumed much more than it produces, financing persistent trade deficits with debt that foreign investors are happy to buy. President Trump is unwilling to accept this state of affairs. In a guest essay for the New York Times, co-CIO Karen Karniol-Tambour describes what this shift means for Europe's economic and security paradigm, the changes that are needed, and the barriers to reform."
-    },
-    {
-      id: "barrons-influential-women",
-      title: "Co-CIO Karen Karniol-Tambour Recognized on Barron's 100 Most Influential Women in U.S. Finance List",
-      date: "March 14, 2025",
-      category: "PEOPLE",
-      authors: ["Karen Karniol-Tambour"],
-      image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
-      description: "For the sixth consecutive year, Barron's has recognized Karen for her expertise, influence, and leadership in the financial services industry."
-    },
-    {
-      id: "gold-all-time-highs",
-      title: "Gold Hits All-Time Highs: Assessing the Rally and Gold's Role in Portfolios",
-      date: "March 4, 2025",
-      category: "RESEARCH & INSIGHTS",
-      authors: ["Hudson Attar", "Alex Smith", "Jim Haskel"],
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-      description: "Daily Observations editor Jim Haskel sits down with head of contra-currencies Hudson Attar and portfolio strategist Alex Smith to discuss the recent gold rally and the type of diversification gold can provide."
-    },
-  ];
+  const { articles, loading } = usePublishedArticles();
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 4;
+  
+  // Calculate pagination
+  const totalPages = Math.max(1, Math.ceil(articles.length / articlesPerPage));
+  const startIndex = (currentPage - 1) * articlesPerPage;
+  const displayedArticles = articles.slice(startIndex, startIndex + articlesPerPage);
+  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Render loading skeletons
+  const renderSkeletons = () => (
+    <>
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="bg-white rounded-xl overflow-hidden">
+          <Skeleton className="h-48 w-full" />
+          <div className="p-6 space-y-3">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        </div>
+      ))}
+    </>
+  );
 
   return (
     <div className="min-h-screen">
@@ -68,40 +54,73 @@ const Insight = () => {
       {/* Latest Research Section */}
       <Section title="Latest Research" titleCentered={true}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
-          {articles.slice(0, 4).map((article) => (
-            <ArticleCard
-              key={article.id}
-              id={article.id}
-              title={article.title}
-              date={article.date}
-              description={article.description}
-              category={article.category}
-              authors={article.authors}
-              image={article.image}
-            />
-          ))}
+          {loading ? renderSkeletons() : (
+            displayedArticles.map((article) => (
+              <ArticleCard
+                key={article.id}
+                id={article.slug}
+                title={article.title}
+                date={format(new Date(article.published_at), 'MMMM dd, yyyy')}
+                description={article.description}
+                category={article.category}
+                authors={article.authors?.map(author => author.name) || []}
+                image={article.image_url}
+              />
+            ))
+          )}
+          
+          {!loading && articles.length === 0 && (
+            <div className="col-span-full text-center py-16">
+              <h3 className="text-xl font-medium text-gray-600">No articles found</h3>
+              <p className="mt-2 text-gray-500">Check back soon for new insights</p>
+            </div>
+          )}
         </div>
-        <div className="mt-12">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" isActive>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+        
+        {totalPages > 1 && (
+          <div className="mt-12">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) handlePageChange(currentPage - 1);
+                    }}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem key={i + 1}>
+                    <PaginationLink 
+                      href="#" 
+                      isActive={currentPage === i + 1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(i + 1);
+                      }}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                    }}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </Section>
 
       {/* Contact Form */}
