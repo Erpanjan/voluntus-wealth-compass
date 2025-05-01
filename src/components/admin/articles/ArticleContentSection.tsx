@@ -2,10 +2,13 @@
 import React from 'react';
 import { 
   Card,
-  CardHeader,
-  CardTitle,
-  CardContent
 } from '@/components/ui/card';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { UseFormReturn } from 'react-hook-form';
 import RichTextEditor from './RichTextEditor';
 import {
@@ -22,26 +25,37 @@ interface ArticleContentSectionProps {
 const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) => {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Article Content</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">        
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <RichTextEditor 
-                  value={field.value} 
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </CardContent>
+      <Accordion
+        type="single" 
+        collapsible 
+        defaultValue="article-content"
+        className="border-none"
+      >
+        <AccordionItem value="article-content" className="border-none">
+          <AccordionTrigger className="px-6 py-4 hover:no-underline">
+            <div className="flex items-center">
+              <h2 className="text-xl font-semibold">Article Content</h2>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-6 pb-6">
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <RichTextEditor 
+                      value={field.value} 
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </Card>
   );
 };
