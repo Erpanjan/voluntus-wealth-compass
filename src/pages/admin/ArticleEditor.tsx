@@ -1,22 +1,16 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
-import { ArrowLeft, Save, Eye, Send } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { handleImageUpload, clearImageUpload } from '@/utils/imageUtils';
 import ArticleInfoSection from '@/components/admin/articles/ArticleInfoSection';
 import ArticleContentSection from '@/components/admin/articles/ArticleContentSection';
-import { handleImageUpload, clearImageUpload } from '@/utils/imageUtils';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription
-} from "@/components/ui/dialog";
+import ArticleEditorToolbar from '@/components/admin/articles/ArticleEditorToolbar';
+import ArticlePreviewDialog from '@/components/admin/articles/ArticlePreviewDialog';
 
 // Sample data for edit mode
 const SAMPLE_ARTICLE = {
@@ -181,78 +175,16 @@ const ArticleEditor = () => {
     setPreviewOpen(true);
   };
 
-  // Format content for preview
-  const getPreviewContent = () => {
-    const formData = form.getValues();
-    const contentHtml = formData.content || '';
-    
-    return (
-      <div className="preview-container">
-        <h1 className="text-3xl font-bold mb-4">{formData.title || 'Untitled Article'}</h1>
-        {imagePreview && (
-          <div className="mb-4">
-            <img src={imagePreview} alt={formData.title} className="w-full h-64 object-cover rounded-lg" />
-          </div>
-        )}
-        <div className="text-gray-500 mb-2 flex gap-2 items-center">
-          <span>By: {selectedAuthors.join(', ') || 'Unknown Author'}</span>
-          <span>•</span>
-          <span>Category: {formData.category || 'Uncategorized'}</span>
-        </div>
-        <p className="text-gray-700 mb-6 italic">{formData.description || 'No description provided.'}</p>
-        <div 
-          className="prose max-w-none"
-          dangerouslySetInnerHTML={{ __html: contentHtml }}
-        />
-      </div>
-    );
-  };
-
   return (
     <AdminLayout>
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/admin/articles')}
-            className="mr-2"
-          >
-            <ArrowLeft size={16} className="mr-2" />
-            Back
-          </Button>
-          <h1 className="text-2xl font-semibold">
-            {isEditMode ? 'Edit Article' : 'Create New Article'}
-          </h1>
-        </div>
-        
-        <div className="flex gap-3">
-          <Button 
-            onClick={openPreview}
-            variant="outline"
-            disabled={submitting}
-          >
-            <Eye size={16} className="mr-2" />
-            Preview
-          </Button>
-          
-          <Button 
-            onClick={saveDraft}
-            variant="secondary"
-            disabled={submitting}
-          >
-            <Save size={16} className="mr-2" />
-            {submitting ? 'Saving...' : 'Save Draft'}
-          </Button>
-          
-          <Button 
-            onClick={publishArticle}
-            disabled={submitting}
-          >
-            <Send size={16} className="mr-2" />
-            {submitting ? 'Publishing...' : 'Publish'}
-          </Button>
-        </div>
-      </div>
+      <ArticleEditorToolbar 
+        isEditMode={isEditMode}
+        submitting={submitting}
+        onBack={() => navigate('/admin/articles')}
+        onPreview={openPreview}
+        onSaveDraft={saveDraft}
+        onPublish={publishArticle}
+      />
       
       <div className="space-y-6">
         <ArticleInfoSection
@@ -270,16 +202,16 @@ const ArticleEditor = () => {
         <ArticleContentSection form={form} />
       </div>
 
-      {/* Preview Dialog */}
-      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Article Preview</DialogTitle>
-            <DialogDescription>Preview how your article will appear when published</DialogDescription>
-          </DialogHeader>
-          {getPreviewContent()}
-        </DialogContent>
-      </Dialog>
+      <ArticlePreviewDialog
+        open={previewOpen}
+        setOpen={setPreviewOpen}
+        title={form.getValues().title}
+        description={form.getValues().description}
+        content={form.getValues().content}
+        imagePreview={imagePreview}
+        category={form.getValues().category}
+        authors={selectedAuthors}
+      />
     </AdminLayout>
   );
 };
