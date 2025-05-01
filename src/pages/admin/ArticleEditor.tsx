@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,27 +30,19 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import { Label } from '@/components/ui/label';
-import { ArrowLeft, Calendar, Clock, Save, Eye } from 'lucide-react';
+import { ArrowLeft, Calendar, Save } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
-import { Json } from '@/integrations/supabase/types';
+import type { Json } from '@/integrations/supabase/types';
+
+// Since the database tables for articles don't exist, we'll create a placeholder component
+// You can later add the necessary tables to your Supabase database
 
 const ArticleEditor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [article, setArticle] = useState<any>(null);
-  const [authors, setAuthors] = useState<any[]>([]);
-  const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
   
   const isEditMode = !!id;
 
@@ -59,178 +51,33 @@ const ArticleEditor = () => {
       title: '',
       description: '',
       category: '',
-      content: [] as any[],
+      content: '',
       image_url: '',
       published_at: format(new Date(), 'yyyy-MM-dd'),
-      selectedAuthors: [] as string[],
     }
   });
-  
-  // Fetch existing article data if in edit mode
-  useEffect(() => {
-    if (isEditMode) {
-      const fetchArticle = async () => {
-        setLoading(true);
-        try {
-          const { data, error } = await supabase
-            .from('articles')
-            .select('*')
-            .eq('id', id)
-            .single();
-            
-          if (error) throw error;
-          
-          if (data) {
-            setArticle(data);
-            
-            // Convert data.content to array if it's not already
-            const contentValue = Array.isArray(data.content) 
-              ? data.content 
-              : [{ type: 'paragraph', content: data.description }];
-            
-            // Populate form values
-            form.reset({
-              title: data.title,
-              description: data.description,
-              category: data.category,
-              content: contentValue,
-              image_url: data.image_url || '',
-              published_at: format(new Date(data.published_at), 'yyyy-MM-dd'),
-              selectedAuthors: [],
-            });
-            
-            // Fetch article authors
-            const { data: authorJoins, error: authorError } = await supabase
-              .from('article_authors')
-              .select('author_id')
-              .eq('article_id', id);
-              
-            if (authorError) throw authorError;
-            
-            if (authorJoins) {
-              setSelectedAuthors(authorJoins.map(join => join.author_id));
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching article:', error);
-          toast({
-            title: 'Error',
-            description: 'Failed to load article data',
-            variant: 'destructive',
-          });
-        } finally {
-          setLoading(false);
-        }
-      };
-      
-      fetchArticle();
-    }
-  }, [id, form, toast, isEditMode]);
-  
-  // Fetch all authors
-  useEffect(() => {
-    const fetchAuthors = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('authors')
-          .select('*')
-          .order('name');
-          
-        if (error) throw error;
-        
-        setAuthors(data || []);
-      } catch (error) {
-        console.error('Error fetching authors:', error);
-      }
-    };
-    
-    fetchAuthors();
-  }, []);
-  
-  const handleToggleAuthor = (authorId) => {
-    setSelectedAuthors(prev => 
-      prev.includes(authorId)
-        ? prev.filter(id => id !== authorId)
-        : [...prev, authorId]
-    );
-  };
   
   const onSubmit = async (data: any) => {
     setSubmitting(true);
     
     try {
-      // Convert content to proper format for the database
-      // For now, we'll use a simple content structure
-      const articleData = {
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        content: [{ type: 'paragraph', content: data.description }] as Json,
-        image_url: data.image_url,
-        published_at: new Date(data.published_at).toISOString(),
-        slug: data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
-      };
-      
-      let articleId = id;
-      
-      if (isEditMode) {
-        // Update existing article
-        const { error } = await supabase
-          .from('articles')
-          .update(articleData)
-          .eq('id', id);
-          
-        if (error) throw error;
-      } else {
-        // Create new article
-        // Note: The slug will be auto-generated by the database trigger
-        const { data: newArticle, error } = await supabase
-          .from('articles')
-          .insert(articleData)
-          .select();
-          
-        if (error) throw error;
-        
-        articleId = newArticle[0].id;
-      }
-      
-      // Handle author associations
-      if (articleId) {
-        // First, delete existing associations if updating
-        if (isEditMode) {
-          await supabase
-            .from('article_authors')
-            .delete()
-            .eq('article_id', articleId);
-        }
-        
-        // Then add the new associations
-        if (selectedAuthors.length > 0) {
-          const authorJoins = selectedAuthors.map(authorId => ({
-            article_id: articleId,
-            author_id: authorId
-          }));
-          
-          const { error: joinError } = await supabase
-            .from('article_authors')
-            .insert(authorJoins);
-            
-          if (joinError) throw joinError;
-        }
-      }
+      // This is a placeholder for future functionality
+      // When you create the articles table in your database,
+      // you can implement the actual save functionality here
       
       toast({
-        title: 'Success',
-        description: isEditMode ? 'Article updated successfully' : 'Article created successfully',
+        title: 'Feature not available',
+        description: 'The article management functionality requires database setup. Please set up the necessary tables in your Supabase database.',
       });
       
-      // Redirect to articles management
-      navigate('/admin/articles');
+      // For demonstration purposes only
+      console.log('Article data that would be saved:', data);
+      
     } catch (error: any) {
-      console.error('Error saving article:', error);
+      console.error('Error:', error);
       toast({
         title: 'Error',
-        description: 'Failed to save article',
+        description: 'An error occurred while trying to save the article.',
         variant: 'destructive',
       });
     } finally {
@@ -248,293 +95,161 @@ const ArticleEditor = () => {
             className="mr-2"
           >
             <ArrowLeft size={16} className="mr-2" />
-            Back to Articles
+            Back
           </Button>
           <h1 className="text-2xl font-semibold">
             {isEditMode ? 'Edit Article' : 'Create New Article'}
           </h1>
         </div>
         
-        <div className="flex space-x-2">
-          <Button variant="outline" disabled={submitting}>
-            <Eye size={16} className="mr-2" />
-            Preview
-          </Button>
-          <Button 
-            onClick={form.handleSubmit(onSubmit)}
-            disabled={submitting}
-          >
-            <Save size={16} className="mr-2" />
-            {submitting ? 'Saving...' : 'Save Article'}
-          </Button>
-        </div>
+        <Button 
+          onClick={form.handleSubmit(onSubmit)}
+          disabled={submitting}
+        >
+          <Save size={16} className="mr-2" />
+          {submitting ? 'Saving...' : 'Save Article'}
+        </Button>
       </div>
       
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Article Content</CardTitle>
-              <CardDescription>
-                Edit your article content and metadata
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Article Content</CardTitle>
+          <CardDescription>
+            Edit your article content and metadata
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form className="space-y-6">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Enter article title" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Enter article description" 
+                        rows={3}
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
                         <FormControl>
-                          <Input 
-                            placeholder="Enter article title" 
-                            {...field} 
-                          />
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
                         </FormControl>
-                        <FormDescription>
-                          The main title of your article
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Enter article description" 
-                            rows={3}
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          A brief summary of your article
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Category</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Finance">Finance</SelectItem>
-                              <SelectItem value="Investing">Investing</SelectItem>
-                              <SelectItem value="Planning">Planning</SelectItem>
-                              <SelectItem value="Markets">Markets</SelectItem>
-                              <SelectItem value="Analysis">Analysis</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="published_at"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Publish Date</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Calendar className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-                              <Input
-                                type="date"
-                                className="pl-8"
-                                {...field}
-                              />
-                            </div>
-                          </FormControl>
-                          <FormDescription>
-                            When the article should be published
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <FormField
-                    control={form.control}
-                    name="image_url"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Feature Image URL</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="https://example.com/image.jpg" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          URL for the article's main image
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  {/* Simple content field for now */}
-                  <div className="space-y-2">
-                    <Label>Article Content</Label>
-                    <div className="border rounded-md p-4 bg-gray-50 text-center h-48 flex items-center justify-center">
-                      <p className="text-gray-500">
-                        Rich text editor will be implemented here.
-                      </p>
-                    </div>
-                    <p className="text-sm text-gray-500">
-                      Create and format your article content
-                    </p>
-                  </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Authors</CardTitle>
-              <CardDescription>
-                Select authors for this article
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {authors.length === 0 ? (
-                <div className="text-center py-6 text-gray-500">
-                  No authors available. Add authors first.
-                </div>
-              ) : (
-                <div className="space-y-4 max-h-72 overflow-y-auto">
-                  {authors.map((author) => (
-                    <div 
-                      key={author.id} 
-                      className={`flex items-center space-x-3 p-3 rounded-md cursor-pointer transition-colors ${
-                        selectedAuthors.includes(author.id) ? 'bg-gray-100' : ''
-                      }`}
-                      onClick={() => handleToggleAuthor(author.id)}
-                    >
-                      {author.image_url ? (
-                        <img 
-                          src={author.image_url} 
-                          alt={author.name} 
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-600">
-                            {author.name.charAt(0)}
-                          </span>
-                        </div>
-                      )}
-                      <div>
-                        <div className="font-medium">{author.name}</div>
-                        <div className="text-xs text-gray-500 truncate max-w-[200px]">
-                          {author.bio || 'No biography available'}
-                        </div>
-                      </div>
-                      <div className="ml-auto">
-                        <input 
-                          type="checkbox" 
-                          checked={selectedAuthors.includes(author.id)} 
-                          onChange={() => {}} // Handled by onClick on the div
-                          className="h-4 w-4"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-            <CardFooter className="justify-between border-t pt-4">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setSelectedAuthors([])}
-              >
-                Clear All
-              </Button>
-              <div className="text-sm text-gray-500">
-                {selectedAuthors.length} selected
-              </div>
-            </CardFooter>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Article Status</CardTitle>
-              <CardDescription>
-                Control when your article is published
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 text-gray-500 mr-2" />
-                  <div className="text-sm">
-                    {form.watch('published_at') && (
-                      <>
-                        Will be published on:{' '}
-                        <span className="font-medium">
-                          {format(new Date(form.watch('published_at')), 'MMMM d, yyyy')}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
+                        <SelectContent>
+                          <SelectItem value="Finance">Finance</SelectItem>
+                          <SelectItem value="Investing">Investing</SelectItem>
+                          <SelectItem value="Planning">Planning</SelectItem>
+                          <SelectItem value="Markets">Markets</SelectItem>
+                          <SelectItem value="Analysis">Analysis</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 text-gray-500 mr-2" />
-                  <div className="text-sm">
-                    {new Date(form.watch('published_at')) > new Date() ? (
-                      <span className="text-yellow-600">Scheduled</span>
-                    ) : (
-                      <span className="text-green-600">Published</span>
-                    )}
-                  </div>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="published_at"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Publish Date</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Calendar className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+                          <Input
+                            type="date"
+                            className="pl-8"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            </CardContent>
-            <CardFooter className="border-t pt-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full"
-                onClick={() => {
-                  // Set publish date to now
-                  form.setValue('published_at', format(new Date(), 'yyyy-MM-dd'));
-                }}
-              >
-                Publish Now
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-      </div>
+              
+              <FormField
+                control={form.control}
+                name="image_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Feature Image URL</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="https://example.com/image.jpg" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Content</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Write your article content here..." 
+                        rows={10}
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter>
+          <p className="text-sm text-muted-foreground">
+            Note: The article management functionality requires additional database setup.
+          </p>
+        </CardFooter>
+      </Card>
     </AdminLayout>
   );
 };

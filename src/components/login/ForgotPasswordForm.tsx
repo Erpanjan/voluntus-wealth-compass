@@ -88,16 +88,22 @@ const ForgotPasswordForm = () => {
     
     try {
       // Verify the OTP and update the password
-      const { error } = await supabase.auth.verifyOtp({
+      // Note: The verifyOtp method doesn't accept password directly in the options
+      // First verify the OTP
+      const { error: verifyError } = await supabase.auth.verifyOtp({
         phone: forgotData.phone,
         token: verificationCode,
         type: 'sms',
-        options: {
-          password: newPassword,
-        },
       });
       
-      if (error) throw error;
+      if (verifyError) throw verifyError;
+      
+      // Then update the password separately if verification succeeds
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (updateError) throw updateError;
       
       toast({
         title: "Password reset successful",
