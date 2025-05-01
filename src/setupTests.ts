@@ -28,6 +28,21 @@ declare global {
       toBeInTheDocument(): R;
     }
   }
+  
+  // Extend Testing Library's Screen interface
+  namespace Testing {
+    interface Queries {
+      queryByAcceptText: (accept: string) => HTMLInputElement | null;
+      queryAllByAcceptText: (accept: string) => HTMLInputElement[];
+      getByAcceptText: (accept: string) => HTMLInputElement;
+      getAllByAcceptText: (accept: string) => HTMLInputElement[];
+    }
+  }
+}
+
+// Extend the screen object with our custom methods
+declare module '@testing-library/react' {
+  interface Screen extends Testing.Queries {}
 }
 
 // Add custom queries

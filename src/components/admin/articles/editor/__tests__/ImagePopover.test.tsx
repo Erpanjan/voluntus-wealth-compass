@@ -67,7 +67,8 @@ describe('ImagePopover Component', () => {
   it('calls handleImageUpload when file input changes', () => {
     render(<ImagePopover {...defaultProps} />);
     
-    const fileInput = screen.getByAcceptText('image/*');
+    // Use standard query to find input by type and accept attribute
+    const fileInput = screen.getByLabelText('Upload Image', { selector: 'input[type="file"]' });
     const file = new File(['dummy content'], 'image.png', { type: 'image/png' });
     
     fireEvent.change(fileInput, { target: { files: [file] } });
