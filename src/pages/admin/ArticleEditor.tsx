@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -16,6 +15,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription
 } from "@/components/ui/dialog";
 
 // Sample data for edit mode
@@ -275,6 +275,7 @@ const ArticleEditor = () => {
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Article Preview</DialogTitle>
+            <DialogDescription>Preview how your article will appear when published</DialogDescription>
           </DialogHeader>
           {getPreviewContent()}
         </DialogContent>

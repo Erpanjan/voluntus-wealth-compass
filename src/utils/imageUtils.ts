@@ -50,12 +50,43 @@ export const insertImageIntoEditor = (
     // Focus the editor
     editorRef.current.focus();
     
-    // Insert the image at cursor position
-    document.execCommand('insertImage', false, imageUrl);
+    // Insert the image at cursor position with responsive styling
+    const imgHtml = `<img src="${imageUrl}" alt="Article image" style="max-width: 100%; height: auto; margin: 1rem 0; border-radius: 8px;" />`;
+    
+    // Use modern execCommand while it's still supported
+    if (document.queryCommandSupported('insertHTML')) {
+      document.execCommand('insertHTML', false, imgHtml);
+    } else {
+      // Fallback for browsers that might not support insertHTML
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const imgElement = document.createElement('div');
+        imgElement.innerHTML = imgHtml;
+        range.deleteContents();
+        range.insertNode(imgElement.firstChild as Node);
+      }
+    }
     
     // Update form value
     if (onChange && typeof onChange === 'function') {
       onChange(editorRef.current.innerHTML);
     }
+    
+    // Provide feedback to user
+    toast({
+      title: "Success",
+      description: "Image inserted successfully",
+    });
+  }
+};
+
+// Helper to validate URLs
+export const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
   }
 };
