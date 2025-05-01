@@ -14,7 +14,6 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
-import { Separator } from '@/components/ui/separator';
 
 interface ArticleContentSectionProps {
   form: UseFormReturn<any>;
@@ -26,15 +25,7 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
       <CardHeader>
         <CardTitle>Article Content</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex gap-2 flex-wrap text-sm text-muted-foreground">
-          <span className="flex items-center gap-1"><span className="font-semibold">Tip:</span> Use headings for structure</span>
-          <Separator orientation="vertical" className="h-5" />
-          <span className="flex items-center gap-1"><span className="font-semibold">Tip:</span> Insert images to make your article engaging</span>
-          <Separator orientation="vertical" className="h-5" />
-          <span className="flex items-center gap-1"><span className="font-semibold">Tip:</span> Highlight text to format it</span>
-        </div>
-        
+      <CardContent className="space-y-4">        
         <FormField
           control={form.control}
           name="content"
