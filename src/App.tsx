@@ -18,6 +18,8 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import Questionnaire from "./pages/Questionnaire";
+import ArticleManagement from "./pages/admin/ArticleManagement";
+import ArticleEditor from "./pages/admin/ArticleEditor";
 
 const queryClient = new QueryClient();
 
@@ -32,11 +34,12 @@ const App = () => (
     <BrowserRouter>
       <TooltipProvider>
         <div className="flex flex-col min-h-screen">
-          {/* Header only on non-dashboard/non-onboarding/non-questionnaire pages */}
+          {/* Header only on non-dashboard/non-onboarding/non-questionnaire/non-admin pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
             <Route path="/questionnaire" element={null} />
+            <Route path="/admin/*" element={null} />
             <Route path="*" element={<Header />} />
           </Routes>
           
@@ -70,16 +73,42 @@ const App = () => (
                   </PrivateRoute>
                 } 
               />
+              {/* Admin routes */}
+              <Route 
+                path="/admin/articles" 
+                element={
+                  <PrivateRoute>
+                    <ArticleManagement />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/admin/articles/new" 
+                element={
+                  <PrivateRoute>
+                    <ArticleEditor />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/admin/articles/edit/:id" 
+                element={
+                  <PrivateRoute>
+                    <ArticleEditor />
+                  </PrivateRoute>
+                } 
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           
-          {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire pages */}
+          {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire/non-admin pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
             <Route path="/login" element={null} />
             <Route path="/questionnaire" element={null} />
+            <Route path="/admin/*" element={null} />
             <Route path="*" element={<Footer />} />
           </Routes>
         </div>
