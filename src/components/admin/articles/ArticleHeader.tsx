@@ -1,12 +1,11 @@
 
 import React from 'react';
-import { NavigateFunction } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Eye, Save, Send } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ArticleHeaderProps {
   isEditMode: boolean;
-  navigate: NavigateFunction;
   handlePreview: () => void;
   handleSaveDraft: () => void;
   handlePublishNow: () => void;
@@ -15,12 +14,13 @@ interface ArticleHeaderProps {
 
 const ArticleHeader: React.FC<ArticleHeaderProps> = ({
   isEditMode,
-  navigate,
   handlePreview,
   handleSaveDraft,
   handlePublishNow,
   submitting
 }) => {
+  const navigate = useNavigate();
+  
   return (
     <div className="flex justify-between items-center mb-6">
       <div className="flex items-center">

@@ -40,3 +40,8 @@ export interface Tables {
   article_authors: ArticleAuthor;
   contact_submissions: ContactSubmission;
 }
+
+// This is a type assertion helper for Supabase
+export const fromTable = <T extends keyof Tables>(table: T) => {
+  return (supabase.from(table) as any) as any;
+};
