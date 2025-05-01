@@ -10,22 +10,79 @@ interface ListControlsProps {
 const ListControls: React.FC<ListControlsProps> = ({ applyFormat }) => {
   const handleBulletList = (e: React.MouseEvent) => {
     e.preventDefault();
-    applyFormat('insertUnorderedList');
+    // Use formatBlock to create proper list items
+    document.execCommand('insertUnorderedList');
+    
+    // After creating the list, make sure the editor maintains focus
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        selection.getRangeAt(0).startContainer.parentElement?.focus();
+      }
+    }, 0);
+    
+    // Notify the parent component about the change
+    if (document.activeElement instanceof HTMLElement) {
+      const event = new Event('input', { bubbles: true });
+      document.activeElement.dispatchEvent(event);
+    }
   };
 
   const handleNumberedList = (e: React.MouseEvent) => {
     e.preventDefault();
-    applyFormat('insertOrderedList');
+    document.execCommand('insertOrderedList');
+    
+    // After creating the list, make sure the editor maintains focus
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        selection.getRangeAt(0).startContainer.parentElement?.focus();
+      }
+    }, 0);
+    
+    // Notify the parent component about the change
+    if (document.activeElement instanceof HTMLElement) {
+      const event = new Event('input', { bubbles: true });
+      document.activeElement.dispatchEvent(event);
+    }
   };
 
   const handleIndent = (e: React.MouseEvent) => {
     e.preventDefault();
-    applyFormat('indent');
+    document.execCommand('indent');
+    
+    // After indenting, make sure the editor maintains focus
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        selection.getRangeAt(0).startContainer.parentElement?.focus();
+      }
+    }, 0);
+    
+    // Notify the parent component about the change
+    if (document.activeElement instanceof HTMLElement) {
+      const event = new Event('input', { bubbles: true });
+      document.activeElement.dispatchEvent(event);
+    }
   };
 
   const handleOutdent = (e: React.MouseEvent) => {
     e.preventDefault();
-    applyFormat('outdent');
+    document.execCommand('outdent');
+    
+    // After outdenting, make sure the editor maintains focus
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        selection.getRangeAt(0).startContainer.parentElement?.focus();
+      }
+    }, 0);
+    
+    // Notify the parent component about the change
+    if (document.activeElement instanceof HTMLElement) {
+      const event = new Event('input', { bubbles: true });
+      document.activeElement.dispatchEvent(event);
+    }
   };
 
   return (
