@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, KeyboardEvent } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,6 +20,7 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
   const [authors, setAuthors] = useState<Author[]>([]);
   const [newAuthorName, setNewAuthorName] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [localAuthors, setLocalAuthors] = useState<{[key: string]: string}>({});
   const { toast } = useToast();
 
   // Fetch available authors when component mounts
@@ -48,13 +48,13 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
   const handleAddAuthor = () => {
     if (!newAuthorName.trim()) return;
     
-    // Check if author already exists to avoid duplicates
+    // Check if author already exists in the database
     const existingAuthor = authors.find(a => 
       a.name.toLowerCase() === newAuthorName.trim().toLowerCase()
     );
     
     if (existingAuthor) {
-      // If author exists, check if already selected
+      // If author exists in database, check if already selected
       if (selectedAuthors.includes(existingAuthor.id)) {
         toast({
           title: "Author already added",
@@ -67,11 +67,18 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
       // Add existing author
       setSelectedAuthors(prev => [...prev, existingAuthor.id]);
     } else {
-      // Here we would typically create a new author, but for now we'll just show a message
+      // Create a temporary ID for this new author
+      const tempId = `new_${Date.now()}`;
+      
+      // Store the author name locally with the temporary ID
+      setLocalAuthors(prev => ({...prev, [tempId]: newAuthorName.trim()}));
+      
+      // Add the temporary ID to selected authors
+      setSelectedAuthors(prev => [...prev, tempId]);
+      
       toast({
-        title: "Author not found",
-        description: "This author doesn't exist in the system. Please select from existing authors.",
-        variant: "destructive",
+        title: "New author added",
+        description: "This new author will be created when you save the article.",
       });
     }
     
@@ -87,10 +94,25 @@ const ArticleAuthorsSection: React.FC<ArticleAuthorsSectionProps> = ({
 
   const handleRemoveAuthor = (authorId: string) => {
     setSelectedAuthors(prev => prev.filter(author => author !== authorId));
+    
+    // If it was a local author, remove it from localAuthors
+    if (authorId.startsWith('new_')) {
+      setLocalAuthors(prev => {
+        const updated = {...prev};
+        delete updated[authorId];
+        return updated;
+      });
+    }
   };
 
-  // Get author name by ID
+  // Get author name by ID (either from database or local)
   const getAuthorName = (authorId: string): string => {
+    // Check if it's a local author
+    if (authorId.startsWith('new_') && localAuthors[authorId]) {
+      return localAuthors[authorId] + ' (New)';
+    }
+    
+    // Otherwise look in fetched authors
     const author = authors.find(a => a.id === authorId);
     return author ? author.name : 'Unknown Author';
   };

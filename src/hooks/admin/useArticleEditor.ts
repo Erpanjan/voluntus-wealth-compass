@@ -9,11 +9,17 @@ import {
   useArticleActions
 } from './articleEditor';
 import { Attachment } from './articleEditor/useArticleAttachments';
-import { Author } from '@/services/articleService';
+import { Author } from '@/types/article.types';
 
 export const useArticleEditor = () => {
   const { form, isEditMode, loadArticleData } = useArticleBasicInfo();
-  const { selectedAuthors, setSelectedAuthors, availableAuthors, loadAuthorsData } = useArticleAuthors(isEditMode);
+  const { 
+    selectedAuthors, 
+    setSelectedAuthors, 
+    availableAuthors, 
+    loadAuthorsData, 
+    processAuthorsForSave 
+  } = useArticleAuthors(isEditMode);
   const { 
     imageFile, setImageFile, 
     imagePreview, setImagePreview, 
@@ -49,13 +55,17 @@ export const useArticleEditor = () => {
   // Wrap saveDraft and publishArticle to get data from their respective hooks
   const handleSaveDraft = async () => {
     const formData = form.getValues();
-    const authorObjects = getAuthorObjects(selectedAuthors);
+    // Process authors (create new ones if needed) before saving
+    const finalAuthorIds = await processAuthorsForSave();
+    const authorObjects = getAuthorObjects(finalAuthorIds);
     await saveDraft(formData, authorObjects, imageFile, attachments as Attachment[]);
   };
 
   const handlePublishArticle = async () => {
     const formData = form.getValues();
-    const authorObjects = getAuthorObjects(selectedAuthors);
+    // Process authors (create new ones if needed) before publishing
+    const finalAuthorIds = await processAuthorsForSave();
+    const authorObjects = getAuthorObjects(finalAuthorIds);
     await publishArticle(formData, authorObjects, imageFile, attachments as Attachment[]);
   };
 
