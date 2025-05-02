@@ -7,11 +7,11 @@ export interface UserAccount {
   email: string;
   status: string;
   role: string;
-  lastLogin?: string;
-  verified?: boolean;
+  lastLogin: string;
+  verified: boolean;
   firstName?: string;
   lastName?: string;
-  phone?: string;
+  phone?: string; // Made optional
   createdAt?: string;
   userNumber?: string;
 }
@@ -21,57 +21,157 @@ export const useUserService = () => {
   
   const fetchUsers = async (): Promise<UserAccount[]> => {
     try {
-      // Fetch only non-admin users from the profiles table
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, email, created_at, first_name, last_name, is_active')
-        .eq('is_admin', false);
+      console.log('Fetching users from profiles table...');
       
-      if (error) {
-        console.error('Error fetching users:', error);
-        toast({
-          title: "Error",
-          description: "Failed to fetch user accounts",
-          variant: "destructive",
-        });
-        return [];
+      // Get all users from the profiles table - this is accessible with regular permissions
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('*');
+      
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        throw profilesError;
       }
       
-      // Transform the data to match our UserAccount interface
-      return data.map(user => ({
-        id: user.id,
-        email: user.email || 'No email',
-        status: user.is_active ? 'Active' : 'Inactive',
-        role: 'Client', // All non-admin users are considered clients
-        firstName: user.first_name || '',
-        lastName: user.last_name || '',
-        createdAt: user.created_at ? new Date(user.created_at).toLocaleString() : 'Unknown',
-        userNumber: user.id.substring(0, 8).toUpperCase(), // First 8 characters of UUID as user number
-      }));
-    } catch (err) {
-      console.error('Unexpected error fetching users:', err);
+      console.log(`Fetched ${profiles?.length || 0} profiles from database:`, profiles);
+      
+      const usersWithAuth: UserAccount[] = [];
+      
+      // Map profiles to user accounts
+      if (profiles) {
+        console.log(`Processing ${profiles.length} profiles...`);
+      } else {
+        console.log('No profiles found in the database');
+      }
+      
+      // Map profiles to user accounts
+      for (const profile of profiles || []) {
+        // Clearly log each profile processing step
+        console.log(`Processing profile:`, profile);
+        
+        // Skip admin accounts completely - they should not appear in the user list at all
+        if (profile.is_admin) {
+          console.log(`Skipping admin profile ${profile.id}`);
+          continue;
+        }
+        
+        // We'll use the email from the profile if available
+        const userEmail = profile.email || 'No email';
+        
+        // Generate a user number based on the first 6 chars of the UUID
+        const userNumber = `USR-${profile.id.substring(0, 6).toUpperCase()}`;
+          
+        const userAccount = {
+          id: profile.id,
+          email: userEmail,
+          status: profile.is_active === false ? 'Inactive' : 'Active',
+          role: profile.is_admin ? 'Admin' : 'Client',
+          lastLogin: profile.updated_at || 'N/A', // Using updated_at as proxy for last login
+          verified: true, // Assuming verified by default
+          firstName: profile.first_name || '',
+          lastName: profile.last_name || '',
+          createdAt: profile.created_at || 'N/A',
+          userNumber, // Added user number
+          // Don't include phone property if it doesn't exist in profile
+          ...(profile.phone && { phone: profile.phone })
+        };
+        
+        console.log(`Added user account:`, userAccount);
+        usersWithAuth.push(userAccount);
+      }
+      
+      console.log(`Processed ${usersWithAuth.length} users to display:`, usersWithAuth);
+      
+      return usersWithAuth;
+    } catch (error) {
+      console.error('Error fetching users:', error);
       toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to fetch user accounts. Using profiles table data only.',
+        variant: 'destructive',
       });
       return [];
     }
   };
   
   const updateUserStatus = async (userId: string, isActive: boolean): Promise<boolean> => {
-    // Stub implementation
-    return true;
+    try {
+      // Update user status in profiles table
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          is_active: isActive,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
+      
+      if (error) throw error;
+      
+      // We know we can't update auth status, so we'll just skip that part
+      console.log('Updated user status in profiles table only (limited admin permissions)');
+      
+      return true;
+    } catch (error: any) {
+      console.error(`Error updating user status:`, error);
+      toast({
+        title: 'Error',
+        description: `Failed to update user account status. ${error.message}`,
+        variant: 'destructive',
+      });
+      return false;
+    }
   };
   
   const deleteUser = async (userId: string): Promise<boolean> => {
-    // Stub implementation
-    return true;
+    try {
+      console.log(`Attempting to delete user ${userId} (soft delete in profiles table)`);
+      
+      // We'll use a soft delete approach for the profile since we can't delete auth users
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          is_active: false,
+          is_deleted: true,
+          updated_at: new Date().toISOString(),
+          email: `deleted_${userId}@deleted.com` // Anonymize the email
+        })
+        .eq('id', userId);
+      
+      if (error) throw error;
+      
+      console.log(`Successfully soft-deleted user ${userId} in profiles table`);
+      return true;
+    } catch (error: any) {
+      console.error(`Error deleting user:`, error);
+      toast({
+        title: 'Error',
+        description: `Failed to delete user account. ${error.message}`,
+        variant: 'destructive',
+      });
+      return false;
+    }
   };
   
   const getUserDetails = async (userId: string): Promise<any> => {
-    // Stub implementation
-    return null;
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+        
+      if (error) throw error;
+      
+      return data;
+    } catch (error: any) {
+      console.error(`Error fetching user details:`, error);
+      toast({
+        title: 'Error',
+        description: `Failed to fetch user details. ${error.message}`,
+        variant: 'destructive',
+      });
+      return null;
+    }
   };
   
   return {

@@ -19,11 +19,12 @@ export const UserFilter: React.FC<UserFilterProps> = ({
 }) => {
   return (
     <div className="flex justify-between items-center mb-4">
-      <h1 className="text-2xl font-bold">Client Account Management</h1>
+      <h1 className="text-2xl font-bold">User Account Management</h1>
       <div className="flex gap-2">
         <SearchBar 
           searchQuery={searchQuery} 
           onSearchChange={onSearchChange}
+          onRefresh={onRefresh}
         />
         <Button 
           variant="outline" 

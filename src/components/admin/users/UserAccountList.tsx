@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserTable } from '@/components/admin/users/UserTable';
+import { SearchBar } from '@/components/admin/users/SearchBar';
 import { UserAccount } from '@/services/userService';
 
 interface UserAccountListProps {
@@ -19,6 +20,9 @@ interface UserAccountListProps {
 export const UserAccountList: React.FC<UserAccountListProps> = ({
   users,
   isLoading,
+  searchQuery,
+  onSearchChange,
+  onRefresh,
   onActivate,
   onDeactivate,
   onDelete,
@@ -27,8 +31,16 @@ export const UserAccountList: React.FC<UserAccountListProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Client Accounts</CardTitle>
-        <CardDescription>View and manage client user accounts and their status</CardDescription>
+        <CardTitle>User Accounts</CardTitle>
+        <CardDescription>Manage client user accounts and their status</CardDescription>
+        
+        <div className="flex items-center justify-end mt-4">
+          <SearchBar 
+            searchQuery={searchQuery} 
+            onSearchChange={onSearchChange} 
+            onRefresh={onRefresh}
+          />
+        </div>
       </CardHeader>
       
       <CardContent>
