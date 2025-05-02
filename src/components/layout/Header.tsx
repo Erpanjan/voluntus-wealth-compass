@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -69,13 +70,13 @@ const Header: React.FC = () => {
       return;
     }
     
-    // Use a more subtle fade transition
+    // Use our enhanced minimalistic fade transition
     document.body.classList.add('login-fade-transition');
     
-    // Navigate after animation completes
+    // Navigate after animation completes (faster transition)
     setTimeout(() => {
       navigate('/login');
-    }, 300); // Shorter animation duration for a more responsive feel
+    }, 250); // Reduced to match our new animation duration
   };
 
   return (

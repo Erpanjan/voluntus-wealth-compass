@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -27,10 +28,10 @@ const Login = () => {
       navigate('/login', { replace: true });
     }
     
-    // Small delay to ensure the animation is visible
+    // Minimal delay to ensure the animation is visible
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 50); // reduced from 100ms to 50ms for faster initial animation
+    }, 30); // reduced further for a more responsive feel
     
     return () => clearTimeout(timer);
   }, [navigate, location]);
@@ -60,8 +61,8 @@ const Login = () => {
   }
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-all duration-700 ease-in-out ${
-      pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
+    <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-opacity duration-300 ease-in-out ${
+      pageLoaded ? 'opacity-100' : 'opacity-0'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
         {/* Increased height container for better form display */}
