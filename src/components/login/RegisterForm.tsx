@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -339,7 +338,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ isAdminMode = false }) => {
                 className="w-full bg-black/80 hover:bg-black text-white font-normal py-6 rounded-none"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Sending Code...' : 'Send Verification Code'}
+                {isSubmitting ? 'Sending Code...' : 'Send confirmation code'}
               </Button>
             </form>
           ) : (
