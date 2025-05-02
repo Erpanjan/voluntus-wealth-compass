@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { User, FileText, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -29,9 +28,10 @@ const Welcome = () => {
     <div className="text-center">
       <h1 className="text-3xl md:text-4xl font-semibold mb-6">Welcome to Valence Long-Term Capital</h1>
       
-      <p className="text-lg mb-12 max-w-3xl mx-auto text-gray-600">
-        We're excited to have you on board. Before we can begin delivering our personalized 
-        financial services, we kindly ask you to complete a few important steps:
+      <p className="text-lg mb-12 max-w-3xl mx-auto text-gray-600 font-inter font-light">
+        We're excited to have you on board. Before we can begin delivering our services, 
+        we kindly ask you to complete a few important steps. Once you've completed these steps, 
+        our team will review your application and follow up shortly.
       </p>
       
       <motion.div 
