@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Section from '@/components/ui/Section';
 import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
+import { User, FileText, Calendar } from 'lucide-react';
 
 const Welcome = () => {
   const navigate = useNavigate();
@@ -23,35 +24,48 @@ const Welcome = () => {
           </h1>
           
           <p className="text-lg text-gray-600 mb-12 max-w-3xl mx-auto">
-            We're excited to have you on board. Before we begin delivering our personalized 
-            financial services, we need to collect some information to better understand your needs.
+            We're excited to have you on board. Before we can begin offering our services, 
+            we kindly ask you to complete a few important steps:
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
             <div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover">
               <div className="h-16 w-16 rounded-full bg-[#F1F1F1] flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-semibold">1</span>
+                <User className="h-7 w-7" />
               </div>
-              <h3 className="text-xl font-medium mb-4">Create Your Profile</h3>
-              <p className="text-gray-600">Tell us who you are and how we can best communicate with you.</p>
+              <h3 className="text-xl font-medium mb-4">1. Create Your Profile</h3>
+              <p className="text-gray-600">
+                Start by telling us a bit about yourself. This helps us personalize your digital experience.
+              </p>
             </div>
             
             <div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover">
               <div className="h-16 w-16 rounded-full bg-[#F1F1F1] flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-semibold">2</span>
+                <FileText className="h-7 w-7" />
               </div>
-              <h3 className="text-xl font-medium mb-4">Complete the Questionnaire</h3>
-              <p className="text-gray-600">Help us understand your financial goals and risk tolerance.</p>
+              <h3 className="text-xl font-medium mb-4">2. Financial Questionnaire</h3>
+              <p className="text-gray-600">
+                This questionnaire is designed to help us understand your financial circumstances. 
+                While completing it is optional at this stage, it will be required before we can 
+                officially begin our service. You're welcome to skip it for now and complete it during consultation.
+              </p>
             </div>
             
             <div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover">
               <div className="h-16 w-16 rounded-full bg-[#F1F1F1] flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-semibold">3</span>
+                <Calendar className="h-7 w-7" />
               </div>
-              <h3 className="text-xl font-medium mb-4">Schedule a Consultation</h3>
-              <p className="text-gray-600">Book time with our advisor to discuss your personalized financial plan.</p>
+              <h3 className="text-xl font-medium mb-4">3. Schedule a Consultation</h3>
+              <p className="text-gray-600">
+                Meet with one of our advisors for a discussion of your financial situation. 
+                We'll also use this session to verify key details and better understand your needs.
+              </p>
             </div>
           </div>
+          
+          <p className="text-gray-600 mb-10 max-w-3xl mx-auto">
+            Once you've completed the steps above, our team will review your application and follow up shortly.
+          </p>
           
           <Button onClick={handleGetStarted} size="lg">
             Get Started
