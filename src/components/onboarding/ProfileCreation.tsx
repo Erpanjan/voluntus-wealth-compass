@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -160,14 +159,13 @@ const ProfileCreation = () => {
           </div>
 
           <div className="space-y-1.5">
-            <textarea
+            <Input
               id="address"
               name="address"
               value={profile.address}
               onChange={handleChange}
               placeholder="Address"
-              rows={3}
-              className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 bg-transparent focus:ring-0 focus:outline-none resize-none placeholder:text-gray-500 text-base md:text-sm"
+              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
             />
           </div>
           
