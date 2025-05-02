@@ -4,7 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AdminToggle from '@/components/login/AdminToggle';
 import LoginTabs from '@/components/login/LoginTabs';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth';
 
 const Login = () => {
   const [pageLoaded, setPageLoaded] = useState(false);

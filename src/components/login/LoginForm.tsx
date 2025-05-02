@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 interface LoginFormProps {
   onDemoLogin: () => void;
@@ -31,26 +31,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       ...prev,
       [name]: value,
     }));
-  };
-
-  // Helper function to get user-specific localStorage key
-  const getUserStorageKey = (userId: string, key: string) => {
-    return `user_${userId}_${key}`;
-  };
-
-  const clearUserStateFlags = (userId?: string) => {
-    // Clear global flags
-    localStorage.removeItem('onboardingComplete');
-    localStorage.removeItem('applicationSubmitted');
-    localStorage.removeItem('isAdminMode');
-    
-    // If we have a userId, clear user-specific flags too
-    if (userId) {
-      localStorage.removeItem(getUserStorageKey(userId, 'onboardingComplete'));
-      localStorage.removeItem(getUserStorageKey(userId, 'applicationSubmitted'));
-    }
-    
-    console.log('Cleared all user state flags from localStorage during login');
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {

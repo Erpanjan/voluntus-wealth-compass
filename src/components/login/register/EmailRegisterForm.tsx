@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 interface EmailRegisterFormProps {
   isSubmitting: boolean;
@@ -33,26 +33,6 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
       ...prev,
       [name]: value,
     }));
-  };
-
-  // Helper function to get user-specific localStorage key
-  const getUserStorageKey = (userId: string, key: string) => {
-    return `user_${userId}_${key}`;
-  };
-
-  const clearUserStateFlags = (userId?: string) => {
-    // Clear global flags
-    localStorage.removeItem('onboardingComplete');
-    localStorage.removeItem('applicationSubmitted');
-    localStorage.removeItem('isAdminMode');
-    
-    // If we have a userId, clear user-specific flags too
-    if (userId) {
-      localStorage.removeItem(getUserStorageKey(userId, 'onboardingComplete'));
-      localStorage.removeItem(getUserStorageKey(userId, 'applicationSubmitted'));
-    }
-    
-    console.log('Cleared all user state flags from localStorage');
   };
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
