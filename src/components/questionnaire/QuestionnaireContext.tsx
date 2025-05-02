@@ -169,6 +169,7 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
     return () => clearTimeout(timeoutId);
   }, [answers, isLoading]);
 
+  // Function to save to localStorage
   const saveToLocalStorage = (data: Record<string, any>) => {
     localStorage.setItem('questionnaireAnswers', JSON.stringify(data));
   };
@@ -263,23 +264,6 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
     } finally {
       setIsSaving(false);
     }
-  };
-
-  // Function to save to localStorage
-  const saveToLocalStorage = (data: Record<string, any>) => {
-    localStorage.setItem('questionnaireAnswers', JSON.stringify(data));
-  };
-
-  // Handle answer updates
-  const updateAnswer = (questionId: string, value: any) => {
-    console.log(`Updating ${questionId} with:`, value);
-    setAnswers(prev => {
-      const updatedAnswers = {
-        ...prev,
-        [questionId]: value
-      };
-      return updatedAnswers;
-    });
   };
 
   // Function to get selected goals (used for goal-specific questions)
