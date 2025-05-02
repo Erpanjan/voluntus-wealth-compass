@@ -12,7 +12,7 @@ const UserAccountManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [noUsersFound, setNoUsersFound] = useState(false);
-  const { fetchUsers } = useUserService();
+  const { fetchUsers, updateUserStatus } = useUserService();
   const { toast } = useToast();
   
   // Fetch users on component mount
@@ -47,6 +47,17 @@ const UserAccountManagement = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Handle user status update
+  const handleUpdateUserStatus = async (userId: string, isActive: boolean) => {
+    try {
+      await updateUserStatus(userId, isActive);
+      // Refresh the user list after updating a user's status
+      await loadUsers();
+    } catch (error) {
+      console.error('Error updating user status:', error);
     }
   };
 
@@ -86,6 +97,7 @@ const UserAccountManagement = () => {
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           onRefresh={loadUsers}
+          onUpdateUserStatus={handleUpdateUserStatus}
         />
       </div>
     </AdminLayout>

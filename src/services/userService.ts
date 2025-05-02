@@ -48,7 +48,34 @@ export const useUserService = () => {
     }
   };
   
+  const updateUserStatus = async (userId: string, isActive: boolean): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_active: isActive, updated_at: new Date().toISOString() })
+        .eq('id', userId);
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: 'Success',
+        description: `User account ${isActive ? 'activated' : 'deactivated'} successfully.`,
+      });
+    } catch (error: any) {
+      console.error('Error updating user status:', error);
+      toast({
+        title: 'Error',
+        description: `Failed to ${isActive ? 'activate' : 'deactivate'} user account.`,
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+  
   return {
-    fetchUsers
+    fetchUsers,
+    updateUserStatus
   };
 };
