@@ -100,14 +100,6 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
               }
             } else {
               console.log('No questionnaire data found in database for this user');
-              // Set default empty state instead of indefinitely showing loading
-              if (isMounted) {
-                updateQuestionnaireData({
-                  completed: false,
-                  answers: combinedAnswers
-                });
-                setDataChecked(true);
-              }
             }
           } else {
             console.log('User is not authenticated, using only localStorage data');
