@@ -51,6 +51,15 @@ const Login = () => {
     );
   }
 
+  // Clear any URL parameters that might be affecting the state
+  useEffect(() => {
+    // Check if there are any query parameters that could be affecting rendering
+    if (window.location.search) {
+      // Replace current URL with the same path but without query parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
   return (
     <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-all duration-700 ease-in-out ${
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
