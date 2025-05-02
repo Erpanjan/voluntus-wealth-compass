@@ -2,7 +2,7 @@
 @layer utilities {
   /* Improved consistent fade in animation */
   .animate-fade-in {
-    animation: fadeIn 0.8s ease-out forwards;
+    animation: fadeIn 0.5s ease-out forwards; /* Reduced from 0.8s to 0.5s */
   }
 
   @keyframes fadeIn {
@@ -17,12 +17,12 @@
   }
   
   .animate-fade-in-up {
-    animation: fadeIn 0.8s ease-out forwards;
+    animation: fadeIn 0.5s ease-out forwards; /* Reduced from 0.8s to 0.5s */
   }
   
-  /* Login mode transition effect - improved and more stable */
+  /* Login mode transition effect - faster and smoother */
   .login-mode-transition {
-    animation: smoothModeTransition 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: smoothModeTransition 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; /* Reduced from 0.5s to 0.3s */
     transform-origin: center;
     backface-visibility: hidden;
   }
@@ -52,9 +52,9 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-black to-[#9F9EA1];
   }
 
-  /* Login transition effect - enhanced with smoother cubic-bezier */
+  /* Login transition effect - faster cubic-bezier */
   .login-transition {
-    animation: smoothPortalTransition 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: smoothPortalTransition 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; /* Reduced from 0.6s to 0.3s */
     pointer-events: none;
     will-change: opacity, transform;
     backface-visibility: hidden;
@@ -71,17 +71,17 @@
     }
   }
 
-  /* Fixed position transition - improved */
+  /* Fixed position transition - faster */
   .fixed-position-transition {
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Reduced from 0.4s to 0.2s */
     position: relative;
     will-change: opacity, transform;
     backface-visibility: hidden;
   }
 
-  /* Content fade transition - smoother with hardware acceleration */
+  /* Content fade transition - faster */
   .content-fade-transition {
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Reduced from 0.4s to 0.2s */
     will-change: opacity, transform;
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -96,9 +96,9 @@
     will-change: opacity, transform;
   }
   
-  /* New smooth portal switch animation */
+  /* New smooth portal switch animation - faster */
   .portal-switch {
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Reduced from 0.4s to 0.2s */
     will-change: opacity, transform;
     transform: translateZ(0);
     backface-visibility: hidden;

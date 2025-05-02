@@ -24,7 +24,7 @@ const Login = () => {
     // Small delay to ensure the animation is visible
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 100);
+    }, 50); // Reduced from 100ms to 50ms for faster initial appearance
     
     return () => {
       clearTimeout(timer);
@@ -34,7 +34,7 @@ const Login = () => {
     };
   }, []);
 
-  // Improved toggle handler with better animation control
+  // Improved toggle handler with faster animation timing
   const handleAdminToggle = useCallback((checked: boolean) => {
     // Prevent rapid toggling
     if (isToggleDisabled || isAnimating) return;
@@ -48,20 +48,20 @@ const Login = () => {
       clearTimeout(animationTimeoutRef.current);
     }
     
-    // Start animation sequence with smoother timing
+    // Start animation sequence with faster timing
     animationTimeoutRef.current = window.setTimeout(() => {
       setIsAdminMode(checked);
       
-      // Complete animation with a single timeout for stability
+      // Complete animation with a single timeout for stability but faster
       animationTimeoutRef.current = window.setTimeout(() => {
         setIsAnimating(false);
         
         // Add a small delay before allowing another toggle for stability
         animationTimeoutRef.current = window.setTimeout(() => {
           setIsToggleDisabled(false);
-        }, 350); // Slightly longer cooldown for stability
-      }, 450); // Sync with CSS transition duration
-    }, 50);
+        }, 200); // Reduced from 350ms to 200ms
+      }, 250); // Reduced from 450ms to 250ms to sync with faster CSS transition
+    }, 30); // Reduced from 50ms to 30ms for more immediate response
   }, [isToggleDisabled, isAnimating]);
 
   // Show loading state
@@ -77,7 +77,7 @@ const Login = () => {
 
   return (
     <div 
-      className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-all duration-700 ease-in-out ${
+      className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-all duration-500 ease-in-out ${
         pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
       }`}
     >
