@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Phone, Users, Smartphone, FileText, LogOut } from 'lucide-react';
@@ -19,27 +18,28 @@ const AdminSidebar = () => {
       const { data: { session } } = await supabase.auth.getSession();
       const userId = session?.user?.id;
       
-      await supabase.auth.signOut();
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
       
-      // Clear all user-specific flags
+      if (error) {
+        throw error;
+      }
+      
+      // Clear all user-specific flags and Supabase session
       clearUserStateFlags(userId);
-      
-      // Clear admin-specific flags
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('isAdminMode');
       
       toast({
         title: 'Logged out',
         description: 'You have been logged out successfully.'
       });
       
-      navigate('/login');
+      // Hard redirect to login page (forces page reload)
+      window.location.href = '/login';
     } catch (error) {
       console.error('Error during logout:', error);
       
       // Force clear local storage even if API call fails
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('isAdminMode');
+      clearUserStateFlags();
       
       toast({
         title: 'Logout issue',
@@ -47,7 +47,8 @@ const AdminSidebar = () => {
         variant: 'destructive'
       });
       
-      navigate('/login');
+      // Hard redirect to login page (forces page reload)
+      window.location.href = '/login';
     }
   };
 

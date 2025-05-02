@@ -18,30 +18,26 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
       const { data: { session } } = await supabase.auth.getSession();
       const userId = session?.user?.id;
       
-      // Sign out from Supabase first
-      await supabase.auth.signOut();
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
       
-      // Clear all user-specific flags
+      if (error) {
+        throw error;
+      }
+      
+      // Clear all user-specific flags and Supabase session
       clearUserStateFlags(userId);
       
-      // Remove all auth flags
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('isAdminMode');
-      localStorage.removeItem('onboardingComplete');
-      
-      // Navigate directly to the login page
-      navigate('/login', { replace: true });
+      // Hard redirect to login page (forces page reload)
+      window.location.href = '/login';
     } catch (error) {
       console.error('Error during logout:', error);
       
       // Clear all flags even on error
       clearUserStateFlags();
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('isAdminMode');
-      localStorage.removeItem('onboardingComplete');
       
-      // Fallback navigation in case of error
-      navigate('/login', { replace: true });
+      // Hard redirect to login page (forces page reload)
+      window.location.href = '/login';
     }
   };
   

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -82,29 +81,28 @@ const Dashboard = () => {
       const { data: { session } } = await supabase.auth.getSession();
       const userId = session?.user?.id;
       
-      await supabase.auth.signOut();
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
       
-      // Clear all user-specific flags
+      if (error) {
+        throw error;
+      }
+      
+      // Clear all user-specific flags and Supabase session
       clearUserStateFlags(userId);
-      
-      // Remove client-specific flags
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('isAdminMode');
-      localStorage.removeItem('onboardingComplete');
       
       toast({
         title: "Logged out successfully",
         description: "You have been logged out of your account."
       });
       
-      navigate('/login');
+      // Hard redirect to login page (forces page reload)
+      window.location.href = '/login';
     } catch (error: any) {
       console.error('Logout error:', error);
       
       // Force clear local storage even if API call fails
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('isAdminMode');
-      localStorage.removeItem('onboardingComplete');
+      clearUserStateFlags();
       
       toast({
         title: "Error logging out",
@@ -112,7 +110,8 @@ const Dashboard = () => {
         variant: "destructive"
       });
       
-      navigate('/login');
+      // Hard redirect to login page (forces page reload)
+      window.location.href = '/login';
     }
   };
 
