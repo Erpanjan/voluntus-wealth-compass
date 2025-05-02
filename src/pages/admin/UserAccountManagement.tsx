@@ -10,6 +10,7 @@ import { useUserService, UserAccount } from '@/services/userService';
 import { useToast } from '@/hooks/use-toast';
 import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { supabase } from '@/integrations/supabase/client'; // Added import for supabase
 
 const UserAccountManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');

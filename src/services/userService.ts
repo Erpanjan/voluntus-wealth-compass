@@ -13,7 +13,7 @@ export interface UserAccount {
   lastName?: string;
   phone?: string;
   createdAt?: string;
-  userNumber?: string; // Added user number field
+  userNumber?: string;
 }
 
 export const useUserService = () => {
@@ -54,7 +54,7 @@ export const useUserService = () => {
           lastName: profile.last_name || '',
           createdAt: profile.created_at || 'N/A',
           userNumber, // Added user number
-          phone: profile.phone || 'N/A'
+          phone: 'N/A' // Use a default value since the phone field may not exist in the profile
         });
       }
       
