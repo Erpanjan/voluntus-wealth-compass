@@ -78,44 +78,46 @@ export const useContactInquiries = () => {
     try {
       // First delete all associated notes
       console.log("Hook: Deleting associated notes...");
-      const { error: notesError, data: deletedNotes } = await supabase
+      const { error: notesError } = await supabase
         .from('contact_notes')
         .delete()
-        .eq('contact_id', id)
-        .select();
+        .eq('contact_id', id);
       
       if (notesError) {
         console.error("Hook: Error deleting notes:", notesError);
         throw notesError;
       }
       
-      console.log("Hook: Successfully deleted associated notes", deletedNotes);
+      console.log("Hook: Successfully deleted associated notes");
       
       // Then delete the inquiry itself
       console.log("Hook: Deleting inquiry...");
-      const { error, data: deletedInquiry } = await supabase
+      const { error } = await supabase
         .from('contact_submissions')
         .delete()
-        .eq('id', id)
-        .select();
+        .eq('id', id);
 
       if (error) {
         console.error("Hook: Error deleting inquiry:", error);
         throw error;
       }
       
-      console.log("Hook: Successfully deleted inquiry with ID:", id, deletedInquiry);
+      console.log("Hook: Successfully deleted inquiry with ID:", id);
 
       // Update local state immediately
       setContactInquiries(prevInquiries => 
         prevInquiries.filter(inquiry => inquiry.id !== id)
       );
 
-    } catch (error: any) {
+      toast({
+        title: "Inquiry deleted",
+        description: "The contact inquiry has been deleted successfully.",
+      });
+    } catch (error) {
       console.error('Hook: Error in deletion process:', error);
       toast({
         title: "Error",
-        description: `Failed to delete inquiry: ${error.message || "Unknown error"}`,
+        description: "Failed to delete inquiry.",
         variant: "destructive",
       });
       throw error; // Re-throw to handle in the component
