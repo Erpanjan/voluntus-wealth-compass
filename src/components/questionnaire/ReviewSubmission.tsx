@@ -3,7 +3,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Check } from 'lucide-react';
+import { Check, Save } from 'lucide-react';
+import { useQuestionnaire } from './QuestionnaireContext';
 
 interface ReviewSubmissionProps {
   answers: Record<string, any>;
@@ -11,47 +12,8 @@ interface ReviewSubmissionProps {
 }
 
 const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ answers, onSubmit }) => {
-  // Store answers in localStorage for onboarding integration
-  React.useEffect(() => {
-    const savedData = localStorage.getItem('onboardingDraft');
-    if (savedData) {
-      const parsedData = JSON.parse(savedData);
-      const updatedData = {
-        ...parsedData,
-        questionnaire: {
-          completed: true,
-          answers
-        }
-      };
-      localStorage.setItem('onboardingDraft', JSON.stringify(updatedData));
-    } else {
-      // Create new data if none exists
-      const newData = {
-        profile: {
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          preferredCommunication: '',
-          mediaAccountNumber: '',
-          address: '',
-          imageUrl: null
-        },
-        questionnaire: {
-          completed: true,
-          answers
-        },
-        consultation: {
-          completed: false,
-          type: '',
-          date: '',
-          time: ''
-        }
-      };
-      localStorage.setItem('onboardingDraft', JSON.stringify(newData));
-    }
-  }, [answers]);
-
+  const { isSaving } = useQuestionnaire();
+  
   return (
     <motion.div 
       className="space-y-6"
@@ -69,13 +31,19 @@ const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ answers, onSubmit }
           <Check className="h-8 w-8 text-emerald-600" />
         </motion.div>
         <h2 className="text-2xl font-semibold mb-2">Questionnaire Complete!</h2>
-        <p className="text-gray-600 mb-8">Thank you for completing the financial questionnaire. Your responses have been recorded.</p>
+        <p className="text-gray-600 mb-8">Thank you for completing the financial questionnaire. Your responses have been saved and will be included in your application.</p>
         
         <Button 
           onClick={onSubmit}
           className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 px-8"
+          disabled={isSaving}
         >
-          Submit and Return to Onboarding
+          {isSaving ? (
+            <>
+              <Save className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : "Submit and Return to Onboarding"}
         </Button>
       </div>
 
@@ -122,6 +90,7 @@ const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ answers, onSubmit }
         
         <p className="text-sm text-gray-500 mt-6">
           This questionnaire is confidential and will only be used to provide better financial recommendations.
+          Your answers have been saved and will be accessible when you return.
         </p>
       </div>
     </motion.div>

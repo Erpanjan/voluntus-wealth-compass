@@ -1,5 +1,7 @@
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface GoalType {
   id: string;
@@ -22,6 +24,9 @@ interface QuestionnaireState {
   getSelectedGoals: () => GoalType[];
   currentGoal: GoalType | null;
   handleGoalQuestionComplete: () => void;
+  isLoading: boolean;
+  saveProgress: () => Promise<boolean>;
+  isSaving: boolean;
 }
 
 const QuestionnaireContext = createContext<QuestionnaireState | null>(null);
@@ -45,6 +50,10 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
   currentStep, 
   setCurrentStep 
 }) => {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  
   // State for storing all questionnaire answers
   const [answers, setAnswers] = useState<Record<string, any>>({
     goals: [], // Will store selected financial goals
@@ -54,13 +63,181 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
   // State to track which goal we're currently asking about for questions 11-14
   const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
 
+  // Load saved answers from Supabase and localStorage on initial render
+  useEffect(() => {
+    const loadSavedAnswers = async () => {
+      setIsLoading(true);
+      try {
+        // Try loading from localStorage first for quick rendering
+        const localData = localStorage.getItem('questionnaireAnswers');
+        let loadedAnswers = localData ? JSON.parse(localData) : null;
+        
+        // Then try to get from Supabase if user is logged in
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user?.id) {
+          const { data, error } = await supabase
+            .from('questionnaire_responses')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .single();
+            
+          if (data && !error) {
+            // If we have database data, convert and use it
+            const dbAnswers = {
+              ...loadedAnswers, // Keep any local data not stored in DB schema
+              ageGroup: data.age_group,
+              income: data.income_level,
+              netWorth: data.net_worth,
+              investmentKnowledge: data.investment_knowledge,
+              investmentExperience: data.investment_experience,
+              complexProducts: data.complex_products,
+              investmentComposition: data.investment_composition,
+              behavioralBiases: data.behavioral_biases,
+              // For complete answers JSON data
+              ...(data.answers_json ? JSON.parse(data.answers_json) : {})
+            };
+            
+            loadedAnswers = dbAnswers;
+            
+            // Update local storage with the latest from DB
+            localStorage.setItem('questionnaireAnswers', JSON.stringify(dbAnswers));
+          }
+        }
+        
+        // Set the answers state if we found data
+        if (loadedAnswers) {
+          setAnswers(loadedAnswers);
+          console.log('Loaded saved answers:', loadedAnswers);
+        }
+      } catch (error) {
+        console.error('Error loading saved answers:', error);
+        toast({
+          title: "Error Loading Data",
+          description: "Could not load your previous answers. You may need to start fresh.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadSavedAnswers();
+  }, [toast]);
+
+  // Autosave functionality - debounced to avoid too many saves
+  useEffect(() => {
+    // Skip the initial load
+    if (isLoading) return;
+    
+    // Don't save empty answers object
+    if (Object.keys(answers).length <= 2 && 
+        answers.goals?.length === 0 && 
+        Object.keys(answers.goalDetails || {}).length === 0) {
+      return;
+    }
+    
+    const timeoutId = setTimeout(() => {
+      saveToLocalStorage(answers);
+    }, 1000); // 1 second debounce
+    
+    return () => clearTimeout(timeoutId);
+  }, [answers, isLoading]);
+
+  const saveToLocalStorage = (data: Record<string, any>) => {
+    localStorage.setItem('questionnaireAnswers', JSON.stringify(data));
+  };
+
   // Handle answer updates
   const updateAnswer = (questionId: string, value: any) => {
     console.log(`Updating ${questionId} with:`, value);
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: value
-    }));
+    setAnswers(prev => {
+      const updatedAnswers = {
+        ...prev,
+        [questionId]: value
+      };
+      return updatedAnswers;
+    });
+  };
+
+  // Save progress to Supabase and update onboarding data
+  const saveProgress = async (): Promise<boolean> => {
+    setIsSaving(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        // If not logged in, just save to localStorage
+        saveToLocalStorage(answers);
+        toast({
+          title: "Progress Saved Locally",
+          description: "Your answers are saved on this device. Log in to save them to your account.",
+        });
+        return true;
+      }
+      
+      // Format the data for the questionnaire_responses table
+      const dataToSave = {
+        user_id: session.user.id,
+        completed: currentStep >= 14, // Consider it completed if they reached the final steps
+        age_group: answers.ageGroup || null,
+        income_level: answers.income || null,
+        net_worth: answers.netWorth || null,
+        investment_knowledge: answers.investmentKnowledge || null,
+        investment_experience: answers.investmentExperience || null,
+        complex_products: answers.complexProducts || null,
+        investment_composition: answers.investmentComposition || null,
+        behavioral_biases: answers.behavioralBiases || null,
+        answers_json: JSON.stringify(answers), // Store complete answers as JSON
+        updated_at: new Date().toISOString()
+      };
+      
+      // Save to Supabase
+      const { error } = await supabase
+        .from('questionnaire_responses')
+        .upsert(dataToSave, { onConflict: 'user_id' });
+        
+      if (error) throw error;
+      
+      // Also update the onboarding data to mark questionnaire as completed
+      const onboardingUpdate = {
+        updated_at: new Date().toISOString()
+      };
+      
+      // Fetch current onboarding data first
+      const { data: onboardingData } = await supabase
+        .from('onboarding_data')
+        .select('id')
+        .eq('id', session.user.id)
+        .single();
+        
+      if (onboardingData) {
+        await supabase
+          .from('onboarding_data')
+          .update(onboardingUpdate)
+          .eq('id', session.user.id);
+      }
+      
+      // Update localStorage
+      saveToLocalStorage(answers);
+      
+      toast({
+        title: "Progress Saved",
+        description: "Your answers have been saved to your account.",
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error saving questionnaire progress:', error);
+      toast({
+        title: "Error Saving Data",
+        description: "Could not save your answers. Please try again.",
+        variant: "destructive"
+      });
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Function to get selected goals (used for goal-specific questions)
@@ -92,6 +269,9 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
       // Move to the next main step after all goals are processed
       setCurrentStep(currentStep + 1);
       setCurrentGoalIndex(0); // Reset for potential back navigation
+      
+      // Save progress when moving to the next major section
+      saveProgress();
     }
   };
 
@@ -101,7 +281,10 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
     updateAnswer,
     getSelectedGoals,
     currentGoal,
-    handleGoalQuestionComplete
+    handleGoalQuestionComplete,
+    isLoading,
+    saveProgress,
+    isSaving
   };
 
   return (

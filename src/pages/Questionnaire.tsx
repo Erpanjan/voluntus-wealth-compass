@@ -2,130 +2,111 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import OnboardingProgressIndicator from '@/components/onboarding/OnboardingProgressIndicator';
 import QuestionnaireForm from '@/components/questionnaire/QuestionnaireForm';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuestionnaire } from '@/components/questionnaire/QuestionnaireContext';
 
 const Questionnaire = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [hasSelectedGoals, setHasSelectedGoals] = useState(true);
+  const [loadingInitial, setLoadingInitial] = useState(true);
   const totalSteps = 15;
 
-  // Check authentication status
+  // Check authentication status and load previous step
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      // If no session, redirect to login
-      if (!session) {
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to access the questionnaire.",
-          variant: "destructive"
-        });
-        navigate('/login');
+    const init = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        // If no session, redirect to login
+        if (!session) {
+          toast({
+            title: "Authentication Required",
+            description: "Please log in to access the questionnaire.",
+            variant: "destructive"
+          });
+          navigate('/login');
+          return;
+        }
+
+        // Try to load the last saved step from localStorage
+        const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
+        if (savedQuestionnaire) {
+          const savedData = JSON.parse(savedQuestionnaire);
+          // If we have lastCompletedStep in saved data, use it
+          if (savedData.lastCompletedStep !== undefined) {
+            const step = Math.min(savedData.lastCompletedStep, totalSteps - 1);
+            setCurrentStep(step);
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing questionnaire:', error);
+      } finally {
+        setLoadingInitial(false);
       }
     };
     
-    checkAuth();
+    init();
   }, [navigate, toast]);
 
-  // Handle saving the questionnaire state
-  const handleSave = async () => {
-    try {
-      setSaving(true);
-      
-      // Get the current user session
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to save your questionnaire.",
-          variant: "destructive"
-        });
-        return;
-      }
+  // Get the questionnaire context
+  const { saveProgress, isLoading, isSaving } = useQuestionnaire();
 
-      // Get existing data from localStorage if it exists
-      const savedData = localStorage.getItem('onboardingDraft');
-      if (!savedData) {
-        toast({
-          title: "Error",
-          description: "No questionnaire data found to save.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      const parsedData = JSON.parse(savedData);
-      
-      // Save questionnaire data to Supabase
-      const { error } = await supabase
-        .from('questionnaire_responses')
-        .upsert({
-          user_id: session.user.id,
-          completed: true,
-          investment_goals: parsedData.questionnaire.answers.investmentGoals || null,
-          risk_tolerance: parsedData.questionnaire.answers.riskTolerance || null,
-          time_horizon: parsedData.questionnaire.answers.timeHorizon || null,
-          additional_info: parsedData.questionnaire.answers.additionalInfo || null,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id' });
-
-      if (error) {
-        throw error;
-      }
-
-      // Also update onboarding_data to ensure consistency
-      const { error: onboardingError } = await supabase
-        .from('onboarding_data')
-        .update({ updated_at: new Date().toISOString() })
-        .eq('id', session.user.id);
-
-      if (onboardingError) {
-        console.error('Error updating onboarding timestamp:', onboardingError);
-      }
-
-      // Show success message
-      toast({
-        title: "Questionnaire Saved",
-        description: "Your responses have been saved successfully.",
-      });
-      
-      // Navigate back to onboarding
-      navigate('/onboarding');
-    } catch (error) {
-      console.error('Error saving questionnaire:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save your questionnaire responses.",
-        variant: "destructive"
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
+  // Handler for step navigation
   const handleStepChange = (stepIncrement: number) => {
-    setCurrentStep(prev => {
-      const newStep = prev + stepIncrement;
-      return Math.max(0, Math.min(newStep, totalSteps));
+    setCurrentStep(prevStep => {
+      // Calculate new step with bounds checking
+      const newStep = Math.max(0, Math.min(prevStep + stepIncrement, totalSteps - 1));
+      
+      // Save the last completed step to localStorage
+      if (stepIncrement > 0) {
+        const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
+        const savedData = savedQuestionnaire ? JSON.parse(savedQuestionnaire) : {};
+        savedData.lastCompletedStep = Math.max(savedData.lastCompletedStep || 0, newStep);
+        localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
+      }
+      
+      return newStep;
     });
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
-    handleSave();
+  // Handle submission
+  const handleSubmit = async () => {
+    const success = await saveProgress();
+    if (success) {
+      setSubmitted(true);
+      // Navigate back to onboarding after a short delay
+      setTimeout(() => navigate('/onboarding'), 2000);
+    }
   };
+
+  // Handle manual save
+  const handleSave = async () => {
+    // Update the last completed step before saving
+    const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
+    const savedData = savedQuestionnaire ? JSON.parse(savedQuestionnaire) : {};
+    savedData.lastCompletedStep = currentStep;
+    localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
+    
+    await saveProgress();
+  };
+
+  // Show loading state for initial data fetch
+  if (loadingInitial || isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <Loader2 className="h-10 w-10 text-gray-400 animate-spin mb-4" />
+        <p className="text-gray-600">Loading your questionnaire data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -159,6 +140,7 @@ const Questionnaire = () => {
             <h1 className="text-2xl font-semibold mb-2">Financial Questionnaire</h1>
             <p className="text-gray-600">
               This questionnaire will help us understand your financial goals and preferences.
+              Your progress is automatically saved as you go.
             </p>
           </motion.div>
 
@@ -173,7 +155,7 @@ const Questionnaire = () => {
               <Button 
                 variant="outline" 
                 onClick={() => handleStepChange(-1)}
-                disabled={currentStep === 0 || saving}
+                disabled={currentStep === 0 || isSaving}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Previous
@@ -182,20 +164,25 @@ const Questionnaire = () => {
               <Button 
                 variant="outline" 
                 onClick={handleSave}
-                disabled={saving}
+                disabled={isSaving}
               >
-                {saving ? (
+                {isSaving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Saving...
                   </>
-                ) : "Save Progress"}
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Progress
+                  </>
+                )}
               </Button>
               
               {currentStep < totalSteps - 1 ? (
                 <Button 
                   onClick={() => handleStepChange(1)}
-                  disabled={saving}
+                  disabled={isSaving}
                 >
                   Next
                   <ArrowRight className="h-4 w-4 ml-2" />
@@ -203,9 +190,9 @@ const Questionnaire = () => {
               ) : (
                 <Button 
                   onClick={handleSubmit}
-                  disabled={saving}
+                  disabled={isSaving}
                 >
-                  {saving ? (
+                  {isSaving ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Submitting...

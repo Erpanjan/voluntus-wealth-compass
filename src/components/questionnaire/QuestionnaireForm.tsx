@@ -8,6 +8,8 @@ import InvestmentSteps from './steps/InvestmentSteps';
 import GoalSelectionSteps from './steps/GoalSelectionSteps';
 import GoalDetailSteps from './steps/GoalDetailSteps';
 import FinalSteps from './steps/FinalSteps';
+import { Loader2 } from 'lucide-react';
+import { useQuestionnaire } from './QuestionnaireContext';
 
 interface QuestionnaireFormProps {
   currentStep: number;
@@ -15,46 +17,61 @@ interface QuestionnaireFormProps {
   onComplete: () => void;
 }
 
+// Component to render the actual question content
+const QuestionContent: React.FC<{
+  currentStep: number;
+  onComplete: () => void;
+}> = ({ currentStep, onComplete }) => {
+  const { isLoading } = useQuestionnaire();
+  
+  if (isLoading) {
+    return (
+      <div className="py-12 flex flex-col items-center justify-center">
+        <Loader2 className="h-8 w-8 text-amber-600 animate-spin mb-4" />
+        <p className="text-gray-600">Loading your previous answers...</p>
+      </div>
+    );
+  }
+  
+  // Function to handle step changes
+  const handleNextStep = () => {
+    // This is handled by the parent component now
+  };
+
+  // Determine which component to render based on the current step
+  // Basic info questions (steps 0-2)
+  if (currentStep <= 2) {
+    return <BasicInfoSteps step={currentStep} />;
+  }
+  
+  // Investment knowledge questions (steps 3-6)
+  if (currentStep >= 3 && currentStep <= 6) {
+    return <InvestmentSteps step={currentStep} />;
+  }
+  
+  // Goal selection and prioritization (steps 7-9)
+  if (currentStep >= 7 && currentStep <= 9) {
+    return <GoalSelectionSteps step={currentStep} onNext={handleNextStep} />;
+  }
+  
+  // Goal-specific questions (steps 10-13)
+  if (currentStep >= 10 && currentStep <= 13) {
+    return <GoalDetailSteps step={currentStep} />;
+  }
+  
+  // Final questions and review (steps 14-15)
+  if (currentStep >= 14) {
+    return <FinalSteps step={currentStep} onComplete={onComplete} />;
+  }
+  
+  return null;
+};
+
 const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ 
   currentStep, 
   setCurrentStep,
   onComplete
 }) => {
-  // Function to handle step changes
-  const handleNextStep = () => {
-    setCurrentStep(currentStep + 1);
-  };
-
-  // Determine which component to render based on the current step
-  const renderQuestion = () => {
-    // Basic info questions (steps 0-2)
-    if (currentStep <= 2) {
-      return <BasicInfoSteps step={currentStep} />;
-    }
-    
-    // Investment knowledge questions (steps 3-6)
-    if (currentStep >= 3 && currentStep <= 6) {
-      return <InvestmentSteps step={currentStep} />;
-    }
-    
-    // Goal selection and prioritization (steps 7-9)
-    if (currentStep >= 7 && currentStep <= 9) {
-      return <GoalSelectionSteps step={currentStep} onNext={handleNextStep} />;
-    }
-    
-    // Goal-specific questions (steps 10-13)
-    if (currentStep >= 10 && currentStep <= 13) {
-      return <GoalDetailSteps step={currentStep} />;
-    }
-    
-    // Final questions and review (steps 14-15)
-    if (currentStep >= 14) {
-      return <FinalSteps step={currentStep} onComplete={onComplete} />;
-    }
-    
-    return null;
-  };
-
   return (
     <QuestionnaireProvider currentStep={currentStep} setCurrentStep={setCurrentStep}>
       <motion.div
@@ -67,7 +84,10 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
       >
         <Card className="w-full">
           <CardContent className="p-6">
-            {renderQuestion()}
+            <QuestionContent 
+              currentStep={currentStep} 
+              onComplete={onComplete} 
+            />
           </CardContent>
         </Card>
       </motion.div>
