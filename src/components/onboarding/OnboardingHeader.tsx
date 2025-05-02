@@ -3,7 +3,6 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut } from 'lucide-react';
 import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 interface OnboardingHeaderProps {
@@ -48,11 +47,9 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
           />
         </Link>
         <Button 
-          variant="outline" 
-          onClick={handleExitSetup} 
-          className="flex items-center gap-2"
+          variant="link" 
+          onClick={handleExitSetup}
         >
-          <LogOut className="h-4 w-4" />
           Exit Setup
         </Button>
       </div>
