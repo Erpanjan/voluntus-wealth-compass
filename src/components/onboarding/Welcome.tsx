@@ -41,7 +41,7 @@ const Welcome = () => {
       
       <motion.div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12" variants={container} initial="hidden" animate="show">
         <motion.div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden" variants={item}>
-          <div className="absolute top-0 left-0 h-2 w-full bg-gray-300"></div>
+          <div className="absolute top-0 left-0 h-2 w-full bg-white"></div>
           <div className="mb-8 flex flex-col items-center">
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
               <User className="h-7 w-7 text-black" />
@@ -55,7 +55,7 @@ const Welcome = () => {
         </motion.div>
         
         <motion.div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden" variants={item}>
-          <div className="absolute top-0 left-0 h-2 w-full bg-gray-300"></div>
+          <div className="absolute top-0 left-0 h-2 w-full bg-white"></div>
           <div className="mb-8 flex flex-col items-center">
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
               <FileText className="h-7 w-7 text-black" />
@@ -69,7 +69,7 @@ const Welcome = () => {
         </motion.div>
         
         <motion.div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden" variants={item}>
-          <div className="absolute top-0 left-0 h-2 w-full bg-gray-300"></div>
+          <div className="absolute top-0 left-0 h-2 w-full bg-white"></div>
           <div className="mb-8 flex flex-col items-center">
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
               <Calendar className="h-7 w-7 text-black" />
