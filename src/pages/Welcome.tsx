@@ -1,13 +1,27 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Section from '@/components/ui/Section';
 import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
 import { User, FileText, Calendar } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Welcome = () => {
   const navigate = useNavigate();
+
+  // Add check to ensure user is authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.log('No valid session found in Welcome page');
+        navigate('/login');
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
 
   const handleGetStarted = () => {
     navigate('/onboarding');

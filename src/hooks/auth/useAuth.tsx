@@ -4,7 +4,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthState } from './useAuthState';
 import { useOnboardingStatus } from './useOnboardingStatus';
-import { useDemoAccount } from './useDemoAccount';
 import { useEffect } from 'react';
 import { useAuthListener } from './useAuthListener';
 import { useAuthSession } from './useAuthSession';
@@ -14,7 +13,6 @@ export const useAuth = (isAdminMode: boolean = false) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { checkOnboardingStatus } = useOnboardingStatus(navigate);
-  const { handleDemoLogin } = useDemoAccount(isAdminMode);
   
   // Get auth state from the hook
   const { 
@@ -54,7 +52,6 @@ export const useAuth = (isAdminMode: boolean = false) => {
     isAdmin,
     session,
     user,
-    handleDemoLogin,
     handleRegularLogin,
     clearUserStateFlags
   };

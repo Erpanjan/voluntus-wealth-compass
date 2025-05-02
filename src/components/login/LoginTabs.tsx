@@ -8,14 +8,12 @@ import ForgotPasswordForm from '@/components/login/ForgotPasswordForm';
 interface LoginTabsProps {
   isAdminMode: boolean;
   isAnimating: boolean;
-  onDemoLogin: () => void;
   onRegularLogin: () => void;
 }
 
 const LoginTabs: React.FC<LoginTabsProps> = ({
   isAdminMode,
   isAnimating,
-  onDemoLogin,
   onRegularLogin
 }) => {
   // Control the active tab state
@@ -40,7 +38,7 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
 
           <div className="h-[650px] relative overflow-hidden">
             <TabsContent value="login" className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out">
-              <LoginForm onDemoLogin={onDemoLogin} onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
+              <LoginForm onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
             </TabsContent>
           </div>
         </Tabs>
@@ -58,7 +56,7 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
 
           <div className="h-[650px] relative overflow-hidden">
             <TabsContent value="login" className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out">
-              <LoginForm onDemoLogin={onDemoLogin} onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
+              <LoginForm onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
             </TabsContent>
 
             <TabsContent value="register" className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out">

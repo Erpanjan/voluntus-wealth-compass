@@ -15,7 +15,7 @@ const Login = () => {
   const location = useLocation();
   
   // Use the custom hook to handle authentication
-  const { loading, handleDemoLogin, handleRegularLogin } = useAuth(isAdminMode);
+  const { loading, handleRegularLogin } = useAuth(isAdminMode);
   
   // Enhanced fade-in animation when component loads
   useEffect(() => {
@@ -80,7 +80,6 @@ const Login = () => {
             <LoginTabs 
               isAdminMode={isAdminMode}
               isAnimating={isAnimating}
-              onDemoLogin={handleDemoLogin}
               onRegularLogin={handleRegularLogin}
             />
           </div>

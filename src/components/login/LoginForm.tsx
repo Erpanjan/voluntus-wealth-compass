@@ -10,12 +10,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 interface LoginFormProps {
-  onDemoLogin: () => void;
   onRegularLogin?: () => void;
   isAdminMode?: boolean;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAdminMode = false }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onRegularLogin, isAdminMode = false }) => {
   const [loginData, setLoginData] = useState({
     email: '',
     password: '',
@@ -54,9 +53,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       
       console.log('Login successful, session:', data.session);
       
-      // Set authentication flag in localStorage
-      localStorage.setItem('isAuthenticated', 'true');
-      
       if (isAdminMode) {
         // Check if user is in admin_users table
         const { data: adminData, error: adminError } = await supabase
@@ -70,9 +66,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
           throw new Error('Your account does not have admin privileges');
         }
         
-        // Set admin mode in localStorage if user is an admin
-        localStorage.setItem('isAdminMode', 'true');
-        
         toast({
           title: "Admin Login successful",
           description: "Welcome to the Admin Portal.",
@@ -81,8 +74,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
         
         navigate('/admin/dashboard');
       } else {
-        localStorage.removeItem('isAdminMode');
-        
         toast({
           title: "Login successful",
           description: "Welcome to the Client Portal.",
@@ -102,10 +93,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
         variant: "destructive",
         duration: 5000,
       });
-      
-      // Clear authentication flags on error
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('isAdminMode');
     } finally {
       setIsSubmitting(false);
     }
@@ -162,17 +149,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       >
         {isSubmitting ? 'Logging in...' : 'Login'}
       </Button>
-      
-      <div className="text-center">
-        <Button 
-          variant="link" 
-          className="text-sm" 
-          onClick={onDemoLogin}
-          disabled={isSubmitting}
-        >
-          Try Demo {isAdminMode ? 'Admin' : 'Client'} Account
-        </Button>
-      </div>
     </form>
   );
 };
