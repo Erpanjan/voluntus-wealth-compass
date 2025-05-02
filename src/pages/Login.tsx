@@ -19,19 +19,18 @@ const Login = () => {
   
   // Enhanced fade-in animation when component loads
   useEffect(() => {
-    // Remove animation classes from body
+    // Remove login-transition class from body if present
     document.body.classList.remove('login-transition');
-    document.body.classList.remove('login-fade-transition');
     
     // Clear URL parameters when landing on login page
     if (location.search) {
       navigate('/login', { replace: true });
     }
     
-    // Minimal delay to ensure the animation is visible
+    // Small delay to ensure the animation is visible
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 30); // reduced further for a more responsive feel
+    }, 50); // reduced from 100ms to 50ms for faster initial animation
     
     return () => clearTimeout(timer);
   }, [navigate, location]);
@@ -61,8 +60,8 @@ const Login = () => {
   }
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-opacity duration-300 ease-in-out ${
-      pageLoaded ? 'opacity-100' : 'opacity-0'
+    <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-all duration-700 ease-in-out ${
+      pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
         {/* Increased height container for better form display */}

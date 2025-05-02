@@ -22,7 +22,7 @@
   
   /* Login mode transition effect - made faster */
   .login-mode-transition {
-    animation: modeTransition 0.15s ease-out forwards; /* reduced from 0.3s to 0.15s */
+    animation: modeTransition 0.15s ease-in-out forwards; /* reduced from 0.3s to 0.15s */
   }
   
   @keyframes modeTransition {
@@ -50,22 +50,7 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-black to-[#9F9EA1];
   }
 
-  /* Enhanced minimalistic login transition effect */
-  .login-fade-transition {
-    animation: simpleFade 0.25s ease-in-out forwards;
-    pointer-events: none;
-  }
-  
-  @keyframes simpleFade {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
-
-  /* Original login transition effect - kept for reference */
+  /* Login transition effect - enhanced and made faster */
   .login-transition {
     animation: portalTransition 0.3s cubic-bezier(0.65, 0, 0.35, 1) forwards; /* reduced from 0.6s to 0.3s */
     pointer-events: none;

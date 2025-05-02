@@ -70,13 +70,15 @@ const Header: React.FC = () => {
       return;
     }
     
-    // Use our enhanced minimalistic fade transition
-    document.body.classList.add('login-fade-transition');
+    setIsAnimating(true);
     
-    // Navigate after animation completes (faster transition)
+    // Add a fade-out animation to the entire page with scale effect
+    document.body.classList.add('login-transition');
+    
+    // Navigate after animation completes
     setTimeout(() => {
       navigate('/login');
-    }, 250); // Reduced to match our new animation duration
+    }, 600); // Match this with the CSS animation duration
   };
 
   return (
