@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -57,7 +58,7 @@ const ProfileCreation = () => {
   return (
     <div>
       <p className="text-lg mb-8">
-        Please provide your personal information to help us better understand your needs.
+        Let us know more about you; this will help us tailor the experience for you.
       </p>
 
       <div className="w-full max-w-2xl mx-auto">
