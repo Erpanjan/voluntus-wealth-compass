@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import ConsultationTypeSelector from './consultation/ConsultationTypeSelector';
 import DateTimeSelector from './consultation/DateTimeSelector';
-import ConsultationConfirmation from './consultation/ConsultationConfirmation';
 import { getReadableDateFormat, getReadableTimeFormat, getAvailableTimes } from './consultation/utils';
 
 interface ConsultationFormSectionProps {
@@ -48,11 +47,6 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
     // Auto-complete the consultation when type, date, and time are all selected
     if (consultationData.type && selectedDate) {
       updateConsultationData({ completed: true });
-      
-      toast({
-        title: "Consultation Scheduled",
-        description: `Your ${consultationData.type === 'virtual' ? 'Virtual Meeting' : 'In-Person Meeting'} consultation has been scheduled for ${getReadableDateFormat(selectedDate)} at ${getReadableTimeFormat(time, availableTimes)}.`,
-      });
     }
   };
 
@@ -71,15 +65,6 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
           selectedTime={consultationData.time}
           onDateChange={handleDateSelection}
           onTimeChange={handleTimeSelection}
-        />
-      )}
-
-      {/* Confirmation Display */}
-      {consultationData.completed && (
-        <ConsultationConfirmation
-          consultationType={consultationData.type}
-          dateText={getReadableDateFormat(selectedDate)}
-          timeText={getReadableTimeFormat(consultationData.time, availableTimes)}
         />
       )}
     </div>
