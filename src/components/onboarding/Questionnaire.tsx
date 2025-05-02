@@ -1,128 +1,25 @@
-
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { 
-  CircleCheck, 
-  PiggyBank, 
-  BarChart3, 
-  Home, 
-  Car, 
-  Heart, 
-  BookOpen, 
-  Landmark, 
-  Sparkles,
-  Star,
-  ArrowUp,
-  ArrowDown
-} from 'lucide-react';
+import { QuestionnaireProps, QuestionnaireAnswers, Goal } from './questionnaire/types';
+import { defaultFinancialGoals, interestLevelOptions, timeHorizonOptions } from './questionnaire/data';
+import { updateNestedAnswer } from './questionnaire/utils';
 
-interface QuestionnaireProps {
-  setCompleted: (completed: boolean) => void;
-  updateProgress: (percent: number) => void;
-}
-
-// Define financial goals with icons
-const defaultFinancialGoals = [
-  { id: 'living-expenses', name: 'Living expenses', icon: <PiggyBank className="h-5 w-5" /> },
-  { id: 'emergency-fund', name: 'Emergency Fund', icon: <CircleCheck className="h-5 w-5" /> },
-  { id: 'wealth-accumulation', name: 'Wealth accumulation', icon: <BarChart3 className="h-5 w-5" /> },
-  { id: 'education', name: 'Education', icon: <BookOpen className="h-5 w-5" /> },
-  { id: 'legacy', name: 'Legacy', icon: <Landmark className="h-5 w-5" /> },
-  { id: 'car', name: 'Buy a car', icon: <Car className="h-5 w-5" /> },
-  { id: 'retirement', name: 'Retirement', icon: <Sparkles className="h-5 w-5" /> },
-  { id: 'house', name: 'Buy a house', icon: <Home className="h-5 w-5" /> },
-  { id: 'kids', name: 'Having kids', icon: <Heart className="h-5 w-5" /> },
-  { id: 'marriage', name: 'Marriage', icon: <Heart className="h-5 w-5" /> },
-  { id: 'medical', name: 'Medical & Health', icon: <CircleCheck className="h-5 w-5" /> }
-];
-
-// Define interest level options for goals
-const interestLevelOptions = [
-  "Already planned",
-  "Strongly interested",
-  "Would consider",
-  "Less likely to consider",
-  "Would not consider"
-];
-
-// Define time horizon options for goals
-const timeHorizonOptions = [
-  "Less than 1 year",
-  "1 to 3 years",
-  "4 to 7 years", 
-  "8 to 15 years",
-  "More than 15 years"
-];
-
-// Define a type for the behavioral biases object
-interface BehavioralBiases {
-  sellOnDrop: number;
-  emotionalAttachment: number;
-  preferStability: number;
-  hopefulRecovery: number;
-  mentalAccounting: number;
-  pastInfluence: number;
-  predictability: number;
-  profitOverPlan: number;
-  valueAlignment: number;
-}
-
-// Define a type for the goal interest levels
-interface GoalInterestLevels {
-  [goalId: string]: string;
-}
-
-// Define a type for the answers object
-interface QuestionnairAnswers {
-  // Basic Information
-  ageGroup: string;
-  incomeRange: string;
-  netWorth: string;
-  
-  // Knowledge & Experience
-  investmentKnowledge: string;
-  investmentExperience: string;
-  
-  // Risk Assessment
-  complexProducts: number;
-  investmentComposition: number;
-  
-  // Goal-specific data
-  goalInterestLevels: GoalInterestLevels;
-  goalPriorities: string[];
-  goalRiskPreferences: string[];
-  goalHorizons: Record<string, string>;
-  riskAppetite: Record<string, string>;
-  absoluteRiskTolerance: Record<string, string>;
-  
-  // Behavioral
-  marketVolatilityResponse: string;
-  behavioralBiases: BehavioralBiases;
-}
-
-// Goal Financial Questionnaire
-interface Goal {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-}
+// Import question components
+import AgeGroupQuestion from './questionnaire/questions/AgeGroupQuestion';
+import IncomeQuestion from './questionnaire/questions/IncomeQuestion';
+import GoalSelectionQuestion from './questionnaire/questions/GoalSelectionQuestion';
+import GenericRadioQuestion from './questionnaire/questions/GenericRadioQuestion';
+import SliderQuestion from './questionnaire/questions/SliderQuestion';
 
 const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [progress, setProgress] = useState(0);
   const [financialGoals, setFinancialGoals] = useState<Goal[]>(defaultFinancialGoals);
-  const [customGoal, setCustomGoal] = useState('');
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
 
-  const [answers, setAnswers] = useState<QuestionnairAnswers>({
+  const [answers, setAnswers] = useState<QuestionnaireAnswers>({
     // Basic Information
     ageGroup: '',
     incomeRange: '',
@@ -177,7 +74,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
   // Initialize goal-specific data after goal selection
   useEffect(() => {
     if (selectedGoals.length > 0 && Object.keys(answers.goalInterestLevels).length === 0) {
-      const initialGoalInterestLevels: GoalInterestLevels = {};
+      const initialGoalInterestLevels: Record<string, string> = {};
       const initialGoalHorizons: Record<string, string> = {};
       const initialRiskAppetite: Record<string, string> = {};
       const initialRiskTolerance: Record<string, string> = {};
@@ -202,17 +99,9 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
   }, [selectedGoals, answers.goalInterestLevels]);
 
   // Handle adding a custom financial goal
-  const handleAddCustomGoal = () => {
-    if (customGoal && !financialGoals.some(goal => goal.name === customGoal)) {
-      const newGoal = {
-        id: `custom-${Date.now()}`,
-        name: customGoal,
-        icon: <Star className="h-5 w-5" />
-      };
-      setFinancialGoals([...financialGoals, newGoal]);
-      setSelectedGoals([...selectedGoals, newGoal.id]);
-      setCustomGoal('');
-    }
+  const handleAddCustomGoal = (newGoal: Goal) => {
+    setFinancialGoals([...financialGoals, newGoal]);
+    setSelectedGoals([...selectedGoals, newGoal.id]);
   };
 
   // Handle goal selection
@@ -224,57 +113,15 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     }
   };
 
-  // Handle moving a goal up in priority
-  const moveGoalUp = (index: number, priorityType: 'priorities' | 'risks') => {
-    if (index <= 0) return;
-    
-    if (priorityType === 'priorities') {
-      const newPriorities = [...answers.goalPriorities];
-      [newPriorities[index], newPriorities[index - 1]] = [newPriorities[index - 1], newPriorities[index]];
-      setAnswers({...answers, goalPriorities: newPriorities});
-    } else {
-      const newRiskPreferences = [...answers.goalRiskPreferences];
-      [newRiskPreferences[index], newRiskPreferences[index - 1]] = [newRiskPreferences[index - 1], newRiskPreferences[index]];
-      setAnswers({...answers, goalRiskPreferences: newRiskPreferences});
-    }
-  };
-
-  // Handle moving a goal down in priority
-  const moveGoalDown = (index: number, priorityType: 'priorities' | 'risks') => {
-    const list = priorityType === 'priorities' 
-      ? answers.goalPriorities
-      : answers.goalRiskPreferences;
-      
-    if (index >= list.length - 1) return;
-    
-    if (priorityType === 'priorities') {
-      const newPriorities = [...answers.goalPriorities];
-      [newPriorities[index], newPriorities[index + 1]] = [newPriorities[index + 1], newPriorities[index]];
-      setAnswers({...answers, goalPriorities: newPriorities});
-    } else {
-      const newRiskPreferences = [...answers.goalRiskPreferences];
-      [newRiskPreferences[index], newRiskPreferences[index + 1]] = [newRiskPreferences[index + 1], newRiskPreferences[index]];
-      setAnswers({...answers, goalRiskPreferences: newRiskPreferences});
-    }
-  };
-
-  // Update goal interest level
-  const updateGoalInterestLevel = (goalId: string, level: string) => {
+  // Update a simple answer
+  const updateAnswer = (section: keyof QuestionnaireAnswers, value: any) => {
     setAnswers({
       ...answers,
-      goalInterestLevels: {
-        ...answers.goalInterestLevels,
-        [goalId]: level
-      }
+      [section]: value
     });
   };
-  
-  // Function to get goal by ID
-  const getGoalById = (goalId: string): Goal | undefined => {
-    return financialGoals.find(goal => goal.id === goalId);
-  };
 
-  // Handle form submission
+  // Handle navigation to next question
   const handleNextStep = () => {
     // Special handling for goal-specific questions
     if ((currentStep === 11 || currentStep === 12 || currentStep === 13) && selectedGoals.length > 0) {
@@ -296,6 +143,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     }
   };
 
+  // Handle navigation to previous question
   const handlePrevStep = () => {
     // Special handling for goal-specific questions
     if ((currentStep === 11 || currentStep === 12 || currentStep === 13) && selectedGoals.length > 0) {
@@ -311,194 +159,128 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     }
   };
 
-  const updateAnswer = (section: keyof QuestionnairAnswers, value: any) => {
-    setAnswers({
-      ...answers,
-      [section]: value
-    });
-  };
-
-  // Update nested answer (for behavioral biases)
-  const updateNestedAnswer = (section: string, subsection: string, value: any) => {
-    if (section === 'behavioralBiases') {
-      const updatedBiases = {
-        ...answers.behavioralBiases,
-        [subsection]: value
-      };
-
-      setAnswers({
-        ...answers,
-        behavioralBiases: updatedBiases
-      });
-    } else if (section === 'riskAppetite' || section === 'absoluteRiskTolerance') {
-      const updatedRecord = {
-        ...answers[section as 'riskAppetite' | 'absoluteRiskTolerance'],
-        [subsection]: value
-      };
-      
-      setAnswers({
-        ...answers,
-        [section]: updatedRecord
-      });
-    }
-  };
-
   // Update goal-specific answer
   const updateGoalAnswer = (answerType: 'riskAppetite' | 'absoluteRiskTolerance', value: string) => {
     const currentGoal = selectedGoals[currentGoalIndex];
-    updateNestedAnswer(answerType, currentGoal, value);
+    setAnswers(updateNestedAnswer(answers, answerType, currentGoal, value));
   };
 
-  // Update time horizon for a goal
-  const updateGoalHorizon = (goalId: string, horizon: string) => {
-    setAnswers({
-      ...answers,
-      goalHorizons: {
-        ...answers.goalHorizons,
-        [goalId]: horizon
-      }
-    });
-  };
-
-  const getLikertScale = (value: number) => {
-    switch(value) {
-      case 1: return "Strongly Disagree";
-      case 2: return "Disagree";
-      case 3: return "Neutral";
-      case 4: return "Agree";
-      case 5: return "Strongly Agree";
-      default: return "Neutral";
-    }
-  };
-
-  // Function to get background style for numbered questions
-  const getNumberedBackground = (questionNumber: number) => {
-    const colors = [
-      'from-blue-500 to-blue-600',   // Step 1
-      'from-indigo-500 to-indigo-600', // Step 2
-      'from-purple-500 to-purple-600', // Step 3
-      'from-fuchsia-500 to-fuchsia-600', // Step 4
-      'from-pink-500 to-pink-600',    // Step 5
-      'from-rose-500 to-rose-600',    // Step 6
-      'from-orange-500 to-orange-600', // Step 7
-      'from-amber-500 to-amber-600',  // Step 8
-      'from-yellow-500 to-yellow-600', // Step 9
-      'from-lime-500 to-lime-600',    // Step 10
-      'from-green-500 to-green-600',  // Step 11
-      'from-emerald-500 to-emerald-600', // Step 12
-      'from-teal-500 to-teal-600',    // Step 13
-      'from-cyan-500 to-cyan-600',    // Step 14
-      'from-sky-500 to-sky-600'       // Step 15
-    ];
-    return `bg-gradient-to-br ${colors[questionNumber - 1] || colors[0]}`;
-  };
-
-  // Render question based on current step
+  // Render the current question based on step
   const renderQuestion = () => {
     switch (currentStep) {
-      case 1: return (
-        <Card className="border-0 shadow-lg overflow-hidden bg-white">
-          <CardContent className="p-6">
-            <div className="space-y-6">
-              <div className="flex items-center space-x-3">
-                <div className={`w-10 h-10 rounded-full ${getNumberedBackground(1)} text-white flex items-center justify-center font-bold`}>1</div>
-                <h2 className="text-xl font-semibold">What is your age group?</h2>
-              </div>
-
-              <RadioGroup 
-                className="grid gap-4 pt-4"
-                value={answers.ageGroup} 
-                onValueChange={(value) => updateAnswer('ageGroup', value)}
-              >
-                {[
-                  { value: "18-25", label: "18–25 years old" },
-                  { value: "26-50", label: "26–50 years old" },
-                  { value: "51-60", label: "51–60 years old" },
-                  { value: "61-64", label: "61–64 years old" },
-                  { value: "65+", label: "65 years old or above" }
-                ].map((option) => (
-                  <div key={option.value}>
-                    <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all ${
-                      answers.ageGroup === option.value ? 
-                        'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' : 
-                        'bg-gray-50 hover:bg-gray-100'
-                    }`}>
-                      <RadioGroupItem 
-                        value={option.value} 
-                        id={`age-${option.value}`} 
-                        className="sr-only"
-                      />
-                      <Label htmlFor={`age-${option.value}`} className="block cursor-pointer">
-                        {option.label}
-                      </Label>
-                    </div>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-          </CardContent>
-        </Card>
-      );
-
-      case 2: return (
-        <Card className="border-0 shadow-lg overflow-hidden">
-          <CardContent className="p-6">
-            <div className="space-y-6">
-              <div className="flex items-center space-x-3">
-                <div className={`w-10 h-10 rounded-full ${getNumberedBackground(2)} text-white flex items-center justify-center font-bold`}>2</div>
-                <h2 className="text-xl font-semibold">What is your average annual income range (in HKD)?</h2>
-              </div>
-              <p className="text-gray-600 text-sm">
-                Includes wages, salaries, business income, interest, financial asset income, rental income, and other non-financial asset income.
-              </p>
-
-              <RadioGroup 
-                className="grid gap-4"
-                value={answers.incomeRange} 
-                onValueChange={(value) => updateAnswer('incomeRange', value)}
-              >
-                {[
-                  { value: "below100k", label: "Below HKD 100,000" },
-                  { value: "100k-200k", label: "HKD 100,000 (inclusive) – HKD 200,000 (exclusive)" },
-                  { value: "200k-500k", label: "HKD 200,000 (inclusive) – HKD 500,000 (inclusive)" },
-                  { value: "500k-1m", label: "HKD 500,000 (exclusive) – HKD 1,000,000 (inclusive)" },
-                  { value: "1m-2m", label: "HKD 1,000,000 (exclusive) – HKD 2,000,000 (inclusive)" },
-                  { value: "above2m", label: "Above HKD 2,000,000" }
-                ].map((option) => (
-                  <div key={option.value}>
-                    <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all ${
-                      answers.incomeRange === option.value ? 
-                        'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md' : 
-                        'bg-gray-50 hover:bg-gray-100'
-                    }`}>
-                      <RadioGroupItem 
-                        value={option.value} 
-                        id={`income-${option.value}`} 
-                        className="sr-only"
-                      />
-                      <Label htmlFor={`income-${option.value}`} className="block cursor-pointer">
-                        {option.label}
-                      </Label>
-                    </div>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-          </CardContent>
-        </Card>
-      );
+      case 1:
+        return (
+          <AgeGroupQuestion 
+            value={answers.ageGroup} 
+            onChange={(value) => updateAnswer('ageGroup', value)} 
+          />
+        );
       
-      // More cases for other steps would follow here
-      default: return (
-        <Card className="border-0 shadow-lg overflow-hidden">
-          <CardContent className="p-6">
-            <div className="text-center p-8">
-              <h2 className="text-xl font-semibold mb-4">Question {currentStep}</h2>
-              <p>This section is in development. Please continue to the next section.</p>
-            </div>
-          </CardContent>
-        </Card>
-      );
+      case 2:
+        return (
+          <IncomeQuestion 
+            value={answers.incomeRange} 
+            onChange={(value) => updateAnswer('incomeRange', value)} 
+          />
+        );
+        
+      case 3:
+        return (
+          <GenericRadioQuestion 
+            questionNumber={3}
+            title="What is your total personal net worth (in HKD)?"
+            description="Including residential properties and operational business assets, cash deposits, stocks, bonds, insurance, and physical asset investments, after deducting liabilities such as mortgage loans, credit card debt, etc."
+            options={[
+              { value: "below1.5m", label: "Below HKD 1,500,000" },
+              { value: "1.5m-5m", label: "HKD 1,500,000 (inclusive) – HKD 5,000,000 (inclusive)" },
+              { value: "5m-10m", label: "HKD 5,000,000 (exclusive) – HKD 10,000,000 (inclusive)" },
+              { value: "10m-100m", label: "HKD 10,000,000 (exclusive) – HKD 100,000,000 (inclusive)" },
+              { value: "above100m", label: "Above HKD 100,000,000" }
+            ]}
+            value={answers.netWorth}
+            onChange={(value) => updateAnswer('netWorth', value)}
+            gradientClass="from-purple-500 to-purple-600"
+          />
+        );
+        
+      case 4:
+        return (
+          <GenericRadioQuestion 
+            questionNumber={4}
+            title="Investment Knowledge and Experience"
+            description="Which of the following best describes your investment knowledge and experience?"
+            options={[
+              { value: "A", label: "Apart from saving deposits, government bonds, and money market funds, I do not invest in other financial products. My investment knowledge is relatively limited." },
+              { value: "B", label: "Most of my investments are in savings deposits, government bonds, and money market funds, with limited investments in stocks, mutual funds, and riskier products. My investment knowledge is somewhat limited." },
+              { value: "C", label: "My investments are diversified across savings, government bonds, trust products, stocks, and mutual funds. I have a certain level of investment knowledge." },
+              { value: "D", label: "Most of my investments are in stocks, mutual funds, forex, and other higher-risk products, with limited investments in savings, government bonds, and money market funds. I have advanced investment knowledge." }
+            ]}
+            value={answers.investmentKnowledge}
+            onChange={(value) => updateAnswer('investmentKnowledge', value)}
+            gradientClass="from-fuchsia-500 to-fuchsia-600"
+          />
+        );
+      
+      case 5:
+        return (
+          <GenericRadioQuestion 
+            questionNumber={5}
+            title="Investment Experience"
+            description="How many years of experience do you have investing in stocks, mutual funds (excluding money market funds), forex, and other higher-risk financial products?"
+            options={[
+              { value: "A", label: "No experience" },
+              { value: "B", label: "Some experience, but less than 2 years" },
+              { value: "C", label: "Between 2 years (inclusive) and 5 years (inclusive)" },
+              { value: "D", label: "Between 5 years (inclusive) and 8 years (inclusive)" },
+              { value: "E", label: "More than 8 years (exclusive)" }
+            ]}
+            value={answers.investmentExperience}
+            onChange={(value) => updateAnswer('investmentExperience', value)}
+            gradientClass="from-pink-500 to-pink-600"
+          />
+        );
+      
+      case 6:
+        return (
+          <SliderQuestion
+            questionNumber={6}
+            title="Complex Financial Products"
+            description="How comfortable are you with complex financial products like derivatives, futures, and options?"
+            value={answers.complexProducts}
+            onChange={(value) => updateAnswer('complexProducts', value)}
+          />
+        );
+      
+      case 7:
+        return (
+          <SliderQuestion
+            questionNumber={7}
+            title="Investment Composition"
+            description="I prefer an investment portfolio that contains more high-risk/high-return products."
+            value={answers.investmentComposition}
+            onChange={(value) => updateAnswer('investmentComposition', value)}
+          />
+        );
+      
+      case 8:
+        return (
+          <GoalSelectionQuestion
+            questionNumber={8}
+            goals={financialGoals}
+            selectedGoals={selectedGoals}
+            onGoalSelection={handleGoalSelection}
+            onAddCustomGoal={handleAddCustomGoal}
+          />
+        );
+      
+      // Add more cases for other steps here...
+      
+      default:
+        return (
+          <div className="p-8 text-center">
+            <p>This section is in development. Please continue to the next section.</p>
+          </div>
+        );
     }
   };
 
