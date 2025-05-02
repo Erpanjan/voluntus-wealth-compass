@@ -76,33 +76,48 @@ export const useContactInquiries = () => {
     console.log("Hook: Starting deletion process for inquiry ID:", id);
     
     try {
+      // Check authentication status first
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        console.error("Hook: No authentication session found");
+        toast({
+          title: "Authentication Error",
+          description: "You must be logged in to delete inquiries.",
+          variant: "destructive",
+        });
+        throw new Error("Authentication required");
+      }
+      
       // First delete all associated notes
       console.log("Hook: Deleting associated notes...");
-      const { error: notesError } = await supabase
+      const { error: notesError, data: deletedNotes } = await supabase
         .from('contact_notes')
         .delete()
-        .eq('contact_id', id);
+        .eq('contact_id', id)
+        .select();
       
       if (notesError) {
         console.error("Hook: Error deleting notes:", notesError);
         throw notesError;
       }
       
-      console.log("Hook: Successfully deleted associated notes");
+      console.log("Hook: Successfully deleted associated notes:", deletedNotes?.length || 0);
       
       // Then delete the inquiry itself
       console.log("Hook: Deleting inquiry...");
-      const { error } = await supabase
+      const { error, data: deletedInquiry } = await supabase
         .from('contact_submissions')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
       if (error) {
         console.error("Hook: Error deleting inquiry:", error);
         throw error;
       }
       
-      console.log("Hook: Successfully deleted inquiry with ID:", id);
+      console.log("Hook: Successfully deleted inquiry:", deletedInquiry);
 
       // Update local state immediately
       setContactInquiries(prevInquiries => 
@@ -113,11 +128,20 @@ export const useContactInquiries = () => {
         title: "Inquiry deleted",
         description: "The contact inquiry has been deleted successfully.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Hook: Error in deletion process:', error);
+      
+      // Provide more specific error messages based on the error type
+      let errorMessage = "Failed to delete inquiry.";
+      if (error.message && error.message.includes("new row violates row-level security")) {
+        errorMessage = "Permission denied. Only admins can delete inquiries.";
+      } else if (error.message && error.message.includes("Authentication required")) {
+        errorMessage = "Authentication required to delete inquiries.";
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to delete inquiry.",
+        description: errorMessage,
         variant: "destructive",
       });
       throw error; // Re-throw to handle in the component

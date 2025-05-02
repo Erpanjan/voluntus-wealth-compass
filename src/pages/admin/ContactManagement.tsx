@@ -37,6 +37,18 @@ const ContactManagement = () => {
   // Get status counts
   const statusCounts = getStatusCounts();
 
+  // Enhanced delete handler with refresh
+  const handleDelete = async (id: string) => {
+    try {
+      await handleDeleteInquiry(id);
+      // Force refresh of inquiries to ensure UI is in sync with database
+      fetchContactInquiries();
+    } catch (error) {
+      console.error('Error in ContactManagement delete handler:', error);
+      // Error toast will be shown by the hook
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -74,7 +86,7 @@ const ContactManagement = () => {
                 notes={getNotesForInquiry(inquiry.id)}
                 refreshNotes={fetchContactNotes}
                 refreshInquiries={fetchContactInquiries}
-                onDelete={handleDeleteInquiry}
+                onDelete={handleDelete}
               />
             ))}
           </div>
