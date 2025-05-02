@@ -1,8 +1,21 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
+import { Check, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 interface ConsultationFormSectionProps {
   consultationData: {
@@ -19,6 +32,9 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
   updateConsultationData
 }) => {
   const { toast } = useToast();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    consultationData.date ? new Date(consultationData.date) : undefined
+  );
 
   // Available consultation types
   const consultationTypes = [
@@ -26,36 +42,61 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
     { id: 'in-person', label: 'In-Person Meeting', description: 'Visit our office for a face-to-face consultation with our financial experts.' }
   ];
 
-  // Available dates and times for scheduling
-  const availableDates = [
-    { id: 'date-1', value: '2025-05-05', label: 'Monday, May 5' },
-    { id: 'date-2', value: '2025-05-06', label: 'Tuesday, May 6' },
-    { id: 'date-3', value: '2025-05-07', label: 'Wednesday, May 7' },
-    { id: 'date-4', value: '2025-05-08', label: 'Thursday, May 8' },
-    { id: 'date-5', value: '2025-05-09', label: 'Friday, May 9' }
-  ];
-
+  // Available times for scheduling, organized by time periods
   const availableTimes = [
-    { id: 'time-1', value: '09:00', label: '9:00 AM' },
-    { id: 'time-2', value: '10:00', label: '10:00 AM' },
-    { id: 'time-3', value: '11:00', label: '11:00 AM' },
-    { id: 'time-4', value: '14:00', label: '2:00 PM' },
-    { id: 'time-5', value: '15:00', label: '3:00 PM' },
-    { id: 'time-6', value: '16:00', label: '4:00 PM' },
+    {
+      label: 'Morning',
+      times: [
+        { value: '09:00', label: '9:00 AM' },
+        { value: '10:00', label: '10:00 AM' },
+        { value: '11:00', label: '11:00 AM' },
+      ]
+    },
+    {
+      label: 'Afternoon',
+      times: [
+        { value: '14:00', label: '2:00 PM' },
+        { value: '15:00', label: '3:00 PM' },
+        { value: '16:00', label: '4:00 PM' },
+      ]
+    }
   ];
 
+  // Handle consultation type selection
   const handleTypeSelection = (type: string) => {
     updateConsultationData({ type });
   };
 
-  const handleDateSelection = (date: string) => {
-    updateConsultationData({ date });
+  // Handle date selection from calendar
+  const handleDateSelection = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      updateConsultationData({ date: format(date, 'yyyy-MM-dd') });
+    }
   };
 
+  // Handle time selection
   const handleTimeSelection = (time: string) => {
     updateConsultationData({ time });
   };
 
+  // Get readable format for selected date
+  const getReadableDateFormat = () => {
+    if (!selectedDate) return '';
+    return format(selectedDate, 'EEEE, MMMM d, yyyy');
+  };
+
+  // Get readable format for selected time
+  const getReadableTimeFormat = () => {
+    if (!consultationData.time) return '';
+    for (const group of availableTimes) {
+      const foundTime = group.times.find(t => t.value === consultationData.time);
+      if (foundTime) return foundTime.label;
+    }
+    return consultationData.time;
+  };
+
+  // Confirm consultation booking
   const confirmConsultation = () => {
     if (!consultationData.type || !consultationData.date || !consultationData.time) {
       toast({
@@ -68,13 +109,9 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
 
     updateConsultationData({ completed: true });
     
-    // Get the label versions for the toast
-    const dateLabel = availableDates.find(d => d.value === consultationData.date)?.label || consultationData.date;
-    const timeLabel = availableTimes.find(t => t.value === consultationData.time)?.label || consultationData.time;
-    
     toast({
       title: "Consultation Scheduled",
-      description: `Your ${consultationData.type} consultation has been scheduled for ${dateLabel} at ${timeLabel}.`,
+      description: `Your ${consultationData.type === 'virtual' ? 'Virtual Meeting' : 'In-Person Meeting'} consultation has been scheduled for ${getReadableDateFormat()} at ${getReadableTimeFormat()}.`,
     });
   };
 
@@ -105,21 +142,41 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
         </div>
       </div>
 
-      {/* Date Selection */}
+      {/* Date Selection with Calendar */}
       {consultationData.type && (
         <div>
           <h3 className="text-lg font-medium mb-4">Select Date</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {availableDates.map(date => (
-              <Button
-                key={date.id}
-                variant={consultationData.date === date.value ? 'default' : 'outline'}
-                className={`w-full ${consultationData.date === date.value ? '' : 'hover:border-gray-400'}`}
-                onClick={() => handleDateSelection(date.value)}
-              >
-                {date.label}
-              </Button>
-            ))}
+          <div className="flex flex-col gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full md:w-[300px] justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? getReadableDateFormat() : <span>Select a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateSelection}
+                  disabled={(date) => date < new Date()}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+            
+            {selectedDate && (
+              <p className="text-sm text-gray-500">
+                Select a convenient date for your consultation.
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -128,17 +185,31 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
       {consultationData.type && consultationData.date && (
         <div>
           <h3 className="text-lg font-medium mb-4">Select Time</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {availableTimes.map(time => (
-              <Button
-                key={time.id}
-                variant={consultationData.time === time.value ? 'default' : 'outline'}
-                className={`w-full ${consultationData.time === time.value ? '' : 'hover:border-gray-400'}`}
-                onClick={() => handleTimeSelection(time.value)}
-              >
-                {time.label}
-              </Button>
-            ))}
+          <div className="flex flex-col gap-2">
+            <Select value={consultationData.time} onValueChange={handleTimeSelection}>
+              <SelectTrigger className="w-full md:w-[300px]">
+                <div className="flex items-center">
+                  <Clock className="mr-2 h-4 w-4" />
+                  <SelectValue placeholder="Select a time" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {availableTimes.map(group => (
+                  <SelectGroup key={group.label}>
+                    <SelectLabel>{group.label}</SelectLabel>
+                    {group.times.map(time => (
+                      <SelectItem key={time.value} value={time.value}>
+                        {time.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <p className="text-sm text-gray-500">
+              Choose a time that works best for you.
+            </p>
           </div>
         </div>
       )}
@@ -162,11 +233,7 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
             <div>
               <p className="font-medium">Consultation Scheduled</p>
               <p className="text-sm text-gray-600">
-                {consultationData.type === 'virtual' ? 'Virtual Meeting' : 'In-Person Meeting'} on {
-                  availableDates.find(d => d.value === consultationData.date)?.label
-                } at {
-                  availableTimes.find(t => t.value === consultationData.time)?.label
-                }
+                {consultationData.type === 'virtual' ? 'Virtual Meeting' : 'In-Person Meeting'} on {getReadableDateFormat()} at {getReadableTimeFormat()}
               </p>
             </div>
           </div>
