@@ -1,195 +1,39 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { ConfirmationDialog } from '@/components/admin/users/ConfirmationDialog';
-import { UserDetailsDialog } from '@/components/admin/users/UserDetailsDialog';
-import { useUserService, UserAccount } from '@/services/userService';
-import { useToast } from '@/hooks/use-toast';
-import { AlertsSection } from '@/components/admin/users/AlertsSection';
-import { UserFilter } from '@/components/admin/users/UserFilter';
-import { UserAccountList } from '@/components/admin/users/UserAccountList';
-import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const UserAccountManagement = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [users, setUsers] = useState<UserAccount[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState<UserAccount | null>(null);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [isUserDetailsDialogOpen, setIsUserDetailsDialogOpen] = useState(false);
-  const [userDetails, setUserDetails] = useState<any>(null);
-  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
-  const [actionType, setActionType] = useState<'activate' | 'deactivate' | 'delete'>('activate');
-  const { fetchUsers, updateUserStatus, deleteUser, getUserDetails } = useUserService();
-  const { toast } = useToast();
-  const [adminPermissionsLimited, setAdminPermissionsLimited] = useState(true); // Default to true since we know we have limited permissions
-  const [noUsersFound, setNoUsersFound] = useState(false);
-  
-  // Fetch users on component mount
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  // Load users from the service
-  const loadUsers = async () => {
-    setIsLoading(true);
-    console.log('Loading users...');
-    
-    try {
-      const fetchedUsers = await fetchUsers();
-      console.log('Fetched users:', fetchedUsers);
-      
-      // Filter out any admin users that might have slipped through
-      const clientUsers = fetchedUsers.filter(user => user.role !== 'Admin');
-      console.log('Client users only:', clientUsers);
-      
-      setUsers(clientUsers);
-      setNoUsersFound(clientUsers.length === 0);
-      
-      // We know we have limited permissions, so no need to check
-      setAdminPermissionsLimited(true);
-    } catch (error) {
-      console.error('Error loading users:', error);
-      setNoUsersFound(true);
-      toast({
-        title: 'Error',
-        description: 'Failed to load user accounts.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Handle user account activation/deactivation
-  const handleUserStatusChange = (user: UserAccount, action: 'activate' | 'deactivate') => {
-    setSelectedUser(user);
-    setActionType(action);
-    setIsConfirmDialogOpen(true);
-  };
-  
-  // Handle user deletion
-  const handleUserDelete = (user: UserAccount) => {
-    setSelectedUser(user);
-    setActionType('delete');
-    setIsConfirmDialogOpen(true);
-  };
-  
-  // Handle user details view
-  const handleViewUserDetails = async (user: UserAccount) => {
-    setSelectedUser(user);
-    setIsUserDetailsDialogOpen(true);
-    setIsLoadingDetails(true);
-    
-    const details = await getUserDetails(user.id);
-    setUserDetails(details);
-    setIsLoadingDetails(false);
-  };
-
-  // Confirm and execute status change or deletion
-  const confirmAction = async () => {
-    if (!selectedUser) return;
-    
-    let success = false;
-    
-    if (actionType === 'delete') {
-      success = await deleteUser(selectedUser.id);
-      
-      if (success) {
-        // Remove from UI
-        setUsers(prevUsers => prevUsers.filter(u => u.id !== selectedUser.id));
-        
-        toast({
-          title: 'Success',
-          description: `User account deleted successfully.`,
-        });
-      }
-    } else {
-      // Activate or deactivate
-      success = await updateUserStatus(
-        selectedUser.id, 
-        actionType === 'activate'
-      );
-      
-      if (success) {
-        // Update local state
-        setUsers(prevUsers => 
-          prevUsers.map(u => 
-            u.id === selectedUser.id
-              ? { ...u, status: actionType === 'activate' ? 'Active' : 'Inactive' }
-              : u
-          )
-        );
-        
-        toast({
-          title: 'Success',
-          description: `User account ${actionType === 'activate' ? 'activated' : 'deactivated'} successfully.`,
-        });
-      }
-    }
-    
-    // Close dialog
-    setIsConfirmDialogOpen(false);
-  };
-
-  // Handle search query change
-  const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
-  };
-
-  // Filter users based on search query
-  const filteredUsers = users.filter(user => {
-    const searchLower = searchQuery.toLowerCase();
-    return user.email.toLowerCase().includes(searchLower) || 
-      (user.userNumber && user.userNumber.toLowerCase().includes(searchLower)) ||
-      (user.firstName && user.firstName.toLowerCase().includes(searchLower)) ||
-      (user.lastName && user.lastName.toLowerCase().includes(searchLower));
-  });
-  
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <UserFilter 
-          searchQuery={searchQuery} 
-          onSearchChange={handleSearchChange} 
-          onRefresh={loadUsers}
-          isLoading={isLoading}
-        />
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">User Account Management</h1>
+        </div>
         
-        <AlertsSection 
-          adminPermissionsLimited={adminPermissionsLimited}
-          noUsersFound={noUsersFound}
-          isLoading={isLoading}
-        />
+        <Alert variant="warning" className="border-amber-300 bg-amber-50">
+          <AlertTriangle className="h-4 w-4 text-amber-500" />
+          <AlertDescription className="text-amber-800">
+            The user account management functionality is currently being updated. Please check back later.
+          </AlertDescription>
+        </Alert>
         
-        <UserAccountList 
-          users={filteredUsers}
-          isLoading={isLoading}
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-          onRefresh={loadUsers}
-          onActivate={(user) => handleUserStatusChange(user, 'activate')}
-          onDeactivate={(user) => handleUserStatusChange(user, 'deactivate')}
-          onDelete={handleUserDelete}
-          onViewDetails={handleViewUserDetails}
-        />
+        <Card>
+          <CardHeader>
+            <CardTitle>User Accounts</CardTitle>
+            <CardDescription>Manage client user accounts and their status</CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <div className="text-center py-10">
+              <p className="text-gray-500">User account management is currently unavailable.</p>
+              <p className="text-sm text-gray-400 mt-2">We're working on improving this feature for better performance.</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      <ConfirmationDialog
-        isOpen={isConfirmDialogOpen}
-        onClose={() => setIsConfirmDialogOpen(false)}
-        onConfirm={confirmAction}
-        user={selectedUser}
-        actionType={actionType}
-      />
-      
-      <UserDetailsDialog 
-        isOpen={isUserDetailsDialogOpen}
-        onClose={() => setIsUserDetailsDialogOpen(false)}
-        user={selectedUser}
-        userDetails={userDetails}
-        isLoading={isLoadingDetails}
-      />
     </AdminLayout>
   );
 };
