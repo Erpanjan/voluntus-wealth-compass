@@ -5,7 +5,6 @@ import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautif
 import { ArrowUp, ArrowDown, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Goal } from '../types';
-import { getNumberedBackground } from '../data';
 
 interface GoalPriorityQuestionProps {
   questionNumber: number;
@@ -53,16 +52,14 @@ const GoalPriorityQuestion: React.FC<GoalPriorityQuestionProps> = ({
   };
 
   return (
-    <Card className="border-0 shadow-lg overflow-hidden">
+    <Card className="border border-gray-200 shadow-sm overflow-hidden">
       <CardContent className="p-6">
         <div className="space-y-6">
-          <div className="flex items-center space-x-3">
-            <div className={`w-10 h-10 rounded-full ${getNumberedBackground(questionNumber)} text-white flex items-center justify-center font-bold`}>{questionNumber}</div>
-            <h2 className="text-xl font-semibold">{title}</h2>
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xl font-semibold">{questionNumber}. {title}</h2>
+            <p className="text-gray-600 text-sm">{description}</p>
           </div>
           
-          <p className="text-gray-600 text-sm">{description}</p>
-
           <div className="space-y-4 mt-4">
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="goals-priority">
@@ -87,15 +84,15 @@ const GoalPriorityQuestion: React.FC<GoalPriorityQuestionProps> = ({
                               <div className="flex items-center space-x-3 flex-grow">
                                 <div 
                                   {...provided.dragHandleProps}
-                                  className="cursor-move text-gray-400 hover:text-gray-700"
+                                  className="cursor-move text-amber-400 hover:text-amber-700"
                                 >
                                   <GripVertical size={20} />
                                 </div>
-                                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100">
+                                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-amber-100 text-amber-800 font-medium">
                                   {index + 1}
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                  <span className="h-5 w-5">{goal.icon}</span>
+                                  <span className="h-5 w-5 text-amber-600">{goal.icon}</span>
                                   <span className="font-medium">{goal.name}</span>
                                 </div>
                               </div>
@@ -104,7 +101,7 @@ const GoalPriorityQuestion: React.FC<GoalPriorityQuestionProps> = ({
                                   type="button"
                                   variant="outline"
                                   size="sm"
-                                  className="p-0 h-8 w-8"
+                                  className="p-0 h-8 w-8 border-amber-200 text-amber-700 hover:text-amber-900 hover:bg-amber-50"
                                   onClick={() => handleMoveUp(index)}
                                   disabled={index === 0}
                                 >
@@ -114,7 +111,7 @@ const GoalPriorityQuestion: React.FC<GoalPriorityQuestionProps> = ({
                                   type="button"
                                   variant="outline" 
                                   size="sm"
-                                  className="p-0 h-8 w-8"
+                                  className="p-0 h-8 w-8 border-amber-200 text-amber-700 hover:text-amber-900 hover:bg-amber-50"
                                   onClick={() => handleMoveDown(index)}
                                   disabled={index === goalOrder.length - 1}
                                 >
@@ -134,7 +131,7 @@ const GoalPriorityQuestion: React.FC<GoalPriorityQuestionProps> = ({
           </div>
           
           {goalOrder.length === 0 && (
-            <div className="text-center py-4 text-gray-500">
+            <div className="text-center py-4 text-gray-500 border border-dashed border-gray-300 rounded-lg bg-gray-50">
               No goals selected. Please select financial goals in the previous section first.
             </div>
           )}
