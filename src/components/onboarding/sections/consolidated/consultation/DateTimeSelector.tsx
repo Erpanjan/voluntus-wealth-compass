@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import CalendarSelector from './CalendarSelector';
 import TimeInput from './TimeInput';
 import { useTimeValidation } from '@/hooks/useTimeValidation';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DateTimeSelectorProps {
   selectedDate: Date | undefined;
@@ -22,6 +23,7 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
   onTimeRangeChange
 }) => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [startTime, setStartTime] = useState(selectedStartTime);
   const [endTime, setEndTime] = useState(selectedEndTime);
   
@@ -72,7 +74,7 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
 
   return (
     <div>
-      <h3 className="text-lg font-medium mb-2">Select Date & Time</h3>
+      <h3 className={`${isMobile ? 'text-xl' : 'text-lg'} font-medium mb-2`}>Select Date & Time</h3>
       <p className="text-sm text-gray-500 mb-4">
         Choose a convenient date and time for your consultation.
       </p>
@@ -86,7 +88,7 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
         
         {selectedDate && (
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className={`flex flex-col ${!isMobile ? 'sm:flex-row' : ''} gap-4`}>
               {/* Start Time Input */}
               <TimeInput
                 label="Start Time"
@@ -105,13 +107,13 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
             </div>
             
             {timeError && (
-              <Alert variant="warning">
-                <AlertDescription>{timeError}</AlertDescription>
+              <Alert variant="warning" className={`${isMobile ? 'p-3' : ''}`}>
+                <AlertDescription className={`${isMobile ? 'text-sm' : ''}`}>{timeError}</AlertDescription>
               </Alert>
             )}
             
             {!timeError && timeRegex.test(startTime) && timeRegex.test(endTime) && (
-              <p className="text-sm text-gray-500">
+              <p className={`${isMobile ? 'text-base' : 'text-sm'} text-gray-500`}>
                 Consultation duration: {getDurationText(startTime, endTime)}
               </p>
             )}

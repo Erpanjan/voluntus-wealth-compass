@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import ConsultationTypeSelector from './consultation/ConsultationTypeSelector';
 import DateTimeSelector from './consultation/DateTimeSelector';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ConsultationFormSectionProps {
   consultationData: {
@@ -20,6 +21,7 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
   updateConsultationData
 }) => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     consultationData.date ? new Date(consultationData.date) : undefined
   );
@@ -51,7 +53,7 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
   };
 
   return (
-    <div className="space-y-8">
+    <div className={`space-y-${isMobile ? '6' : '8'}`}>
       {/* Consultation Type Selection */}
       <ConsultationTypeSelector 
         selectedType={consultationData.type}

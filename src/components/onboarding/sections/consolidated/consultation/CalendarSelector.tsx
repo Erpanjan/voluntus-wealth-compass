@@ -6,6 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CalendarSelectorProps {
   selectedDate: Date | undefined;
@@ -16,6 +17,8 @@ const CalendarSelector: React.FC<CalendarSelectorProps> = ({
   selectedDate,
   onDateChange
 }) => {
+  const isMobile = useIsMobile();
+  
   const getReadableDateFormat = () => {
     if (!selectedDate) return '';
     return format(selectedDate, 'EEEE, MMMM d, yyyy');
@@ -29,10 +32,11 @@ const CalendarSelector: React.FC<CalendarSelectorProps> = ({
             variant="outline"
             className={cn(
               "w-full justify-start text-left font-normal",
-              !selectedDate && "text-muted-foreground"
+              !selectedDate && "text-muted-foreground",
+              isMobile && "h-12 text-base py-6"
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
+            <CalendarIcon className={cn("mr-2 h-4 w-4", isMobile && "h-5 w-5")} />
             {selectedDate ? getReadableDateFormat() : <span>Select a date</span>}
           </Button>
         </PopoverTrigger>
@@ -43,7 +47,7 @@ const CalendarSelector: React.FC<CalendarSelectorProps> = ({
             onSelect={onDateChange}
             disabled={(date) => date < new Date()}
             initialFocus
-            className="p-3 pointer-events-auto"
+            className={cn("p-3 pointer-events-auto", isMobile && "touch-manipulation")}
           />
         </PopoverContent>
       </Popover>
