@@ -124,7 +124,7 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
                 
                 <Button 
                   onClick={handleNavigateToQuestionnaire}
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+                  variant="default"
                 >
                   Complete Questionnaire
                 </Button>
@@ -168,9 +168,10 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
               
               <Button 
                 onClick={handleNavigateToQuestionnaire}
+                variant={questionnaireData.completed ? "secondary" : "default"}
                 className={questionnaireData.completed 
-                  ? "bg-gray-100 text-gray-800 hover:bg-gray-200" 
-                  : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"}
+                  ? "" 
+                  : ""}
               >
                 {loading ? (
                   <>
