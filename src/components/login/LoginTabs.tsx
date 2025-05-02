@@ -7,31 +7,20 @@ import ForgotPasswordForm from '@/components/login/ForgotPasswordForm';
 
 interface LoginTabsProps {
   isAdminMode: boolean;
-  isAnimating: boolean;
   onDemoLogin: () => void;
   onRegularLogin: () => void;
 }
 
 const LoginTabs: React.FC<LoginTabsProps> = ({
   isAdminMode,
-  isAnimating,
   onDemoLogin,
   onRegularLogin
 }) => {
   return (
-    <div 
-      className={`portal-switch transition-all duration-500 ease-in-out ${
-        isAnimating ? 'opacity-70 transform scale-[0.99]' : 'opacity-100 transform scale-100'
-      }`}
-      style={{ 
-        willChange: 'opacity, transform', 
-        backfaceVisibility: 'hidden',
-        transformStyle: 'preserve-3d'
-      }}
-    >
+    <div>
       {isAdminMode ? (
         // Admin mode - Single login tab with consistent height
-        <Tabs defaultValue="login" className="w-full custom-tabs prevent-flicker">
+        <Tabs defaultValue="login" className="w-full custom-tabs">
           <div className="px-6">
             <TabsList className="grid grid-cols-1 w-full bg-transparent p-0 h-12 relative">
               <TabsTrigger value="login" className="tab-button">Login</TabsTrigger>
@@ -39,11 +28,10 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
             </TabsList>
           </div>
 
-          <div className="h-[450px] relative overflow-hidden prevent-flicker">
+          <div className="h-[450px] relative overflow-hidden">
             <TabsContent 
               value="login" 
-              className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out"
-              // Force render even during transitions
+              className="p-6 absolute w-full top-0 left-0"
               forceMount={true}
             >
               <LoginForm onDemoLogin={onDemoLogin} onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
@@ -52,7 +40,7 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
         </Tabs>
       ) : (
         // Client mode - All three tabs with the same fixed height
-        <Tabs defaultValue="login" className="w-full custom-tabs prevent-flicker">
+        <Tabs defaultValue="login" className="w-full custom-tabs">
           <div className="px-6">
             <TabsList className="grid grid-cols-3 w-full bg-transparent p-0 h-12 relative">
               <TabsTrigger value="login" className="tab-button">Login</TabsTrigger>
@@ -62,10 +50,10 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
             </TabsList>
           </div>
 
-          <div className="h-[450px] relative overflow-hidden prevent-flicker">
+          <div className="h-[450px] relative overflow-hidden">
             <TabsContent 
               value="login" 
-              className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out"
+              className="p-6 absolute w-full top-0 left-0"
               forceMount={true}
             >
               <LoginForm onDemoLogin={onDemoLogin} onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
@@ -73,7 +61,7 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
 
             <TabsContent 
               value="register" 
-              className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out"
+              className="p-6 absolute w-full top-0 left-0"
               forceMount={true}
             >
               <RegisterForm isAdminMode={isAdminMode} />
@@ -81,7 +69,7 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
 
             <TabsContent 
               value="forgot" 
-              className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out"
+              className="p-6 absolute w-full top-0 left-0"
               forceMount={true}
             >
               <ForgotPasswordForm />

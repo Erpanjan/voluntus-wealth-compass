@@ -6,29 +6,19 @@ import { Label } from '@/components/ui/label';
 interface AdminToggleProps {
   isAdminMode: boolean;
   onToggle: (checked: boolean) => void;
-  isAnimating?: boolean;
   isDisabled?: boolean;
 }
 
 const AdminToggle: React.FC<AdminToggleProps> = ({ 
   isAdminMode, 
-  onToggle, 
-  isAnimating = false,
+  onToggle,
   isDisabled = false 
 }) => {
   return (
-    <div className="flex items-center justify-center relative w-full h-full prevent-flicker">
+    <div className="flex items-center justify-center relative w-full h-full">
       <div className="flex items-center space-x-4">
-        <div className="text-center w-[200px] prevent-flicker">
-          <h1 
-            className={`text-3xl font-bold transition-all duration-400 ease-out
-              ${isAnimating ? 'opacity-80 transform scale-[0.98]' : 'opacity-100 transform scale-100'}`}
-            style={{ 
-              willChange: 'opacity, transform',
-              backfaceVisibility: 'hidden',
-              transformStyle: 'preserve-3d'
-            }}
-          >
+        <div className="text-center w-[200px]">
+          <h1 className="text-3xl font-bold">
             {isAdminMode ? 'Admin Portal' : 'Client Portal'}
           </h1>
         </div>
@@ -37,7 +27,7 @@ const AdminToggle: React.FC<AdminToggleProps> = ({
             id="admin-mode"
             checked={isAdminMode}
             onCheckedChange={onToggle}
-            className={`transition-all duration-300 ${isDisabled ? 'opacity-70 cursor-not-allowed' : ''}`}
+            className={isDisabled ? 'opacity-70 cursor-not-allowed' : ''}
             disabled={isDisabled}
           />
           <Label htmlFor="admin-mode" className="text-sm text-gray-600"></Label>
