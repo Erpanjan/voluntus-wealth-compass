@@ -121,22 +121,15 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
     <div className={`border rounded-lg overflow-hidden ${inquiry.status === 'New' ? 'border-l-4 border-l-blue-500' : ''}`}>
       <div className="bg-white p-4">
         <div className="flex justify-between items-start mb-2">
-          <div className="flex-1">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-medium">{`${inquiry.first_name} ${inquiry.last_name}`}</h3>
-              <div className="flex items-center">
-                <ContactDetails inquiry={inquiry} />
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-gray-500 hover:text-red-500 ml-2"
-                  onClick={() => setIsDeleteDialogOpen(true)}
-                >
-                  <Trash size={16} />
-                </Button>
-              </div>
-            </div>
-          </div>
+          <ContactDetails inquiry={inquiry} />
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="text-gray-500 hover:text-red-500"
+            onClick={() => setIsDeleteDialogOpen(true)}
+          >
+            <Trash size={16} />
+          </Button>
         </div>
         
         <ContactActions 

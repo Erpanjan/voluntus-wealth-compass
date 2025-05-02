@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { Phone, Mail, MessageSquare } from 'lucide-react';
@@ -38,12 +37,15 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ inquiry }) => {
   };
 
   return (
-    <>
-      <Badge className={`px-2 py-1 text-xs ${getStatusColor(inquiry.status)}`}>
-        {inquiry.status}
-      </Badge>
+    <div className="flex-1">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-lg font-medium">{`${inquiry.first_name} ${inquiry.last_name}`}</h3>
+        <Badge className={`px-2 py-1 text-xs ${getStatusColor(inquiry.status)}`}>
+          {inquiry.status}
+        </Badge>
+      </div>
       
-      <div className="grid md:grid-cols-2 gap-2 mb-3 mt-2">
+      <div className="grid md:grid-cols-2 gap-2 mb-3">
         <div className="text-sm text-gray-700">
           <span className="text-gray-500">Contact via:</span> {inquiry.contact_type}
         </div>
@@ -59,7 +61,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ inquiry }) => {
       <div className="mb-4 text-gray-700 bg-gray-50 p-3 rounded-md text-sm">
         {inquiry.message}
       </div>
-    </>
+    </div>
   );
 };
 
