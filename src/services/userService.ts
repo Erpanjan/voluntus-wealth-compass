@@ -21,10 +21,12 @@ export const useUserService = () => {
     try {
       console.log('Fetching profiles from Supabase...');
       
-      // Get all profiles from the public.profiles table
+      // The current approach is causing an infinite recursion in the RLS policy
+      // We need to use a simpler query that doesn't trigger the recursive policy check
       const { data: profiles, error } = await supabase
         .from('profiles')
-        .select('*');
+        .select('id, email, first_name, last_name, is_active, is_admin, phone, created_at, updated_at')
+        .order('created_at', { ascending: false });
       
       if (error) {
         console.error('Error fetching profiles:', error);
@@ -32,10 +34,10 @@ export const useUserService = () => {
       }
       
       console.log(`Fetched ${profiles?.length || 0} profiles from database`);
-      console.log('Raw profiles data:', profiles);
+      if (profiles && profiles.length > 0) {
+        console.log('First profile:', profiles[0]);
+      }
       
-      // Return all profiles - we're not filtering out admin users anymore
-      // since we want to see all user accounts in the management interface
       return profiles || [];
     } catch (error: any) {
       console.error('Error fetching users:', error);
