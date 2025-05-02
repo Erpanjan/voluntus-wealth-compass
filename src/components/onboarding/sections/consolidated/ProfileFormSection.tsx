@@ -63,7 +63,7 @@ const ProfileFormSection: React.FC<ProfileFormSectionProps> = ({
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6">Personal Information</h2>
+      <h2 className="text-2xl font-semibold mb-6">Create Your Profile</h2>
       <p className="text-gray-600 mb-8">
         Let us know more about you; this will help us tailor the experience for you.
       </p>
