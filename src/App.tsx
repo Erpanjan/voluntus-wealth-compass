@@ -26,6 +26,7 @@ import ArticlesManagement from "./pages/admin/ArticlesManagement";
 import ArticleEditor from "./pages/admin/ArticleEditor";
 import ContactManagement from "./pages/admin/ContactManagement";
 import UserAccountManagement from "./pages/admin/UserAccountManagement";
+import ClientAppManagement from "./pages/admin/ClientAppManagement";
 
 const queryClient = new QueryClient();
 
@@ -243,6 +244,14 @@ const App = () => (
                 element={
                   <AdminRoute>
                     <UserAccountManagement />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/client-app" 
+                element={
+                  <AdminRoute>
+                    <ClientAppManagement />
                   </AdminRoute>
                 } 
               />
