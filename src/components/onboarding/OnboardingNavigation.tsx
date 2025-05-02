@@ -28,14 +28,7 @@ const OnboardingNavigation: React.FC<OnboardingNavigationProps> = ({
         </Button>
       )}
       
-      {currentStep === 0 && (
-        <Button 
-          variant="outline" 
-          onClick={handleSkip}
-        >
-          Skip Welcome
-        </Button>
-      )}
+      {/* Skip Welcome button removed */}
 
       {currentStep === totalSteps - 1 && (
         <Button 
