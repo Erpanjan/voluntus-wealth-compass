@@ -5,14 +5,21 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
-
-// Import the existing Questionnaire component
-import QuestionnaireComponent from '@/components/onboarding/Questionnaire';
+import { useOnboardingForm } from '@/hooks/use-onboarding-form';
+import QuestionnaireFormSection from '@/components/onboarding/sections/consolidated/QuestionnaireFormSection';
 
 const Questionnaire = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { formData, updateQuestionnaireData } = useOnboardingForm();
+
+  // Check if the questionnaire is already completed from the form data
+  React.useEffect(() => {
+    if (formData.questionnaire.completed) {
+      setIsCompleted(true);
+    }
+  }, [formData.questionnaire.completed]);
 
   const handleCompletion = () => {
     toast({
@@ -25,6 +32,12 @@ const Questionnaire = () => {
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 }
+    });
+    
+    // Save to localStorage via our hook before redirecting
+    updateQuestionnaireData({
+      completed: true,
+      answers: formData.questionnaire.answers
     });
     
     setTimeout(() => navigate('/onboarding'), 1500);
@@ -71,12 +84,22 @@ const Questionnaire = () => {
               <p className="text-amber-700">
                 This questionnaire will help us understand your financial situation and recommend the best investment 
                 strategy for you. Your answers are confidential and will only be used to customize our advice.
-                Complete all sections to earn rewards!
               </p>
             </div>
           </motion.div>
 
-          <QuestionnaireComponent setCompleted={setIsCompleted} />
+          <motion.div
+            className="bg-white rounded-lg shadow-sm border border-gray-100 p-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <QuestionnaireFormSection 
+              questionnaireData={formData.questionnaire}
+              updateQuestionnaireData={updateQuestionnaireData}
+              setCompleted={setIsCompleted}
+            />
+          </motion.div>
 
           <motion.div 
             className="flex justify-between mt-8"
@@ -88,7 +111,7 @@ const Questionnaire = () => {
               variant="outline" 
               onClick={() => navigate('/onboarding')}
             >
-              Skip Questionnaire
+              Back to Onboarding
             </Button>
             
             <Button 
