@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,10 +38,9 @@ export const useAuthListener = ({
           localStorage.setItem('isAuthenticated', 'true');
           
           // Check if the user is an admin by querying the profiles table
-          const isUserAdmin = await checkIsAdmin(session.user.id);
-          
-          if (isAdminMode || isUserAdmin) {
-            // Handle admin authentication flow
+          if (isAdminMode) {
+            const isUserAdmin = await checkIsAdmin(session.user.id);
+            
             if (!isUserAdmin) {
               toast({
                 title: "Access Denied",
@@ -57,16 +55,14 @@ export const useAuthListener = ({
               localStorage.removeItem('isAdminMode');
               navigate('/login');
             } else {
-              // User is admin and trying to access admin portal
               localStorage.setItem('isAdminMode', 'true');
               setIsAdmin(true);
               navigate('/admin/dashboard');
             }
           } else {
-            // Handle regular user flow
             localStorage.removeItem('isAdminMode');
             
-            // Only check onboarding status for non-admin mode
+            // Handle regular user flow based on onboarding status
             if (event === 'SIGNED_IN') {
               await checkOnboardingStatus(session.user.id);
             }
@@ -86,21 +82,20 @@ export const useAuthListener = ({
       if (session) {
         localStorage.setItem('isAuthenticated', 'true');
         
-        // Check if the user is an admin first
-        const isUserAdmin = await checkIsAdmin(session.user.id);
-        setIsAdmin(isUserAdmin);
-        
         // Check localStorage for admin mode
         const adminMode = localStorage.getItem('isAdminMode') === 'true';
         
-        // Admin flow has priority - if admin mode is active or user is admin
         if (adminMode || isAdminMode) {
+          const isUserAdmin = await checkIsAdmin(session.user.id);
+          
+          setIsAdmin(isUserAdmin);
+          
           if (isUserAdmin) {
-            // User is verified admin, set admin mode and redirect
             localStorage.setItem('isAdminMode', 'true');
             navigate('/admin/dashboard');
           } else {
-            // Not an admin but trying to access admin routes
+            // If not an admin but trying to access admin routes,
+            // redirect to regular dashboard
             localStorage.removeItem('isAdminMode');
             
             if (isAdminMode) {
@@ -112,21 +107,12 @@ export const useAuthListener = ({
               });
               navigate('/login');
             } else {
-              // Check onboarding for regular users
+              // Check onboarding status for regular users
               await checkOnboardingStatus(session.user.id);
             }
           }
-        } else if (isUserAdmin) {
-          // User is admin but not in admin mode, ask if they want to go to admin dashboard
-          toast({
-            title: "Admin Account Detected",
-            description: "You are logged in as an admin. You can access the admin dashboard.",
-            duration: 5000,
-          });
-          // Still follow regular flow for now
-          await checkOnboardingStatus(session.user.id);
         } else {
-          // Regular user flow
+          // Check onboarding status for regular users
           await checkOnboardingStatus(session.user.id);
         }
       }
