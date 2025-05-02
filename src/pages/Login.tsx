@@ -27,19 +27,17 @@ const Login = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle toggle animation for mode switch with card flip timing
+  // Handle toggle animation for mode switch
   const handleAdminToggle = (checked: boolean) => {
     setIsAnimating(true);
-    
-    // Allow time for the flip animation to occur
+    // Add animation class
     setTimeout(() => {
       setIsAdminMode(checked);
-      
       // Remove animation class after mode has changed
       setTimeout(() => {
         setIsAnimating(false);
-      }, 600);
-    }, 350);
+      }, 300);
+    }, 50);
   };
 
   // Show loading state
@@ -58,8 +56,8 @@ const Login = () => {
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
-        {/* Title and admin mode toggle with 3D flip effect */}
-        <div className="h-24 flex items-center justify-center">
+        {/* Title and admin mode toggle */}
+        <div className="h-24">
           <AdminToggle 
             isAdminMode={isAdminMode}
             onToggle={handleAdminToggle}
