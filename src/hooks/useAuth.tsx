@@ -27,7 +27,7 @@ export const useAuth = (isAdminMode: boolean) => {
           .from('onboarding_data')
           .select('id, status')
           .eq('id', userId)
-          .single();
+          .maybeSingle();
         
         if (error) {
           console.error('Error checking onboarding data:', error);
@@ -44,7 +44,8 @@ export const useAuth = (isAdminMode: boolean) => {
             navigate('/pending-approval');
           }
         } else {
-          // No onboarding data found, direct to welcome page
+          // No onboarding data found (data is null), direct to welcome page
+          console.log('No onboarding data found, redirecting to welcome page');
           navigate('/welcome');
         }
       }
