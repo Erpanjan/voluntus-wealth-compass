@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -23,7 +24,7 @@ export interface OnboardingFormData {
 }
 
 export function useOnboarding() {
-  
+  // This is kept for backward compatibility
 }
 
 export function useOnboardingForm() {
@@ -141,7 +142,7 @@ export function useOnboardingForm() {
         // If no session, only save to localStorage
         localStorage.setItem('onboardingDraft', JSON.stringify(newFormData));
         setSaving(false);
-        return;
+        return true;
       }
 
       // Save profile and consultation data to onboarding_data table
@@ -170,11 +171,6 @@ export function useOnboardingForm() {
 
       // Update localStorage with the latest data
       localStorage.setItem('onboardingDraft', JSON.stringify(newFormData));
-
-      toast({
-        title: 'Success',
-        description: status === 'draft' ? 'Draft saved successfully' : 'Application submitted successfully',
-      });
 
       return true;
     } catch (error) {
