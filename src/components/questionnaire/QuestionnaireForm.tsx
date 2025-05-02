@@ -1,22 +1,13 @@
-import React, { useState, useEffect } from 'react';
+
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
-import AgeGroupQuestion from './questions/AgeGroupQuestion';
-import IncomeQuestion from './questions/IncomeQuestion';
-import NetWorthQuestion from './questions/NetWorthQuestion';
-import InvestmentKnowledgeQuestion from './questions/InvestmentKnowledgeQuestion';
-import InvestmentExperienceQuestion from './questions/InvestmentExperienceQuestion';
-import ComplexProductsQuestion from './questions/ComplexProductsQuestion';
-import InvestmentCompositionQuestion from './questions/InvestmentCompositionQuestion';
-import FinancialGoalsQuestion from './questions/FinancialGoalsQuestion';
-import GoalPrioritiesQuestion from './questions/GoalPrioritiesQuestion';
-import RiskPreferencesQuestion from './questions/RiskPreferencesQuestion';
-import GoalTimelineQuestion from './questions/GoalTimelineQuestion';
-import GoalRiskAppetiteQuestion from './questions/GoalRiskAppetiteQuestion';
-import GoalRiskToleranceQuestion from './questions/GoalRiskToleranceQuestion';
-import GoalMarketResponseQuestion from './questions/GoalMarketResponseQuestion';
-import BehavioralBiasesQuestion from './questions/BehavioralBiasesQuestion';
-import ReviewSubmission from './ReviewSubmission';
+import { QuestionnaireProvider } from './QuestionnaireContext';
+import BasicInfoSteps from './steps/BasicInfoSteps';
+import InvestmentSteps from './steps/InvestmentSteps';
+import GoalSelectionSteps from './steps/GoalSelectionSteps';
+import GoalDetailSteps from './steps/GoalDetailSteps';
+import FinalSteps from './steps/FinalSteps';
 
 interface QuestionnaireFormProps {
   currentStep: number;
@@ -29,223 +20,58 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
   setCurrentStep,
   onComplete
 }) => {
-  // State for storing all questionnaire answers
-  const [answers, setAnswers] = useState<Record<string, any>>({
-    goals: [], // Will store selected financial goals
-    goalDetails: {} // Will store per-goal details
-  });
-
-  // Handle answer updates
-  const updateAnswer = (questionId: string, value: any) => {
-    console.log(`Updating ${questionId} with:`, value);
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: value
-    }));
-  };
-
-  // Function to get selected goals (used for goal-specific questions)
-  const getSelectedGoals = () => {
-    console.log("All goals:", answers.goals);
-    const filteredGoals = answers.goals?.filter(goal => {
-      const interestLevel = goal.interestLevel?.toLowerCase();
-      console.log(`Goal: ${goal.name}, Interest Level: ${interestLevel}`);
-      return (
-        interestLevel === 'already-planned' || 
-        interestLevel === 'strongly-interested' || 
-        interestLevel === 'would-consider'
-      );
-    }) || [];
-    
-    console.log("Filtered goals:", filteredGoals);
-    return filteredGoals;
-  };
-
-  // State to track which goal we're currently asking about for questions 11-14
-  const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
-  
-  // Get the current goal for goal-specific questions
-  const selectedGoals = getSelectedGoals();
-  const currentGoal = selectedGoals[currentGoalIndex] || null;
-
-  // Effect to log when goals change
-  useEffect(() => {
-    console.log("Goals changed:", answers.goals);
-    console.log("Selected goals:", selectedGoals);
-  }, [answers.goals, selectedGoals]);
-
-  // Function to progress to the next goal or step
-  const handleGoalQuestionComplete = () => {
-    if (currentGoalIndex < selectedGoals.length - 1) {
-      setCurrentGoalIndex(currentGoalIndex + 1);
-    } else {
-      // Move to the next main step after all goals are processed
-      setCurrentStep(currentStep + 1);
-      setCurrentGoalIndex(0); // Reset for potential back navigation
-    }
+  // Function to handle step changes
+  const handleNextStep = () => {
+    setCurrentStep(currentStep + 1);
   };
 
   // Determine which component to render based on the current step
   const renderQuestion = () => {
-    // For steps 11-14, we need to check if we have selected goals
+    // Basic info questions (steps 0-2)
+    if (currentStep <= 2) {
+      return <BasicInfoSteps step={currentStep} />;
+    }
+    
+    // Investment knowledge questions (steps 3-6)
+    if (currentStep >= 3 && currentStep <= 6) {
+      return <InvestmentSteps step={currentStep} />;
+    }
+    
+    // Goal selection and prioritization (steps 7-9)
+    if (currentStep >= 7 && currentStep <= 9) {
+      return <GoalSelectionSteps step={currentStep} onNext={handleNextStep} />;
+    }
+    
+    // Goal-specific questions (steps 10-13)
     if (currentStep >= 10 && currentStep <= 13) {
-      if (!selectedGoals.length) {
-        // Skip goal-specific questions if no goals were selected
-        setCurrentStep(14); // Skip to behavioral biases question
-        return null;
-      }
+      return <GoalDetailSteps step={currentStep} />;
     }
-
-    switch (currentStep) {
-      case 0:
-        return <AgeGroupQuestion value={answers.ageGroup} onChange={(val) => updateAnswer('ageGroup', val)} />;
-      case 1:
-        return <IncomeQuestion value={answers.income} onChange={(val) => updateAnswer('income', val)} />;
-      case 2:
-        return <NetWorthQuestion value={answers.netWorth} onChange={(val) => updateAnswer('netWorth', val)} />;
-      case 3:
-        return <InvestmentKnowledgeQuestion value={answers.investmentKnowledge} onChange={(val) => updateAnswer('investmentKnowledge', val)} />;
-      case 4:
-        return <InvestmentExperienceQuestion value={answers.investmentExperience} onChange={(val) => updateAnswer('investmentExperience', val)} />;
-      case 5:
-        return <ComplexProductsQuestion value={answers.complexProducts} onChange={(val) => updateAnswer('complexProducts', val)} />;
-      case 6:
-        return <InvestmentCompositionQuestion value={answers.investmentComposition} onChange={(val) => updateAnswer('investmentComposition', val)} />;
-      case 7:
-        return <FinancialGoalsQuestion value={answers.goals} onChange={(val) => updateAnswer('goals', val)} />;
-      case 8:
-        return selectedGoals.length > 0 ? 
-          <GoalPrioritiesQuestion goals={selectedGoals} value={answers.goalPriorities} onChange={(val) => updateAnswer('goalPriorities', val)} /> : 
-          <div className="py-4">
-            <p className="text-center text-gray-600">No financial goals selected for prioritization. Let's continue.</p>
-            <div className="flex justify-center mt-4">
-              <button 
-                className="px-4 py-2 bg-black text-white rounded-md"
-                onClick={() => setCurrentStep(currentStep + 1)}
-              >
-                Continue
-              </button>
-            </div>
-          </div>;
-      case 9:
-        return selectedGoals.length > 0 ? 
-          <RiskPreferencesQuestion goals={selectedGoals} value={answers.riskPreferences} onChange={(val) => updateAnswer('riskPreferences', val)} /> : 
-          <div className="py-4">
-            <p className="text-center text-gray-600">No financial goals selected for risk preferences. Let's continue.</p>
-            <div className="flex justify-center mt-4">
-              <button 
-                className="px-4 py-2 bg-black text-white rounded-md"
-                onClick={() => setCurrentStep(currentStep + 1)}
-              >
-                Continue
-              </button>
-            </div>
-          </div>;
-      case 10:
-        return currentGoal ? 
-          <GoalTimelineQuestion 
-            goal={currentGoal} 
-            value={answers.goalDetails?.[currentGoal.id]?.timeline} 
-            onChange={(val) => {
-              setAnswers(prev => ({
-                ...prev,
-                goalDetails: {
-                  ...prev.goalDetails,
-                  [currentGoal.id]: {
-                    ...prev.goalDetails?.[currentGoal.id],
-                    timeline: val
-                  }
-                }
-              }));
-            }}
-            onComplete={handleGoalQuestionComplete}
-          /> : 
-          null;
-      case 11:
-        return currentGoal ? 
-          <GoalRiskAppetiteQuestion 
-            goal={currentGoal}
-            value={answers.goalDetails?.[currentGoal.id]?.riskAppetite}
-            onChange={(val) => {
-              setAnswers(prev => ({
-                ...prev,
-                goalDetails: {
-                  ...prev.goalDetails,
-                  [currentGoal.id]: {
-                    ...prev.goalDetails?.[currentGoal.id],
-                    riskAppetite: val
-                  }
-                }
-              }));
-            }}
-            onComplete={handleGoalQuestionComplete}
-          /> : 
-          null;
-      case 12:
-        return currentGoal ? 
-          <GoalRiskToleranceQuestion 
-            goal={currentGoal}
-            value={answers.goalDetails?.[currentGoal.id]?.riskTolerance}
-            onChange={(val) => {
-              setAnswers(prev => ({
-                ...prev,
-                goalDetails: {
-                  ...prev.goalDetails,
-                  [currentGoal.id]: {
-                    ...prev.goalDetails?.[currentGoal.id],
-                    riskTolerance: val
-                  }
-                }
-              }));
-            }}
-            onComplete={handleGoalQuestionComplete}
-          /> : 
-          null;
-      case 13:
-        return currentGoal ? 
-          <GoalMarketResponseQuestion 
-            goal={currentGoal}
-            riskTolerance={answers.goalDetails?.[currentGoal.id]?.riskTolerance}
-            value={answers.goalDetails?.[currentGoal.id]?.marketResponse}
-            onChange={(val) => {
-              setAnswers(prev => ({
-                ...prev,
-                goalDetails: {
-                  ...prev.goalDetails,
-                  [currentGoal.id]: {
-                    ...prev.goalDetails?.[currentGoal.id],
-                    marketResponse: val
-                  }
-                }
-              }));
-            }}
-            onComplete={handleGoalQuestionComplete}
-          /> : 
-          null;
-      case 14:
-        return <BehavioralBiasesQuestion value={answers.behavioralBiases} onChange={(val) => updateAnswer('behavioralBiases', val)} />;
-      case 15:
-        return <ReviewSubmission answers={answers} onSubmit={onComplete} />;
-      default:
-        return null;
+    
+    // Final questions and review (steps 14-15)
+    if (currentStep >= 14) {
+      return <FinalSteps step={currentStep} onComplete={onComplete} />;
     }
+    
+    return null;
   };
 
   return (
-    <motion.div
-      key={`question-${currentStep}-goal-${currentGoalIndex}`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.4 }}
-      className="w-full"
-    >
-      <Card className="w-full">
-        <CardContent className="p-6">
-          {renderQuestion()}
-        </CardContent>
-      </Card>
-    </motion.div>
+    <QuestionnaireProvider currentStep={currentStep} setCurrentStep={setCurrentStep}>
+      <motion.div
+        key={`question-${currentStep}`}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.4 }}
+        className="w-full"
+      >
+        <Card className="w-full">
+          <CardContent className="p-6">
+            {renderQuestion()}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </QuestionnaireProvider>
   );
 };
 
