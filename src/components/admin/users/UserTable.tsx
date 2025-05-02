@@ -3,7 +3,7 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { UserCheck, UserMinus, UserX, User, AlertCircle, Eye } from 'lucide-react';
+import { UserCheck, UserMinus, UserX, Eye } from 'lucide-react';
 import { UserAccount } from '@/services/userService';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
@@ -38,7 +38,6 @@ export const UserTable: React.FC<UserTableProps> = ({
   if (users.length === 0) {
     return (
       <div className="text-center py-10">
-        <AlertCircle className="mx-auto h-10 w-10 text-gray-400" />
         <p className="mt-2 text-gray-500">No user accounts found.</p>
       </div>
     );
@@ -57,10 +56,7 @@ export const UserTable: React.FC<UserTableProps> = ({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>User #</TableHead>
           <TableHead>Email</TableHead>
-          <TableHead>Role</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Joined</TableHead>
           <TableHead className="text-right">Actions</TableHead>
@@ -69,23 +65,7 @@ export const UserTable: React.FC<UserTableProps> = ({
       <TableBody>
         {users.map(user => (
           <TableRow key={user.id}>
-            <TableCell className="font-medium">
-              <div className="flex items-center">
-                <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center mr-2">
-                  <User size={16} />
-                </div>
-                {user.firstName && user.lastName 
-                  ? `${user.firstName} ${user.lastName}` 
-                  : 'Unnamed User'}
-              </div>
-            </TableCell>
-            <TableCell>{user.userNumber || `USR-${user.id.substring(0, 6).toUpperCase()}`}</TableCell>
             <TableCell>{user.email}</TableCell>
-            <TableCell>
-              <Badge variant={user.role === 'Advisor' ? 'default' : 'outline'}>
-                {user.role}
-              </Badge>
-            </TableCell>
             <TableCell>
               <Badge 
                 variant="outline" 

@@ -12,6 +12,8 @@ import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 const UserAccountManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,6 +29,7 @@ const UserAccountManagement = () => {
   const { toast } = useToast();
   const [adminPermissionsLimited, setAdminPermissionsLimited] = useState(false);
   const [noUsersFound, setNoUsersFound] = useState(false);
+  const [showAdminAccounts, setShowAdminAccounts] = useState(false);
   
   // Fetch users on component mount
   useEffect(() => {
@@ -132,13 +135,22 @@ const UserAccountManagement = () => {
     setSearchQuery(query);
   };
 
-  // Filter users based on search query
-  const filteredUsers = users.filter(user => 
-    user.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    (user.userNumber && user.userNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (user.firstName && user.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (user.lastName && user.lastName.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // Filter users based on search query and admin toggle
+  const filteredUsers = users.filter(user => {
+    // First filter by search query
+    const matchesSearch = 
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (user.userNumber && user.userNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (user.firstName && user.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (user.lastName && user.lastName.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // Then filter by admin status if needed
+    if (!showAdminAccounts && user.role === 'Admin') {
+      return false;
+    }
+    
+    return matchesSearch;
+  });
   
   return (
     <AdminLayout>
@@ -180,11 +192,21 @@ const UserAccountManagement = () => {
             <CardTitle>User Accounts</CardTitle>
             <CardDescription>Manage client user accounts and their status</CardDescription>
             
-            <SearchBar 
-              searchQuery={searchQuery} 
-              onSearchChange={handleSearchChange} 
-              onRefresh={loadUsers}
-            />
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center space-x-2">
+                <Switch 
+                  id="show-admin" 
+                  checked={showAdminAccounts}
+                  onCheckedChange={setShowAdminAccounts}
+                />
+                <Label htmlFor="show-admin">Show admin accounts</Label>
+              </div>
+              <SearchBar 
+                searchQuery={searchQuery} 
+                onSearchChange={handleSearchChange} 
+                onRefresh={loadUsers}
+              />
+            </div>
           </CardHeader>
           
           <CardContent>
