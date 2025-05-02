@@ -27,15 +27,6 @@ const Login = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Clear any URL parameters that might be affecting the state
-  useEffect(() => {
-    // Check if there are any query parameters that could be affecting rendering
-    if (window.location.search) {
-      // Replace current URL with the same path but without query parameters
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
-
   // Handle toggle animation for mode switch
   const handleAdminToggle = (checked: boolean) => {
     setIsAnimating(true);
@@ -49,7 +40,7 @@ const Login = () => {
     }, 25); // reduced from 50ms to 25ms for faster response
   };
 
-  // Return loading UI
+  // Show loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
