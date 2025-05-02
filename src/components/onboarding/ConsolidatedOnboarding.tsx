@@ -60,47 +60,44 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
   
   return (
     <div className="w-full max-w-3xl mx-auto pb-24">
-      {/* Create a position context for the entire form content */}
-      <div className="relative">
-        {/* Profile Section */}
-        <div className="mb-16">
-          <ProfileFormSection 
-            profileData={formData.profile}
-            updateProfileData={updateProfileData}
-          />
-        </div>
+      {/* Profile Section */}
+      <div className="mb-16">
+        <ProfileFormSection 
+          profileData={formData.profile}
+          updateProfileData={updateProfileData}
+        />
+      </div>
+      
+      {/* Divider */}
+      <div className="w-full h-px bg-gray-200 my-10"></div>
+      
+      {/* Questionnaire Section */}
+      <div className="mb-16">
+        <h2 className="text-2xl font-semibold mb-6">Financial Questionnaire</h2>
+        <p className="text-gray-600 mb-8">
+          This questionnaire is designed to help us understand your financial circumstances and investment goals. While completing it is optional at this stage, it will be required before we can officially begin our service. You're welcome to skip it for now and return to it during consultation.
+        </p>
         
-        {/* Divider */}
-        <div className="w-full h-px bg-gray-200 my-10"></div>
+        <QuestionnaireFormSection
+          questionnaireData={formData.questionnaire}
+          updateQuestionnaireData={updateQuestionnaireData}
+        />
+      </div>
+      
+      {/* Divider */}
+      <div className="w-full h-px bg-gray-200 my-10"></div>
+      
+      {/* Consultation Section */}
+      <div>
+        <h2 className="text-2xl font-semibold mb-6">Schedule a Consultation</h2>
+        <p className="text-gray-600 mb-8">
+          Meet with one of our advisors for an in-depth discussion of your financial situation. We'll also use this session to verify key details and better understand your needs.
+        </p>
         
-        {/* Questionnaire Section */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-semibold mb-6">Financial Questionnaire</h2>
-          <p className="text-gray-600 mb-8">
-            This questionnaire is designed to help us understand your financial circumstances and investment goals. While completing it is optional at this stage, it will be required before we can officially begin our service. You're welcome to skip it for now and return to it during consultation.
-          </p>
-          
-          <QuestionnaireFormSection
-            questionnaireData={formData.questionnaire}
-            updateQuestionnaireData={updateQuestionnaireData}
-          />
-        </div>
-        
-        {/* Divider */}
-        <div className="w-full h-px bg-gray-200 my-10"></div>
-        
-        {/* Consultation Section */}
-        <div>
-          <h2 className="text-2xl font-semibold mb-6">Schedule a Consultation</h2>
-          <p className="text-gray-600 mb-8">
-            Meet with one of our advisors for an in-depth discussion of your financial situation. We'll also use this session to verify key details and better understand your needs.
-          </p>
-          
-          <ConsultationFormSection
-            consultationData={formData.consultation}
-            updateConsultationData={updateConsultationData}
-          />
-        </div>
+        <ConsultationFormSection
+          consultationData={formData.consultation}
+          updateConsultationData={updateConsultationData}
+        />
       </div>
       
       {/* Fixed Bottom Action Bar - Increased z-index to 100 to prevent layout shift */}
