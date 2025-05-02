@@ -69,6 +69,9 @@ export function useOnboardingForm() {
         formData.consultation.startTime && 
         formData.consultation.endTime) {
       updateConsultationData({ completed: true });
+    } else if (formData.consultation.completed) {
+      // If any required field is missing but completion is marked true, update it
+      updateConsultationData({ completed: false });
     }
   }, [formData.consultation.type, formData.consultation.date, formData.consultation.startTime, formData.consultation.endTime]);
 

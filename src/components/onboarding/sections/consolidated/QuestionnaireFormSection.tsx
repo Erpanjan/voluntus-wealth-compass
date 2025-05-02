@@ -15,7 +15,8 @@ interface QuestionnaireFormSectionProps {
 }
 
 const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
-  questionnaireData
+  questionnaireData,
+  updateQuestionnaireData
 }) => {
   const navigate = useNavigate();
   
@@ -44,6 +45,16 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
   };
   
   const completionPercentage = calculateCompletionPercentage();
+  
+  // Mark as complete if we've reached 100%
+  React.useEffect(() => {
+    if (completionPercentage === 100 && !questionnaireData.completed) {
+      updateQuestionnaireData({
+        ...questionnaireData,
+        completed: true
+      });
+    }
+  }, [completionPercentage, questionnaireData]);
   
   return (
     <div className="space-y-6">

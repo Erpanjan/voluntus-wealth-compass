@@ -29,27 +29,29 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
   // Handle consultation type selection
   const handleTypeSelection = (type: string) => {
     updateConsultationData({ type });
+    checkCompletionStatus(type, consultationData.date, consultationData.startTime, consultationData.endTime);
   };
 
   // Handle date selection from calendar
   const handleDateSelection = (date: Date | undefined) => {
     if (date) {
+      const dateStr = date.toISOString().split('T')[0];
       setSelectedDate(date);
-      updateConsultationData({ date: date.toISOString().split('T')[0] });
+      updateConsultationData({ date: dateStr });
+      checkCompletionStatus(consultationData.type, dateStr, consultationData.startTime, consultationData.endTime);
     }
   };
 
   // Handle time range selection
   const handleTimeRangeSelection = (startTime: string, endTime: string) => {
-    updateConsultationData({ 
-      startTime, 
-      endTime 
-    });
-    
-    // Auto-complete the consultation when all fields are selected
-    if (consultationData.type && selectedDate && startTime && endTime) {
-      updateConsultationData({ completed: true });
-    }
+    updateConsultationData({ startTime, endTime });
+    checkCompletionStatus(consultationData.type, consultationData.date, startTime, endTime);
+  };
+
+  // Helper to check if all required fields are filled
+  const checkCompletionStatus = (type: string, date: string, startTime: string, endTime: string) => {
+    const isComplete = Boolean(type && date && startTime && endTime);
+    updateConsultationData({ completed: isComplete });
   };
 
   return (

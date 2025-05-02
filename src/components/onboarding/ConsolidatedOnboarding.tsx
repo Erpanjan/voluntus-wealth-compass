@@ -136,10 +136,10 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
   return (
     <div className="w-full max-w-5xl mx-auto pb-24">
       <div className="flex flex-col md:flex-row gap-6 md:gap-10">
-        {/* Vertical progress indicator - sticky on desktop */}
+        {/* Vertical progress indicator - repositioned */}
         <div className={cn(
-          "md:sticky md:top-8 md:self-start",
-          isMobile ? "mb-6" : "w-[60px]"
+          "md:flex md:items-center md:justify-center",
+          isMobile ? "mb-6" : "w-[100px] sticky top-0 self-start h-screen flex items-center"
         )}>
           <VerticalProgressIndicator steps={progressSteps} />
         </div>

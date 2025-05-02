@@ -31,21 +31,32 @@ const VerticalProgressIndicator: React.FC<VerticalProgressIndicatorProps> = ({
       <div className={cn("w-full flex items-center justify-between py-2", className)}>
         {steps.map((step, index) => (
           <React.Fragment key={step.id || step.title}>
-            {/* Step circle with checkmark or empty */}
+            {/* Step with outer circle and inner circle/checkmark */}
             <div className="flex flex-col items-center">
               <div
                 className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
+                  "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300",
                   step.completed 
-                    ? "bg-black text-white" // Completed step (checkmark)
+                    ? "border-black" // Outer circle for completed step
                     : step.active 
-                    ? "bg-black text-white" // Active step (filled circle)
-                    : "bg-white border-2 border-gray-200" // Inactive step (empty circle)
+                    ? "border-black" // Outer circle for active step
+                    : "border-gray-300" // Outer circle for inactive step
                 )}
               >
-                {step.completed ? (
-                  <Check className="w-4 h-4 stroke-2" />
-                ) : null}
+                <div
+                  className={cn(
+                    "w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300",
+                    step.completed 
+                      ? "bg-black text-white" // Inner circle for completed step
+                      : step.active 
+                      ? "bg-black text-white" // Inner circle for active step
+                      : "bg-gray-200" // Inner circle for inactive step
+                  )}
+                >
+                  {step.completed ? (
+                    <Check className="w-4 h-4 stroke-2" />
+                  ) : null}
+                </div>
               </div>
             </div>
             
@@ -53,7 +64,7 @@ const VerticalProgressIndicator: React.FC<VerticalProgressIndicatorProps> = ({
             {index < stepCount - 1 && (
               <div className={cn(
                 "h-px grow mx-1 transition-all duration-300",
-                (step.completed || steps[index + 1].active || steps[index + 1].completed) ? "bg-black" : "bg-gray-200"
+                (step.completed || steps[index + 1].active || steps[index + 1].completed) ? "bg-black" : "bg-gray-300"
               )} />
             )}
           </React.Fragment>
@@ -64,24 +75,35 @@ const VerticalProgressIndicator: React.FC<VerticalProgressIndicatorProps> = ({
   
   // On desktop, we'll render a vertical progress indicator
   return (
-    <div className={cn("h-full flex flex-col items-center py-8 sticky top-8", className)}>
+    <div className={cn("h-full flex flex-col items-center py-16", className)}>
       {steps.map((step, index) => (
         <React.Fragment key={step.id || step.title}>
-          {/* Step circle with checkmark or empty */}
+          {/* Step with outer circle and inner circle/checkmark */}
           <div className="relative">
             <div
               className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+                "w-16 h-16 rounded-full border-2 flex items-center justify-center transition-all duration-300",
                 step.completed 
-                  ? "bg-black text-white" // Completed step (checkmark)
+                  ? "border-black" // Outer circle for completed step
                   : step.active 
-                  ? "bg-black text-white" // Active step (filled circle)
-                  : "bg-white border-2 border-gray-200" // Inactive step (empty circle)
+                  ? "border-black" // Outer circle for active step
+                  : "border-gray-300" // Outer circle for inactive step
               )}
             >
-              {step.completed ? (
-                <Check className="w-5 h-5 stroke-2" />
-              ) : null}
+              <div
+                className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+                  step.completed 
+                    ? "bg-black text-white" // Inner circle for completed step
+                    : step.active 
+                    ? "bg-black text-white" // Inner circle for active step
+                    : "bg-gray-200" // Inner circle for inactive step
+                )}
+              >
+                {step.completed ? (
+                  <Check className="w-5 h-5 stroke-2" />
+                ) : null}
+              </div>
             </div>
           </div>
           
@@ -89,7 +111,7 @@ const VerticalProgressIndicator: React.FC<VerticalProgressIndicatorProps> = ({
           {index < stepCount - 1 && (
             <div className={cn(
               "w-px grow my-4 transition-all duration-300",
-              (step.completed || steps[index + 1].active || steps[index + 1].completed) ? "bg-black" : "bg-gray-200"
+              (step.completed || steps[index + 1].active || steps[index + 1].completed) ? "bg-black" : "bg-gray-300"
             )} />
           )}
         </React.Fragment>
