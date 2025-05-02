@@ -2,6 +2,7 @@
 import React from 'react';
 import { User, FileText, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
+
 const Welcome = () => {
   const container = {
     hidden: {
@@ -14,6 +15,7 @@ const Welcome = () => {
       }
     }
   };
+  
   const item = {
     hidden: {
       opacity: 0,
@@ -27,8 +29,9 @@ const Welcome = () => {
       }
     }
   };
+  
   return <div className="text-center">
-      <h1 className="text-3xl md:text-4xl font-semibold mb-6">Welcome to Valence Long-Term Capital</h1>
+      <h1 className="text-3xl md:text-4xl font-inter font-semibold mb-6">Welcome to Valence Long-Term Capital</h1>
       
       <p className="mb-12 max-w-3xl mx-auto text-gray-600 font-inter font-light text-sm">
         We're excited to have you on board. Before we can begin delivering our services, 
@@ -43,9 +46,9 @@ const Welcome = () => {
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
               <User className="h-7 w-7 text-black" />
             </div>
-            <h3 className="text-xl font-semibold">Create Your Profile</h3>
+            <h3 className="text-xl font-inter font-medium">Create Your Profile</h3>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 font-inter font-light">
             This is the first step. Tell us a bit about yourself so we can tailor your digital 
             experience throughout our service.
           </p>
@@ -57,9 +60,9 @@ const Welcome = () => {
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
               <FileText className="h-7 w-7 text-black" />
             </div>
-            <h3 className="text-xl font-semibold">Complete the Questionnaire</h3>
+            <h3 className="text-xl font-inter font-medium">Complete the Questionnaire</h3>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 font-inter font-light">
             This questionnaire will help us understand your financial circumstances. It is a mandatory step 
             before we offer the service; however, you can skip it and complete it during our consultation.
           </p>
@@ -71,13 +74,14 @@ const Welcome = () => {
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
               <Calendar className="h-7 w-7 text-black" />
             </div>
-            <h3 className="text-xl font-semibold">Schedule a Consultation</h3>
+            <h3 className="text-xl font-inter font-medium">Schedule a Consultation</h3>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 font-inter font-light">
             Book a session with our advisor. Knowing your financial circumstances is central to what we do.
           </p>
         </motion.div>
       </motion.div>
     </div>;
 };
+
 export default Welcome;
