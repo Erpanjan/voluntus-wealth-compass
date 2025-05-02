@@ -72,7 +72,10 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
 
   return (
     <div>
-      <h3 className="text-lg font-medium mb-4">Select Date & Time</h3>
+      <h3 className="text-lg font-medium mb-2">Select Date & Time</h3>
+      <p className="text-sm text-gray-500 mb-4">
+        Choose a convenient date and time for your consultation.
+      </p>
       <div className="flex flex-col md:flex-row gap-4">
         {/* Date Selector */}
         <div className="flex-1">
@@ -126,10 +129,6 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
           </Select>
         </div>
       </div>
-      
-      <p className="text-sm text-gray-500 mt-2">
-        Choose a convenient date and time for your consultation.
-      </p>
     </div>
   );
 };
