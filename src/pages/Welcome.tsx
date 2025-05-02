@@ -17,7 +17,7 @@ const Welcome = () => {
     <div className="min-h-screen bg-white">
       <OnboardingHeader currentStep={0} />
       
-      <Section className="pt-2" shiftUp={true}>
+      <Section className="pt-2">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl md:text-4xl font-inter font-semibold mb-4 tracking-tight">
             Welcome to Voluntus

@@ -30,7 +30,7 @@ const Welcome = () => {
     }
   };
   
-  return <div className="text-center mt-[-8vh]">
+  return <div className="text-center">
       <h1 className="text-3xl md:text-4xl font-inter font-semibold mb-6">Welcome to Valence Long-Term Capital</h1>
       
       <p className="mb-12 max-w-3xl mx-auto text-gray-600 font-inter font-light text-sm">
