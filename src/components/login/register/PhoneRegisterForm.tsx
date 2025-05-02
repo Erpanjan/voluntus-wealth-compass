@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface PhoneRegisterFormProps {
   isSubmitting: boolean;
   setIsSubmitting: (value: boolean) => void;
-  onVerificationSent: () => void;
+  onVerificationSent: (phoneNumber: string) => void;
 }
 
 const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({ 
@@ -62,7 +62,8 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
       // Remove onboarding complete flag for new users
       localStorage.removeItem('onboardingComplete');
       
-      onVerificationSent();
+      // Pass the phone number back to parent component
+      onVerificationSent(registerData.phone);
       
       toast({
         title: "Verification code sent",

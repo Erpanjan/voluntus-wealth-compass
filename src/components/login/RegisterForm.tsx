@@ -12,12 +12,13 @@ interface RegisterFormProps {
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ isAdminMode = false }) => {
   const [registerMethod, setRegisterMethod] = useState<'email' | 'phone'>('email');
-  const [phoneData, setPhoneData] = useState({ phone: '' });
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
 
-  // Handle phone verification sent
-  const handleVerificationSent = () => {
+  // Handle phone verification sent with phone number
+  const handleVerificationSent = (phone: string) => {
+    setPhoneNumber(phone);
     setVerificationSent(true);
   };
 
@@ -62,7 +63,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ isAdminMode = false }) => {
             <PhoneVerificationForm 
               isSubmitting={isSubmitting}
               setIsSubmitting={setIsSubmitting}
-              phone={phoneData.phone}
+              phone={phoneNumber}
               onGoBack={handleGoBack}
             />
           )}
