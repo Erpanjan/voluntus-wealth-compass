@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import ConsultationTypeSelector from './consultation/ConsultationTypeSelector';
 import DateTimeSelector from './consultation/DateTimeSelector';
@@ -45,25 +44,16 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
   // Handle time selection
   const handleTimeSelection = (time: string) => {
     updateConsultationData({ time });
-  };
-
-  // Confirm consultation booking
-  const confirmConsultation = () => {
-    if (!consultationData.type || !consultationData.date || !consultationData.time) {
-      toast({
-        title: "Incomplete Selection",
-        description: "Please select consultation type, date and time.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    updateConsultationData({ completed: true });
     
-    toast({
-      title: "Consultation Scheduled",
-      description: `Your ${consultationData.type === 'virtual' ? 'Virtual Meeting' : 'In-Person Meeting'} consultation has been scheduled for ${getReadableDateFormat(selectedDate)} at ${getReadableTimeFormat(consultationData.time, availableTimes)}.`,
-    });
+    // Auto-complete the consultation when type, date, and time are all selected
+    if (consultationData.type && selectedDate) {
+      updateConsultationData({ completed: true });
+      
+      toast({
+        title: "Consultation Scheduled",
+        description: `Your ${consultationData.type === 'virtual' ? 'Virtual Meeting' : 'In-Person Meeting'} consultation has been scheduled for ${getReadableDateFormat(selectedDate)} at ${getReadableTimeFormat(time, availableTimes)}.`,
+      });
+    }
   };
 
   return (
@@ -82,15 +72,6 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
           onDateChange={handleDateSelection}
           onTimeChange={handleTimeSelection}
         />
-      )}
-
-      {/* Confirm Button */}
-      {consultationData.type && consultationData.date && consultationData.time && !consultationData.completed && (
-        <div className="pt-4">
-          <Button onClick={confirmConsultation} className="ml-auto block">
-            Confirm Consultation
-          </Button>
-        </div>
       )}
 
       {/* Confirmation Display */}
