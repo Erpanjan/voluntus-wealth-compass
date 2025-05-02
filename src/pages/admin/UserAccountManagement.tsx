@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,8 +11,6 @@ import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 
 const UserAccountManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +26,6 @@ const UserAccountManagement = () => {
   const { toast } = useToast();
   const [adminPermissionsLimited, setAdminPermissionsLimited] = useState(false);
   const [noUsersFound, setNoUsersFound] = useState(false);
-  const [showAdminAccounts, setShowAdminAccounts] = useState(false); // Default to false to hide admin accounts
   
   // Fetch users on component mount
   useEffect(() => {
@@ -39,9 +35,17 @@ const UserAccountManagement = () => {
   // Load users from the service
   const loadUsers = async () => {
     setIsLoading(true);
+    console.log('Loading users...');
+    
     const fetchedUsers = await fetchUsers();
-    setUsers(fetchedUsers);
-    setNoUsersFound(fetchedUsers.length === 0);
+    console.log('Fetched users:', fetchedUsers);
+    
+    // Filter out any admin users that might have slipped through
+    const clientUsers = fetchedUsers.filter(user => user.role !== 'Admin');
+    console.log('Client users only:', clientUsers);
+    
+    setUsers(clientUsers);
+    setNoUsersFound(clientUsers.length === 0);
     
     // Check if we got a permission error
     if (fetchedUsers.length > 0) {
@@ -135,14 +139,8 @@ const UserAccountManagement = () => {
     setSearchQuery(query);
   };
 
-  // Filter users based on search query and admin toggle
+  // Filter users based on search query
   const filteredUsers = users.filter(user => {
-    // First filter by admin status
-    if (!showAdminAccounts && user.role === 'Admin') {
-      return false;
-    }
-    
-    // Then filter by search query
     return user.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
       (user.userNumber && user.userNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (user.firstName && user.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -189,15 +187,7 @@ const UserAccountManagement = () => {
             <CardTitle>User Accounts</CardTitle>
             <CardDescription>Manage client user accounts and their status</CardDescription>
             
-            <div className="flex items-center justify-between mt-4">
-              <div className="flex items-center space-x-2">
-                <Switch 
-                  id="show-admin" 
-                  checked={showAdminAccounts}
-                  onCheckedChange={setShowAdminAccounts}
-                />
-                <Label htmlFor="show-admin">Show admin accounts</Label>
-              </div>
+            <div className="flex items-center justify-end mt-4">
               <SearchBar 
                 searchQuery={searchQuery} 
                 onSearchChange={handleSearchChange} 

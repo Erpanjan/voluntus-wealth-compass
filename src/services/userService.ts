@@ -21,31 +21,40 @@ export const useUserService = () => {
   
   const fetchUsers = async (): Promise<UserAccount[]> => {
     try {
+      console.log('Fetching users from profiles table...');
+      
       // Get all users from the profiles table - this is accessible with regular permissions
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('*');
       
       if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
         throw profilesError;
       }
       
-      console.log(`Fetched ${profiles?.length || 0} profiles from database`);
+      console.log(`Fetched ${profiles?.length || 0} profiles from database:`, profiles);
       
       const usersWithAuth: UserAccount[] = [];
       
       // Map profiles to user accounts
       for (const profile of profiles || []) {
-        // We're no longer skipping admin users to ensure all users appear
-        // if (profile.is_admin) continue;
+        // Clearly log each profile processing step
+        console.log(`Processing profile:`, profile);
         
-        // We'll use the email from the profile if available (should now be synced from auth.users)
+        // Skip admin accounts completely - they should not appear in the user list at all
+        if (profile.is_admin) {
+          console.log(`Skipping admin profile ${profile.id}`);
+          continue;
+        }
+        
+        // We'll use the email from the profile if available
         const userEmail = profile.email || 'No email';
         
         // Generate a user number based on the first 6 chars of the UUID
         const userNumber = `USR-${profile.id.substring(0, 6).toUpperCase()}`;
           
-        usersWithAuth.push({
+        const userAccount = {
           id: profile.id,
           email: userEmail,
           status: profile.is_active === false ? 'Inactive' : 'Active',
@@ -56,26 +65,17 @@ export const useUserService = () => {
           lastName: profile.last_name || '',
           createdAt: profile.created_at || 'N/A',
           userNumber, // Added user number
-          phone: 'N/A' // Use a default value since the phone field may not exist in the profile
-        });
-      }
-      
-      console.log(`Processed ${usersWithAuth.length} users to display`);
-      
-      // Try to get users from auth.users if we have admin permissions (this will likely fail without service role key)
-      try {
-        // This is just an attempt, we don't rely on this working
-        const { data: { users } } = await supabase.auth.admin.listUsers();
+          phone: profile.phone || 'N/A'
+        };
         
-        if (users && users.length > 0) {
-          console.log('Successfully retrieved auth users:', users);
-          
-          // If needed, we could merge with profile data here
-        }
-      } catch (authError) {
-        console.log('Could not fetch auth users with admin permissions:', authError);
-        // This is expected if we don't have admin permissions, so we won't show an error
+        console.log(`Added user account:`, userAccount);
+        usersWithAuth.push(userAccount);
       }
+      
+      console.log(`Processed ${usersWithAuth.length} users to display:`, usersWithAuth);
+      
+      // We no longer try to get users from auth.users since we don't have adequate permissions
+      // and we're already getting what we need from profiles
       
       return usersWithAuth;
     } catch (error) {

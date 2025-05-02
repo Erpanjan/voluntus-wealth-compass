@@ -2,7 +2,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
+import { Search, RefreshCw } from 'lucide-react';
 
 interface SearchBarProps {
   searchQuery: string;
@@ -16,7 +16,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onRefresh 
 }) => {
   return (
-    <div className="flex gap-2 mt-4">
+    <div className="flex gap-2">
       <div className="relative flex-1">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
         <Input 
@@ -27,7 +27,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
-      <Button variant="outline" onClick={onRefresh}>
+      <Button 
+        variant="outline" 
+        onClick={onRefresh}
+        className="flex items-center gap-1"
+      >
+        <RefreshCw className="h-4 w-4" />
         Refresh
       </Button>
     </div>
