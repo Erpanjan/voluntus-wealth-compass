@@ -9,14 +9,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { UserAccount } from '@/services/userService';
+import { UserProfile } from '@/services/userService';
 import { AlertTriangle } from 'lucide-react';
 
 interface ConfirmationDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  user: UserAccount | null;
+  user: UserProfile | null;
   actionType: 'activate' | 'deactivate' | 'delete';
 }
 
@@ -75,9 +75,6 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         <p className="py-4">
           Are you sure you want to {actionType} the account for{' '}
           <span className="font-medium">{user?.email}</span>?
-          {user?.userNumber && (
-            <><br /><span className="text-sm text-gray-500">User ID: {user.userNumber}</span></>
-          )}
         </p>
         
         <DialogFooter>
