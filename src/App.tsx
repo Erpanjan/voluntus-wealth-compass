@@ -69,7 +69,14 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/welcome" element={<Welcome />} />
+              <Route 
+                path="/welcome" 
+                element={
+                  <PrivateRoute>
+                    <Welcome />
+                  </PrivateRoute>
+                } 
+              />
               <Route 
                 path="/pending-approval" 
                 element={

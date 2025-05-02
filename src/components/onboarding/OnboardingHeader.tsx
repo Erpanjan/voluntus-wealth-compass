@@ -29,13 +29,8 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
       localStorage.removeItem('isAdminMode');
       localStorage.removeItem('onboardingComplete');
       
-      // Add transition effect to the body
-      document.body.classList.add('login-transition');
-      
-      // Redirect to login after a short delay to ensure session changes are processed
-      setTimeout(() => {
-        navigate('/login', { replace: true });
-      }, 500); // Increased from 300ms to 500ms for more reliable session clearing
+      // Navigate directly to the home page
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('Error during logout:', error);
       
@@ -46,7 +41,7 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
       localStorage.removeItem('onboardingComplete');
       
       // Fallback navigation in case of error
-      navigate('/login', { replace: true });
+      navigate('/', { replace: true });
     }
   };
   
