@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -44,23 +44,7 @@ const Questionnaire = () => {
 
   const handleStepChange = (stepIncrement: number) => {
     setCurrentStep(prev => {
-      let newStep = prev + stepIncrement;
-      
-      // Get answers from localStorage to check if we can skip goal-specific questions
-      const savedData = localStorage.getItem('onboardingDraft');
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        const goals = parsedData?.questionnaire?.answers?.goals || [];
-        
-        // Check if there are any selected goals (not marked as "would-not-consider")
-        const hasSelectedGoals = goals.some(goal => goal.interestLevel !== 'would-not-consider');
-        
-        // Skip goal-specific questions if no goals were selected
-        if (!hasSelectedGoals && newStep >= 8 && newStep <= 13) {
-          newStep = stepIncrement > 0 ? 14 : 7; // Skip to behavioral biases or back to goals
-        }
-      }
-      
+      const newStep = prev + stepIncrement;
       return Math.max(0, Math.min(newStep, totalSteps));
     });
   };
