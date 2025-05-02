@@ -5,8 +5,6 @@ import { useToast } from '@/hooks/use-toast';
 import { OnboardingFormData } from '@/hooks/use-onboarding-form';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Card, CardContent } from '@/components/ui/card';
-import { Check, ArrowRight } from 'lucide-react';
 import ProfileFormSection from './sections/consolidated/ProfileFormSection';
 import QuestionnaireFormSection from './sections/consolidated/QuestionnaireFormSection';
 import ConsultationFormSection from './sections/consolidated/ConsultationFormSection';
@@ -60,13 +58,6 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
     handleSubmit();
   };
   
-  const handleQuestionnaireRedirect = () => {
-    // Save current form data before navigating
-    handleSaveDraft();
-    // Navigate to questionnaire page
-    navigate('/questionnaire');
-  };
-  
   return (
     <div className="w-full max-w-3xl mx-auto pb-24">
       {/* Profile Section */}
@@ -93,41 +84,10 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
           </p>
         </div>
         
-        <Card className="overflow-hidden border border-gray-200">
-          <CardContent className="p-6">
-            {formData.questionnaire.completed ? (
-              <div className="flex flex-col items-center py-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
-                  <Check className="w-6 h-6 text-green-600" />
-                </div>
-                <h3 className="text-xl font-medium text-center mb-2">Questionnaire Completed</h3>
-                <p className="text-gray-500 text-center mb-4">
-                  Thank you for completing the financial questionnaire. Your responses will help us provide personalized financial advice.
-                </p>
-                <Button 
-                  variant="outline"
-                  onClick={handleQuestionnaireRedirect}
-                  className="mt-2"
-                >
-                  Review Your Responses
-                </Button>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center py-4">
-                <h3 className="text-xl font-medium text-center mb-4">Complete the Financial Questionnaire</h3>
-                <p className="text-gray-500 text-center mb-6">
-                  Please take a few minutes to complete our financial questionnaire. This will help us understand your financial situation and goals better.
-                </p>
-                <Button 
-                  onClick={handleQuestionnaireRedirect}
-                  className="flex items-center gap-2"
-                >
-                  Go to Questionnaire <ArrowRight className="ml-1 w-4 h-4" />
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <QuestionnaireFormSection
+          questionnaireData={formData.questionnaire}
+          updateQuestionnaireData={updateQuestionnaireData}
+        />
       </div>
       
       {/* Divider */}

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
 
 interface QuestionnaireFormSectionProps {
   questionnaireData: {
@@ -11,13 +10,11 @@ interface QuestionnaireFormSectionProps {
     answers: Record<string, any>;
   };
   updateQuestionnaireData: (data: { completed: boolean; answers: Record<string, any> }) => void;
-  setCompleted?: (completed: boolean) => void; // Optional callback for the standalone questionnaire page
 }
 
 const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
   questionnaireData,
-  updateQuestionnaireData,
-  setCompleted
+  updateQuestionnaireData
 }) => {
   const [answers, setAnswers] = useState<Record<string, any>>(questionnaireData.answers || {});
 
@@ -66,18 +63,11 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
     const newAnswers = { ...answers, [questionId]: value };
     setAnswers(newAnswers);
     
-    const isComplete = isQuestionnaireComplete(newAnswers);
-    
     // Update parent component state
     updateQuestionnaireData({
-      completed: isComplete,
+      completed: isQuestionnaireComplete(newAnswers),
       answers: newAnswers
     });
-    
-    // If we're on the standalone questionnaire page, update its completion state
-    if (setCompleted) {
-      setCompleted(isComplete);
-    }
   };
 
   const isQuestionnaireComplete = (currentAnswers: Record<string, any>) => {
