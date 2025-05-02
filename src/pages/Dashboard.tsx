@@ -21,30 +21,47 @@ const Dashboard = () => {
 
   // Subscribe to auth state changes
   useEffect(() => {
+    let isMounted = true;
+    
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Auth state changed:', event, session);
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+        console.log('Dashboard auth state changed:', event, session);
+        if (isMounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
       }
     );
     
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session check:', session);
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      console.log('Dashboard initial session check:', session);
+      if (isMounted) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
     });
     
     return () => {
+      isMounted = false;
       if (subscription) {
         subscription.unsubscribe();
       }
     };
   }, []);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    
+    if (!session && !isAuthenticated && !loading) {
+      console.log('Dashboard: Not authenticated, redirecting to login');
+      navigate('/login');
+    }
+  }, [session, navigate, loading]);
 
   // Show loading state
   if (loading) {
@@ -55,12 +72,6 @@ const Dashboard = () => {
         </div>
       </div>
     );
-  }
-
-  // Redirect to login if not authenticated
-  if (!user && !localStorage.getItem('isAuthenticated')) {
-    console.log('Not authenticated, redirecting to login');
-    return <Navigate to="/login" />;
   }
 
   const handleLogout = async () => {

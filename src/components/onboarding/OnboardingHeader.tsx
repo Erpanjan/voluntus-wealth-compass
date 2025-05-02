@@ -29,8 +29,8 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
       localStorage.removeItem('isAdminMode');
       localStorage.removeItem('onboardingComplete');
       
-      // Navigate directly to the home page
-      navigate('/', { replace: true });
+      // Navigate directly to the login page
+      navigate('/login', { replace: true });
     } catch (error) {
       console.error('Error during logout:', error);
       
@@ -41,7 +41,7 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
       localStorage.removeItem('onboardingComplete');
       
       // Fallback navigation in case of error
-      navigate('/', { replace: true });
+      navigate('/login', { replace: true });
     }
   };
   

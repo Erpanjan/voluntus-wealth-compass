@@ -65,32 +65,35 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
           .eq('id', data.user.id)
           .single();
         
-        if (adminError) {
-          console.error('Error fetching admin status:', adminError);
-          throw new Error('Could not verify admin status');
-        }
-        
-        if (!adminData) {
+        if (adminError || !adminData) {
+          console.error('Error or no admin data:', adminError);
           throw new Error('Your account does not have admin privileges');
         }
         
         // Set admin mode in localStorage if user is an admin
         localStorage.setItem('isAdminMode', 'true');
+        
+        toast({
+          title: "Admin Login successful",
+          description: "Welcome to the Admin Portal.",
+          duration: 5000,
+        });
+        
         navigate('/admin/dashboard');
       } else {
         localStorage.removeItem('isAdminMode');
+        
+        toast({
+          title: "Login successful",
+          description: "Welcome to the Client Portal.",
+          duration: 5000,
+        });
+        
         // Check onboarding status - this will handle navigation
         if (onRegularLogin) {
           onRegularLogin();
         }
       }
-      
-      toast({
-        title: "Login successful",
-        description: `Welcome back to ${isAdminMode ? 'Admin' : 'Client'} Portal.`,
-        duration: 5000,
-      });
-      
     } catch (error: any) {
       console.error('Login error:', error);
       toast({

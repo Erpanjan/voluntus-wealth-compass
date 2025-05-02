@@ -32,7 +32,13 @@ const queryClient = new QueryClient();
 // Private route component for React Router v6
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  
+  if (!isAuthenticated) {
+    console.log("Access denied: User not authenticated");
+    return <Navigate to="/login" />;
+  }
+  
+  return children;
 };
 
 // Admin route component that checks for both authentication and admin mode
@@ -40,7 +46,17 @@ const AdminRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   const isAdminMode = localStorage.getItem('isAdminMode') === 'true';
   
-  return isAuthenticated && isAdminMode ? children : <Navigate to="/login" />;
+  if (!isAuthenticated) {
+    console.log("Access denied: User not authenticated");
+    return <Navigate to="/login" />;
+  }
+  
+  if (!isAdminMode) {
+    console.log("Access denied: User not in admin mode");
+    return <Navigate to="/login" />;
+  }
+  
+  return children;
 };
 
 const App = () => (

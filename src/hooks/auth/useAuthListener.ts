@@ -30,11 +30,31 @@ export const useAuthListener = ({
 }: UseAuthListenerProps) => {
   // Listen for auth state changes and check for existing session
   useEffect(() => {
+    let isMounted = true;
+    
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         
+        if (!isMounted) return;
+        
+        // Handle sign out event
+        if (event === 'SIGNED_OUT') {
+          if (isMounted) {
+            setSession(null);
+            setUser(null);
+            setIsAdmin(false);
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('isAdminMode');
+            localStorage.removeItem('onboardingComplete');
+            console.log('User signed out, cleared session and local storage');
+            navigate('/login');
+          }
+          return;
+        }
+        
+        // Handle sign in event
         if (session) {
           localStorage.setItem('isAuthenticated', 'true');
           
@@ -55,81 +75,145 @@ export const useAuthListener = ({
               await supabase.auth.signOut();
               localStorage.removeItem('isAuthenticated');
               localStorage.removeItem('isAdminMode');
-              navigate('/login');
+              
+              if (isMounted) {
+                setSession(null);
+                setUser(null);
+                setIsAdmin(false);
+                navigate('/login');
+              }
             } else {
               // Set admin mode and navigate to admin dashboard
               localStorage.setItem('isAdminMode', 'true');
-              setIsAdmin(true);
-              navigate('/admin/dashboard');
+              
+              if (isMounted) {
+                setIsAdmin(true);
+                setSession(session);
+                setUser(session.user);
+                setLoading(false);
+                navigate('/admin/dashboard');
+              }
             }
           } else {
             // Handle regular client flow
             localStorage.removeItem('isAdminMode');
             
-            // Handle regular user flow based on onboarding status
-            if (event === 'SIGNED_IN') {
-              await checkOnboardingStatus(session.user.id);
+            if (isMounted) {
+              setSession(session);
+              setUser(session.user);
+              setLoading(false);
+              
+              // Handle regular user flow based on onboarding status
+              if (event === 'SIGNED_IN') {
+                await checkOnboardingStatus(session.user.id);
+              }
             }
           }
+        } else if (isMounted) {
+          setSession(null);
+          setUser(null);
+          setLoading(false);
         }
-        setSession(session);
-        setUser(session?.user || null);
-        setLoading(false);
       }
     );
     
     // Check for existing session
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log('Initial session check:', session?.user?.id);
-      
-      if (session) {
-        localStorage.setItem('isAuthenticated', 'true');
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Initial session check:', session?.user?.id);
         
-        // Check localStorage for admin mode
-        const adminMode = localStorage.getItem('isAdminMode') === 'true';
+        if (!isMounted) return;
         
-        if (adminMode || isAdminMode) {
-          // Check if user is in admin_users table
-          const isUserAdmin = await checkIsAdmin(session.user.id);
+        if (session) {
+          localStorage.setItem('isAuthenticated', 'true');
           
-          setIsAdmin(isUserAdmin);
+          // Check localStorage for admin mode
+          const adminMode = localStorage.getItem('isAdminMode') === 'true';
           
-          if (isUserAdmin) {
-            localStorage.setItem('isAdminMode', 'true');
-            navigate('/admin/dashboard');
-          } else {
-            // If not an admin but trying to access admin routes,
-            // redirect to regular dashboard
-            localStorage.removeItem('isAdminMode');
+          if (adminMode || isAdminMode) {
+            // Check if user is in admin_users table
+            const isUserAdmin = await checkIsAdmin(session.user.id);
             
-            if (isAdminMode) {
-              toast({
-                title: "Access Denied",
-                description: "Your account does not have admin privileges.",
-                variant: "destructive",
-                duration: 5000,
-              });
-              navigate('/login');
+            if (isUserAdmin) {
+              localStorage.setItem('isAdminMode', 'true');
+              setIsAdmin(true);
+              
+              if (isMounted) {
+                setSession(session);
+                setUser(session.user);
+                setLoading(false);
+                
+                if (window.location.pathname.startsWith('/admin')) {
+                  // Already on admin page, no need to navigate
+                  return;
+                }
+                
+                navigate('/admin/dashboard');
+              }
             } else {
-              // Check onboarding status for regular users
-              await checkOnboardingStatus(session.user.id);
+              // If not an admin but trying to access admin routes,
+              // redirect to regular dashboard
+              localStorage.removeItem('isAdminMode');
+              
+              if (isAdminMode) {
+                toast({
+                  title: "Access Denied",
+                  description: "Your account does not have admin privileges.",
+                  variant: "destructive",
+                  duration: 5000,
+                });
+                
+                if (isMounted) {
+                  setSession(session);
+                  setUser(session.user);
+                  setLoading(false);
+                  navigate('/login');
+                }
+              } else if (isMounted) {
+                // Check onboarding status for regular users
+                setSession(session);
+                setUser(session.user);
+                setLoading(false);
+                await checkOnboardingStatus(session.user.id);
+              }
             }
+          } else if (isMounted) {
+            // Check onboarding status for regular users
+            setSession(session);
+            setUser(session.user);
+            setLoading(false);
+            await checkOnboardingStatus(session.user.id);
           }
-        } else {
-          // Check onboarding status for regular users
-          await checkOnboardingStatus(session.user.id);
+        } else if (isMounted) {
+          setSession(null);
+          setUser(null);
+          setLoading(false);
+          
+          // If no session but trying to access protected routes, redirect to login
+          const currentPath = window.location.pathname;
+          const protectedRoutes = ['/welcome', '/onboarding', '/pending-approval', '/dashboard', '/questionnaire'];
+          const isAdminRoute = currentPath.startsWith('/admin');
+          
+          if (protectedRoutes.includes(currentPath) || isAdminRoute) {
+            navigate('/login');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking session:', error);
+        
+        if (isMounted) {
+          setSession(null);
+          setUser(null);
+          setLoading(false);
         }
       }
-      
-      setSession(session);
-      setUser(session?.user || null);
-      setLoading(false);
     };
     
     checkSession();
     
     return () => {
+      isMounted = false;
       if (subscription) {
         subscription.unsubscribe();
       }

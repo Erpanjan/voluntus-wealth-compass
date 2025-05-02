@@ -15,6 +15,14 @@ export const useOnboardingStatus = (navigate: NavigateFunction) => {
       setIsCheckingStatus(true);
       console.log('Checking onboarding status for user:', userId);
       
+      // Ensure we're authenticated before proceeding
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.log('No valid session found during onboarding check');
+        navigate('/login');
+        return;
+      }
+      
       // First check database for onboarding data - prioritize this over localStorage
       const { data, error } = await supabase
         .from('onboarding_data')
@@ -46,20 +54,24 @@ export const useOnboardingStatus = (navigate: NavigateFunction) => {
           // It's a new user with an auto-created empty draft - send to welcome page
           localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
           localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+          localStorage.setItem('onboardingComplete', 'false');
           navigate('/welcome');
         } else if (data.status === 'draft') {
           // User has draft data but hasn't submitted it yet, go to onboarding
           localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
           localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+          localStorage.setItem('onboardingComplete', 'false');
           navigate('/onboarding');
         } else if (data.status === 'submitted') {
           // Application is submitted, go to pending approval
           localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'true');
           localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+          localStorage.setItem('onboardingComplete', 'false');
           navigate('/pending-approval');
         } else if (data.status === 'approved') {
           // Application is approved, go to dashboard
           localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'true');
+          localStorage.setItem('onboardingComplete', 'true');
           navigate('/dashboard');
         }
       } else {
@@ -67,6 +79,7 @@ export const useOnboardingStatus = (navigate: NavigateFunction) => {
         console.log('No onboarding data found, directing to welcome page');
         localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
         localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+        localStorage.setItem('onboardingComplete', 'false');
         navigate('/welcome');
       }
     } catch (err) {
