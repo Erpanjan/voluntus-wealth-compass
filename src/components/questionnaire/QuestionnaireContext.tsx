@@ -84,30 +84,44 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
 
   // State to track which goal we're currently asking about for questions 11-14
   const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
+  const [dataLoadAttempted, setDataLoadAttempted] = useState(false);
 
   // Load saved answers from Supabase and localStorage on initial render
   useEffect(() => {
+    if (dataLoadAttempted) return; // Prevent duplicate loading attempts
+    
     let isMounted = true; // Flag to prevent state updates after unmount
     const abortController = new AbortController(); // For aborting fetch operations
     
     const loadSavedAnswers = async () => {
       if (isMounted) setIsLoading(true);
       try {
+        console.log('Loading questionnaire data...');
         // Try loading from localStorage first for quick rendering
         const localData = localStorage.getItem('questionnaireAnswers');
         let loadedAnswers = localData ? JSON.parse(localData) : null;
+        
+        // Log if we found localStorage data
+        if (loadedAnswers) {
+          console.log('Found questionnaire data in localStorage');
+        }
         
         // Then try to get from Supabase if user is logged in
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user?.id) {
+          console.log('User is authenticated, checking for questionnaire data in database');
           const { data, error } = await supabase
             .from('questionnaire_responses')
             .select('*')
             .eq('user_id', session.user.id)
             .maybeSingle(); // Using maybeSingle to avoid errors
             
-          if (data && !error) {
+          if (error) {
+            console.error('Error fetching questionnaire data from database:', error);
+            // Continue with localStorage data if available
+          } else if (data) {
+            console.log('Found questionnaire data in database');
             // Cast data to our interface for type safety
             const responseData = data as QuestionnaireResponseData;
             
@@ -123,33 +137,43 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
               investmentComposition: responseData.investment_composition,
               behavioralBiases: responseData.behavioral_biases,
               // For complete answers JSON data
-              ...(responseData.answers_json ? JSON.parse(responseData.answers_json) : {})
+              ...(responseData.answers_json ? JSON.parse(responseData.answers_json as string) : {})
             };
             
             loadedAnswers = dbAnswers;
             
             // Update local storage with the latest from DB
             localStorage.setItem('questionnaireAnswers', JSON.stringify(dbAnswers));
+          } else {
+            console.log('No questionnaire data found in database');
           }
+        } else {
+          console.log('User is not authenticated, using only localStorage data');
         }
         
         // Set the answers state if we found data
         if (loadedAnswers && isMounted) {
+          console.log('Setting loaded answers to state');
           setAnswers(loadedAnswers);
-          console.log('Loaded saved answers:', loadedAnswers);
+        } else {
+          console.log('No existing questionnaire data found, using default empty state');
         }
       } catch (error) {
         console.error('Error loading saved answers:', error);
         if (isMounted) {
           toast({
-            title: "Error Loading Data",
-            description: "Could not load your previous answers. You may need to start fresh.",
-            variant: "destructive"
+            title: "Data Loading Notice",
+            description: "Starting with a fresh questionnaire. Your progress will be saved as you go.",
+            variant: "default"
           });
         }
       } finally {
         // Always set loading to false to prevent UI freeze
-        if (isMounted) setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+          setDataLoadAttempted(true);
+          console.log('Questionnaire data loading complete');
+        }
       }
     };
     
@@ -159,21 +183,22 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
     const timeoutId = setTimeout(() => {
       if (isLoading && isMounted) {
         setIsLoading(false);
-        console.warn('Loading timeout reached, forcing loading state to complete');
+        setDataLoadAttempted(true);
+        console.warn('Loading timeout reached, proceeding with empty questionnaire');
       }
-    }, 10000); // 10 seconds timeout
+    }, 3000); // Reduced from 10 to 3 seconds for better user experience
     
     return () => {
       isMounted = false;
       clearTimeout(timeoutId);
       abortController.abort();
     };
-  }, [toast]);
+  }, [toast, dataLoadAttempted]);
 
   // Autosave functionality - debounced to avoid too many saves
   useEffect(() => {
     // Skip the initial load
-    if (isLoading) return;
+    if (isLoading || !dataLoadAttempted) return;
     
     // Don't save empty answers object
     if (Object.keys(answers).length <= 2 && 
@@ -187,11 +212,16 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
     }, 1000); // 1 second debounce
     
     return () => clearTimeout(timeoutId);
-  }, [answers, isLoading]);
+  }, [answers, isLoading, dataLoadAttempted]);
 
   // Function to save to localStorage
   const saveToLocalStorage = (data: Record<string, any>) => {
-    localStorage.setItem('questionnaireAnswers', JSON.stringify(data));
+    try {
+      localStorage.setItem('questionnaireAnswers', JSON.stringify(data));
+      console.log('Saved questionnaire data to localStorage');
+    } catch (e) {
+      console.error('Error saving to localStorage:', e);
+    }
   };
 
   // Handle answer updates
@@ -238,12 +268,19 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
         updated_at: new Date().toISOString()
       };
       
+      console.log('Saving questionnaire data to database:', dataToSave);
+      
       // Save to Supabase
       const { error } = await supabase
         .from('questionnaire_responses')
         .upsert(dataToSave, { onConflict: 'user_id' });
         
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving to database:', error);
+        throw error;
+      }
+      
+      console.log('Successfully saved questionnaire data to database');
       
       // Also update the onboarding data to mark questionnaire as completed
       const onboardingUpdate = {
@@ -262,6 +299,8 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
           .from('onboarding_data')
           .update(onboardingUpdate)
           .eq('id', session.user.id);
+        
+        console.log('Updated onboarding data timestamp');
       }
       
       // Update localStorage

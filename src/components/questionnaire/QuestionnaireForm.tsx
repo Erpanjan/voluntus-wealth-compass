@@ -34,7 +34,7 @@ const QuestionContent: React.FC<{
     if (isLoading) {
       timeoutId = window.setTimeout(() => {
         setLoadingError('Loading is taking longer than expected. Please try again.');
-      }, 10000); // 10 seconds timeout
+      }, 5000); // Reduced from 10 to 5 seconds for better user experience
     } else if (loadingError) {
       setLoadingError(null); // Clear error when loading completes
     }

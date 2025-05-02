@@ -38,7 +38,8 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
         if (!session?.user) {
           if (isMounted) {
             setLoading(false);
-            // No need to set error for unauthenticated users
+            console.log('No authenticated user found for questionnaire data');
+            // No need to set error for unauthenticated users, as they'll be redirected
           }
           return;
         }
@@ -65,6 +66,7 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
         if (localData) {
           try {
             parsedLocalData = JSON.parse(localData);
+            console.log('Found questionnaire data in localStorage:', parsedLocalData);
           } catch (e) {
             console.error('Error parsing localStorage data:', e);
           }
@@ -72,6 +74,7 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
         
         if (isMounted) {
           // Combine data sources with priority to database
+          // If data is null (no records found), we still proceed with local data if available
           const combinedAnswers = {
             ...parsedLocalData,
             // Use optional chaining and nullish coalescing to safely access potentially missing properties
@@ -83,6 +86,12 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
             completed: data?.completed || false,
             answers: combinedAnswers,
           });
+          
+          console.log('Questionnaire data updated:', {
+            completed: data?.completed || false,
+            hasAnswers: Object.keys(combinedAnswers).length > 0
+          });
+          
           setLoading(false);
         }
       } catch (err) {
@@ -100,9 +109,10 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
     const timeoutId = setTimeout(() => {
       if (loading && isMounted) {
         setLoading(false);
-        setError('Loading took too long. Please try again later.');
+        setError(null); // Change from error to simply stop loading
+        console.warn('Questionnaire data loading timeout reached, continuing with available data');
       }
-    }, 10000); // 10 seconds timeout
+    }, 5000); // Reduced from 10 seconds to 5 seconds
     
     return () => {
       isMounted = false; // Prevent state updates after unmount
@@ -116,7 +126,7 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
     navigate('/questionnaire');
   };
 
-  // If there's an error, show an error message
+  // If there's an error, show an error message but still allow navigation
   if (error) {
     return (
       <div className="space-y-6">

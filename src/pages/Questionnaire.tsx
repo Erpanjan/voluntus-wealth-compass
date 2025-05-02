@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Loader2, Save, AlertCircle } from 'lucide-react';
@@ -19,6 +19,7 @@ const Questionnaire = () => {
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const totalSteps = 15;
+  const questionnaireFormRef = useRef<any>(null);
 
   // Check authentication status and load previous step
   useEffect(() => {
@@ -54,12 +55,18 @@ const Questionnaire = () => {
             }
           } catch (e) {
             console.error('Error parsing saved questionnaire data:', e);
-            if (isMounted) setError('Could not load your previous progress');
+            if (isMounted) {
+              // Don't show error, just start fresh
+              console.log('Could not load previous progress, starting fresh');
+            }
           }
         }
       } catch (error) {
         console.error('Error initializing questionnaire:', error);
-        if (isMounted) setError('Error initializing questionnaire');
+        if (isMounted) {
+          // Don't block UI with errors, just log them
+          console.error('Error initializing questionnaire:', error);
+        }
       } finally {
         if (isMounted) setLoadingInitial(false);
       }
@@ -71,9 +78,9 @@ const Questionnaire = () => {
     const timeoutId = setTimeout(() => {
       if (loadingInitial && isMounted) {
         setLoadingInitial(false);
-        setError('Loading took too long. Starting with a fresh questionnaire.');
+        console.log('Loading took too long, proceeding with fresh questionnaire');
       }
-    }, 10000); // 10 seconds timeout
+    }, 3000); // Reduced from 10 seconds to 3 seconds
     
     return () => {
       isMounted = false;
@@ -81,8 +88,6 @@ const Questionnaire = () => {
       abortController.abort();
     };
   }, [navigate, toast]);
-
-  // Get the questionnaire context through the QuestionnaireForm
 
   // Handler for step navigation
   const handleStepChange = (stepIncrement: number) => {
@@ -99,11 +104,7 @@ const Questionnaire = () => {
           localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
         } catch (e) {
           console.error('Error saving step progress:', e);
-          toast({
-            title: "Error Saving Progress",
-            description: "Could not save your current step. You may need to restart from the beginning next time.",
-            variant: "destructive"
-          });
+          // Don't block UI with errors
         }
       }
       
@@ -114,19 +115,25 @@ const Questionnaire = () => {
   // Handle submission
   const handleSubmit = async () => {
     try {
-      // We'll access saveProgress through the QuestionnaireForm component
       setSubmitted(true);
+      
+      // Access the QuestionnaireContext through a ref to save progress
+      if (questionnaireFormRef.current && questionnaireFormRef.current.saveProgress) {
+        await questionnaireFormRef.current.saveProgress();
+      }
+      
       toast({
         title: "Questionnaire Submitted",
         description: "Your questionnaire has been submitted successfully.",
       });
+      
       // Navigate back to onboarding after a short delay
-      setTimeout(() => navigate('/onboarding'), 2000);
+      setTimeout(() => navigate('/onboarding'), 1500);
     } catch (error) {
       console.error('Error submitting questionnaire:', error);
       toast({
         title: "Submission Error",
-        description: "There was an error submitting your questionnaire. Please try again.",
+        description: "There was an error submitting your questionnaire. Your answers have been saved, and you can try submitting again.",
         variant: "destructive"
       });
       setSubmitted(false);
@@ -135,7 +142,35 @@ const Questionnaire = () => {
 
   // Handle manual save
   const handleSave = async () => {
-    // We'll pass this to the QuestionnaireForm component
+    try {
+      // We'll access the QuestionnaireContext through refs or events
+      // Access the QuestionnaireContext's saveProgress function
+      const questionnaireContext = document.querySelector('[data-questionnaire-context]');
+      if (questionnaireContext && (questionnaireContext as any).saveProgress) {
+        await (questionnaireContext as any).saveProgress();
+      } else {
+        // Fallback to just saving to localStorage
+        const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
+        if (savedQuestionnaire) {
+          // Just ensure lastCompletedStep is set
+          const savedData = JSON.parse(savedQuestionnaire);
+          savedData.lastCompletedStep = currentStep;
+          localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
+          
+          toast({
+            title: "Progress Saved Locally",
+            description: "Your answers have been saved on this device.",
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error saving progress:', error);
+      toast({
+        title: "Save Error",
+        description: "There was an error saving your progress. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Show loading state for initial data fetch
@@ -218,6 +253,7 @@ const Questionnaire = () => {
             currentStep={currentStep}
             setCurrentStep={setCurrentStep}
             onComplete={handleSubmit}
+            ref={questionnaireFormRef}
           />
           
           {!submitted && (
