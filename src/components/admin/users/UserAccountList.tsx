@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { UserTable } from '@/components/admin/users/UserTable';
 import { UserProfile } from '@/services/userService';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -23,12 +23,7 @@ export const UserAccountList: React.FC<UserAccountListProps> = ({
 }) => {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>User Profiles</CardTitle>
-        <CardDescription>View all registered user profiles from the Supabase database</CardDescription>
-      </CardHeader>
-      
-      <CardContent>
+      <CardContent className="pt-6">
         {users.length === 0 && !isLoading && (
           <Alert className="mb-4 bg-amber-50 border-amber-300">
             <AlertTriangle className="h-4 w-4 text-amber-500" />
