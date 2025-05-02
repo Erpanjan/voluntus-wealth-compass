@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import ConsultationTypeSelector from './sections/scheduling/ConsultationTypeSelector';
-import DateTimeSelector from './sections/scheduling/DateTimeSelector';
-import ConsultationConfirmationDialog from './sections/scheduling/ConsultationConfirmationDialog';
-import { getAvailableDates, getAvailableTimes, getDateLabel, getTimeLabel } from './sections/scheduling/utils';
 import { Check } from 'lucide-react';
+import ConsultationTypeSelector from './sections/consultation/ConsultationTypeSelector';
+import ConsultationDateTimeSelector from './sections/consultation/ConsultationDateTimeSelector';
+import ConsultationConfirmationDialog from './sections/consultation/ConsultationConfirmationDialog';
+import { getAvailableDates, getAvailableTimes, getDateLabel, getTimeLabel } from './sections/scheduling/utils';
 
 interface ConsultationSchedulingProps {
   setCompleted: (completed: boolean) => void;
@@ -76,19 +76,17 @@ const ConsultationScheduling = ({ setCompleted }: ConsultationSchedulingProps) =
       <div className="space-y-8">
         {/* Consultation Type Selection */}
         <ConsultationTypeSelector
-          consultationType={consultationType}
-          setConsultationType={setConsultationType}
+          selectedType={consultationType}
+          onTypeChange={setConsultationType}
         />
 
         {/* Date and Time Selection */}
         {consultationType && (
-          <DateTimeSelector
+          <ConsultationDateTimeSelector
             selectedDate={selectedDate}
             selectedTime={selectedTime}
-            setSelectedDate={setSelectedDate}
-            setSelectedTime={setSelectedTime}
-            availableDates={availableDates}
-            availableTimes={availableTimes}
+            onDateChange={setSelectedDate}
+            onTimeChange={setSelectedTime}
           />
         )}
 
@@ -100,7 +98,7 @@ const ConsultationScheduling = ({ setCompleted }: ConsultationSchedulingProps) =
       {/* Confirmation Dialog */}
       <ConsultationConfirmationDialog
         isOpen={isDialogOpen}
-        setIsOpen={setIsDialogOpen}
+        onOpenChange={setIsDialogOpen}
         consultationType={consultationType}
         dateLabel={getDateLabel(selectedDate, availableDates)}
         timeLabel={getTimeLabel(selectedTime, availableTimes)}

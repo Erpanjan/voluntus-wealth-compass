@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { getAvailableDates, getAvailableTimes } from '../scheduling/utils';
 
 interface ConsultationDateTimeSelectorProps {
   selectedDate: string;
@@ -18,22 +19,8 @@ const ConsultationDateTimeSelector: React.FC<ConsultationDateTimeSelectorProps> 
   onTimeChange
 }) => {
   // Available dates and times for scheduling
-  const availableDates = [
-    { id: 'date-1', value: '2025-05-05', label: 'Monday, May 5' },
-    { id: 'date-2', value: '2025-05-06', label: 'Tuesday, May 6' },
-    { id: 'date-3', value: '2025-05-07', label: 'Wednesday, May 7' },
-    { id: 'date-4', value: '2025-05-08', label: 'Thursday, May 8' },
-    { id: 'date-5', value: '2025-05-09', label: 'Friday, May 9' }
-  ];
-
-  const availableTimes = [
-    { id: 'time-1', value: '09:00', label: '9:00 AM' },
-    { id: 'time-2', value: '10:00', label: '10:00 AM' },
-    { id: 'time-3', value: '11:00', label: '11:00 AM' },
-    { id: 'time-4', value: '14:00', label: '2:00 PM' },
-    { id: 'time-5', value: '15:00', label: '3:00 PM' },
-    { id: 'time-6', value: '16:00', label: '4:00 PM' },
-  ];
+  const availableDates = getAvailableDates();
+  const availableTimes = getAvailableTimes();
 
   return (
     <Card>
