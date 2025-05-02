@@ -3,6 +3,8 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 interface OnboardingHeaderProps {
   currentStep: number;
@@ -10,25 +12,42 @@ interface OnboardingHeaderProps {
 
 const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   
-  const handleExitSetup = () => {
-    // Set onboardingComplete to true in localStorage
-    localStorage.setItem('onboardingComplete', 'true');
-    
-    // Remove authentication state to properly log out the user
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('isAdminMode');
-    
-    // Sign out from Supabase
-    supabase.auth.signOut();
-    
-    // Add transition effect to the body
-    document.body.classList.add('login-transition');
-    
-    // Redirect to login after a short delay to allow animation to play
-    setTimeout(() => {
-      navigate('/login');
-    }, 300); // Match this with the CSS animation duration in animations.css
+  const handleExitSetup = async () => {
+    try {
+      // Clear all localStorage flags first
+      clearUserStateFlags();
+      
+      // Remove authentication state
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('isAdminMode');
+      
+      // Sign out from Supabase
+      await supabase.auth.signOut();
+      
+      // Add transition effect to the body
+      document.body.classList.add('login-transition');
+      
+      // Provide feedback to user
+      toast({
+        title: "Logged out successfully",
+        description: "You have been signed out of your account."
+      });
+      
+      // Redirect to login after a short delay to allow animation to play
+      // and ensure session is properly cleared
+      setTimeout(() => {
+        navigate('/login');
+      }, 500);
+    } catch (error) {
+      console.error('Error during logout:', error);
+      toast({
+        title: "Logout Error",
+        description: "There was a problem signing you out. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
   
   return (
@@ -41,11 +60,10 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
             className="h-16" 
           />
         </Link>
-        {currentStep < 3 && (
-          <Button variant="link" onClick={handleExitSetup}>
-            Exit Setup
-          </Button>
-        )}
+        {/* Show Exit Setup button on all onboarding pages */}
+        <Button variant="link" onClick={handleExitSetup}>
+          Exit Setup
+        </Button>
       </div>
     </header>
   );

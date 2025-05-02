@@ -2,10 +2,50 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
-import { CheckCircle, Clock } from 'lucide-react';
+import { CheckCircle, Clock, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 const PendingApproval = () => {
-  // Removed automatic redirect timer to avoid state conflicts
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  const handleLogout = async () => {
+    try {
+      // Clear all user state
+      clearUserStateFlags();
+      
+      // Remove authentication state
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('isAdminMode');
+      
+      // Sign out from Supabase
+      await supabase.auth.signOut();
+      
+      toast({
+        title: "Logged out successfully",
+        description: "You have been signed out of your account."
+      });
+      
+      // Add transition effect
+      document.body.classList.add('login-transition');
+      
+      // Redirect after a short delay
+      setTimeout(() => {
+        navigate('/login');
+      }, 500);
+    } catch (error) {
+      console.error('Error during logout:', error);
+      toast({
+        title: "Logout Error",
+        description: "There was a problem signing you out. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
   
   return (
     <div className="min-h-screen bg-white">
@@ -38,15 +78,23 @@ const PendingApproval = () => {
             </CardContent>
           </Card>
           
-          <div className="bg-[#F1F1F1] p-5 rounded-lg max-w-lg mx-auto">
+          <div className="bg-[#F1F1F1] p-5 rounded-lg max-w-lg mx-auto mb-6">
             <p className="text-sm text-gray-600 font-inter font-light">
               If you have any questions in the meantime, please contact our support team at <span className="font-medium">support@valencecapital.com</span>
             </p>
           </div>
           
-          {/* For demo purposes only */}
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2 mx-auto mt-6" 
+            onClick={handleLogout}
+          >
+            <LogOut size={16} />
+            Sign Out
+          </Button>
+          
           <p className="mt-6 text-xs text-gray-500 font-inter">
-            (For demo purposes, you can manually navigate to the dashboard when ready)
+            (For demo purposes, you can sign out and try logging in again)
           </p>
         </div>
       </div>
