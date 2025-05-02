@@ -40,9 +40,43 @@ export const useContactNotes = () => {
     return contactNotes.filter(note => note.contact_id === inquiryId);
   };
 
+  const updateNote = async (noteId: string, noteText: string) => {
+    try {
+      const { error } = await supabase
+        .from('contact_notes')
+        .update({ note: noteText })
+        .eq('id', noteId);
+
+      if (error) throw error;
+      
+      // Update local state
+      setContactNotes(prevNotes => 
+        prevNotes.map(note => 
+          note.id === noteId ? { ...note, note: noteText } : note
+        )
+      );
+
+      toast({
+        title: "Note updated",
+        description: "The note has been updated successfully.",
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error updating note:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update note.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   return {
     contactNotes,
     fetchContactNotes,
-    getNotesForInquiry
+    getNotesForInquiry,
+    updateNote
   };
 };

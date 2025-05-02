@@ -72,11 +72,49 @@ export const useContactInquiries = () => {
     }
   };
 
+  const handleDeleteInquiry = async (id: string) => {
+    try {
+      // First delete all associated notes
+      const { error: notesError } = await supabase
+        .from('contact_notes')
+        .delete()
+        .eq('contact_id', id);
+      
+      if (notesError) throw notesError;
+      
+      // Then delete the inquiry itself
+      const { error } = await supabase
+        .from('contact_submissions')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Update local state
+      setContactInquiries(prevInquiries => 
+        prevInquiries.filter(inquiry => inquiry.id !== id)
+      );
+
+      toast({
+        title: "Inquiry deleted",
+        description: "The contact inquiry has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error('Error deleting inquiry:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete inquiry.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return {
     contactInquiries,
     isLoading,
     fetchContactInquiries,
     handleStatusChange,
+    handleDeleteInquiry,
     setContactInquiries
   };
 };

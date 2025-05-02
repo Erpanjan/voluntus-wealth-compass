@@ -34,42 +34,36 @@ export const getContactIcon = (contactType: string) => {
 
 const ContactDetails: React.FC<ContactDetailsProps> = ({ inquiry }) => {
   const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
     return format(new Date(dateString), 'MMM d, yyyy h:mm a');
   };
 
   return (
-    <>
-      <div className="flex justify-between items-center mb-3">
+    <div className="flex-1">
+      <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-medium">{`${inquiry.first_name} ${inquiry.last_name}`}</h3>
         <Badge className={`px-2 py-1 text-xs ${getStatusColor(inquiry.status)}`}>
           {inquiry.status}
         </Badge>
       </div>
       
-      <div className="text-sm text-gray-500 flex flex-wrap items-center gap-1 mb-3">
-        <span className="flex items-center">
-          {getContactIcon(inquiry.contact_type)}
-          {inquiry.contact_type}
-        </span>
-        <span className="mx-2">•</span>
-        <span className="flex items-center font-medium">
-          {inquiry.contact_info}
-        </span>
-        <span className="mx-2">•</span>
-        <span>{formatDate(inquiry.created_at)}</span>
+      <div className="grid md:grid-cols-2 gap-2 mb-3">
+        <div className="text-sm text-gray-700">
+          <span className="text-gray-500">Contact via:</span> {inquiry.contact_type}
+        </div>
+        <div className="text-sm text-gray-700">
+          <span className="text-gray-500">Contact info:</span>{' '}
+          <span className="font-medium">{inquiry.contact_info}</span>
+        </div>
+        <div className="text-sm text-gray-700">
+          <span className="text-gray-500">Date:</span> {formatDate(inquiry.created_at)}
+        </div>
       </div>
       
-      <div className="mb-4 text-gray-700 bg-gray-50 p-3 rounded-md">
+      <div className="mb-4 text-gray-700 bg-gray-50 p-3 rounded-md text-sm">
+        <div className="font-medium mb-1 text-gray-500">Message:</div>
         {inquiry.message}
       </div>
-    </>
+    </div>
   );
 };
 

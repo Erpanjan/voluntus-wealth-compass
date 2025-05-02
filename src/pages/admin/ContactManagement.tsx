@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import ContactCard from '@/components/admin/contact/ContactCard';
 import FilterTabs from '@/components/admin/contact/FilterTabs';
 import ReplyDialog from '@/components/admin/contact/ReplyDialog';
-import ExportOptions from '@/components/admin/contact/ExportOptions';
 import SearchBar from '@/components/admin/contact/SearchBar';
 import { useContactManagement } from '@/hooks/admin/useContactManagement';
 
@@ -26,9 +25,9 @@ const ContactManagement = () => {
     sendReply,
     getNotesForInquiry,
     getFilteredInquiries,
-    handleExport,
     getStatusCounts,
-    fetchContactNotes
+    fetchContactNotes,
+    fetchContactInquiries
   } = useContactManagement();
 
   // Get filtered inquiries
@@ -40,13 +39,8 @@ const ContactManagement = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h1 className="text-2xl font-bold">Contact Inquiries</h1>
-          
-          <div className="flex gap-3 w-full sm:w-auto">
-            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-            <ExportOptions handleExport={handleExport} />
-          </div>
+        <div className="flex justify-between items-center">
+          <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         </div>
         
         {/* Tabs for filtering by status */}
@@ -78,6 +72,7 @@ const ContactManagement = () => {
                 onReply={handleReply}
                 notes={getNotesForInquiry(inquiry.id)}
                 refreshNotes={fetchContactNotes}
+                refreshInquiries={fetchContactInquiries}
               />
             ))}
           </div>

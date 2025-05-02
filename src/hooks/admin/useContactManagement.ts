@@ -3,7 +3,6 @@ import { useContactInquiries } from './contact/useContactInquiries';
 import { useContactNotes } from './contact/useContactNotes';
 import { useContactSearch } from './contact/useContactSearch';
 import { useContactReply } from './contact/useContactReply';
-import { useContactExport } from './contact/useContactExport';
 
 export const useContactManagement = () => {
   // Use the smaller, focused hooks
@@ -11,13 +10,15 @@ export const useContactManagement = () => {
     contactInquiries, 
     isLoading, 
     fetchContactInquiries, 
-    handleStatusChange 
+    handleStatusChange,
+    handleDeleteInquiry 
   } = useContactInquiries();
   
   const { 
     contactNotes, 
     fetchContactNotes, 
-    getNotesForInquiry 
+    getNotesForInquiry,
+    updateNote
   } = useContactNotes();
   
   const { 
@@ -38,10 +39,6 @@ export const useContactManagement = () => {
     handleReply, 
     sendReply 
   } = useContactReply(fetchContactNotes, handleStatusChange);
-  
-  const { 
-    handleExport 
-  } = useContactExport(getFilteredInquiries, getNotesForInquiry, activeTab);
 
   // Return all the values and functions that were previously exposed
   return {
@@ -64,7 +61,8 @@ export const useContactManagement = () => {
     sendReply,
     getNotesForInquiry,
     getFilteredInquiries,
-    handleExport,
+    handleDeleteInquiry,
+    updateNote,
     getStatusCounts,
   };
 };
