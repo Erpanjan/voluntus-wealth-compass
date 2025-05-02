@@ -69,10 +69,6 @@ const AdminSidebar = () => {
           <LogOut size={16} />
           Logout
         </Button>
-        
-        <p className="text-xs text-center text-gray-500 mt-4">
-          Logged in as: {localStorage.getItem('userEmail') || 'Admin'}
-        </p>
       </div>
     </div>
   );
