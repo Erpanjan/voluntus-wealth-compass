@@ -33,11 +33,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
     }));
   };
 
-  const clearUserStateFlags = () => {
-    // Reset all user state flags in localStorage
+  // Helper function to get user-specific localStorage key
+  const getUserStorageKey = (userId: string, key: string) => {
+    return `user_${userId}_${key}`;
+  };
+
+  const clearUserStateFlags = (userId?: string) => {
+    // Clear global flags
     localStorage.removeItem('onboardingComplete');
     localStorage.removeItem('applicationSubmitted');
     localStorage.removeItem('isAdminMode');
+    
+    // If we have a userId, clear user-specific flags too
+    if (userId) {
+      localStorage.removeItem(getUserStorageKey(userId, 'onboardingComplete'));
+      localStorage.removeItem(getUserStorageKey(userId, 'applicationSubmitted'));
+    }
     
     console.log('Cleared all user state flags from localStorage during login');
   };
@@ -87,6 +98,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       } else {
         localStorage.removeItem('isAdminMode');
       }
+      
+      // Clear any user-specific flags for this user
+      clearUserStateFlags(data.user.id);
       
       toast({
         title: "Login successful",

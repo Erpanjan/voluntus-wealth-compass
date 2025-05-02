@@ -35,11 +35,22 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
     }));
   };
 
-  const clearUserStateFlags = () => {
-    // Clear all localStorage flags related to user state
+  // Helper function to get user-specific localStorage key
+  const getUserStorageKey = (userId: string, key: string) => {
+    return `user_${userId}_${key}`;
+  };
+
+  const clearUserStateFlags = (userId?: string) => {
+    // Clear global flags
     localStorage.removeItem('onboardingComplete');
     localStorage.removeItem('applicationSubmitted');
     localStorage.removeItem('isAdminMode');
+    
+    // If we have a userId, clear user-specific flags too
+    if (userId) {
+      localStorage.removeItem(getUserStorageKey(userId, 'onboardingComplete'));
+      localStorage.removeItem(getUserStorageKey(userId, 'applicationSubmitted'));
+    }
     
     console.log('Cleared all user state flags from localStorage');
   };
@@ -73,6 +84,11 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
       });
       
       if (error) throw error;
+      
+      // Clear user-specific flags if we have a user ID
+      if (data?.user?.id) {
+        clearUserStateFlags(data.user.id);
+      }
       
       toast({
         title: "Registration successful",

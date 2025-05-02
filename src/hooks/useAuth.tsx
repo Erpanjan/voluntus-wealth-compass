@@ -11,6 +11,11 @@ export const useAuth = (isAdminMode: boolean) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Helper function to get user-specific localStorage key
+  const getUserStorageKey = (userId: string, key: string) => {
+    return `user_${userId}_${key}`;
+  };
+  
   // Helper function to check onboarding data status and redirect accordingly
   const checkOnboardingStatus = async (userId: string) => {
     try {
@@ -19,7 +24,7 @@ export const useAuth = (isAdminMode: boolean) => {
       // First check database for onboarding data - prioritize this over localStorage
       const { data, error } = await supabase
         .from('onboarding_data')
-        .select('id, status')
+        .select('id, status, first_name, last_name, email, phone')
         .eq('id', userId)
         .maybeSingle();
       
@@ -30,30 +35,44 @@ export const useAuth = (isAdminMode: boolean) => {
         return;
       }
       
+      console.log('Onboarding data found:', data);
+
       // Based on database onboarding data status
       if (data) {
-        console.log('Onboarding data found:', data);
+        // Check if it's an empty draft (created by trigger but user never started onboarding)
+        const isEmptyDraft = data.status === 'draft' && 
+                            !data.first_name && 
+                            !data.last_name && 
+                            !data.email && 
+                            !data.phone;
+                            
+        console.log('Is this an empty draft record?', isEmptyDraft);
         
-        if (data.status === 'draft') {
+        if (isEmptyDraft) {
+          // It's a new user with an auto-created empty draft - send to welcome page
+          localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
+          localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+          navigate('/welcome');
+        } else if (data.status === 'draft') {
           // User has draft data but hasn't submitted it yet, go to onboarding
-          localStorage.setItem('applicationSubmitted', 'false');
-          localStorage.setItem('onboardingComplete', 'false');
+          localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
+          localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
           navigate('/onboarding');
         } else if (data.status === 'submitted') {
           // Application is submitted, go to pending approval
-          localStorage.setItem('applicationSubmitted', 'true');
-          localStorage.setItem('onboardingComplete', 'false');
+          localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'true');
+          localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
           navigate('/pending-approval');
         } else if (data.status === 'approved') {
           // Application is approved, go to dashboard
-          localStorage.setItem('onboardingComplete', 'true');
+          localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'true');
           navigate('/dashboard');
         }
       } else {
         // No onboarding data found, direct to welcome page
         console.log('No onboarding data found, directing to welcome page');
-        localStorage.setItem('applicationSubmitted', 'false');
-        localStorage.setItem('onboardingComplete', 'false');
+        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
+        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
         navigate('/welcome');
       }
     } catch (err) {
@@ -62,12 +81,22 @@ export const useAuth = (isAdminMode: boolean) => {
     }
   };
 
+  // Clear localStorage keys for a specific user
+  const clearUserStateFlags = (userId: string) => {
+    if (!userId) return;
+    
+    localStorage.removeItem(getUserStorageKey(userId, 'onboardingComplete'));
+    localStorage.removeItem(getUserStorageKey(userId, 'applicationSubmitted'));
+    
+    console.log(`Cleared all user state flags from localStorage for user ${userId}`);
+  };
+
   // Check if user is already logged in
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session);
+        console.log('Auth state changed:', event, session?.user?.id);
         
         if (session) {
           localStorage.setItem('isAuthenticated', 'true');
@@ -115,7 +144,7 @@ export const useAuth = (isAdminMode: boolean) => {
     // Check for existing session
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      console.log('Initial session check:', session);
+      console.log('Initial session check:', session?.user?.id);
       
       if (session) {
         localStorage.setItem('isAuthenticated', 'true');
@@ -206,6 +235,7 @@ export const useAuth = (isAdminMode: boolean) => {
     isAdmin,
     session,
     handleDemoLogin,
-    handleRegularLogin
+    handleRegularLogin,
+    clearUserStateFlags
   };
 };

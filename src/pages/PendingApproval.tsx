@@ -1,23 +1,12 @@
 
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
 import { CheckCircle, Clock } from 'lucide-react';
 
 const PendingApproval = () => {
-  const navigate = useNavigate();
-
-  // For demo purposes - automatically redirect to dashboard after 5 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      localStorage.setItem('onboardingComplete', 'true');
-      navigate('/dashboard');
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
-
+  // Removed automatic redirect timer to avoid state conflicts
+  
   return (
     <div className="min-h-screen bg-white">
       <OnboardingHeader currentStep={3} />
@@ -55,9 +44,9 @@ const PendingApproval = () => {
             </p>
           </div>
           
-          {/* For demo purposes, this would normally be an automatic process */}
+          {/* For demo purposes only */}
           <p className="mt-6 text-xs text-gray-500 font-inter">
-            (For demo purposes, your application will be automatically approved in a few seconds)
+            (For demo purposes, you can manually navigate to the dashboard when ready)
           </p>
         </div>
       </div>
