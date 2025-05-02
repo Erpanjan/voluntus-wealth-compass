@@ -1,28 +1,24 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LoginForm from '@/components/login/LoginForm';
 import RegisterForm from '@/components/login/RegisterForm';
 import ForgotPasswordForm from '@/components/login/ForgotPasswordForm';
-
 interface LoginTabsProps {
   isAdminMode: boolean;
   isAnimating: boolean;
   onDemoLogin: () => void;
   onRegularLogin: () => void;
 }
-
-const LoginTabs: React.FC<LoginTabsProps> = ({ 
-  isAdminMode, 
+const LoginTabs: React.FC<LoginTabsProps> = ({
+  isAdminMode,
   isAnimating,
   onDemoLogin,
   onRegularLogin
 }) => {
-  return (
-    <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 transform scale-[0.98]' : 'opacity-100 transform scale-100'}`}>
-      {isAdminMode ? (
-        // Admin mode - Single login tab
-        <Tabs defaultValue="login" className="w-full custom-tabs">
+  return <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 transform scale-[0.98]' : 'opacity-100 transform scale-100'}`}>
+      {isAdminMode ?
+    // Admin mode - Single login tab
+    <Tabs defaultValue="login" className="w-full custom-tabs">
           <div className="px-6">
             <TabsList className="grid grid-cols-1 w-full bg-transparent p-0 h-12 relative">
               <TabsTrigger value="login" className="tab-button">Login</TabsTrigger>
@@ -32,17 +28,12 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
 
           <div className="h-[450px] relative overflow-hidden">
             <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
-              <LoginForm 
-                onDemoLogin={onDemoLogin} 
-                onRegularLogin={onRegularLogin}
-                isAdminMode={isAdminMode}
-              />
+              <LoginForm onDemoLogin={onDemoLogin} onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
             </TabsContent>
           </div>
-        </Tabs>
-      ) : (
-        // Client mode - All three tabs
-        <Tabs defaultValue="login" className="w-full custom-tabs">
+        </Tabs> :
+    // Client mode - All three tabs
+    <Tabs defaultValue="login" className="w-full custom-tabs">
           <div className="px-6">
             <TabsList className="grid grid-cols-3 w-full bg-transparent p-0 h-12 relative">
               <TabsTrigger value="login" className="tab-button">Login</TabsTrigger>
@@ -52,13 +43,9 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
             </TabsList>
           </div>
 
-          <div className="h-[450px] relative overflow-hidden">
+          <div className="h-[450px] relative overflow-hidden py-[240px]">
             <TabsContent value="login" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
-              <LoginForm 
-                onDemoLogin={onDemoLogin} 
-                onRegularLogin={onRegularLogin}
-                isAdminMode={isAdminMode}
-              />
+              <LoginForm onDemoLogin={onDemoLogin} onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
             </TabsContent>
 
             <TabsContent value="register" className="p-6 transition-all duration-300 ease-in-out absolute w-full top-0 left-0">
@@ -69,10 +56,7 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
               <ForgotPasswordForm />
             </TabsContent>
           </div>
-        </Tabs>
-      )}
-    </div>
-  );
+        </Tabs>}
+    </div>;
 };
-
 export default LoginTabs;
