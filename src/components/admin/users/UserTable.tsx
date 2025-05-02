@@ -25,6 +25,8 @@ export const UserTable: React.FC<UserTableProps> = ({
   onDelete,
   onViewDetails
 }) => {
+  console.log('UserTable rendering with users:', users);
+  
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">

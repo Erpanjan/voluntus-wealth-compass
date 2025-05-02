@@ -30,12 +30,14 @@ export const useUserService = () => {
         throw profilesError;
       }
       
+      console.log(`Fetched ${profiles?.length || 0} profiles from database`);
+      
       const usersWithAuth: UserAccount[] = [];
       
       // Map profiles to user accounts
       for (const profile of profiles || []) {
-        // Skip admin users
-        if (profile.is_admin) continue;
+        // We're no longer skipping admin users to ensure all users appear
+        // if (profile.is_admin) continue;
         
         // We'll use the email from the profile if available (should now be synced from auth.users)
         const userEmail = profile.email || 'No email';
@@ -47,7 +49,7 @@ export const useUserService = () => {
           id: profile.id,
           email: userEmail,
           status: profile.is_active === false ? 'Inactive' : 'Active',
-          role: 'Client',
+          role: profile.is_admin ? 'Admin' : 'Client',
           lastLogin: profile.updated_at || 'N/A', // Using updated_at as proxy for last login
           verified: true, // Assuming verified by default
           firstName: profile.first_name || '',
@@ -57,6 +59,8 @@ export const useUserService = () => {
           phone: 'N/A' // Use a default value since the phone field may not exist in the profile
         });
       }
+      
+      console.log(`Processed ${usersWithAuth.length} users to display`);
       
       // Try to get users from auth.users if we have admin permissions (this will likely fail without service role key)
       try {

@@ -19,11 +19,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log('Checking admin authentication...');
+        
         // First check if we already have a valid admin session in localStorage
         const isAdminMode = localStorage.getItem('isAdminMode') === 'true';
         const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
         
         if (isAuthenticated && isAdminMode) {
+          console.log('Admin session found in localStorage');
           setIsAuthorized(true);
           setInitialLoading(false);
           return;
@@ -36,6 +39,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           throw new Error('Not authenticated');
         }
         
+        console.log('Supabase session found, checking admin status');
+        
         // Check if user is an admin
         const { data, error } = await supabase
           .from('profiles')
@@ -47,11 +52,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           throw error;
         }
         
+        console.log('Admin status check result:', data);
+        
         if (!data?.is_admin) {
           throw new Error('Not authorized as admin');
         }
         
         // User is authenticated and is an admin
+        console.log('User confirmed as admin');
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('isAdminMode', 'true');
         setIsAuthorized(true);
