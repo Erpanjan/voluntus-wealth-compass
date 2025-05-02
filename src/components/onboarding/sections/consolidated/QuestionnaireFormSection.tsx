@@ -25,7 +25,7 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
     navigate('/questionnaire');
   };
   
-  // Calculate completion percentage
+  // Calculate completion percentage based on answered categories
   const calculateCompletionPercentage = (): number => {
     if (questionnaireData.completed) return 100;
     
@@ -34,50 +34,48 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
       return 0;
     }
     
-    // Calculate based on filled answers for main categories
+    // Main categories that need to be answered
     const requiredCategories = [
       'ageGroup',
       'incomeRange',
       'netWorth',
       'investmentKnowledge',
       'investmentExperience',
-      'marketVolatilityResponse'
+      'complexProductsSuitability',
+      'investmentComposition',
+      'futureExpenseGoals',
+      'financialPriorities',
+      'riskPreferences',
+      'goalHorizons',
+      'riskAppetite',
+      'absoluteRiskTolerance',
+      'marketVolatilityResponse',
+      'behavioralBiases'
     ];
     
     let completedCategories = 0;
-    let totalCategories = requiredCategories.length;
     
-    // Check main categories
+    // Check which categories have been answered
     requiredCategories.forEach(category => {
-      if (questionnaireData.answers[category]) completedCategories++;
-    });
-    
-    // Check if any goals were selected 
-    if (
-      questionnaireData.answers.goalPriorities && 
-      Array.isArray(questionnaireData.answers.goalPriorities) && 
-      questionnaireData.answers.goalPriorities.length > 0
-    ) {
-      completedCategories++;
-      totalCategories++;
-      
-      // Check if goal-specific questions are answered
-      const goalIds = questionnaireData.answers.goalPriorities;
-      const goalSpecificCategories = ['goalHorizons', 'riskAppetite', 'absoluteRiskTolerance'];
-      
-      goalSpecificCategories.forEach(category => {
-        totalCategories++;
-        if (
-          questionnaireData.answers[category] && 
-          Object.keys(questionnaireData.answers[category]).length > 0 &&
-          goalIds.some(id => questionnaireData.answers[category][id])
-        ) {
+      if (questionnaireData.answers[category]) {
+        // Special handling for goal-specific questions
+        if (category === 'goalHorizons' || category === 'riskAppetite' || category === 'absoluteRiskTolerance') {
+          // Check if at least one goal has been answered
+          if (Object.keys(questionnaireData.answers[category] || {}).length > 0) {
+            completedCategories++;
+          }
+        } else if (category === 'behavioralBiases') {
+          // Check if behavioral biases section has at least one answer
+          if (Object.keys(questionnaireData.answers[category] || {}).length > 0) {
+            completedCategories++;
+          }
+        } else {
           completedCategories++;
         }
-      });
-    }
+      }
+    });
     
-    return Math.round((completedCategories / totalCategories) * 100);
+    return Math.round((completedCategories / requiredCategories.length) * 100);
   };
   
   const completionPercentage = calculateCompletionPercentage();
