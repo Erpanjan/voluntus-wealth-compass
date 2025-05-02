@@ -173,6 +173,60 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_data: {
+        Row: {
+          address: string | null
+          consultation_date: string | null
+          consultation_time: string | null
+          consultation_type: string | null
+          created_at: string
+          email: string | null
+          first_name: string | null
+          id: string
+          image_url: string | null
+          last_name: string | null
+          media_account_number: string | null
+          phone: string | null
+          preferred_communication: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          consultation_date?: string | null
+          consultation_time?: string | null
+          consultation_type?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id: string
+          image_url?: string | null
+          last_name?: string | null
+          media_account_number?: string | null
+          phone?: string | null
+          preferred_communication?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          consultation_date?: string | null
+          consultation_time?: string | null
+          consultation_type?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          image_url?: string | null
+          last_name?: string | null
+          media_account_number?: string | null
+          phone?: string | null
+          preferred_communication?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -206,6 +260,42 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      questionnaire_responses: {
+        Row: {
+          additional_info: string | null
+          completed: boolean | null
+          created_at: string
+          id: string
+          investment_goals: string | null
+          risk_tolerance: string | null
+          time_horizon: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          additional_info?: string | null
+          completed?: boolean | null
+          created_at?: string
+          id?: string
+          investment_goals?: string | null
+          risk_tolerance?: string | null
+          time_horizon?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          additional_info?: string | null
+          completed?: boolean | null
+          created_at?: string
+          id?: string
+          investment_goals?: string | null
+          risk_tolerance?: string | null
+          time_horizon?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

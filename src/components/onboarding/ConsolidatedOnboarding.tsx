@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { OnboardingFormData } from '@/hooks/use-onboarding-form';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Loader2 } from 'lucide-react';
 import ProfileFormSection from './sections/consolidated/ProfileFormSection';
 import QuestionnaireFormSection from './sections/consolidated/QuestionnaireFormSection';
 import ConsultationFormSection from './sections/consolidated/ConsultationFormSection';
@@ -17,6 +18,7 @@ interface ConsolidatedOnboardingProps {
   updateConsultationData: (data: Partial<OnboardingFormData['consultation']>) => void;
   handleSubmit: () => void;
   handleSaveDraft: () => void;
+  saving?: boolean;
 }
 
 const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
@@ -25,7 +27,8 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
   updateQuestionnaireData,
   updateConsultationData,
   handleSubmit,
-  handleSaveDraft
+  handleSaveDraft,
+  saving = false
 }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -103,16 +106,37 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
       {/* Fixed Bottom Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-4 px-6 z-10">
         <div className="max-w-3xl mx-auto flex justify-between items-center">
-          <Button variant="outline" onClick={handleSaveDraft}>
-            Save Draft
+          <Button 
+            variant="outline" 
+            onClick={handleSaveDraft}
+            disabled={saving}
+          >
+            {saving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : "Save Draft"}
           </Button>
           
           <div className="flex gap-3">
-            <Button variant="secondary" onClick={handlePreview}>
+            <Button 
+              variant="secondary" 
+              onClick={handlePreview}
+              disabled={saving}
+            >
               Preview
             </Button>
-            <Button onClick={handleSubmitForm}>
-              Submit Application
+            <Button 
+              onClick={handleSubmitForm}
+              disabled={saving}
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : "Submit Application"}
             </Button>
           </div>
         </div>
@@ -131,8 +155,16 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
             <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>
               Close
             </Button>
-            <Button onClick={handleSubmitForm}>
-              Submit Application
+            <Button 
+              onClick={handleSubmitForm}
+              disabled={saving}
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : "Submit Application"}
             </Button>
           </DialogFooter>
         </DialogContent>

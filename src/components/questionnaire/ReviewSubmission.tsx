@@ -11,6 +11,47 @@ interface ReviewSubmissionProps {
 }
 
 const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ answers, onSubmit }) => {
+  // Store answers in localStorage for onboarding integration
+  React.useEffect(() => {
+    const savedData = localStorage.getItem('onboardingDraft');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      const updatedData = {
+        ...parsedData,
+        questionnaire: {
+          completed: true,
+          answers
+        }
+      };
+      localStorage.setItem('onboardingDraft', JSON.stringify(updatedData));
+    } else {
+      // Create new data if none exists
+      const newData = {
+        profile: {
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          preferredCommunication: '',
+          mediaAccountNumber: '',
+          address: '',
+          imageUrl: null
+        },
+        questionnaire: {
+          completed: true,
+          answers
+        },
+        consultation: {
+          completed: false,
+          type: '',
+          date: '',
+          time: ''
+        }
+      };
+      localStorage.setItem('onboardingDraft', JSON.stringify(newData));
+    }
+  }, [answers]);
+
   return (
     <motion.div 
       className="space-y-6"
