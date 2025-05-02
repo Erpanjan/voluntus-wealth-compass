@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -77,12 +76,6 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
         <p className="text-gray-600 mb-8">
           This questionaire will help us understand your financial circumstances and investment goals, however, its optional at this stage.
         </p>
-        
-        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-8">
-          <p className="text-amber-700">
-            This questionnaire is optional but will help us tailor our advice to your specific situation.
-          </p>
-        </div>
         
         <QuestionnaireFormSection
           questionnaireData={formData.questionnaire}
