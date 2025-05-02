@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -90,12 +91,14 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
     if (dataLoadAttempted) return; // Prevent duplicate loading attempts
     
     let isMounted = true; // Flag to prevent state updates after unmount
-    const abortController = new AbortController(); // For aborting fetch operations
     
     const loadSavedAnswers = async () => {
-      if (isMounted) setIsLoading(true);
-      try {
+      if (isMounted) {
+        setIsLoading(true);
         console.log('Loading questionnaire data...');
+      }
+      
+      try {
         // Try loading from localStorage first for quick rendering
         const localData = localStorage.getItem('questionnaireAnswers');
         let loadedAnswers = localData ? JSON.parse(localData) : null;
@@ -178,19 +181,18 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
     
     loadSavedAnswers();
     
-    // Set a timeout to prevent infinite loading
+    // Set a timeout to prevent infinite loading - reduced to 2 seconds
     const timeoutId = setTimeout(() => {
       if (isLoading && isMounted) {
         setIsLoading(false);
         setDataLoadAttempted(true);
         console.warn('Loading timeout reached, proceeding with empty questionnaire');
       }
-    }, 3000); // Reduced from 10 to 3 seconds for better user experience
+    }, 2000);
     
     return () => {
       isMounted = false;
       clearTimeout(timeoutId);
-      abortController.abort();
     };
   }, [toast, dataLoadAttempted]);
 
@@ -251,6 +253,9 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
         return true;
       }
       
+      // Save to localStorage first to ensure data is not lost
+      saveToLocalStorage(answers);
+      
       // Format the data for the questionnaire_responses table
       const dataToSave = {
         user_id: session.user.id,
@@ -291,7 +296,7 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
         .from('onboarding_data')
         .select('id')
         .eq('id', session.user.id)
-        .maybeSingle(); // Using maybeSingle to avoid errors
+        .maybeSingle(); 
         
       if (onboardingData) {
         await supabase
@@ -301,9 +306,6 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
         
         console.log('Updated onboarding data timestamp');
       }
-      
-      // Update localStorage
-      saveToLocalStorage(answers);
       
       toast({
         title: "Progress Saved",

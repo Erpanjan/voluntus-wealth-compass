@@ -23,6 +23,7 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dataChecked, setDataChecked] = useState(false);
   
   // Fetch the latest questionnaire data from Supabase
   useEffect(() => {
@@ -34,90 +35,92 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
         if (isMounted) setLoading(true);
         setError(null);
         
+        // Get the current user session
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user) {
-          if (isMounted) {
-            setLoading(false);
-            console.log('No authenticated user found for questionnaire data');
-            // No need to set error for unauthenticated users, as they'll be redirected
-          }
-          return;
-        }
         
-        // Get latest questionnaire data
-        const { data, error } = await supabase
-          .from('questionnaire_responses')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .maybeSingle(); // Using maybeSingle instead of single to avoid errors
-          
-        if (error) {
-          console.error('Error fetching questionnaire data:', error);
-          if (isMounted) {
-            setError('Could not load questionnaire data');
-            setLoading(false);
-          }
-          return;
-        }
-        
-        // Also check localStorage for any additional data
+        // Initialize with any local data
         const localData = localStorage.getItem('questionnaireAnswers');
-        let parsedLocalData = {};
+        let parsedLocalData: Record<string, any> = {};
+        let combinedAnswers: Record<string, any> = {};
+        let isCompleted = false;
+        
         if (localData) {
           try {
             parsedLocalData = JSON.parse(localData);
             console.log('Found questionnaire data in localStorage:', parsedLocalData);
+            combinedAnswers = { ...parsedLocalData };
           } catch (e) {
             console.error('Error parsing localStorage data:', e);
           }
         }
         
-        if (isMounted) {
-          // Combine data sources with priority to database
-          // If data is null (no records found), we still proceed with local data if available
-          const combinedAnswers = {
-            ...parsedLocalData,
-            // Use optional chaining and nullish coalescing to safely access potentially missing properties
-            ...((data?.answers_json ? JSON.parse(data.answers_json as string) : {})),
-          };
+        // Try to get data from Supabase if authenticated
+        if (session?.user) {
+          console.log('User is authenticated, checking for questionnaire data in database');
           
-          // Update onboarding form data with latest questionnaire status
+          const { data, error } = await supabase
+            .from('questionnaire_responses')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+          
+          if (error) {
+            console.error('Error fetching questionnaire data:', error);
+          } else if (data) {
+            console.log('Found questionnaire data in database:', data);
+            isCompleted = data.completed || false;
+            
+            // Parse any stored JSON answers
+            if (data.answers_json) {
+              try {
+                const dbAnswers = JSON.parse(data.answers_json);
+                combinedAnswers = { ...combinedAnswers, ...dbAnswers };
+              } catch (e) {
+                console.error('Error parsing database JSON answers:', e);
+              }
+            }
+          } else {
+            console.log('No questionnaire data found in database for this user');
+          }
+        } else {
+          console.log('User is not authenticated, using only localStorage data');
+        }
+        
+        if (isMounted) {
+          // Update onboarding form data with combined answers
           updateQuestionnaireData({
-            completed: data?.completed || false,
+            completed: isCompleted,
             answers: combinedAnswers,
           });
           
-          console.log('Questionnaire data updated:', {
-            completed: data?.completed || false,
-            hasAnswers: Object.keys(combinedAnswers).length > 0
-          });
-          
+          setDataChecked(true);
           setLoading(false);
         }
       } catch (err) {
-        console.error('Error fetching questionnaire data:', err);
+        console.error('Unexpected error fetching questionnaire data:', err);
         if (isMounted) {
-          setError('An unexpected error occurred');
+          setError('An unexpected error occurred while checking your questionnaire status');
           setLoading(false);
+          setDataChecked(true);
         }
       }
     };
     
     fetchLatestData();
     
-    // Set a timeout to prevent infinite loading
+    // Set a timeout to prevent infinite loading - reduced to 2 seconds
     const timeoutId = setTimeout(() => {
       if (loading && isMounted) {
+        console.warn('Questionnaire data loading timeout reached');
         setLoading(false);
-        setError(null); // Change from error to simply stop loading
-        console.warn('Questionnaire data loading timeout reached, continuing with available data');
+        setDataChecked(true);
       }
-    }, 5000); // Reduced from 10 seconds to 5 seconds
+    }, 2000);
     
     return () => {
-      isMounted = false; // Prevent state updates after unmount
+      isMounted = false;
       clearTimeout(timeoutId);
-      abortController.abort(); // Cancel any pending fetch operations
+      abortController.abort();
     };
   }, [updateQuestionnaireData]);
   
@@ -156,7 +159,7 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
       </div>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden border border-gray-200">
@@ -189,9 +192,15 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
                     Checking status...
                   </div>
                 ) : (
-                  questionnaireData.completed 
-                    ? "Questionnaire completed. You can update it anytime." 
-                    : "Optional: Complete our questionnaire to help us understand your financial goals."
+                  !dataChecked ? (
+                    "Loading questionnaire status..."
+                  ) : questionnaireData.completed ? (
+                    "Questionnaire completed. You can update it anytime."
+                  ) : Object.keys(questionnaireData.answers).length > 0 ? (
+                    "You have partially completed the questionnaire. Continue where you left off."
+                  ) : (
+                    "Optional: Complete our questionnaire to help us understand your financial goals."
+                  )
                 )}
               </div>
               
@@ -200,15 +209,19 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
                 className={questionnaireData.completed 
                   ? "bg-gray-100 text-gray-800 hover:bg-gray-200" 
                   : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"}
-                disabled={loading}
+                disabled={loading && !dataChecked} // Only disable during initial loading
               >
-                {loading ? (
+                {loading && !dataChecked ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Loading...
                   </>
+                ) : questionnaireData.completed ? (
+                  "Review Questionnaire"
+                ) : Object.keys(questionnaireData.answers).length > 0 ? (
+                  "Continue Questionnaire"
                 ) : (
-                  questionnaireData.completed ? "Review Questionnaire" : "Complete Questionnaire"
+                  "Start Questionnaire"
                 )}
               </Button>
             </div>
