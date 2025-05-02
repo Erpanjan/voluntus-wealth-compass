@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface DateTimeSelectorProps {
   selectedDate: Date | undefined;
@@ -24,33 +25,84 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
   onTimeChange
 }) => {
   const { toast } = useToast();
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
   
-  // States for validation feedback
+  // Time state
+  const [startHour, setStartHour] = useState<string>('');
+  const [startMinute, setStartMinute] = useState<string>('00');
+  const [startPeriod, setStartPeriod] = useState<string>('AM');
+  
+  const [endHour, setEndHour] = useState<string>('');
+  const [endMinute, setEndMinute] = useState<string>('00');
+  const [endPeriod, setEndPeriod] = useState<string>('AM');
+  
+  // Validation states
   const [startTimeValid, setStartTimeValid] = useState<boolean | null>(null);
   const [endTimeValid, setEndTimeValid] = useState<boolean | null>(null);
   const [rangeValid, setRangeValid] = useState<boolean | null>(null);
 
-  // Parse the selected time on component load
+  // Parse and set initial time values if selectedTime exists
   useEffect(() => {
     if (selectedTime && selectedTime.includes('-')) {
-      const [start, end] = selectedTime.split('-');
-      setStartTime(start);
-      setEndTime(end);
-    }
-  }, []);
-
-  // Update the selected time when start or end time changes
-  useEffect(() => {
-    if (startTime && endTime) {
-      // Only update if both times are valid
-      if (startTimeValid && endTimeValid && rangeValid) {
-        // Format is HH:MM-HH:MM
-        onTimeChange(`${startTime}-${endTime}`);
+      const [startTimeStr, endTimeStr] = selectedTime.split('-');
+      
+      // Parse start time
+      if (startTimeStr) {
+        const [hours, minutes] = startTimeStr.split(':').map(Number);
+        const isPM = hours >= 12;
+        const displayHour = hours % 12 || 12;
+        
+        setStartHour(displayHour.toString());
+        setStartMinute(minutes.toString().padStart(2, '0'));
+        setStartPeriod(isPM ? 'PM' : 'AM');
+      }
+      
+      // Parse end time
+      if (endTimeStr) {
+        const [hours, minutes] = endTimeStr.split(':').map(Number);
+        const isPM = hours >= 12;
+        const displayHour = hours % 12 || 12;
+        
+        setEndHour(displayHour.toString());
+        setEndMinute(minutes.toString().padStart(2, '0'));
+        setEndPeriod(isPM ? 'PM' : 'AM');
       }
     }
-  }, [startTime, endTime, startTimeValid, endTimeValid, rangeValid, onTimeChange]);
+  }, []);
+  
+  // Convert 12-hour time format to 24-hour format
+  const convertTo24Hour = (hour: string, minute: string, period: string): string => {
+    const hourNum = parseInt(hour, 10);
+    if (isNaN(hourNum) || hourNum < 1 || hourNum > 12) return '';
+    
+    let hour24 = hourNum;
+    if (period === 'PM' && hourNum < 12) hour24 += 12;
+    if (period === 'AM' && hourNum === 12) hour24 = 0;
+    
+    return `${hour24.toString().padStart(2, '0')}:${minute}`;
+  };
+
+  // Update the selected time when any time component changes
+  useEffect(() => {
+    if (startHour && startMinute && startPeriod && endHour && endMinute && endPeriod) {
+      const start24 = convertTo24Hour(startHour, startMinute, startPeriod);
+      const end24 = convertTo24Hour(endHour, endMinute, endPeriod);
+      
+      const isStartValid = validateTimeInput(start24, startPeriod);
+      const isEndValid = validateTimeInput(end24, endPeriod);
+      
+      setStartTimeValid(isStartValid);
+      setEndTimeValid(isEndValid);
+      
+      if (isStartValid && isEndValid) {
+        const isRangeValid = validateTimeRange(start24, end24);
+        setRangeValid(isRangeValid);
+        
+        if (isRangeValid) {
+          onTimeChange(`${start24}-${end24}`);
+        }
+      }
+    }
+  }, [startHour, startMinute, startPeriod, endHour, endMinute, endPeriod, onTimeChange]);
 
   // Get readable format for selected date
   const getReadableDateFormat = () => {
@@ -58,87 +110,85 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
     return format(selectedDate, 'EEEE, MMMM d, yyyy');
   };
 
-  // Validate the time format and range
-  const validateTimeInput = (time: string): boolean => {
-    // Check format (HH:MM in 24-hour format)
-    if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time)) {
+  // Validate time format and operating hours (7AM to 9PM)
+  const validateTimeInput = (time24: string, period: string): boolean => {
+    if (!time24) return false;
+    
+    // Check the time format
+    if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time24)) {
       return false;
     }
-
+    
     // Convert to minutes since midnight for easier comparison
-    const [hours, minutes] = time.split(':').map(Number);
+    const [hours, minutes] = time24.split(':').map(Number);
     const totalMinutes = hours * 60 + minutes;
-
-    // Check if within operating hours (7AM to 9PM)
+    
+    // Operating hours: 7AM to 9PM (420 to 1260 minutes)
     const minTime = 7 * 60; // 7:00 AM in minutes
     const maxTime = 21 * 60; // 9:00 PM in minutes
-
+    
     return totalMinutes >= minTime && totalMinutes <= maxTime;
   };
 
-  // Check the time difference constraint (max 4 hours)
-  const validateTimeRange = (): boolean => {
-    if (!startTime || !endTime) return false;
-
+  // Validate the time range (end after start and max 4 hours)
+  const validateTimeRange = (start24: string, end24: string): boolean => {
+    if (!start24 || !end24) return false;
+    
     // Parse times
-    const [startHours, startMinutes] = startTime.split(':').map(Number);
-    const [endHours, endMinutes] = endTime.split(':').map(Number);
-
+    const [startHours, startMinutes] = start24.split(':').map(Number);
+    const [endHours, endMinutes] = end24.split(':').map(Number);
+    
     // Calculate minutes since midnight
     const startTotalMinutes = startHours * 60 + startMinutes;
     const endTotalMinutes = endHours * 60 + endMinutes;
-
+    
     // Check if end time is after start time
     if (endTotalMinutes <= startTotalMinutes) {
       return false;
     }
-
-    // Calculate duration in minutes
+    
+    // Calculate duration in minutes and check if within 4 hours (240 minutes)
     const durationMinutes = endTotalMinutes - startTotalMinutes;
-
-    // Check if duration is within 4 hours (240 minutes)
     return durationMinutes <= 240;
   };
 
-  // Handle start time change with inline validation
-  const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = e.target.value;
-    setStartTime(newTime);
-    
-    // Validate the time format and range
-    if (newTime === '') {
-      setStartTimeValid(null);
-    } else {
-      const isValid = validateTimeInput(newTime);
-      setStartTimeValid(isValid);
-    }
-    
-    // Update range validation if both times are present
-    if (newTime && endTime && validateTimeInput(newTime) && endTimeValid) {
-      setRangeValid(validateTimeRange());
-    } else {
-      setRangeValid(null);
+  // Input validation functions
+  const validateHourInput = (value: string): boolean => {
+    const hour = parseInt(value, 10);
+    return !isNaN(hour) && hour >= 1 && hour <= 12;
+  };
+
+  const validateMinuteInput = (value: string): boolean => {
+    const minute = parseInt(value, 10);
+    return !isNaN(minute) && minute >= 0 && minute <= 59;
+  };
+
+  // Handle time input changes
+  const handleStartHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || validateHourInput(value)) {
+      setStartHour(value);
     }
   };
 
-  // Handle end time change with inline validation
-  const handleEndTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = e.target.value;
-    setEndTime(newTime);
-    
-    // Validate the time format and range
-    if (newTime === '') {
-      setEndTimeValid(null);
-    } else {
-      const isValid = validateTimeInput(newTime);
-      setEndTimeValid(isValid);
+  const handleStartMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || validateMinuteInput(value)) {
+      setStartMinute(value.padStart(2, '0'));
     }
-    
-    // Update range validation if both times are present
-    if (startTime && newTime && startTimeValid && validateTimeInput(newTime)) {
-      setRangeValid(validateTimeRange());
-    } else {
-      setRangeValid(null);
+  };
+
+  const handleEndHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || validateHourInput(value)) {
+      setEndHour(value);
+    }
+  };
+
+  const handleEndMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || validateMinuteInput(value)) {
+      setEndMinute(value.padStart(2, '0'));
     }
   };
 
@@ -185,56 +235,134 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
           </Popover>
         </div>
         
-        {/* Time Selection - Always visible */}
-        <div className="space-y-4">
-          <h4 className="font-medium">Consultation Time (7AM-9PM)</h4>
+        {/* Time Selection */}
+        <div>
+          <h4 className="font-medium mb-2">Consultation Time (7AM-9PM)</h4>
           <p className="text-sm text-gray-500 mb-3">
-            Enter times in 24-hour format (e.g., 09:00 for 9AM, 14:30 for 2:30PM)
+            Select your preferred consultation time. Maximum duration is 4 hours.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="startTime" className="mb-2 block">Start Time</Label>
-              <div className="flex items-center">
-                <Clock className="mr-2 h-4 w-4 text-gray-500" />
+          {/* Start Time */}
+          <div className="mb-4">
+            <Label htmlFor="startTime" className="mb-2 block">Start Time</Label>
+            <div className="grid grid-cols-5 gap-2">
+              {/* Hour Input */}
+              <div className="col-span-1">
+                <Label htmlFor="startHour" className="sr-only">Hour</Label>
                 <Input
-                  id="startTime"
+                  id="startHour"
                   type="text"
-                  placeholder="HH:MM (e.g. 09:00)"
-                  value={startTime}
-                  onChange={handleStartTimeChange}
-                  className={cn("w-full", getBorderColor(startTimeValid))}
+                  placeholder="Hour"
+                  maxLength={2}
+                  value={startHour}
+                  onChange={handleStartHourChange}
+                  className={cn("text-center", getBorderColor(startTimeValid))}
                 />
               </div>
-              {startTimeValid === false && (
-                <p className="text-xs text-red-500 mt-1">
-                  Please enter a valid time between 7:00 and 21:00 in format HH:MM
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="endTime" className="mb-2 block">End Time</Label>
-              <div className="flex items-center">
-                <Clock className="mr-2 h-4 w-4 text-gray-500" />
+              
+              <div className="col-span-1 flex items-center justify-center">
+                <span className="text-gray-600">:</span>
+              </div>
+              
+              {/* Minute Input */}
+              <div className="col-span-1">
+                <Label htmlFor="startMinute" className="sr-only">Minute</Label>
                 <Input
-                  id="endTime"
+                  id="startMinute"
                   type="text"
-                  placeholder="HH:MM (e.g. 10:30)"
-                  value={endTime}
-                  onChange={handleEndTimeChange}
-                  className={cn("w-full", getBorderColor(endTimeValid))}
+                  placeholder="Min"
+                  maxLength={2}
+                  value={startMinute}
+                  onChange={handleStartMinuteChange}
+                  className={cn("text-center", getBorderColor(startTimeValid))}
                 />
               </div>
-              {endTimeValid === false && (
-                <p className="text-xs text-red-500 mt-1">
-                  Please enter a valid time between 7:00 and 21:00 in format HH:MM
-                </p>
-              )}
+              
+              {/* AM/PM Selector */}
+              <div className="col-span-2">
+                <Select 
+                  value={startPeriod} 
+                  onValueChange={setStartPeriod}
+                >
+                  <SelectTrigger className={getBorderColor(startTimeValid)}>
+                    <SelectValue placeholder="AM/PM" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="AM">AM</SelectItem>
+                    <SelectItem value="PM">PM</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           
-          {/* Time range validation message */}
+          {/* End Time */}
+          <div className="mb-4">
+            <Label htmlFor="endTime" className="mb-2 block">End Time</Label>
+            <div className="grid grid-cols-5 gap-2">
+              {/* Hour Input */}
+              <div className="col-span-1">
+                <Label htmlFor="endHour" className="sr-only">Hour</Label>
+                <Input
+                  id="endHour"
+                  type="text"
+                  placeholder="Hour"
+                  maxLength={2}
+                  value={endHour}
+                  onChange={handleEndHourChange}
+                  className={cn("text-center", getBorderColor(endTimeValid))}
+                />
+              </div>
+              
+              <div className="col-span-1 flex items-center justify-center">
+                <span className="text-gray-600">:</span>
+              </div>
+              
+              {/* Minute Input */}
+              <div className="col-span-1">
+                <Label htmlFor="endMinute" className="sr-only">Minute</Label>
+                <Input
+                  id="endMinute"
+                  type="text"
+                  placeholder="Min"
+                  maxLength={2}
+                  value={endMinute}
+                  onChange={handleEndMinuteChange}
+                  className={cn("text-center", getBorderColor(endTimeValid))}
+                />
+              </div>
+              
+              {/* AM/PM Selector */}
+              <div className="col-span-2">
+                <Select 
+                  value={endPeriod} 
+                  onValueChange={setEndPeriod}
+                >
+                  <SelectTrigger className={getBorderColor(endTimeValid)}>
+                    <SelectValue placeholder="AM/PM" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="AM">AM</SelectItem>
+                    <SelectItem value="PM">PM</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          
+          {/* Time validation messages */}
+          {startTimeValid === false && (
+            <p className="text-xs text-red-500 mt-1">
+              Please enter a valid start time between 7:00 AM and 9:00 PM
+            </p>
+          )}
+          
+          {endTimeValid === false && (
+            <p className="text-xs text-red-500 mt-1">
+              Please enter a valid end time between 7:00 AM and 9:00 PM
+            </p>
+          )}
+          
           {startTimeValid && endTimeValid && rangeValid === false && (
             <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
               <p className="text-sm text-red-600">

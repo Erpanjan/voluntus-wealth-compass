@@ -38,11 +38,6 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
   // Handle time selection
   const handleTimeSelection = (time: string) => {
     updateConsultationData({ time });
-    
-    // Auto-complete the consultation when type, date, and time are all selected
-    if (consultationData.type && selectedDate && time) {
-      updateConsultationData({ completed: true });
-    }
   };
 
   // Check if time format is valid (HH:MM-HH:MM)

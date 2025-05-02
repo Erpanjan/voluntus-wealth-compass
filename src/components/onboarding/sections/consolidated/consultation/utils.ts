@@ -21,7 +21,7 @@ export const getReadableDateFormat = (date: Date | undefined): string => {
 export const getReadableTimeFormat = (time: string): string => {
   if (!time) return '';
   
-  // Check if time is in the new format (HH:MM-HH:MM)
+  // Check if time is in the HH:MM-HH:MM format
   if (time.includes('-')) {
     const [startTime, endTime] = time.split('-');
     return formatTimeString(startTime) + ' - ' + formatTimeString(endTime);
@@ -37,7 +37,7 @@ export const getReadableTimeFormat = (time: string): string => {
   return time;
 };
 
-// Format HH:MM to human-readable format (e.g., "9:00 AM")
+// Format HH:MM 24-hour time to human-readable 12-hour format (e.g., "9:00 AM")
 const formatTimeString = (timeStr: string): string => {
   if (!timeStr) return '';
   
