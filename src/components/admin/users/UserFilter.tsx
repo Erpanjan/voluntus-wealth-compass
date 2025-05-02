@@ -18,8 +18,7 @@ export const UserFilter: React.FC<UserFilterProps> = ({
   isLoading
 }) => {
   return (
-    <div className="flex justify-between items-center mb-4">
-      <h1 className="text-2xl font-bold">User Account Management</h1>
+    <div className="flex justify-end items-center mb-4">
       <div className="flex gap-2">
         <SearchBar 
           searchQuery={searchQuery} 
