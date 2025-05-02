@@ -41,10 +41,20 @@ export const useAuth = (isAdminMode: boolean = false) => {
     navigate,
     toast
   });
-
-  // Handle regular login success
-  const handleRegularLogin = () => {
-    // Navigation is already handled in the auth state change listener
+  
+  // Handle successful login by verifying current session and enforcing route protection
+  const handleRegularLogin = async () => {
+    // Additional check to verify session is valid before navigating
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    
+    if (currentSession) {
+      console.log("Login confirmed, proceeding with onboarding status check");
+      // The navigation will be handled by the checkOnboardingStatus function
+      await checkOnboardingStatus(currentSession.user.id);
+    } else {
+      console.log("Session verification failed after login attempt");
+      navigate('/login');
+    }
   };
 
   return {

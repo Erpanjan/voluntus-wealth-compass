@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import AdminToggle from '@/components/login/AdminToggle';
 import LoginTabs from '@/components/login/LoginTabs';
 import { useAuth } from '@/hooks/auth/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 const Login = () => {
   const [pageLoaded, setPageLoaded] = useState(false);
@@ -16,6 +17,42 @@ const Login = () => {
   
   // Use the custom hook to handle authentication
   const { loading, handleRegularLogin } = useAuth(isAdminMode);
+  
+  // Check if user is already authenticated and redirect if needed
+  useEffect(() => {
+    const checkExistingAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // User is already authenticated, check if they're an admin in admin mode
+        if (isAdminMode) {
+          const { data, error } = await supabase
+            .from('admin_users')
+            .select('id')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (data && !error) {
+            navigate('/admin/dashboard', { replace: true });
+          } else {
+            // Not an admin but trying to access admin mode
+            toast({
+              title: "Access Denied",
+              description: "Your account does not have admin privileges.",
+              variant: "destructive",
+            });
+          }
+        } else {
+          // Regular user already authenticated, check onboarding status
+          navigate('/welcome', { replace: true });
+        }
+      }
+    };
+    
+    if (!loading) {
+      checkExistingAuth();
+    }
+  }, [loading, isAdminMode, navigate, toast]);
   
   // Enhanced fade-in animation when component loads
   useEffect(() => {

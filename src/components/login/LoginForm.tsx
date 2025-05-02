@@ -72,13 +72,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegularLogin, isAdminMode = fal
           duration: 5000,
         });
         
-        navigate('/admin/dashboard');
+        navigate('/admin/dashboard', { replace: true });
       } else {
         toast({
           title: "Login successful",
           description: "Welcome to the Client Portal.",
           duration: 5000,
         });
+        
+        // Additional verification to ensure session is active
+        const { data: sessionCheck } = await supabase.auth.getSession();
+        
+        if (!sessionCheck.session) {
+          throw new Error("Session verification failed");
+        }
         
         // Check onboarding status - this will handle navigation
         if (onRegularLogin) {
@@ -93,6 +100,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegularLogin, isAdminMode = fal
         variant: "destructive",
         duration: 5000,
       });
+      
+      // Clear any auth state that might have been partially set
+      await supabase.auth.signOut();
     } finally {
       setIsSubmitting(false);
     }

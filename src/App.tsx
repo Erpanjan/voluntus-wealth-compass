@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -50,7 +49,18 @@ const PrivateRoute = ({ children }) => {
       }
     };
     
+    // Immediate check for initial render
     checkSession();
+    
+    // Also set up listener for auth changes to keep state in sync
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setAuthenticated(!!session);
+      setLoading(false);
+    });
+    
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
   
   // Show loading state while checking authentication
@@ -63,7 +73,7 @@ const PrivateRoute = ({ children }) => {
   // Redirect to login if not authenticated
   if (!authenticated) {
     console.log("Access denied: No valid Supabase session found");
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
   
   return children;

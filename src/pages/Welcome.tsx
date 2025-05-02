@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Section from '@/components/ui/Section';
@@ -9,14 +9,27 @@ import { supabase } from '@/integrations/supabase/client';
 
 const Welcome = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
 
-  // Add check to ensure user is authenticated
+  // Add thorough authentication check
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        console.log('No valid session found in Welcome page');
-        navigate('/login');
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          console.log('No valid session found in Welcome page, redirecting to login');
+          navigate('/login', { replace: true });
+          return;
+        }
+        
+        setAuthenticated(true);
+      } catch (error) {
+        console.error('Auth check error:', error);
+        navigate('/login', { replace: true });
+      } finally {
+        setLoading(false);
       }
     };
     
@@ -27,6 +40,18 @@ const Welcome = () => {
     navigate('/onboarding');
   };
 
+  // Only render content when authenticated, otherwise show loading
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <p className="text-gray-600">Verifying authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // This will only render if authentication check passed
   return (
     <div className="min-h-screen bg-white">
       <OnboardingHeader currentStep={0} />
