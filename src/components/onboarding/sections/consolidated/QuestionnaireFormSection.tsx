@@ -1,11 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, ClipboardList, Loader2, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface QuestionnaireFormSectionProps {
@@ -85,15 +84,8 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
             />
             
             <div className="flex justify-between items-center mt-4">
-              <div className="text-sm text-gray-600">
-                {questionnaireData.completed ? (
-                  "Questionnaire completed. You can update it anytime."
-                ) : Object.keys(questionnaireData.answers).length > 0 ? (
-                  "You have partially completed the questionnaire. Continue where you left off."
-                ) : (
-                  "Optional: Complete our questionnaire to help us understand your financial goals."
-                )}
-              </div>
+              {/* Removed the text content from this div */}
+              <div className="text-sm text-gray-600"></div>
               
               <Button 
                 onClick={handleNavigateToQuestionnaire}
