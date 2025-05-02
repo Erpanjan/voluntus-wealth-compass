@@ -37,7 +37,7 @@ export const useUserService = () => {
         // Skip admin users
         if (profile.is_admin) continue;
         
-        // We'll use the email from the profile if available
+        // We'll use the email from the profile if available (should now be synced from auth.users)
         const userEmail = profile.email || 'No email';
         
         // Generate a user number based on the first 6 chars of the UUID

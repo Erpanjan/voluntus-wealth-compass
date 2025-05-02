@@ -8,9 +8,10 @@ import { ConfirmationDialog } from '@/components/admin/users/ConfirmationDialog'
 import { UserDetailsDialog } from '@/components/admin/users/UserDetailsDialog';
 import { useUserService, UserAccount } from '@/services/userService';
 import { useToast } from '@/hooks/use-toast';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { supabase } from '@/integrations/supabase/client'; // Added import for supabase
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
 
 const UserAccountManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,6 +26,7 @@ const UserAccountManagement = () => {
   const { fetchUsers, updateUserStatus, deleteUser, getUserDetails } = useUserService();
   const { toast } = useToast();
   const [adminPermissionsLimited, setAdminPermissionsLimited] = useState(false);
+  const [noUsersFound, setNoUsersFound] = useState(false);
   
   // Fetch users on component mount
   useEffect(() => {
@@ -36,6 +38,7 @@ const UserAccountManagement = () => {
     setIsLoading(true);
     const fetchedUsers = await fetchUsers();
     setUsers(fetchedUsers);
+    setNoUsersFound(fetchedUsers.length === 0);
     
     // Check if we got a permission error
     if (fetchedUsers.length > 0) {
@@ -46,6 +49,8 @@ const UserAccountManagement = () => {
         console.log('Admin permissions limited:', error);
         setAdminPermissionsLimited(true);
       }
+    } else {
+      setAdminPermissionsLimited(true);
     }
     
     setIsLoading(false);
@@ -140,6 +145,16 @@ const UserAccountManagement = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">User Account Management</h1>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={loadUsers} 
+            className="flex items-center gap-1"
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
         </div>
         
         {adminPermissionsLimited && (
@@ -147,6 +162,15 @@ const UserAccountManagement = () => {
             <AlertTriangle className="h-4 w-4 text-amber-500" />
             <AlertDescription className="text-amber-800">
               Limited admin permissions detected. Some operations (like user deletion at auth level) may not work. User profiles will still be manageable.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {noUsersFound && !isLoading && (
+          <Alert variant="warning" className="border-amber-300 bg-amber-50">
+            <AlertTriangle className="h-4 w-4 text-amber-500" />
+            <AlertDescription className="text-amber-800">
+              No user accounts found. If you expected to see users, please check your Supabase configuration.
             </AlertDescription>
           </Alert>
         )}
