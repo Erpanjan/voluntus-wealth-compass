@@ -18,7 +18,7 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
   };
   
   return (
-    <header className="border-b py-4">
+    <header className="py-4">
       <div className="container mx-auto px-6 flex justify-between items-center">
         <Link to="/" className="flex items-center">
           <img 
