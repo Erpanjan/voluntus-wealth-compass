@@ -182,7 +182,6 @@ export type Database = {
           is_active: boolean | null
           is_admin: boolean | null
           last_name: string | null
-          phone: string | null
           updated_at: string | null
         }
         Insert: {
@@ -193,7 +192,6 @@ export type Database = {
           is_active?: boolean | null
           is_admin?: boolean | null
           last_name?: string | null
-          phone?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -204,7 +202,6 @@ export type Database = {
           is_active?: boolean | null
           is_admin?: boolean | null
           last_name?: string | null
-          phone?: string | null
           updated_at?: string | null
         }
         Relationships: []

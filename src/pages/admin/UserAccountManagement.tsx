@@ -1,192 +1,109 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { UserFilter } from '@/components/admin/users/UserFilter';
 import { UserAccountList } from '@/components/admin/users/UserAccountList';
 import { AlertsSection } from '@/components/admin/users/AlertsSection';
-import { UserDetailsDialog } from '@/components/admin/users/UserDetailsDialog';
-import { ConfirmationDialog } from '@/components/admin/users/ConfirmationDialog';
+import { UserFilter } from '@/components/admin/users/UserFilter';
 import { useUserService, UserAccount } from '@/services/userService';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { useToast } from '@/hooks/use-toast';
 
 const UserAccountManagement = () => {
   const [users, setUsers] = useState<UserAccount[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserAccount[]>([]);
-  const [selectedUser, setSelectedUser] = useState<UserAccount | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingTimeout, setLoadingTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showDeactivateDialog, setShowDeactivateDialog] = useState(false);
-  const [showActivateDialog, setShowActivateDialog] = useState(false);
-  const [databaseError, setDatabaseError] = useState<string | undefined>(undefined);
-  const [connectError, setConnectError] = useState(false);
-  const [userDetailsLoading, setUserDetailsLoading] = useState(false);
-  const [userDetails, setUserDetails] = useState<any>(null);
-  
-  const userService = useUserService();
+  const [adminPermissionsLimited, setAdminPermissionsLimited] = useState(false);
+  const { fetchUsers } = useUserService();
   const { toast } = useToast();
 
-  const fetchUsers = useCallback(async () => {
-    try {
+  // Fetch users on page load
+  useEffect(() => {
+    const loadUsers = async () => {
       setIsLoading(true);
-      setDatabaseError(undefined);
-      setConnectError(false);
-      
-      // Set a timeout to handle stuck loading states
-      const timeout = setTimeout(() => {
-        setIsLoading(false);
-        setConnectError(true);
+      try {
+        const userData = await fetchUsers();
+        setUsers(userData);
+        setFilteredUsers(userData);
+      } catch (error) {
+        console.error('Error loading users:', error);
         toast({
-          title: "Connection Timeout",
-          description: "Could not connect to the database in a reasonable time",
+          title: "Error loading users",
+          description: "Please try again later or contact support",
           variant: "destructive",
         });
-      }, 10000);
-      
-      setLoadingTimeout(timeout);
-      
-      const fetchedUsers = await userService.fetchUsers();
-      
-      if (loadingTimeout) clearTimeout(loadingTimeout);
-      
-      setUsers(fetchedUsers);
-      setFilteredUsers(fetchedUsers);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error in fetchUsers:', error);
-      setDatabaseError((error as Error).message);
-      setIsLoading(false);
-      
-      if (loadingTimeout) clearTimeout(loadingTimeout);
-    }
-  }, [userService, toast, loadingTimeout]);
-
-  useEffect(() => {
-    fetchUsers();
-    
-    return () => {
-      if (loadingTimeout) clearTimeout(loadingTimeout);
+      } finally {
+        setIsLoading(false);
+      }
     };
-  }, [fetchUsers, loadingTimeout]);
 
+    loadUsers();
+  }, [fetchUsers, toast]);
+
+  // Filter users based on search query
   useEffect(() => {
-    if (searchQuery.trim() === '') {
+    if (!searchQuery) {
       setFilteredUsers(users);
       return;
     }
-
-    const lowercaseQuery = searchQuery.toLowerCase();
+    
+    const query = searchQuery.toLowerCase();
     const filtered = users.filter(user => 
-      user.firstName?.toLowerCase().includes(lowercaseQuery) ||
-      user.lastName?.toLowerCase().includes(lowercaseQuery) ||
-      user.email?.toLowerCase().includes(lowercaseQuery) ||
-      user.userNumber?.toLowerCase().includes(lowercaseQuery)
+      user.email?.toLowerCase().includes(query) ||
+      user.firstName?.toLowerCase().includes(query) ||
+      user.lastName?.toLowerCase().includes(query) ||
+      user.userNumber?.toLowerCase().includes(query)
     );
     
     setFilteredUsers(filtered);
   }, [searchQuery, users]);
 
-  const fetchUserDetails = useCallback(async (userId: string) => {
-    setUserDetailsLoading(true);
-    try {
-      const details = await userService.getUserDetails(userId);
-      setUserDetails(details);
-    } catch (error) {
-      console.error('Error fetching user details:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load user details",
-        variant: "destructive"
-      });
-      setUserDetails(null);
-    } finally {
-      setUserDetailsLoading(false);
-    }
-  }, [userService, toast]);
-
+  // Handle search input change
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
   };
 
-  const handleRefresh = () => {
-    fetchUsers();
-  };
-
-  const handleViewDetails = (user: UserAccount) => {
-    setSelectedUser(user);
-    setShowDetailsDialog(true);
-    fetchUserDetails(user.id);
-  };
-
-  const handleDelete = (user: UserAccount) => {
-    setSelectedUser(user);
-    setShowDeleteDialog(true);
-  };
-
-  const handleDeactivate = (user: UserAccount) => {
-    setSelectedUser(user);
-    setShowDeactivateDialog(true);
-  };
-
-  const handleActivate = (user: UserAccount) => {
-    setSelectedUser(user);
-    setShowActivateDialog(true);
-  };
-
-  const confirmDelete = async () => {
-    if (!selectedUser) return;
-    
-    const success = await userService.deleteUser(selectedUser.id);
-    
-    if (success) {
-      fetchUsers();
+  // Handle refresh button click
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    try {
+      const userData = await fetchUsers();
+      setUsers(userData);
+      setFilteredUsers(userData);
+      toast({
+        title: "Refreshed",
+        description: "User data has been refreshed",
+      });
+    } catch (error) {
+      console.error('Error refreshing users:', error);
+      toast({
+        title: "Error refreshing users",
+        description: "Please try again later",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setShowDeleteDialog(false);
   };
 
-  const confirmDeactivate = async () => {
-    if (!selectedUser) return;
-    
-    const success = await userService.updateUserStatus(selectedUser.id, false);
-    
-    if (success) {
-      fetchUsers();
-    }
-    
-    setShowDeactivateDialog(false);
-  };
-
-  const confirmActivate = async () => {
-    if (!selectedUser) return;
-    
-    const success = await userService.updateUserStatus(selectedUser.id, true);
-    
-    if (success) {
-      fetchUsers();
-    }
-    
-    setShowActivateDialog(false);
-  };
+  // Placeholder handler functions to pass to components
+  const handleActivate = (user: UserAccount) => {};
+  const handleDeactivate = (user: UserAccount) => {};
+  const handleDelete = (user: UserAccount) => {};
+  const handleViewDetails = (user: UserAccount) => {};
 
   return (
     <AdminLayout>
-      <TooltipProvider>
-        <AlertsSection 
-          adminPermissionsLimited={true} 
-          noUsersFound={!isLoading && filteredUsers.length === 0 && users.length === 0}
-          isLoading={isLoading}
-          databaseError={databaseError}
-          connectError={connectError}
-        />
-        
+      <div className="space-y-6">
         <UserFilter 
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           onRefresh={handleRefresh}
+          isLoading={isLoading}
+        />
+        
+        <AlertsSection 
+          adminPermissionsLimited={adminPermissionsLimited}
+          noUsersFound={!isLoading && filteredUsers.length === 0}
           isLoading={isLoading}
         />
         
@@ -201,43 +118,7 @@ const UserAccountManagement = () => {
           onDelete={handleDelete}
           onViewDetails={handleViewDetails}
         />
-
-        {selectedUser && (
-          <>
-            <UserDetailsDialog 
-              isOpen={showDetailsDialog}
-              onClose={() => setShowDetailsDialog(false)}
-              user={selectedUser}
-              userDetails={userDetails}
-              isLoading={userDetailsLoading}
-            />
-            
-            <ConfirmationDialog 
-              isOpen={showDeleteDialog}
-              onClose={() => setShowDeleteDialog(false)}
-              onConfirm={confirmDelete}
-              user={selectedUser}
-              actionType="delete"
-            />
-            
-            <ConfirmationDialog 
-              isOpen={showDeactivateDialog}
-              onClose={() => setShowDeactivateDialog(false)}
-              onConfirm={confirmDeactivate}
-              user={selectedUser}
-              actionType="deactivate"
-            />
-            
-            <ConfirmationDialog 
-              isOpen={showActivateDialog}
-              onClose={() => setShowActivateDialog(false)}
-              onConfirm={confirmActivate}
-              user={selectedUser}
-              actionType="activate"
-            />
-          </>
-        )}
-      </TooltipProvider>
+      </div>
     </AdminLayout>
   );
 };
