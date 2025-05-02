@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Search, RefreshCw } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 interface SearchBarProps {
   searchQuery: string;
@@ -12,29 +11,18 @@ interface SearchBarProps {
 
 export const SearchBar: React.FC<SearchBarProps> = ({ 
   searchQuery, 
-  onSearchChange, 
-  onRefresh 
+  onSearchChange
 }) => {
   return (
-    <div className="flex gap-2">
-      <div className="relative flex-1">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-        <Input 
-          type="text" 
-          placeholder="Search by name or email" 
-          className="pl-8" 
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
-      </div>
-      <Button 
-        variant="outline" 
-        onClick={onRefresh}
-        className="flex items-center gap-1"
-      >
-        <RefreshCw className="h-4 w-4" />
-        Refresh
-      </Button>
+    <div className="relative flex-1">
+      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+      <Input 
+        type="text" 
+        placeholder="Search by name, email, or ID" 
+        className="pl-8" 
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+      />
     </div>
   );
 };

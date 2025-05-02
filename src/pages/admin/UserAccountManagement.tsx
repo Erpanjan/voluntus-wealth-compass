@@ -1,16 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { UserTable } from '@/components/admin/users/UserTable';
-import { SearchBar } from '@/components/admin/users/SearchBar';
 import { ConfirmationDialog } from '@/components/admin/users/ConfirmationDialog';
 import { UserDetailsDialog } from '@/components/admin/users/UserDetailsDialog';
 import { useUserService, UserAccount } from '@/services/userService';
 import { useToast } from '@/hooks/use-toast';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import { AlertsSection } from '@/components/admin/users/AlertsSection';
+import { UserFilter } from '@/components/admin/users/UserFilter';
+import { UserAccountList } from '@/components/admin/users/UserAccountList';
 
 const UserAccountManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -150,63 +147,30 @@ const UserAccountManagement = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">User Account Management</h1>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={loadUsers} 
-            className="flex items-center gap-1"
-            disabled={isLoading}
-          >
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-        </div>
+        <UserFilter 
+          searchQuery={searchQuery} 
+          onSearchChange={handleSearchChange} 
+          onRefresh={loadUsers}
+          isLoading={isLoading}
+        />
         
-        {adminPermissionsLimited && (
-          <Alert variant="warning" className="border-amber-300 bg-amber-50">
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
-            <AlertDescription className="text-amber-800">
-              Limited admin permissions detected. Some operations (like user deletion at auth level) may not work. User profiles will still be manageable.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {noUsersFound && !isLoading && (
-          <Alert variant="warning" className="border-amber-300 bg-amber-50">
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
-            <AlertDescription className="text-amber-800">
-              No user accounts found. If you expected to see users, please check your Supabase configuration.
-            </AlertDescription>
-          </Alert>
-        )}
+        <AlertsSection 
+          adminPermissionsLimited={adminPermissionsLimited}
+          noUsersFound={noUsersFound}
+          isLoading={isLoading}
+        />
         
-        <Card>
-          <CardHeader>
-            <CardTitle>User Accounts</CardTitle>
-            <CardDescription>Manage client user accounts and their status</CardDescription>
-            
-            <div className="flex items-center justify-end mt-4">
-              <SearchBar 
-                searchQuery={searchQuery} 
-                onSearchChange={handleSearchChange} 
-                onRefresh={loadUsers}
-              />
-            </div>
-          </CardHeader>
-          
-          <CardContent>
-            <UserTable 
-              users={filteredUsers}
-              isLoading={isLoading}
-              onActivate={(user) => handleUserStatusChange(user, 'activate')}
-              onDeactivate={(user) => handleUserStatusChange(user, 'deactivate')}
-              onDelete={handleUserDelete}
-              onViewDetails={handleViewUserDetails}
-            />
-          </CardContent>
-        </Card>
+        <UserAccountList 
+          users={filteredUsers}
+          isLoading={isLoading}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          onRefresh={loadUsers}
+          onActivate={(user) => handleUserStatusChange(user, 'activate')}
+          onDeactivate={(user) => handleUserStatusChange(user, 'deactivate')}
+          onDelete={handleUserDelete}
+          onViewDetails={handleViewUserDetails}
+        />
       </div>
 
       <ConfirmationDialog
