@@ -134,6 +134,7 @@ export const useApplicationService = () => {
       
       return {
         ...application,
+        has_questionnaire: !!questionnaire, // Add this property based on whether questionnaire exists
         questionnaire: questionnaire || null
       };
     } catch (error: any) {
