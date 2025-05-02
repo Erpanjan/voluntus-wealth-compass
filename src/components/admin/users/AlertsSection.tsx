@@ -20,7 +20,12 @@ export const AlertsSection: React.FC<AlertsSectionProps> = ({
         <Alert variant="warning" className="border-amber-300 bg-amber-50">
           <AlertTriangle className="h-4 w-4 text-amber-500" />
           <AlertDescription className="text-amber-800">
-            No user accounts found. If you expected to see users, please check your Supabase configuration.
+            No user accounts found. This could be due to:
+            <ul className="mt-2 list-disc pl-5">
+              <li>No user accounts exist in the Supabase database</li>
+              <li>Connection issues with the Supabase API</li>
+              <li>Authentication issues - check if your session is valid</li>
+            </ul>
           </AlertDescription>
         </Alert>
       )}

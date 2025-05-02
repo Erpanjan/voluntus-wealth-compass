@@ -32,11 +32,11 @@ export const useUserService = () => {
       }
       
       console.log(`Fetched ${profiles?.length || 0} profiles from database`);
+      console.log('Raw profiles data:', profiles);
       
-      // Filter admin users if needed
-      const clientProfiles = profiles?.filter(profile => !profile.is_admin) || [];
-      
-      return clientProfiles;
+      // Return all profiles - we're not filtering out admin users anymore
+      // since we want to see all user accounts in the management interface
+      return profiles || [];
     } catch (error: any) {
       console.error('Error fetching users:', error);
       toast({

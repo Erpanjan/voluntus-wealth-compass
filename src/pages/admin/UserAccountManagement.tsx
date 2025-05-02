@@ -40,6 +40,11 @@ const UserAccountManagement = () => {
       }
     } catch (error) {
       console.error('Error loading profiles:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load user profiles. Please check your connection.',
+        variant: 'destructive',
+      });
     } finally {
       setIsLoading(false);
     }
