@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -20,55 +21,60 @@ const Questionnaire = () => {
   const totalSteps = 15;
   // Create the ref with the correct type
   const questionnaireFormRef = useRef<{ saveProgress: () => Promise<boolean> }>(null);
+  // Add a ready state to help prevent loading flicker
+  const [isReady, setIsReady] = useState(false);
 
   // Check authentication status and load previous step
   useEffect(() => {
     let isMounted = true;
-    const abortController = new AbortController();
     
     const init = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        // If no session, redirect to login
-        if (!session) {
-          if (isMounted) {
-            toast({
-              title: "Authentication Required",
-              description: "Please log in to access the questionnaire.",
-              variant: "destructive"
-            });
-            navigate('/login');
-          }
-          return;
-        }
-
-        // Try to load the last saved step from localStorage
+        // Try to load the last saved step from localStorage first for fast initial display
         const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
-        if (savedQuestionnaire) {
+        if (savedQuestionnaire && isMounted) {
           try {
             const savedData = JSON.parse(savedQuestionnaire);
             // If we have lastCompletedStep in saved data, use it
             if (savedData.lastCompletedStep !== undefined) {
-              const step = Math.min(savedData.lastCompletedStep, totalSteps - 1);
-              if (isMounted) setCurrentStep(step);
+              const lastStep = Math.min(Number(savedData.lastCompletedStep) || 0, totalSteps - 1);
+              if (isMounted) setCurrentStep(lastStep);
             }
           } catch (e) {
             console.error('Error parsing saved questionnaire data:', e);
-            if (isMounted) {
-              // Don't show error, just start fresh
-              console.log('Could not load previous progress, starting fresh');
-            }
           }
+        }
+
+        // Then check auth status with a timeout to not block UI
+        try {
+          const sessionPromise = supabase.auth.getSession();
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Session fetch timeout')), 1000)
+          );
+          
+          const { data: { session } } = await Promise.race([
+            sessionPromise,
+            timeoutPromise
+          ]) as { data: { session: any } };
+          
+          // If no session, show message but don't redirect immediately
+          if (!session && isMounted) {
+            console.log('No active session found');
+            setError('Please log in to save your questionnaire progress');
+          }
+        } catch (error) {
+          console.log('Session check timed out, continuing with questionnaire');
         }
       } catch (error) {
         console.error('Error initializing questionnaire:', error);
-        if (isMounted) {
-          // Don't block UI with errors, just log them
-          console.error('Error initializing questionnaire:', error);
-        }
       } finally {
-        if (isMounted) setLoadingInitial(false);
+        if (isMounted) {
+          setLoadingInitial(false);
+          // Short delay before setting ready to avoid UI flickering
+          setTimeout(() => {
+            if (isMounted) setIsReady(true);
+          }, 100);
+        }
       }
     };
     
@@ -78,16 +84,16 @@ const Questionnaire = () => {
     const timeoutId = setTimeout(() => {
       if (loadingInitial && isMounted) {
         setLoadingInitial(false);
+        setIsReady(true);
         console.log('Loading took too long, proceeding with fresh questionnaire');
       }
-    }, 3000); // Reduced from 10 seconds to 3 seconds
+    }, 1000); // Reduced from 3 seconds to 1 second
     
     return () => {
       isMounted = false;
       clearTimeout(timeoutId);
-      abortController.abort();
     };
-  }, [navigate, toast]);
+  }, [navigate, toast, totalSteps]);
 
   // Handler for step navigation
   const handleStepChange = (stepIncrement: number) => {
@@ -104,7 +110,6 @@ const Questionnaire = () => {
           localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
         } catch (e) {
           console.error('Error saving step progress:', e);
-          // Don't block UI with errors
         }
       }
       
@@ -120,6 +125,15 @@ const Questionnaire = () => {
       // Access the saveProgress method through the ref
       if (questionnaireFormRef.current) {
         await questionnaireFormRef.current.saveProgress();
+      } else {
+        console.warn('QuestionnaireForm ref not available, saving to localStorage only');
+        // Fallback to just saving to localStorage
+        const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
+        if (savedQuestionnaire) {
+          const savedData = JSON.parse(savedQuestionnaire);
+          savedData.lastCompletedStep = currentStep;
+          localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
+        }
       }
       
       toast({
@@ -153,6 +167,7 @@ const Questionnaire = () => {
           });
         }
       } else {
+        console.warn('QuestionnaireForm ref not available, saving to localStorage only');
         // Fallback to just saving to localStorage
         const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
         if (savedQuestionnaire) {
@@ -160,6 +175,15 @@ const Questionnaire = () => {
           const savedData = JSON.parse(savedQuestionnaire);
           savedData.lastCompletedStep = currentStep;
           localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
+          
+          toast({
+            title: "Progress Saved Locally",
+            description: "Your answers have been saved on this device.",
+          });
+        } else {
+          // Initialize empty questionnaire data
+          const newData = { lastCompletedStep: currentStep };
+          localStorage.setItem('questionnaireAnswers', JSON.stringify(newData));
           
           toast({
             title: "Progress Saved Locally",
@@ -187,7 +211,7 @@ const Questionnaire = () => {
     );
   }
 
-  if (error) {
+  if (error && !isReady) {
     return (
       <div className="min-h-screen bg-white">
         <header className="border-b py-4">
@@ -208,9 +232,14 @@ const Questionnaire = () => {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
 
-            <Button onClick={() => window.location.reload()}>
-              Try Again
-            </Button>
+            <div className="flex space-x-3">
+              <Button onClick={() => window.location.reload()}>
+                Try Again
+              </Button>
+              <Button variant="outline" onClick={() => setIsReady(true)}>
+                Continue Anyway
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -236,6 +265,20 @@ const Questionnaire = () => {
           <OnboardingProgressIndicator currentStep={currentStep} totalSteps={totalSteps} />
         </div>
       </motion.header>
+
+      {/* Notice banner for not logged in users */}
+      {error && (
+        <div className="bg-amber-50 border-b border-amber-100 py-2">
+          <div className="container mx-auto px-6">
+            <Alert variant="warning" className="bg-transparent border-none py-1 shadow-none">
+              <AlertCircle className="h-4 w-4 text-amber-500" />
+              <AlertDescription className="text-amber-700 text-sm">
+                {error} <Link to="/login" className="underline font-medium">Login here</Link>
+              </AlertDescription>
+            </Alert>
+          </div>
+        </div>
+      )}
 
       {/* Main content */}
       <div className="container mx-auto px-6 py-8">
@@ -274,7 +317,6 @@ const Questionnaire = () => {
               <Button 
                 variant="outline" 
                 onClick={handleSave}
-                disabled={false}
               >
                 <Save className="h-4 w-4 mr-2" />
                 Save Progress
@@ -283,7 +325,6 @@ const Questionnaire = () => {
               {currentStep < totalSteps - 1 ? (
                 <Button 
                   onClick={() => handleStepChange(1)}
-                  disabled={false}
                 >
                   Next
                   <ArrowRight className="h-4 w-4 ml-2" />
@@ -291,7 +332,6 @@ const Questionnaire = () => {
               ) : (
                 <Button 
                   onClick={handleSubmit}
-                  disabled={false}
                 >
                   Submit
                 </Button>

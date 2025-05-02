@@ -28,17 +28,13 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
   // Fetch the latest questionnaire data from Supabase
   useEffect(() => {
     let isMounted = true; // Flag to prevent state updates after unmount
-    const abortController = new AbortController(); // For aborting fetch operations
     
     const fetchLatestData = async () => {
       try {
         if (isMounted) setLoading(true);
         setError(null);
         
-        // Get the current user session
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        // Initialize with any local data
+        // Initialize with any local data first for faster display
         const localData = localStorage.getItem('questionnaireAnswers');
         let parsedLocalData: Record<string, any> = {};
         let combinedAnswers: Record<string, any> = {};
@@ -54,46 +50,63 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
           }
         }
         
-        // Try to get data from Supabase if authenticated
-        if (session?.user) {
-          console.log('User is authenticated, checking for questionnaire data in database');
+        // Try to get session with a timeout to prevent blocking
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session fetch timeout')), 1000)
+        );
+        
+        try {
+          // Use Promise.race to timeout if session fetch takes too long
+          const { data: { session } } = await Promise.race([
+            sessionPromise,
+            timeoutPromise
+          ]) as { data: { session: any } };
           
-          const { data, error } = await supabase
-            .from('questionnaire_responses')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
-          
-          if (error) {
-            console.error('Error fetching questionnaire data:', error);
-          } else if (data) {
-            console.log('Found questionnaire data in database:', data);
-            isCompleted = data.completed || false;
+          // Try to get data from Supabase if authenticated
+          if (session?.user) {
+            console.log('User is authenticated, checking for questionnaire data in database');
             
-            // Parse any stored JSON answers
-            if (data.answers_json) {
-              try {
-                // Fix here: Ensure we're properly handling the JSON data
-                const dbAnswers = typeof data.answers_json === 'string' 
-                  ? JSON.parse(data.answers_json) 
-                  : data.answers_json;
-                
-                // Make sure lastCompletedStep is a number
-                if (dbAnswers.lastCompletedStep !== undefined) {
-                  const lastStep = Number(dbAnswers.lastCompletedStep);
-                  dbAnswers.lastCompletedStep = isNaN(lastStep) ? 0 : lastStep;
+            const { data, error } = await supabase
+              .from('questionnaire_responses')
+              .select('*')
+              .eq('user_id', session.user.id)
+              .maybeSingle();
+            
+            if (error) {
+              console.error('Error fetching questionnaire data:', error);
+            } else if (data) {
+              console.log('Found questionnaire data in database:', data);
+              isCompleted = data.completed || false;
+              
+              // Parse any stored JSON answers
+              if (data.answers_json) {
+                try {
+                  // Ensure we're properly handling the JSON data
+                  const dbAnswers = typeof data.answers_json === 'string' 
+                    ? JSON.parse(data.answers_json) 
+                    : data.answers_json;
+                  
+                  // Make sure lastCompletedStep is a number
+                  if (dbAnswers.lastCompletedStep !== undefined) {
+                    const lastStep = Number(dbAnswers.lastCompletedStep);
+                    dbAnswers.lastCompletedStep = isNaN(lastStep) ? 0 : lastStep;
+                  }
+                  
+                  combinedAnswers = { ...combinedAnswers, ...dbAnswers };
+                } catch (e) {
+                  console.error('Error parsing database JSON answers:', e);
                 }
-                
-                combinedAnswers = { ...combinedAnswers, ...dbAnswers };
-              } catch (e) {
-                console.error('Error parsing database JSON answers:', e);
               }
+            } else {
+              console.log('No questionnaire data found in database for this user');
             }
           } else {
-            console.log('No questionnaire data found in database for this user');
+            console.log('User is not authenticated, using only localStorage data');
           }
-        } else {
-          console.log('User is not authenticated, using only localStorage data');
+        } catch (error) {
+          // Session fetch timed out or failed
+          console.log('Session fetch timed out or failed, using only localStorage data');
         }
         
         if (isMounted) {
@@ -118,19 +131,18 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
     
     fetchLatestData();
     
-    // Set a timeout to prevent infinite loading - reduced to 2 seconds
+    // Force stop loading after a short timeout regardless of API response
     const timeoutId = setTimeout(() => {
-      if (loading && isMounted) {
+      if (isMounted && loading) {
         console.warn('Questionnaire data loading timeout reached');
         setLoading(false);
         setDataChecked(true);
       }
-    }, 2000);
+    }, 1000); // Reduced to 1 second for better UX
     
     return () => {
       isMounted = false;
       clearTimeout(timeoutId);
-      abortController.abort();
     };
   }, [updateQuestionnaireData]);
   
@@ -219,9 +231,9 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
                 className={questionnaireData.completed 
                   ? "bg-gray-100 text-gray-800 hover:bg-gray-200" 
                   : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"}
-                disabled={loading && !dataChecked} // Only disable during initial loading
+                // Never disable the button - even during loading
               >
-                {loading && !dataChecked ? (
+                {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Loading...
