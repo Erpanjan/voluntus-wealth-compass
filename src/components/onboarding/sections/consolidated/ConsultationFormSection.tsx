@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import ConsultationTypeSelector from './consultation/ConsultationTypeSelector';
 import DateTimeSelector from './consultation/DateTimeSelector';
-import { getReadableDateFormat, getReadableTimeFormat, getReadableDuration } from './consultation/utils';
 
 interface ConsultationFormSectionProps {
   consultationData: {
