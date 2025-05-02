@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import AgeGroupQuestion from './questions/AgeGroupQuestion';
@@ -38,6 +37,7 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
 
   // Handle answer updates
   const updateAnswer = (questionId: string, value: any) => {
+    console.log(`Updating ${questionId} with:`, value);
     setAnswers(prev => ({
       ...prev,
       [questionId]: value
@@ -46,11 +46,19 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
 
   // Function to get selected goals (used for goal-specific questions)
   const getSelectedGoals = () => {
-    return answers.goals?.filter(goal => 
-      goal.interestLevel === 'already-planned' || 
-      goal.interestLevel === 'strongly-interested' || 
-      goal.interestLevel === 'would-consider'
-    ) || [];
+    console.log("All goals:", answers.goals);
+    const filteredGoals = answers.goals?.filter(goal => {
+      const interestLevel = goal.interestLevel?.toLowerCase();
+      console.log(`Goal: ${goal.name}, Interest Level: ${interestLevel}`);
+      return (
+        interestLevel === 'already-planned' || 
+        interestLevel === 'strongly-interested' || 
+        interestLevel === 'would-consider'
+      );
+    }) || [];
+    
+    console.log("Filtered goals:", filteredGoals);
+    return filteredGoals;
   };
 
   // State to track which goal we're currently asking about for questions 11-14
@@ -59,6 +67,12 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
   // Get the current goal for goal-specific questions
   const selectedGoals = getSelectedGoals();
   const currentGoal = selectedGoals[currentGoalIndex] || null;
+
+  // Effect to log when goals change
+  useEffect(() => {
+    console.log("Goals changed:", answers.goals);
+    console.log("Selected goals:", selectedGoals);
+  }, [answers.goals, selectedGoals]);
 
   // Function to progress to the next goal or step
   const handleGoalQuestionComplete = () => {

@@ -12,7 +12,7 @@ interface FinancialGoalType {
   id: string;
   name: string;
   interestLevel: string;
-  isCustom?: boolean; // Adding the isCustom property as optional
+  isCustom?: boolean;
 }
 
 interface FinancialGoalsQuestionProps {
@@ -35,7 +35,7 @@ const predefinedGoals = [
   'Medical & Health',
 ];
 
-// Interest level options
+// Interest level options with consistent lowercase kebab-case values
 const interestLevels = [
   { value: 'already-planned', label: 'Already planned' },
   { value: 'strongly-interested', label: 'Strongly interested' },
@@ -52,20 +52,21 @@ const FinancialGoalsQuestion: React.FC<FinancialGoalsQuestionProps> = ({ value =
     ...predefinedGoals.map(name => ({
       id: uuidv4(),
       name,
-      interestLevel: 'would-not-consider',
-      isCustom: false // Explicitly set isCustom to false for predefined goals
+      interestLevel: 'would-not-consider', // Use consistent lowercase kebab-case
+      isCustom: false
     })),
     // Add 'Other' as a special case
     {
       id: 'other',
       name: 'Other',
-      interestLevel: 'would-not-consider',
-      isCustom: false // Explicitly set isCustom to false for the 'Other' option
+      interestLevel: 'would-not-consider', // Use consistent lowercase kebab-case
+      isCustom: false
     }
   ];
 
   // Handle interest level change for a goal
   const handleInterestChange = (goalId: string, interestLevel: string) => {
+    console.log(`Setting goal ${goalId} interest level to: ${interestLevel}`);
     const updatedGoals = goals.map(goal => 
       goal.id === goalId ? { ...goal, interestLevel } : goal
     );
@@ -79,7 +80,7 @@ const FinancialGoalsQuestion: React.FC<FinancialGoalsQuestionProps> = ({ value =
     const newCustomGoal: FinancialGoalType = {
       id: uuidv4(),
       name: customGoalName,
-      interestLevel: 'strongly-interested',
+      interestLevel: 'strongly-interested', // Use consistent lowercase kebab-case
       isCustom: true
     };
     
