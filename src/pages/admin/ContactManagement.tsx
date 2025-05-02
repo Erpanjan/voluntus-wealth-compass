@@ -1,21 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Phone, Mail, AtSign, User, MapPin, Search } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
+import { Search } from 'lucide-react';
+import ContactCard from '@/components/admin/contact/ContactCard';
+import FilterTabs from '@/components/admin/contact/FilterTabs';
+import ReplyDialog from '@/components/admin/contact/ReplyDialog';
+import ExportOptions from '@/components/admin/contact/ExportOptions';
 
 interface ContactInquiry {
   id: string;
@@ -28,17 +22,28 @@ interface ContactInquiry {
   status: string;
 }
 
+interface ContactNote {
+  id: string;
+  contact_id: string;
+  note: string;
+  created_at: string;
+  created_by: string;
+}
+
 const ContactManagement = () => {
   const [contactInquiries, setContactInquiries] = useState<ContactInquiry[]>([]);
+  const [contactNotes, setContactNotes] = useState<ContactNote[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedInquiry, setSelectedInquiry] = useState<ContactInquiry | null>(null);
   const [replyText, setReplyText] = useState('');
   const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
   const { toast } = useToast();
 
   useEffect(() => {
     fetchContactInquiries();
+    fetchContactNotes();
   }, []);
 
   const fetchContactInquiries = async () => {
@@ -65,6 +70,30 @@ const ContactManagement = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchContactNotes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('contact_notes')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data) {
+        setContactNotes(data as ContactNote[]);
+      }
+    } catch (error) {
+      console.error('Error fetching contact notes:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load contact notes.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -110,9 +139,22 @@ const ContactManagement = () => {
     if (!selectedInquiry) return;
     
     // In a real application, this would send an email or message
-    // For now, we'll just simulate it and update the status
     try {
+      // Mark as responded
       await handleStatusChange(selectedInquiry.id, 'Responded');
+      
+      // Add a note about the reply
+      if (replyText.trim()) {
+        await supabase.from('contact_notes').insert({
+          contact_id: selectedInquiry.id,
+          note: `Reply sent: ${replyText}`,
+          created_by: localStorage.getItem('userEmail') || 'Admin'
+        });
+        
+        // Refresh notes
+        fetchContactNotes();
+      }
+      
       toast({
         title: "Reply sent",
         description: "Your reply has been sent successfully.",
@@ -120,31 +162,66 @@ const ContactManagement = () => {
       setIsReplyDialogOpen(false);
     } catch (error) {
       console.error('Error sending reply:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send reply.",
+        variant: "destructive",
+      });
     }
   };
 
-  const exportData = () => {
-    try {
-      // Create CSV content
-      const headers = ['Name', 'Contact Type', 'Contact Info', 'Message', 'Date', 'Status'];
-      const csvContent = [
-        headers.join(','),
-        ...contactInquiries.map(item => [
-          `${item.first_name} ${item.last_name}`,
-          item.contact_type,
-          item.contact_info,
-          `"${item.message.replace(/"/g, '""')}"`,
-          new Date(item.created_at).toLocaleDateString(),
-          item.status
-        ].join(','))
-      ].join('\n');
+  const getNotesForInquiry = (inquiryId: string) => {
+    return contactNotes.filter(note => note.contact_id === inquiryId);
+  };
 
-      // Create download link
+  const handleExport = (includeNotes: boolean) => {
+    try {
+      // Filter inquiries based on current tab and search
+      const inquiriesToExport = getFilteredInquiries();
+      
+      // Create CSV rows
+      let csvRows = [];
+      
+      // Headers
+      const basicHeaders = ['Name', 'Contact Type', 'Contact Info', 'Message', 'Date', 'Status'];
+      const headers = includeNotes ? [...basicHeaders, 'Notes'] : basicHeaders;
+      csvRows.push(headers.join(','));
+      
+      // Data rows
+      inquiriesToExport.forEach(item => {
+        const basicData = [
+          `"${item.first_name} ${item.last_name}"`,
+          `"${item.contact_type}"`,
+          `"${item.contact_info}"`,
+          `"${item.message.replace(/"/g, '""')}"`,
+          `"${new Date(item.created_at).toLocaleDateString()}"`,
+          `"${item.status}"`
+        ];
+        
+        if (includeNotes) {
+          const inquiryNotes = getNotesForInquiry(item.id);
+          const notesText = inquiryNotes.map(note => 
+            `${note.note} (${new Date(note.created_at).toLocaleDateString()} by ${note.created_by})`
+          ).join('; ');
+          basicData.push(`"${notesText}"`);
+        }
+        
+        csvRows.push(basicData.join(','));
+      });
+      
+      // Create and download CSV file
+      const csvContent = csvRows.join('\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
+      
+      // Determine filename based on current filter
+      const dateStr = new Date().toISOString().split('T')[0];
+      const filterName = activeTab !== 'all' ? `_${activeTab}` : '';
+      const notesIndicator = includeNotes ? '_with_notes' : '';
+      
       link.setAttribute('href', url);
-      link.setAttribute('download', `contact_inquiries_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `contact_inquiries${filterName}${notesIndicator}_${dateStr}.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -152,7 +229,7 @@ const ContactManagement = () => {
       
       toast({
         title: "Export successful",
-        description: "Contact inquiries data has been exported to CSV.",
+        description: `Contact inquiries data has been exported to CSV${includeNotes ? ' with notes' : ''}.`,
       });
     } catch (error) {
       console.error('Error exporting data:', error);
@@ -164,34 +241,62 @@ const ContactManagement = () => {
     }
   };
 
-  // Filter inquiries based on search query
-  const filteredInquiries = contactInquiries.filter(inquiry => {
+  // Filter inquiries based on active tab and search query
+  const getFilteredInquiries = () => {
+    // First filter by status based on active tab
+    let filteredByStatus = contactInquiries;
+    if (activeTab !== 'all') {
+      const statusMap: { [key: string]: string } = {
+        'new': 'New',
+        'responded': 'Responded',
+        'closed': 'Closed'
+      };
+      
+      filteredByStatus = contactInquiries.filter(
+        inquiry => inquiry.status === statusMap[activeTab]
+      );
+    }
+    
+    // Then filter by search query
+    if (!searchQuery) return filteredByStatus;
+    
     const searchLower = searchQuery.toLowerCase();
-    return (
-      inquiry.first_name.toLowerCase().includes(searchLower) ||
-      inquiry.last_name.toLowerCase().includes(searchLower) ||
-      inquiry.contact_info.toLowerCase().includes(searchLower) ||
-      inquiry.message.toLowerCase().includes(searchLower) ||
-      inquiry.status.toLowerCase().includes(searchLower)
-    );
-  });
-
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return filteredByStatus.filter(inquiry => {
+      // Search in basic fields
+      const basicMatch = 
+        inquiry.first_name.toLowerCase().includes(searchLower) ||
+        inquiry.last_name.toLowerCase().includes(searchLower) ||
+        inquiry.contact_info.toLowerCase().includes(searchLower) ||
+        inquiry.message.toLowerCase().includes(searchLower) ||
+        inquiry.contact_type.toLowerCase().includes(searchLower);
+      
+      // Search in notes
+      const inquiryNotes = getNotesForInquiry(inquiry.id);
+      const notesMatch = inquiryNotes.some(note => 
+        note.note.toLowerCase().includes(searchLower)
+      );
+      
+      return basicMatch || notesMatch;
+    });
   };
+
+  // Get filtered inquiries
+  const filteredInquiries = getFilteredInquiries();
   
+  // Count inquiries by status
+  const statusCounts = {
+    all: contactInquiries.length,
+    new: contactInquiries.filter(i => i.status === 'New').length,
+    responded: contactInquiries.filter(i => i.status === 'Responded').length,
+    closed: contactInquiries.filter(i => i.status === 'Closed').length
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-2xl font-bold">Contact Inquiries</h1>
+          
           <div className="flex gap-3 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
@@ -202,9 +307,20 @@ const ContactManagement = () => {
                 className="pl-8"
               />
             </div>
-            <Button variant="outline" onClick={exportData}>Export Data</Button>
+            <ExportOptions handleExport={handleExport} />
           </div>
         </div>
+        
+        {/* Tabs for filtering by status */}
+        <Card>
+          <CardContent className="p-2">
+            <FilterTabs 
+              activeTab={activeTab} 
+              setActiveTab={setActiveTab} 
+              counts={statusCounts} 
+            />
+          </CardContent>
+        </Card>
         
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -217,109 +333,26 @@ const ContactManagement = () => {
         ) : (
           <div className="grid gap-4">
             {filteredInquiries.map((inquiry) => (
-              <Card key={inquiry.id} className={`${inquiry.status === 'New' ? 'border-l-4 border-l-blue-500' : ''}`}>
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-lg">{`${inquiry.first_name} ${inquiry.last_name}`}</CardTitle>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      inquiry.status === 'New' ? 'bg-blue-100 text-blue-800' : 
-                      inquiry.status === 'Responded' ? 'bg-yellow-100 text-yellow-800' : 
-                      'bg-green-100 text-green-800'
-                    }`}>
-                      {inquiry.status}
-                    </span>
-                  </div>
-                  <CardDescription className="flex items-center gap-1 flex-wrap">
-                    <span className="flex items-center">
-                      <User size={14} className="mr-1" />
-                      {inquiry.contact_type}
-                    </span>
-                    <span className="mx-2">•</span>
-                    <span className="flex items-center">
-                      {inquiry.contact_type.toLowerCase().includes('email') ? (
-                        <Mail size={14} className="mr-1" />
-                      ) : (
-                        <Phone size={14} className="mr-1" />
-                      )}
-                      {inquiry.contact_info}
-                    </span>
-                    <span className="mx-2">•</span>
-                    {formatDate(inquiry.created_at)}
-                  </CardDescription>
-                </CardHeader>
-                
-                <CardContent>
-                  <p className="text-gray-700 whitespace-pre-wrap">{inquiry.message}</p>
-                  <div className="mt-4 flex gap-2 flex-wrap">
-                    <Button size="sm" variant="default" onClick={() => handleReply(inquiry)}>
-                      Reply
-                    </Button>
-                    {inquiry.status === 'New' ? (
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleStatusChange(inquiry.id, 'Responded')}
-                      >
-                        Mark as Responded
-                      </Button>
-                    ) : inquiry.status === 'Responded' ? (
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => handleStatusChange(inquiry.id, 'Closed')}
-                      >
-                        Mark as Closed
-                      </Button>
-                    ) : (
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => handleStatusChange(inquiry.id, 'New')}
-                      >
-                        Reopen
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+              <ContactCard 
+                key={inquiry.id} 
+                inquiry={inquiry}
+                onStatusChange={handleStatusChange}
+                onReply={handleReply}
+                notes={getNotesForInquiry(inquiry.id)}
+                refreshNotes={fetchContactNotes}
+              />
             ))}
           </div>
         )}
 
-        <Dialog open={isReplyDialogOpen} onOpenChange={setIsReplyDialogOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Reply to {selectedInquiry?.first_name} {selectedInquiry?.last_name}</DialogTitle>
-              <DialogDescription>
-                Send a response to the contact inquiry.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Recipient</p>
-                <p className="text-sm">{selectedInquiry?.contact_info}</p>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Original Message</p>
-                <p className="text-sm bg-gray-100 p-3 rounded">{selectedInquiry?.message}</p>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Your Reply</p>
-                <Textarea
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  rows={5}
-                  placeholder="Type your response here..."
-                  className="resize-none"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsReplyDialogOpen(false)}>Cancel</Button>
-              <Button onClick={sendReply}>Send Reply</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <ReplyDialog
+          isOpen={isReplyDialogOpen}
+          onClose={() => setIsReplyDialogOpen(false)}
+          selectedInquiry={selectedInquiry}
+          onSendReply={sendReply}
+          replyText={replyText}
+          setReplyText={setReplyText}
+        />
       </div>
     </AdminLayout>
   );
