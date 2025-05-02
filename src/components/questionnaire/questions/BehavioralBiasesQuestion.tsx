@@ -15,7 +15,7 @@ const statements = [
   },
   {
     id: 'emotional_attachment',
-    text: 'I tend to feel emotionally attached to my investments, making it difficult to part with them even if it's the rational choice.'
+    text: 'I tend to feel emotionally attached to my investments, making it difficult to part with them even if it is the rational choice.'
   },
   {
     id: 'maintain_investments',
