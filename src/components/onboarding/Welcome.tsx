@@ -1,10 +1,11 @@
 import React from 'react';
 import { User, FileText, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
-
 const Welcome = () => {
   const container = {
-    hidden: { opacity: 0 },
+    hidden: {
+      opacity: 0
+    },
     show: {
       opacity: 1,
       transition: {
@@ -12,38 +13,30 @@ const Welcome = () => {
       }
     }
   };
-
   const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { 
-      opacity: 1, 
+    hidden: {
+      opacity: 0,
+      y: 20
+    },
+    show: {
+      opacity: 1,
       y: 0,
       transition: {
         duration: 0.6
       }
     }
   };
-
-  return (
-    <div className="text-center">
+  return <div className="text-center">
       <h1 className="text-3xl md:text-4xl font-semibold mb-6">Welcome to Valence Long-Term Capital</h1>
       
-      <p className="text-lg mb-12 max-w-3xl mx-auto text-gray-600 font-inter font-light">
+      <p className="mb-12 max-w-3xl mx-auto text-gray-600 font-inter font-light text-sm">
         We're excited to have you on board. Before we can begin delivering our services, 
         we kindly ask you to complete a few important steps. Once you've completed these steps, 
         our team will review your application and follow up shortly.
       </p>
       
-      <motion.div 
-        className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12"
-        variants={container}
-        initial="hidden"
-        animate="show"
-      >
-        <motion.div 
-          className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden"
-          variants={item}
-        >
+      <motion.div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12" variants={container} initial="hidden" animate="show">
+        <motion.div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden" variants={item}>
           <div className="absolute top-0 left-0 h-2 w-full bg-gray-300"></div>
           <div className="mb-8 flex flex-col items-center">
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
@@ -57,10 +50,7 @@ const Welcome = () => {
           </p>
         </motion.div>
         
-        <motion.div 
-          className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden"
-          variants={item}
-        >
+        <motion.div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden" variants={item}>
           <div className="absolute top-0 left-0 h-2 w-full bg-gray-300"></div>
           <div className="mb-8 flex flex-col items-center">
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
@@ -74,10 +64,7 @@ const Welcome = () => {
           </p>
         </motion.div>
         
-        <motion.div 
-          className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden"
-          variants={item}
-        >
+        <motion.div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden" variants={item}>
           <div className="absolute top-0 left-0 h-2 w-full bg-gray-300"></div>
           <div className="mb-8 flex flex-col items-center">
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
@@ -92,16 +79,18 @@ const Welcome = () => {
         </motion.div>
       </motion.div>
       
-      <motion.div 
-        className="mt-14 text-lg text-gray-600 max-w-2xl mx-auto"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.6 }}
-      >
+      <motion.div className="mt-14 text-lg text-gray-600 max-w-2xl mx-auto" initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      delay: 0.8,
+      duration: 0.6
+    }}>
         <p>Once you've completed these steps, our team will review your application and follow up shortly.</p>
       </motion.div>
-    </div>
-  );
+    </div>;
 };
-
 export default Welcome;
