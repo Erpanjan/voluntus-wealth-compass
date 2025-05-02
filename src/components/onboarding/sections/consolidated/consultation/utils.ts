@@ -18,16 +18,38 @@ export const getReadableDateFormat = (date: Date | undefined): string => {
   return format(date, 'EEEE, MMMM d, yyyy');
 };
 
-export const getReadableTimeFormat = (time: string, availableTimes: TimeGroup[]): string => {
+export const getReadableTimeFormat = (time: string): string => {
   if (!time) return '';
+  
+  // Check if time is in the new format (HH:MM-HH:MM)
+  if (time.includes('-')) {
+    const [startTime, endTime] = time.split('-');
+    return formatTimeString(startTime) + ' - ' + formatTimeString(endTime);
+  }
+  
+  // Legacy format handling
+  const availableTimes = getAvailableTimes();
   for (const group of availableTimes) {
     const foundTime = group.times.find(t => t.value === time);
     if (foundTime) return foundTime.label;
   }
+  
   return time;
 };
 
-// Available times data
+// Format HH:MM to human-readable format (e.g., "9:00 AM")
+const formatTimeString = (timeStr: string): string => {
+  if (!timeStr) return '';
+  
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  const displayMinutes = minutes.toString().padStart(2, '0');
+  
+  return `${displayHours}:${displayMinutes} ${period}`;
+};
+
+// Available times data (kept for backward compatibility)
 export const getAvailableTimes = (): TimeGroup[] => {
   return [
     {
@@ -58,7 +80,6 @@ export const getAvailableTimes = (): TimeGroup[] => {
         { value: '19:00', label: '7:00 PM' },
         { value: '20:00', label: '8:00 PM' },
         { value: '21:00', label: '9:00 PM' },
-        { value: '22:00', label: '10:00 PM' },
       ]
     }
   ];

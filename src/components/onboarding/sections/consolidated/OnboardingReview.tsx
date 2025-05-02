@@ -24,6 +24,13 @@ const OnboardingReview: React.FC<OnboardingReviewProps> = ({ formData }) => {
   };
 
   const getTimeLabel = (timeValue: string) => {
+    // Handle the new time format (HH:MM-HH:MM)
+    if (timeValue.includes('-')) {
+      const [startTime, endTime] = timeValue.split('-');
+      return formatTimeForDisplay(startTime) + ' - ' + formatTimeForDisplay(endTime);
+    }
+    
+    // Handle the old time format
     const times = [
       { value: '09:00', label: '9:00 AM' },
       { value: '10:00', label: '10:00 AM' },
@@ -33,6 +40,18 @@ const OnboardingReview: React.FC<OnboardingReviewProps> = ({ formData }) => {
       { value: '16:00', label: '4:00 PM' },
     ];
     return times.find(t => t.value === timeValue)?.label || timeValue;
+  };
+  
+  // Helper function to format time for display
+  const formatTimeForDisplay = (timeStr: string): string => {
+    if (!timeStr) return '';
+    
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    const displayMinutes = minutes.toString().padStart(2, '0');
+    
+    return `${displayHours}:${displayMinutes} ${period}`;
   };
 
   // Helper function to display questionnaire answers
@@ -151,7 +170,7 @@ const OnboardingReview: React.FC<OnboardingReviewProps> = ({ formData }) => {
           <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
             <p className="font-medium mb-1">Consultation Scheduled</p>
             <p className="text-gray-700">
-              Your {getConsultationTypeLabel(formData.consultation.type)} consultation has been scheduled for {getDateLabel(formData.consultation.date)} at {getTimeLabel(formData.consultation.time)}.
+              Your {getConsultationTypeLabel(formData.consultation.type)} consultation has been scheduled for {getDateLabel(formData.consultation.date)} from {getTimeLabel(formData.consultation.time)}.
             </p>
           </div>
         ) : (

@@ -1,9 +1,8 @@
 
 import React, { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
 import ConsultationTypeSelector from './consultation/ConsultationTypeSelector';
 import DateTimeSelector from './consultation/DateTimeSelector';
-import { getReadableDateFormat, getReadableTimeFormat, getAvailableTimes } from './consultation/utils';
+import { getReadableDateFormat } from './consultation/utils';
 
 interface ConsultationFormSectionProps {
   consultationData: {
@@ -19,14 +18,10 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
   consultationData,
   updateConsultationData
 }) => {
-  const { toast } = useToast();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     consultationData.date ? new Date(consultationData.date) : undefined
   );
   
-  // Available times for scheduling reference
-  const availableTimes = getAvailableTimes();
-
   // Handle consultation type selection
   const handleTypeSelection = (type: string) => {
     updateConsultationData({ type });
@@ -45,10 +40,8 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
     updateConsultationData({ time });
     
     // Auto-complete the consultation when type, date, and time are all selected
-    if (consultationData.type && selectedDate) {
+    if (consultationData.type && selectedDate && time) {
       updateConsultationData({ completed: true });
-      
-      // Remove the toast notification
     }
   };
 
