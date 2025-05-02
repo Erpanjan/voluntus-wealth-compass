@@ -48,10 +48,7 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
     if (consultationData.type && selectedDate) {
       updateConsultationData({ completed: true });
       
-      toast({
-        title: "Consultation Scheduled",
-        description: `Your ${consultationData.type === 'virtual' ? 'Virtual Meeting' : 'In-Person Meeting'} consultation has been scheduled for ${getReadableDateFormat(selectedDate)} at ${getReadableTimeFormat(time, availableTimes)}.`,
-      });
+      // Remove the toast notification
     }
   };
 
