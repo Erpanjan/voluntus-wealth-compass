@@ -12,7 +12,7 @@ import {
 import { Check, X, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ApplicationData } from '@/hooks/admin/useClientApplications';
+import { ApplicationData } from '@/types/onboarding.types';
 
 interface ApplicationListProps {
   applications: ApplicationData[];

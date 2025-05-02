@@ -1,30 +1,12 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ApplicationData } from '@/hooks/admin/useClientApplications';
+import { ApplicationData, QuestionnaireResponse } from '@/types/onboarding.types';
 import { supabase } from '@/integrations/supabase/client';
 import { Check, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-
-interface QuestionnaireResponse {
-  id: string;
-  user_id: string;
-  investment_goals: string | null;
-  risk_tolerance: string | null;
-  time_horizon: string | null;
-  additional_info: string | null;
-  age_group: string | null;
-  income_level: string | null;
-  net_worth: string | null;
-  investment_knowledge: string | null;
-  investment_experience: string | null;
-  complex_products: number | null;
-  investment_composition: string | null;
-  behavioral_biases: string | null;
-}
 
 interface ApplicationDetailsProps {
   application: ApplicationData;

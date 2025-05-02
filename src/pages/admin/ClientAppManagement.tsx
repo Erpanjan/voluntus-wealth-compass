@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { ApplicationData, clientApplicationService } from '@/services/clientApplicationService';
+import { clientApplicationService } from '@/services/clientApplicationService';
 import ApplicationList from '@/components/admin/client-app/ApplicationList';
 import ApplicationDetails from '@/components/admin/client-app/ApplicationDetails';
 import ApplicationFilter from '@/components/admin/client-app/ApplicationFilter';
+import { ApplicationData } from '@/types/onboarding.types';
 
 const ClientAppManagement = () => {
   const [applications, setApplications] = useState<ApplicationData[]>([]);
