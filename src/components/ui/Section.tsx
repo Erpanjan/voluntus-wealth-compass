@@ -15,6 +15,7 @@ interface SectionProps {
   titleClassName?: string; // New prop for custom title styling
   subtitleClassName?: string; // New prop for custom subtitle styling
   contentClassName?: string; // New prop for custom content styling
+  shiftUp?: boolean; // New prop to shift content up
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -28,7 +29,8 @@ const Section: React.FC<SectionProps> = ({
   carouselItem = false,
   titleClassName = '',
   subtitleClassName = '',
-  contentClassName = ''
+  contentClassName = '',
+  shiftUp = false
 }) => {
   const isMobile = useIsMobile();
   
@@ -41,6 +43,7 @@ const Section: React.FC<SectionProps> = ({
   return (
     <section id={id} className={cn(
       'min-h-screen flex flex-col justify-center py-12 md:py-16 overflow-hidden relative',
+      shiftUp && 'mt-[-8vh]', // Add negative margin when shiftUp is true
       carouselItem ? 'h-full w-full flex-shrink-0' : '',
       bgClasses[background],
       className

@@ -22,7 +22,7 @@ const PendingApproval = () => {
     <div className="min-h-screen bg-white">
       <OnboardingHeader currentStep={3} />
       
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-6 py-8 mt-[-8vh]">
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-3xl font-inter font-semibold mb-4">Thank You for Your Application</h1>
           <p className="text-sm md:text-base font-inter text-gray-600 mb-6">
