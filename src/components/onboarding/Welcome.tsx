@@ -1,73 +1,114 @@
 
 import React from 'react';
 import { User, FileText, Calendar } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Welcome = () => {
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.6
+      }
+    }
+  };
+
   return (
     <div className="text-center">
       <h1 className="text-3xl md:text-4xl font-semibold mb-6">Welcome to Valence Long-Term Capital</h1>
       
-      <p className="text-lg mb-10 max-w-3xl mx-auto text-voluntus-gray-medium">
+      <p className="text-lg mb-12 max-w-3xl mx-auto text-gray-600">
         We're excited to have you on board. Before we can begin delivering our personalized 
         financial services, we kindly ask you to complete a few important steps:
       </p>
       
-      <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
-        <div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover relative overflow-hidden">
+      <motion.div 
+        className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12"
+        variants={container}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.div 
+          className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden"
+          variants={item}
+        >
           <div className="absolute top-0 left-0 h-2 w-full bg-gray-300"></div>
-          <div className="flex items-center mb-6">
-            <div className="bg-[#F1F1F1] p-3 rounded-full mr-4">
-              <User className="h-6 w-6 text-black" />
+          <div className="mb-8 flex flex-col items-center">
+            <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
+              <User className="h-7 w-7 text-black" />
             </div>
-            <div className="text-xl font-semibold flex items-center">
-              <span className="bg-gray-200 text-gray-600 w-7 h-7 rounded-full flex items-center justify-center text-sm mr-3">1</span>
-              Create Your Profile
+            <div className="flex items-center mb-2">
+              <span className="bg-gray-200 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">1</span>
             </div>
+            <h3 className="text-xl font-semibold">Create Your Profile</h3>
           </div>
-          <p className="text-gray-600 ml-16">
+          <p className="text-gray-600">
             This is the first step. Tell us a bit about yourself so we can tailor your digital 
             experience throughout our service.
           </p>
-        </div>
+        </motion.div>
         
-        <div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover relative overflow-hidden">
+        <motion.div 
+          className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden"
+          variants={item}
+        >
           <div className="absolute top-0 left-0 h-2 w-full bg-gray-300"></div>
-          <div className="flex items-center mb-6">
-            <div className="bg-[#F1F1F1] p-3 rounded-full mr-4">
-              <FileText className="h-6 w-6 text-black" />
+          <div className="mb-8 flex flex-col items-center">
+            <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
+              <FileText className="h-7 w-7 text-black" />
             </div>
-            <div className="text-xl font-semibold flex items-center">
-              <span className="bg-gray-200 text-gray-600 w-7 h-7 rounded-full flex items-center justify-center text-sm mr-3">2</span>
-              Complete the Questionnaire
+            <div className="flex items-center mb-2">
+              <span className="bg-gray-200 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">2</span>
             </div>
+            <h3 className="text-xl font-semibold">Complete the Questionnaire</h3>
           </div>
-          <p className="text-gray-600 ml-16">
+          <p className="text-gray-600">
             Help us understand your financial circumstances and investment goals. This step is optional, 
             but it allows us to provide more relevant and meaningful advice.
           </p>
-        </div>
+        </motion.div>
         
-        <div className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover relative overflow-hidden">
+        <motion.div 
+          className="bg-white p-8 rounded-3xl shadow-soft border border-gray-100 transition-all duration-300 hover:shadow-hover hover:border-gray-200 relative overflow-hidden"
+          variants={item}
+        >
           <div className="absolute top-0 left-0 h-2 w-full bg-gray-300"></div>
-          <div className="flex items-center mb-6">
-            <div className="bg-[#F1F1F1] p-3 rounded-full mr-4">
-              <Calendar className="h-6 w-6 text-black" />
+          <div className="mb-8 flex flex-col items-center">
+            <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
+              <Calendar className="h-7 w-7 text-black" />
             </div>
-            <div className="text-xl font-semibold flex items-center">
-              <span className="bg-gray-200 text-gray-600 w-7 h-7 rounded-full flex items-center justify-center text-sm mr-3">3</span>
-              Schedule a Consultation
+            <div className="flex items-center mb-2">
+              <span className="bg-gray-200 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">3</span>
             </div>
+            <h3 className="text-xl font-semibold">Schedule a Consultation</h3>
           </div>
-          <p className="text-gray-600 ml-16">
+          <p className="text-gray-600">
             Book a session with one of our advisors. We'll have an in-depth conversation about your 
             financial situation and verify key details.
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
       
-      <div className="mt-12 text-lg text-voluntus-gray-medium animate-fade-in">
+      <motion.div 
+        className="mt-14 text-lg text-gray-600 max-w-2xl mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+      >
         <p>Once you've completed these steps, our team will review your application and follow up shortly.</p>
-      </div>
+      </motion.div>
     </div>
   );
 };
