@@ -1,16 +1,31 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { QuestionnaireProps, QuestionnaireAnswers, Goal } from './questionnaire/types';
-import { defaultFinancialGoals, interestLevelOptions, timeHorizonOptions } from './questionnaire/data';
-import { updateNestedAnswer } from './questionnaire/utils';
-
-// Import question components
-import AgeGroupQuestion from './questionnaire/questions/AgeGroupQuestion';
-import IncomeQuestion from './questionnaire/questions/IncomeQuestion';
-import GoalSelectionQuestion from './questionnaire/questions/GoalSelectionQuestion';
-import GenericRadioQuestion from './questionnaire/questions/GenericRadioQuestion';
-import SliderQuestion from './questionnaire/questions/SliderQuestion';
+import { 
+  QuestionnaireProps, 
+  QuestionnaireAnswers, 
+  Goal 
+} from './questionnaire/types';
+import { 
+  defaultFinancialGoals, 
+  timeHorizonOptions 
+} from './questionnaire/data';
+import { 
+  AgeGroupQuestion,
+  IncomeQuestion,
+  NetWorthQuestion,
+  InvestmentKnowledgeQuestion,
+  InvestmentExperienceQuestion,
+  SliderQuestion,
+  GoalSelectionQuestion,
+  GoalTimeHorizonQuestion,
+  GoalRiskAppetiteQuestion,
+  GoalRiskToleranceQuestion,
+  MarketVolatilityQuestion,
+  BehavioralBiasQuestion
+} from './questionnaire/questions';
+import { getGoalById } from './questionnaire/utils';
 
 const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -80,7 +95,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
       const initialRiskTolerance: Record<string, string> = {};
       
       selectedGoals.forEach(goalId => {
-        initialGoalInterestLevels[goalId] = interestLevelOptions[0];
+        initialGoalInterestLevels[goalId] = '';
         initialGoalHorizons[goalId] = timeHorizonOptions[1]; // Default to "1 to 3 years"
         initialRiskAppetite[goalId] = '';
         initialRiskTolerance[goalId] = '';
@@ -162,9 +177,36 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
   // Update goal-specific answer
   const updateGoalAnswer = (answerType: 'riskAppetite' | 'absoluteRiskTolerance', value: string) => {
     const currentGoal = selectedGoals[currentGoalIndex];
-    setAnswers(updateNestedAnswer(answers, answerType, currentGoal, value));
+    setAnswers(prev => ({
+      ...prev,
+      [answerType]: {
+        ...prev[answerType],
+        [currentGoal]: value
+      }
+    }));
   };
 
+  // Update behavioral bias answer
+  const updateBehavioralBias = (biasKey: keyof QuestionnaireAnswers['behavioralBiases'], value: number) => {
+    setAnswers(prev => ({
+      ...prev,
+      behavioralBiases: {
+        ...prev.behavioralBiases,
+        [biasKey]: value
+      }
+    }));
+  };
+
+  // Get current goal for goal-specific questions
+  const getCurrentGoal = () => {
+    if (selectedGoals.length === 0 || currentGoalIndex >= selectedGoals.length) {
+      return null;
+    }
+    
+    const currentGoalId = selectedGoals[currentGoalIndex];
+    return getGoalById(financialGoals, currentGoalId);
+  };
+  
   // Render the current question based on step
   const renderQuestion = () => {
     switch (currentStep) {
@@ -186,57 +228,25 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
         
       case 3:
         return (
-          <GenericRadioQuestion 
-            questionNumber={3}
-            title="What is your total personal net worth (in HKD)?"
-            description="Including residential properties and operational business assets, cash deposits, stocks, bonds, insurance, and physical asset investments, after deducting liabilities such as mortgage loans, credit card debt, etc."
-            options={[
-              { value: "below1.5m", label: "Below HKD 1,500,000" },
-              { value: "1.5m-5m", label: "HKD 1,500,000 (inclusive) – HKD 5,000,000 (inclusive)" },
-              { value: "5m-10m", label: "HKD 5,000,000 (exclusive) – HKD 10,000,000 (inclusive)" },
-              { value: "10m-100m", label: "HKD 10,000,000 (exclusive) – HKD 100,000,000 (inclusive)" },
-              { value: "above100m", label: "Above HKD 100,000,000" }
-            ]}
-            value={answers.netWorth}
-            onChange={(value) => updateAnswer('netWorth', value)}
-            gradientClass="from-purple-500 to-purple-600"
+          <NetWorthQuestion 
+            value={answers.netWorth} 
+            onChange={(value) => updateAnswer('netWorth', value)} 
           />
         );
         
       case 4:
         return (
-          <GenericRadioQuestion 
-            questionNumber={4}
-            title="Investment Knowledge and Experience"
-            description="Which of the following best describes your investment knowledge and experience?"
-            options={[
-              { value: "A", label: "Apart from saving deposits, government bonds, and money market funds, I do not invest in other financial products. My investment knowledge is relatively limited." },
-              { value: "B", label: "Most of my investments are in savings deposits, government bonds, and money market funds, with limited investments in stocks, mutual funds, and riskier products. My investment knowledge is somewhat limited." },
-              { value: "C", label: "My investments are diversified across savings, government bonds, trust products, stocks, and mutual funds. I have a certain level of investment knowledge." },
-              { value: "D", label: "Most of my investments are in stocks, mutual funds, forex, and other higher-risk products, with limited investments in savings, government bonds, and money market funds. I have advanced investment knowledge." }
-            ]}
+          <InvestmentKnowledgeQuestion
             value={answers.investmentKnowledge}
             onChange={(value) => updateAnswer('investmentKnowledge', value)}
-            gradientClass="from-fuchsia-500 to-fuchsia-600"
           />
         );
       
       case 5:
         return (
-          <GenericRadioQuestion 
-            questionNumber={5}
-            title="Investment Experience"
-            description="How many years of experience do you have investing in stocks, mutual funds (excluding money market funds), forex, and other higher-risk financial products?"
-            options={[
-              { value: "A", label: "No experience" },
-              { value: "B", label: "Some experience, but less than 2 years" },
-              { value: "C", label: "Between 2 years (inclusive) and 5 years (inclusive)" },
-              { value: "D", label: "Between 5 years (inclusive) and 8 years (inclusive)" },
-              { value: "E", label: "More than 8 years (exclusive)" }
-            ]}
+          <InvestmentExperienceQuestion
             value={answers.investmentExperience}
             onChange={(value) => updateAnswer('investmentExperience', value)}
-            gradientClass="from-pink-500 to-pink-600"
           />
         );
       
@@ -272,8 +282,101 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
             onAddCustomGoal={handleAddCustomGoal}
           />
         );
+
+      case 9:
+        return (
+          <BehavioralBiasQuestion
+            questionNumber={9}
+            title="Financial Decision-Making"
+            description="I tend to sell investments quickly when they decrease in value."
+            biasKey="sellOnDrop"
+            value={answers.behavioralBiases.sellOnDrop}
+            onChange={(value) => updateBehavioralBias('sellOnDrop', value)}
+          />
+        );
+
+      case 10:
+        return (
+          <MarketVolatilityQuestion
+            questionNumber={10}
+            value={answers.marketVolatilityResponse}
+            onChange={(value) => updateAnswer('marketVolatilityResponse', value)}
+          />
+        );
       
-      // Add more cases for other steps here...
+      case 11: {
+        const currentGoal = getCurrentGoal();
+        if (!currentGoal) return null;
+        
+        return (
+          <GoalTimeHorizonQuestion
+            questionNumber={11}
+            goal={currentGoal}
+            value={answers.goalHorizons[currentGoal.id] || ''}
+            onChange={(value) => {
+              setAnswers(prev => ({
+                ...prev,
+                goalHorizons: {
+                  ...prev.goalHorizons,
+                  [currentGoal.id]: value
+                }
+              }));
+            }}
+          />
+        );
+      }
+      
+      case 12: {
+        const currentGoal = getCurrentGoal();
+        if (!currentGoal) return null;
+        
+        return (
+          <GoalRiskAppetiteQuestion
+            questionNumber={12}
+            goal={currentGoal}
+            value={answers.riskAppetite[currentGoal.id] || ''}
+            onChange={(value) => updateGoalAnswer('riskAppetite', value)}
+          />
+        );
+      }
+      
+      case 13: {
+        const currentGoal = getCurrentGoal();
+        if (!currentGoal) return null;
+        
+        return (
+          <GoalRiskToleranceQuestion
+            questionNumber={13}
+            goal={currentGoal}
+            value={answers.absoluteRiskTolerance[currentGoal.id] || ''}
+            onChange={(value) => updateGoalAnswer('absoluteRiskTolerance', value)}
+          />
+        );
+      }
+
+      case 14:
+        return (
+          <BehavioralBiasQuestion
+            questionNumber={14}
+            title="Emotional Investment Attachment"
+            description="I get emotionally attached to specific investments, making it difficult to sell them."
+            biasKey="emotionalAttachment"
+            value={answers.behavioralBiases.emotionalAttachment}
+            onChange={(value) => updateBehavioralBias('emotionalAttachment', value)}
+          />
+        );
+
+      case 15:
+        return (
+          <BehavioralBiasQuestion
+            questionNumber={15}
+            title="Investment Stability Preference"
+            description="I prefer stable, predictable investments over potentially higher-return but more volatile options."
+            biasKey="preferStability"
+            value={answers.behavioralBiases.preferStability}
+            onChange={(value) => updateBehavioralBias('preferStability', value)}
+          />
+        );
       
       default:
         return (
@@ -282,6 +385,17 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
           </div>
         );
     }
+  };
+
+  // Display goal name and progress for goal-specific questions
+  const getGoalProgressText = () => {
+    if (currentStep >= 11 && currentStep <= 13 && selectedGoals.length > 0) {
+      const currentGoal = getCurrentGoal();
+      if (currentGoal) {
+        return `Goal ${currentGoalIndex + 1} of ${selectedGoals.length}: ${currentGoal.name}`;
+      }
+    }
+    return null;
   };
 
   return (
@@ -293,6 +407,13 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
           <span className="text-sm font-medium">{progress}% Complete</span>
         </div>
         <Progress value={progress} className="h-2" />
+        
+        {/* Display goal progress if on a goal-specific question */}
+        {getGoalProgressText() && (
+          <div className="mt-2 text-sm font-medium text-gray-600">
+            {getGoalProgressText()}
+          </div>
+        )}
       </div>
 
       {/* Question container */}
