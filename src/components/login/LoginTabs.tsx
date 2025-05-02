@@ -30,7 +30,7 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
             </TabsList>
           </div>
 
-          <div className="h-[450px] relative overflow-hidden">
+          <div className="h-[550px] relative overflow-hidden">
             <TabsContent value="login" className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out">
               <LoginForm onDemoLogin={onDemoLogin} onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
             </TabsContent>
@@ -48,7 +48,7 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
             </TabsList>
           </div>
 
-          <div className="h-[450px] relative overflow-hidden">
+          <div className="h-[550px] relative overflow-hidden">
             <TabsContent value="login" className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out">
               <LoginForm onDemoLogin={onDemoLogin} onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
             </TabsContent>
