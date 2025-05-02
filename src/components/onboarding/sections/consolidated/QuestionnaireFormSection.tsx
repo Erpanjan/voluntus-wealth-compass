@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, ClipboardList, Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface QuestionnaireFormSectionProps {
@@ -143,12 +143,7 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
           <div className="space-y-4">
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center gap-2">
-                {questionnaireData.completed ? (
-                  <CheckCircle className="h-5 w-5 text-emerald-600" />
-                ) : (
-                  <ClipboardList className="h-5 w-5 text-amber-600" />
-                )}
-                <h3 className="font-medium">Financial Questionnaire</h3>
+                {/* Removed icon and "Financial Questionnaire" heading */}
               </div>
               <span className="text-sm font-medium">
                 {completionPercentage}% Complete
