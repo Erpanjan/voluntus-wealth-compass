@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -121,7 +120,8 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
   // Update progress when current step changes
   useEffect(() => {
     const totalSteps = 15;
-    setProgress(Math.round((currentStep / totalSteps) * 100));
+    const currentProgress = Math.round((currentStep / totalSteps) * 100);
+    setProgress(currentProgress);
     
     // Add points when progressing
     setPoints(prev => prev + 5);
@@ -419,25 +419,20 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
         </motion.div>
       )}
       
-      {/* Progress Indicator & Points */}
+      {/* Progress Indicator & Points - Simplified but maintaining point system */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
             {achievement.icon}
             <div>
               <span className="font-medium text-gray-800">{achievement.name}</span>
-              <p className="text-xs text-gray-500">{achievement.description}</p>
             </div>
           </div>
-          <div className="flex flex-col items-end">
-            <span className="text-sm font-medium">{progress}% Complete</span>
-            <div className="flex items-center text-amber-500 font-bold">
-              <Star className="h-4 w-4 mr-1" />
-              <span>{points} points</span>
-            </div>
+          <div className="flex items-center text-amber-500 font-bold">
+            <Star className="h-4 w-4 mr-1" />
+            <span>{points} points</span>
           </div>
         </div>
-        <Progress value={progress} className="h-2 bg-gray-100" />
       </div>
 
       {/* Question Container with Animation */}
@@ -529,7 +524,7 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <div className={`relative flex-1 p-4 rounded-lg cursor-pointer transition-all ${
+                      <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all ${
                         answers.incomeRange === option.value ? 
                           'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md' : 
                           'bg-gray-50 hover:bg-gray-100'

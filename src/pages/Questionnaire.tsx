@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
+import { Progress } from '@/components/ui/progress';
+import { ArrowLeft } from 'lucide-react';
 
 // Import the existing Questionnaire component
 import QuestionnaireComponent from '@/components/onboarding/Questionnaire';
@@ -20,19 +22,28 @@ const Questionnaire = () => {
     return false;
   });
   
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  // Effect to check if the questionnaire was already completed
-  useEffect(() => {
+  // Track current progress
+  const [progress, setProgress] = useState<number>(() => {
     const savedData = localStorage.getItem('onboardingDraft');
     if (savedData) {
       const parsedData = JSON.parse(savedData);
-      if (parsedData?.questionnaire?.completed) {
-        setIsCompleted(true);
+      if (parsedData?.questionnaire?.completed) return 100;
+      if (parsedData?.questionnaire?.answers) {
+        // Calculate based on number of answers (simple approximation)
+        const answerCount = Object.keys(parsedData.questionnaire.answers).length;
+        return Math.min(Math.round((answerCount / 5) * 100), 99); // Max 99% until marked complete
       }
     }
-  }, []);
+    return 0;
+  });
+  
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Effect to track progress from the questionnaire component
+  const trackProgress = (newProgress: number) => {
+    setProgress(newProgress);
+  };
 
   const handleCompletion = () => {
     // Update localStorage with completed questionnaire status
@@ -66,20 +77,24 @@ const Questionnaire = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
+      {/* Header with progress */}
       <motion.header 
         className="border-b py-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="container mx-auto px-6 flex justify-between items-center">
-          <Link to="/" className="flex items-center">
-            <span className="font-bold text-xl">VOLUNTUS</span>
-          </Link>
-          <Button variant="link" onClick={() => navigate('/onboarding')}>
-            Return to Onboarding
-          </Button>
+        <div className="container mx-auto px-6">
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center">
+              <Button variant="ghost" onClick={() => navigate('/onboarding')} className="mr-2">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Onboarding
+              </Button>
+            </div>
+            <div className="text-sm font-medium">{progress}% Complete</div>
+          </div>
+          <Progress value={progress} className="h-1.5" />
         </div>
       </motion.header>
 
@@ -93,38 +108,19 @@ const Questionnaire = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-amber-600 rounded-full flex items-center justify-center mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-6 h-6">
-                  <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm0 8.625a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25zM15.375 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0zM8.625 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
-                </svg>
-              </div>
               <h1 className="text-2xl font-semibold">Financial Questionnaire</h1>
-            </div>
-            
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-6">
-              <p className="text-amber-700">
-                This questionnaire will help us understand your financial situation and recommend the best investment 
-                strategy for you. Your answers are confidential and will only be used to customize our advice.
-                Complete all sections to earn rewards!
-              </p>
             </div>
           </motion.div>
 
+          {/* Pass trackProgress to the Questionnaire component */}
           <QuestionnaireComponent setCompleted={setIsCompleted} />
 
           <motion.div 
-            className="flex justify-between mt-8"
+            className="flex justify-end mt-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/onboarding')}
-            >
-              Skip Questionnaire
-            </Button>
-            
             <Button 
               onClick={handleCompletion}
               disabled={!isCompleted}
