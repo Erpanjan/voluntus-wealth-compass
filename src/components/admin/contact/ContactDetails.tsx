@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { Phone, Mail, MessageSquare } from 'lucide-react';
@@ -60,7 +59,6 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ inquiry }) => {
       </div>
       
       <div className="mb-4 text-gray-700 bg-gray-50 p-3 rounded-md text-sm">
-        <div className="font-medium mb-1 text-gray-500">Message:</div>
         {inquiry.message}
       </div>
     </div>
