@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, forwardRef, useImperativeHandle } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -104,32 +104,46 @@ const QuestionContent: React.FC<{
   return null;
 };
 
-const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ 
-  currentStep, 
-  setCurrentStep,
-  onComplete
-}) => {
+// Using forwardRef to allow the parent to access the QuestionnaireProvider's methods
+const QuestionnaireForm = forwardRef<
+  { saveProgress: () => Promise<boolean> }, 
+  QuestionnaireFormProps
+>(({ currentStep, setCurrentStep, onComplete }, ref) => {
+  // Include a QuestionnaireProvider as we need to forward its methods
   return (
     <QuestionnaireProvider currentStep={currentStep} setCurrentStep={setCurrentStep}>
-      <motion.div
-        key={`question-${currentStep}`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.4 }}
-        className="w-full"
-      >
-        <Card className="w-full">
-          <CardContent className="p-6">
-            <QuestionContent 
-              currentStep={currentStep} 
-              onComplete={onComplete} 
-            />
-          </CardContent>
-        </Card>
-      </motion.div>
+      {/* Use render props pattern to access context within provider */}
+      {(contextValue) => {
+        // Forward the saveProgress method to the parent component
+        useImperativeHandle(ref, () => ({
+          saveProgress: contextValue.saveProgress
+        }), [contextValue.saveProgress]);
+        
+        return (
+          <motion.div
+            key={`question-${currentStep}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            className="w-full"
+          >
+            <Card className="w-full">
+              <CardContent className="p-6">
+                <QuestionContent 
+                  currentStep={currentStep} 
+                  onComplete={onComplete} 
+                />
+              </CardContent>
+            </Card>
+          </motion.div>
+        );
+      }}
     </QuestionnaireProvider>
   );
-};
+});
+
+// Set display name for React DevTools
+QuestionnaireForm.displayName = "QuestionnaireForm";
 
 export default QuestionnaireForm;

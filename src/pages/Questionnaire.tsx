@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -19,7 +18,8 @@ const Questionnaire = () => {
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const totalSteps = 15;
-  const questionnaireFormRef = useRef<any>(null);
+  // Create the ref with the correct type
+  const questionnaireFormRef = useRef<{ saveProgress: () => Promise<boolean> }>(null);
 
   // Check authentication status and load previous step
   useEffect(() => {
@@ -117,8 +117,8 @@ const Questionnaire = () => {
     try {
       setSubmitted(true);
       
-      // Access the QuestionnaireContext through a ref to save progress
-      if (questionnaireFormRef.current && questionnaireFormRef.current.saveProgress) {
+      // Access the saveProgress method through the ref
+      if (questionnaireFormRef.current) {
         await questionnaireFormRef.current.saveProgress();
       }
       
@@ -143,11 +143,15 @@ const Questionnaire = () => {
   // Handle manual save
   const handleSave = async () => {
     try {
-      // We'll access the QuestionnaireContext through refs or events
-      // Access the QuestionnaireContext's saveProgress function
-      const questionnaireContext = document.querySelector('[data-questionnaire-context]');
-      if (questionnaireContext && (questionnaireContext as any).saveProgress) {
-        await (questionnaireContext as any).saveProgress();
+      // Use the ref to access the saveProgress method
+      if (questionnaireFormRef.current) {
+        const saved = await questionnaireFormRef.current.saveProgress();
+        if (saved) {
+          toast({
+            title: "Progress Saved",
+            description: "Your questionnaire progress has been saved.",
+          });
+        }
       } else {
         // Fallback to just saving to localStorage
         const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');

@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -62,7 +61,7 @@ export const useQuestionnaire = () => {
 };
 
 interface QuestionnaireProviderProps {
-  children: ReactNode;
+  children: ReactNode | ((contextValue: QuestionnaireState) => ReactNode);
   currentStep: number;
   setCurrentStep: (step: number) => void;
 }
@@ -376,7 +375,7 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
 
   return (
     <QuestionnaireContext.Provider value={value}>
-      {children}
+      {typeof children === 'function' ? children(value) : children}
     </QuestionnaireContext.Provider>
   );
 };
