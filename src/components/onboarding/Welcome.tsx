@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { User, FileText, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -77,19 +78,6 @@ const Welcome = () => {
             financial situation and verify key details.
           </p>
         </motion.div>
-      </motion.div>
-      
-      <motion.div className="mt-14 text-lg text-gray-600 max-w-2xl mx-auto" initial={{
-      opacity: 0,
-      y: 20
-    }} animate={{
-      opacity: 1,
-      y: 0
-    }} transition={{
-      delay: 0.8,
-      duration: 0.6
-    }}>
-        <p>Once you've completed these steps, our team will review your application and follow up shortly.</p>
       </motion.div>
     </div>;
 };
