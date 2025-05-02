@@ -3,14 +3,15 @@ import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import ConsultationTypeSelector from './consultation/ConsultationTypeSelector';
 import DateTimeSelector from './consultation/DateTimeSelector';
-import { getReadableDateFormat, getReadableTimeFormat, getAvailableTimes } from './consultation/utils';
+import { getReadableDateFormat, getReadableTimeFormat, getReadableDuration } from './consultation/utils';
 
 interface ConsultationFormSectionProps {
   consultationData: {
     completed: boolean;
     type: string;
     date: string;
-    time: string;
+    startTime: string;
+    endTime: string;
   };
   updateConsultationData: (data: Partial<ConsultationFormSectionProps['consultationData']>) => void;
 }
@@ -24,9 +25,6 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
     consultationData.date ? new Date(consultationData.date) : undefined
   );
   
-  // Available times for scheduling reference
-  const availableTimes = getAvailableTimes();
-
   // Handle consultation type selection
   const handleTypeSelection = (type: string) => {
     updateConsultationData({ type });
@@ -40,12 +38,15 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
     }
   };
 
-  // Handle time selection
-  const handleTimeSelection = (time: string) => {
-    updateConsultationData({ time });
+  // Handle time range selection
+  const handleTimeRangeSelection = (startTime: string, endTime: string) => {
+    updateConsultationData({ 
+      startTime, 
+      endTime 
+    });
     
-    // Auto-complete the consultation when type, date, and time are all selected
-    if (consultationData.type && selectedDate) {
+    // Auto-complete the consultation when all fields are selected
+    if (consultationData.type && selectedDate && startTime && endTime) {
       updateConsultationData({ completed: true });
     }
   };
@@ -62,9 +63,10 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
       {consultationData.type && (
         <DateTimeSelector
           selectedDate={selectedDate}
-          selectedTime={consultationData.time}
+          selectedStartTime={consultationData.startTime}
+          selectedEndTime={consultationData.endTime}
           onDateChange={handleDateSelection}
-          onTimeChange={handleTimeSelection}
+          onTimeRangeChange={handleTimeRangeSelection}
         />
       )}
     </div>

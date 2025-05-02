@@ -21,7 +21,8 @@ export interface OnboardingFormData {
     completed: boolean;
     type: string;
     date: string;
-    time: string;
+    startTime: string;
+    endTime: string;
   };
 }
 
@@ -46,7 +47,8 @@ export function useOnboardingForm() {
       completed: false,
       type: '',
       date: '',
-      time: '',
+      startTime: '',
+      endTime: '',
     },
   };
 
