@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ApplicationData {
@@ -38,18 +37,27 @@ export interface QuestionnaireResponse {
 export const clientApplicationService = {
   async getApplications(): Promise<ApplicationData[]> {
     try {
+      console.log('clientApplicationService: Fetching applications from Supabase...');
+      
       const { data, error } = await supabase
         .from('onboarding_data')
         .select('*')
         .order('created_at', { ascending: false });
       
       if (error) {
+        console.error('clientApplicationService: Error in getApplications:', error);
         throw error;
       }
       
+      console.log('clientApplicationService: Successfully fetched data:', { 
+        count: data?.length,
+        firstItem: data && data.length > 0 ? data[0] : null,
+        full: data 
+      });
+      
       return data as ApplicationData[];
     } catch (error) {
-      console.error('Error fetching client applications:', error);
+      console.error('clientApplicationService: Error fetching client applications:', error);
       throw error;
     }
   },

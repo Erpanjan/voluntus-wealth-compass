@@ -19,33 +19,43 @@ const ClientAppManagement = () => {
 
   // Fetch applications on component mount
   useEffect(() => {
+    console.log('ClientAppManagement: Component mounted, fetching applications...');
     fetchApplications();
   }, []);
   
   // Apply filters whenever applications, searchTerm, or statusFilter changes
   useEffect(() => {
+    console.log('ClientAppManagement: Applying filters with', { 
+      applicationsCount: applications.length, 
+      searchTerm, 
+      statusFilter 
+    });
     applyFilters();
   }, [applications, searchTerm, statusFilter]);
   
   const fetchApplications = async () => {
     try {
+      console.log('ClientAppManagement: Starting to fetch applications');
       setLoading(true);
       const data = await clientApplicationService.getApplications();
+      console.log('ClientAppManagement: Fetched applications data:', data);
       setApplications(data);
     } catch (error) {
-      console.error('Error fetching applications:', error);
+      console.error('ClientAppManagement: Error fetching applications:', error);
       toast({
         title: 'Error',
         description: 'Failed to fetch client applications',
         variant: 'destructive'
       });
     } finally {
+      console.log('ClientAppManagement: Setting loading to false');
       setLoading(false);
     }
   };
   
   const applyFilters = () => {
     let filtered = [...applications];
+    console.log('ClientAppManagement: Starting to apply filters on', filtered.length, 'applications');
     
     // Apply search term filter
     if (searchTerm) {
@@ -55,13 +65,16 @@ const ClientAppManagement = () => {
           `${app.first_name} ${app.last_name}`.toLowerCase().includes(searchLower) ||
           (app.email && app.email.toLowerCase().includes(searchLower))
       );
+      console.log('ClientAppManagement: After search filter:', filtered.length, 'applications remain');
     }
     
     // Apply status filter
     if (statusFilter && statusFilter !== 'all') {
       filtered = filtered.filter(app => app.status === statusFilter);
+      console.log('ClientAppManagement: After status filter:', filtered.length, 'applications remain');
     }
     
+    console.log('ClientAppManagement: Setting filtered applications:', filtered);
     setFilteredApplications(filtered);
   };
   
@@ -125,6 +138,13 @@ const ClientAppManagement = () => {
         />
         
         {/* Applications List */}
+        <div className="mb-4">
+          <p className="text-sm text-gray-500">
+            {loading ? 'Loading applications...' : 
+             `Found ${filteredApplications.length} application(s) ${applications.length > 0 ? `out of ${applications.length} total` : ''}`}
+          </p>
+        </div>
+        
         <ApplicationList 
           applications={filteredApplications}
           loading={loading}

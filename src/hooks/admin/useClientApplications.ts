@@ -26,6 +26,7 @@ export const useClientApplications = () => {
 
   const fetchApplications = async () => {
     try {
+      console.log('useClientApplications: Starting to fetch applications');
       setLoading(true);
       
       const { data, error } = await supabase
@@ -34,14 +35,26 @@ export const useClientApplications = () => {
         .order('created_at', { ascending: false });
       
       if (error) {
+        console.error('useClientApplications: Error fetching applications:', error);
         throw error;
       }
+      
+      console.log('useClientApplications: Applications fetched successfully:', { 
+        count: data?.length,
+        firstItem: data && data.length > 0 ? {
+          id: data[0].id,
+          first_name: data[0].first_name,
+          last_name: data[0].last_name,
+          status: data[0].status
+        } : 'No data',
+        allItems: data
+      });
       
       if (data) {
         setApplications(data as ApplicationData[]);
       }
     } catch (error: any) {
-      console.error('Error fetching applications:', error);
+      console.error('useClientApplications: Error fetching applications:', error);
       toast({
         title: 'Error',
         description: 'Failed to fetch client applications',

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
@@ -19,14 +18,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        console.log('Checking admin authentication...');
+        console.log('AdminLayout: Checking admin authentication...');
         
         // First check if we already have a valid admin session in localStorage
         const isAdminMode = localStorage.getItem('isAdminMode') === 'true';
         const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
         
+        console.log('AdminLayout: LocalStorage auth status:', { isAdminMode, isAuthenticated });
+        
         if (isAuthenticated && isAdminMode) {
-          console.log('Admin session found in localStorage');
+          console.log('AdminLayout: Admin session found in localStorage');
           setIsAuthorized(true);
           setInitialLoading(false);
           return;
@@ -35,11 +36,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         // If not, verify with Supabase
         const { data: { session } } = await supabase.auth.getSession();
         
+        console.log('AdminLayout: Supabase session check result:', { 
+          hasSession: !!session,
+          userId: session?.user?.id 
+        });
+        
         if (!session) {
+          console.log('AdminLayout: No session found in Supabase');
           throw new Error('Not authenticated');
         }
-        
-        console.log('Supabase session found, checking admin status');
         
         // Check if user is an admin using admin_users table
         const { data, error } = await supabase
@@ -48,18 +53,21 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           .eq('id', session.user.id)
           .single();
         
+        console.log('AdminLayout: Admin check result:', { data, error });
+        
         if (error || !data) {
+          console.log('AdminLayout: User is not an admin');
           throw new Error('Not authorized as admin');
         }
         
         // User is authenticated and is an admin
-        console.log('User confirmed as admin');
+        console.log('AdminLayout: User confirmed as admin');
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('isAdminMode', 'true');
         setIsAuthorized(true);
         setInitialLoading(false);
       } catch (error) {
-        console.error('Authentication error:', error);
+        console.error('AdminLayout: Authentication error:', error);
         
         // Redirect to login page
         toast({
@@ -93,7 +101,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       <AdminSidebar />
       <div className="flex-1 overflow-auto">
         <div className="container mx-auto px-4 py-6">
-          {isAuthorized ? children : null}
+          {isAuthorized ? (
+            <>
+              {children}
+              <div className="mt-4 text-xs text-gray-400 text-right">
+                Admin session active
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
     </div>
