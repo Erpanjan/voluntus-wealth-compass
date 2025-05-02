@@ -51,7 +51,7 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
       {/* Consultation Type Selection */}
       <ConsultationTypeSelector 
         selectedType={consultationData.type}
