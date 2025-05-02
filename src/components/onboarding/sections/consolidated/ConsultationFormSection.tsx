@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ConsultationTypeSelector from './consultation/ConsultationTypeSelector';
 import DateTimeSelector from './consultation/DateTimeSelector';
 import { getReadableDateFormat } from './consultation/utils';
@@ -45,6 +45,29 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
     }
   };
 
+  // Check if time format is valid (HH:MM-HH:MM)
+  const isTimeValid = (time: string): boolean => {
+    if (!time) return false;
+    
+    // Check if it contains the hyphen separator
+    if (!time.includes('-')) return false;
+    
+    const [startTime, endTime] = time.split('-');
+    
+    // Basic format validation (not comprehensive)
+    const timeFormat = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    return timeFormat.test(startTime) && timeFormat.test(endTime);
+  };
+
+  // Effect to update completion status when all fields are filled
+  useEffect(() => {
+    if (consultationData.type && selectedDate && isTimeValid(consultationData.time)) {
+      updateConsultationData({ completed: true });
+    } else {
+      updateConsultationData({ completed: false });
+    }
+  }, [consultationData.type, selectedDate, consultationData.time]);
+
   return (
     <div className="space-y-8">
       {/* Consultation Type Selection */}
@@ -53,7 +76,7 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
         onTypeChange={handleTypeSelection}
       />
 
-      {/* Date and Time Selection */}
+      {/* Date and Time Selection - Always visible when a type is selected */}
       {consultationData.type && (
         <DateTimeSelector
           selectedDate={selectedDate}

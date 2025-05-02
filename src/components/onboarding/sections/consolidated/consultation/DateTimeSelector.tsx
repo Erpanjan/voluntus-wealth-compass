@@ -26,14 +26,31 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
   const { toast } = useToast();
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  
+  // States for validation feedback
+  const [startTimeValid, setStartTimeValid] = useState<boolean | null>(null);
+  const [endTimeValid, setEndTimeValid] = useState<boolean | null>(null);
+  const [rangeValid, setRangeValid] = useState<boolean | null>(null);
+
+  // Parse the selected time on component load
+  useEffect(() => {
+    if (selectedTime && selectedTime.includes('-')) {
+      const [start, end] = selectedTime.split('-');
+      setStartTime(start);
+      setEndTime(end);
+    }
+  }, []);
 
   // Update the selected time when start or end time changes
   useEffect(() => {
     if (startTime && endTime) {
-      // Format is HH:MM-HH:MM
-      onTimeChange(`${startTime}-${endTime}`);
+      // Only update if both times are valid
+      if (startTimeValid && endTimeValid && rangeValid) {
+        // Format is HH:MM-HH:MM
+        onTimeChange(`${startTime}-${endTime}`);
+      }
     }
-  }, [startTime, endTime, onTimeChange]);
+  }, [startTime, endTime, startTimeValid, endTimeValid, rangeValid, onTimeChange]);
 
   // Get readable format for selected date
   const getReadableDateFormat = () => {
@@ -60,8 +77,8 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
   };
 
   // Check the time difference constraint (max 4 hours)
-  const validateTimeRange = () => {
-    if (!startTime || !endTime) return true;
+  const validateTimeRange = (): boolean => {
+    if (!startTime || !endTime) return false;
 
     // Parse times
     const [startHours, startMinutes] = startTime.split(':').map(Number);
@@ -73,11 +90,6 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
 
     // Check if end time is after start time
     if (endTotalMinutes <= startTotalMinutes) {
-      toast({
-        title: "Invalid Time Range",
-        description: "End time must be after start time",
-        variant: "destructive"
-      });
       return false;
     }
 
@@ -85,38 +97,55 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
     const durationMinutes = endTotalMinutes - startTotalMinutes;
 
     // Check if duration is within 4 hours (240 minutes)
-    if (durationMinutes > 240) {
-      toast({
-        title: "Time Range Too Long",
-        description: "Consultation cannot be longer than 4 hours",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    return true;
+    return durationMinutes <= 240;
   };
 
-  // Handle start time change
+  // Handle start time change with inline validation
   const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value;
-    if (newTime === '' || validateTimeInput(newTime)) {
-      setStartTime(newTime);
-      if (endTime && newTime && !validateTimeRange()) {
-        setEndTime('');
-      }
+    setStartTime(newTime);
+    
+    // Validate the time format and range
+    if (newTime === '') {
+      setStartTimeValid(null);
+    } else {
+      const isValid = validateTimeInput(newTime);
+      setStartTimeValid(isValid);
+    }
+    
+    // Update range validation if both times are present
+    if (newTime && endTime && validateTimeInput(newTime) && endTimeValid) {
+      setRangeValid(validateTimeRange());
+    } else {
+      setRangeValid(null);
     }
   };
 
-  // Handle end time change
+  // Handle end time change with inline validation
   const handleEndTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value;
-    if (newTime === '' || validateTimeInput(newTime)) {
-      setEndTime(newTime);
-      if (startTime && newTime && !validateTimeRange()) {
-        setEndTime('');
-      }
+    setEndTime(newTime);
+    
+    // Validate the time format and range
+    if (newTime === '') {
+      setEndTimeValid(null);
+    } else {
+      const isValid = validateTimeInput(newTime);
+      setEndTimeValid(isValid);
     }
+    
+    // Update range validation if both times are present
+    if (startTime && newTime && startTimeValid && validateTimeInput(newTime)) {
+      setRangeValid(validateTimeRange());
+    } else {
+      setRangeValid(null);
+    }
+  };
+
+  // Get border color based on validation state
+  const getBorderColor = (isValid: boolean | null) => {
+    if (isValid === null) return '';
+    return isValid ? 'border-green-500' : 'border-red-500';
   };
 
   return (
@@ -128,7 +157,7 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
       
       <div className="flex flex-col gap-4">
         {/* Date Selector */}
-        <div>
+        <div className="mb-4">
           <Label className="mb-2 block">Date</Label>
           <Popover>
             <PopoverTrigger asChild>
@@ -156,11 +185,16 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
           </Popover>
         </div>
         
-        {/* Time Selection */}
-        {selectedDate && (
-          <div className="space-y-4">
+        {/* Time Selection - Always visible */}
+        <div className="space-y-4">
+          <h4 className="font-medium">Consultation Time (7AM-9PM)</h4>
+          <p className="text-sm text-gray-500 mb-3">
+            Enter times in 24-hour format (e.g., 09:00 for 9AM, 14:30 for 2:30PM)
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="startTime" className="mb-2 block">Start Time (7AM-9PM)</Label>
+              <Label htmlFor="startTime" className="mb-2 block">Start Time</Label>
               <div className="flex items-center">
                 <Clock className="mr-2 h-4 w-4 text-gray-500" />
                 <Input
@@ -169,14 +203,18 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
                   placeholder="HH:MM (e.g. 09:00)"
                   value={startTime}
                   onChange={handleStartTimeChange}
-                  className="w-full"
+                  className={cn("w-full", getBorderColor(startTimeValid))}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Enter time in 24-hour format (e.g. 14:00 for 2PM)</p>
+              {startTimeValid === false && (
+                <p className="text-xs text-red-500 mt-1">
+                  Please enter a valid time between 7:00 and 21:00 in format HH:MM
+                </p>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="endTime" className="mb-2 block">End Time (7AM-9PM)</Label>
+              <Label htmlFor="endTime" className="mb-2 block">End Time</Label>
               <div className="flex items-center">
                 <Clock className="mr-2 h-4 w-4 text-gray-500" />
                 <Input
@@ -185,13 +223,38 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
                   placeholder="HH:MM (e.g. 10:30)"
                   value={endTime}
                   onChange={handleEndTimeChange}
-                  className="w-full"
+                  className={cn("w-full", getBorderColor(endTimeValid))}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Maximum consultation duration is 4 hours</p>
+              {endTimeValid === false && (
+                <p className="text-xs text-red-500 mt-1">
+                  Please enter a valid time between 7:00 and 21:00 in format HH:MM
+                </p>
+              )}
             </div>
           </div>
-        )}
+          
+          {/* Time range validation message */}
+          {startTimeValid && endTimeValid && rangeValid === false && (
+            <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-600">
+                Invalid time range. Make sure the end time is after the start time and the duration is not longer than 4 hours.
+              </p>
+            </div>
+          )}
+          
+          {startTimeValid && endTimeValid && rangeValid === true && (
+            <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+              <p className="text-sm text-green-600">
+                Valid time range selected!
+              </p>
+            </div>
+          )}
+          
+          <p className="text-xs text-gray-500 mt-2">
+            Note: Maximum consultation duration is 4 hours. Operating hours are from 7:00 AM to 9:00 PM.
+          </p>
+        </div>
       </div>
     </div>
   );
