@@ -47,7 +47,7 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
   // Function to get selected goals (used for goal-specific questions)
   const getSelectedGoals = () => {
     return answers.goals?.filter(goal => 
-      goal.interestLevel !== 'Would not consider'
+      goal.interestLevel !== 'would-not-consider'
     ) || [];
   };
 

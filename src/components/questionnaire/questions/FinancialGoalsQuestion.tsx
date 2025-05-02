@@ -12,7 +12,7 @@ interface FinancialGoalType {
   id: string;
   name: string;
   interestLevel: string;
-  isCustom?: boolean; // Adding the isCustom property as optional
+  isCustom?: boolean;
 }
 
 interface FinancialGoalsQuestionProps {
