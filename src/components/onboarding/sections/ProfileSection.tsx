@@ -1,10 +1,9 @@
-
 import React, { useState, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Upload } from 'lucide-react';
-import { Section } from '@/components/ui/Section';
+import Section from '@/components/ui/Section';
 
 interface ProfileSectionProps {
   profileData: {

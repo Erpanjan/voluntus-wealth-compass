@@ -157,7 +157,7 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <OnboardingHeader />
+      <OnboardingHeader currentStep={0} />
 
       {/* Section Navigation */}
       <OnboardingSectionNavigation 
