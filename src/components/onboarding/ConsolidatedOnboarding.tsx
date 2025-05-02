@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Loader2 } from 'lucide-react';
 import ProfileFormSection from './sections/consolidated/ProfileFormSection';
+import QuestionnaireFormSection from './sections/consolidated/QuestionnaireFormSection';
 import ConsultationFormSection from './sections/consolidated/ConsultationFormSection';
 import OnboardingReview from './sections/consolidated/OnboardingReview';
 
 interface ConsolidatedOnboardingProps {
   formData: OnboardingFormData;
   updateProfileData: (data: Partial<OnboardingFormData['profile']>) => void;
+  updateQuestionnaireData: (data: { completed: boolean; answers: Record<string, any> }) => void;
   updateConsultationData: (data: Partial<OnboardingFormData['consultation']>) => void;
   handleSubmit: () => void;
   handleSaveDraft: () => void;
@@ -22,6 +24,7 @@ interface ConsolidatedOnboardingProps {
 const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
   formData,
   updateProfileData,
+  updateQuestionnaireData,
   updateConsultationData,
   handleSubmit,
   handleSaveDraft,
@@ -65,6 +68,22 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
         <ProfileFormSection 
           profileData={formData.profile}
           updateProfileData={updateProfileData}
+        />
+      </div>
+      
+      {/* Divider */}
+      <div className="w-full h-px bg-gray-200 my-10"></div>
+      
+      {/* Questionnaire Section */}
+      <div className="mb-16">
+        <h2 className="text-2xl font-semibold mb-6">Financial Questionnaire</h2>
+        <p className="text-gray-600 mb-8">
+          This questionnaire is designed to help us understand your financial circumstances and investment goals. While completing it is optional at this stage, it will be required before we can officially begin our service. You're welcome to skip it for now and return to it during consultation.
+        </p>
+        
+        <QuestionnaireFormSection
+          questionnaireData={formData.questionnaire}
+          updateQuestionnaireData={updateQuestionnaireData}
         />
       </div>
       

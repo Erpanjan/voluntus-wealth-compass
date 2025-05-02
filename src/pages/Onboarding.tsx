@@ -17,10 +17,10 @@ const Onboarding = () => {
     formData, 
     loading,
     saving,
-    updateProfileData,
+    updateProfileData, 
+    updateQuestionnaireData, 
     updateConsultationData,
-    handleSubmit,
-    handleSaveDraft
+    saveOnboardingData
   } = useOnboardingForm();
 
   // Check authentication status
@@ -42,6 +42,58 @@ const Onboarding = () => {
     checkAuth();
   }, [navigate, toast]);
 
+  // Handle saving draft explicitly
+  const handleSaveDraft = async () => {
+    const success = await saveOnboardingData(formData, 'draft');
+    
+    if (success) {
+      toast({
+        title: "Draft Saved",
+        description: "Your information has been saved. You can return to complete it later.",
+      });
+    }
+  };
+
+  // Handle final submission
+  const handleSubmit = async () => {
+    if (!formData.consultation.completed) {
+      toast({
+        title: "Required Step",
+        description: "Please schedule a consultation to proceed.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Extra validation for required fields
+    if (!formData.profile.firstName || !formData.profile.lastName || !formData.profile.email || !formData.profile.phone) {
+      toast({
+        title: "Required Fields Missing",
+        description: "Please fill in all required profile fields to proceed.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const success = await saveOnboardingData(formData, 'submitted');
+    
+    if (success) {
+      toast({
+        title: "Application Submitted",
+        description: "Your application is now pending approval. We'll notify you when it's approved.",
+      });
+      
+      // Clear localStorage draft since it's now submitted
+      localStorage.removeItem('onboardingDraft');
+      
+      // For demo purposes, simulate immediate approval
+      setTimeout(() => {
+        localStorage.setItem('onboardingComplete', 'true');
+        navigate('/dashboard');
+      }, 3000);
+    }
+  };
+
   // Show loading state
   if (loading) {
     return (
@@ -60,6 +112,7 @@ const Onboarding = () => {
         <ConsolidatedOnboarding
           formData={formData}
           updateProfileData={updateProfileData}
+          updateQuestionnaireData={updateQuestionnaireData}
           updateConsultationData={updateConsultationData}
           handleSubmit={handleSubmit}
           handleSaveDraft={handleSaveDraft}
