@@ -17,7 +17,6 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
-import Questionnaire from "./pages/Questionnaire";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ArticlesManagement from "./pages/admin/ArticlesManagement";
 import ArticleEditor from "./pages/admin/ArticleEditor";
@@ -46,11 +45,10 @@ const App = () => (
     <BrowserRouter>
       <TooltipProvider>
         <div className="flex flex-col min-h-screen">
-          {/* Header only on non-dashboard/non-onboarding/non-questionnaire/non-admin pages */}
+          {/* Header only on non-dashboard/non-onboarding/non-admin pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
-            <Route path="/questionnaire" element={null} />
             <Route path="/admin/*" element={null} />
             <Route path="*" element={<Header />} />
           </Routes>
@@ -78,14 +76,6 @@ const App = () => (
                 element={
                   <PrivateRoute>
                     <Onboarding />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/questionnaire" 
-                element={
-                  <PrivateRoute>
-                    <Questionnaire />
                   </PrivateRoute>
                 } 
               />
@@ -152,12 +142,11 @@ const App = () => (
             </Routes>
           </main>
           
-          {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire/non-admin pages */}
+          {/* Footer only on non-dashboard/non-onboarding/non-login/non-admin pages */}
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
             <Route path="/login" element={null} />
-            <Route path="/questionnaire" element={null} />
             <Route path="/admin/*" element={null} />
             <Route path="*" element={<Footer />} />
           </Routes>
