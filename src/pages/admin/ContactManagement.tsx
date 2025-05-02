@@ -25,6 +25,7 @@ const ContactManagement = () => {
     sendReply,
     getNotesForInquiry,
     getFilteredInquiries,
+    handleDeleteInquiry,
     getStatusCounts,
     fetchContactNotes,
     fetchContactInquiries
@@ -73,6 +74,7 @@ const ContactManagement = () => {
                 notes={getNotesForInquiry(inquiry.id)}
                 refreshNotes={fetchContactNotes}
                 refreshInquiries={fetchContactInquiries}
+                onDelete={handleDeleteInquiry}
               />
             ))}
           </div>

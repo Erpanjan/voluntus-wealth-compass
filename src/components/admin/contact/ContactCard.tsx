@@ -35,6 +35,7 @@ interface ContactInquiryProps {
   notes: ContactNoteType[];
   refreshNotes: () => void;
   refreshInquiries: () => void;
+  onDelete: (id: string) => Promise<void>;
 }
 
 const ContactCard: React.FC<ContactInquiryProps> = ({ 
@@ -43,7 +44,8 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
   onReply,
   notes,
   refreshNotes,
-  refreshInquiries
+  refreshInquiries,
+  onDelete
 }) => {
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [newNote, setNewNote] = useState('');
@@ -89,46 +91,19 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
     }
   };
 
-  const handleDeleteInquiry = async () => {
+  const handleDelete = async () => {
     try {
-      console.log("Attempting to delete inquiry with ID:", inquiry.id);
+      console.log("ContactCard: Initiating delete for inquiry ID:", inquiry.id);
       
-      // First delete associated notes
-      const { error: notesError } = await supabase
-        .from('contact_notes')
-        .delete()
-        .eq('contact_id', inquiry.id);
+      // Use the onDelete function passed from the parent component
+      await onDelete(inquiry.id);
       
-      if (notesError) {
-        console.error('Error deleting associated notes:', notesError);
-        throw notesError;
-      }
-      
-      console.log("Associated notes deleted successfully");
-      
-      // Then delete the inquiry
-      const { error } = await supabase
-        .from('contact_submissions')
-        .delete()
-        .eq('id', inquiry.id);
-
-      if (error) {
-        console.error('Error deleting inquiry:', error);
-        throw error;
-      }
-      
-      console.log("Inquiry deleted successfully");
-
-      toast({
-        title: "Success",
-        description: "Contact inquiry deleted successfully.",
-      });
-      
-      // Close the dialog and refresh the inquiries list
+      // Close the dialog after successful deletion
       setIsDeleteDialogOpen(false);
-      refreshInquiries();
+      
+      // No need to refresh inquiries here as it will be handled in the hook
     } catch (error) {
-      console.error('Error in deletion process:', error);
+      console.error('Error in ContactCard delete handler:', error);
       toast({
         title: "Error",
         description: "Failed to delete inquiry.",
@@ -200,7 +175,7 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteInquiry} className="bg-red-500 hover:bg-red-600">
+            <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
