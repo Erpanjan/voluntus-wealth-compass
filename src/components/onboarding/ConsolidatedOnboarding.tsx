@@ -100,8 +100,8 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
         />
       </div>
       
-      {/* Fixed Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-4 px-6 z-10">
+      {/* Fixed Bottom Action Bar - Increased z-index to 100 to prevent layout shift */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-4 px-6 z-[100]">
         <div className="max-w-3xl mx-auto flex justify-between items-center">
           <Button variant="outline" onClick={handleSaveDraft}>
             Save Draft
