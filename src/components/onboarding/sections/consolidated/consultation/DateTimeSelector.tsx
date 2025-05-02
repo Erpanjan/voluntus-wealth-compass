@@ -4,15 +4,7 @@ import { CalendarIcon, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -35,41 +27,15 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
 }) => {
   const { toast } = useToast();
   const [timeError, setTimeError] = useState<string | null>(null);
+  const [startTime, setStartTime] = useState(selectedStartTime);
+  const [endTime, setEndTime] = useState(selectedEndTime);
   
-  // Available times for scheduling, organized by time periods
-  const availableTimes = [
-    { value: '07:00', label: '7:00 AM' },
-    { value: '07:30', label: '7:30 AM' },
-    { value: '08:00', label: '8:00 AM' },
-    { value: '08:30', label: '8:30 AM' },
-    { value: '09:00', label: '9:00 AM' },
-    { value: '09:30', label: '9:30 AM' },
-    { value: '10:00', label: '10:00 AM' },
-    { value: '10:30', label: '10:30 AM' },
-    { value: '11:00', label: '11:00 AM' },
-    { value: '11:30', label: '11:30 AM' },
-    { value: '12:00', label: '12:00 PM' },
-    { value: '12:30', label: '12:30 PM' },
-    { value: '13:00', label: '1:00 PM' },
-    { value: '13:30', label: '1:30 PM' },
-    { value: '14:00', label: '2:00 PM' },
-    { value: '14:30', label: '2:30 PM' },
-    { value: '15:00', label: '3:00 PM' },
-    { value: '15:30', label: '3:30 PM' },
-    { value: '16:00', label: '4:00 PM' },
-    { value: '16:30', label: '4:30 PM' },
-    { value: '17:00', label: '5:00 PM' },
-    { value: '17:30', label: '5:30 PM' },
-    { value: '18:00', label: '6:00 PM' },
-    { value: '18:30', label: '6:30 PM' },
-    { value: '19:00', label: '7:00 PM' },
-    { value: '19:30', label: '7:30 PM' },
-    { value: '20:00', label: '8:00 PM' },
-    { value: '20:30', label: '8:30 PM' },
-    { value: '21:00', label: '9:00 PM' },
-    { value: '21:30', label: '9:30 PM' },
-    { value: '22:00', label: '10:00 PM' },
-  ];
+  // Time regex validation for HH:MM in 24h format
+  const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
+  
+  // Operating hours range (7:00 to 22:00)
+  const minTimeMinutes = 7 * 60;
+  const maxTimeMinutes = 22 * 60;
 
   // Get readable format for selected date
   const getReadableDateFormat = () => {
@@ -77,104 +43,124 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
     return format(selectedDate, 'EEEE, MMMM d, yyyy');
   };
 
-  // Handle start time change and validate time range
-  const handleStartTimeChange = (startTime: string) => {
-    let newEndTime = selectedEndTime;
-    
-    // Check if current end time would exceed 3 hour limit
-    if (selectedEndTime) {
-      const startMinutes = getTimeInMinutes(startTime);
-      const endMinutes = getTimeInMinutes(selectedEndTime);
-      
-      if (endMinutes - startMinutes > 180) {
-        // Find a valid end time within 3 hours
-        const maxEndTimeMinutes = startMinutes + 180;
-        const endTimeOption = availableTimes.find(time => 
-          getTimeInMinutes(time.value) <= maxEndTimeMinutes && 
-          getTimeInMinutes(time.value) > startMinutes
-        );
-        
-        newEndTime = endTimeOption ? endTimeOption.value : '';
-      } else if (endMinutes <= startMinutes) {
-        // Find a new end time that's after the start time
-        const endTimeOption = availableTimes.find(time => 
-          getTimeInMinutes(time.value) > startMinutes &&
-          getTimeInMinutes(time.value) <= startMinutes + 180
-        );
-        
-        newEndTime = endTimeOption ? endTimeOption.value : '';
-      }
-    }
-    
-    onTimeRangeChange(startTime, newEndTime);
-    validateTimeRange(startTime, newEndTime);
-  };
-
-  // Handle end time change and validate
-  const handleEndTimeChange = (endTime: string) => {
-    onTimeRangeChange(selectedStartTime, endTime);
-    validateTimeRange(selectedStartTime, endTime);
-  };
-
   // Convert time string (HH:MM) to minutes for easier comparison
   const getTimeInMinutes = (timeString: string): number => {
-    if (!timeString) return 0;
+    if (!timeString || !timeRegex.test(timeString)) return -1;
     const [hours, minutes] = timeString.split(':').map(Number);
     return hours * 60 + minutes;
   };
 
-  // Validate the time range is within 3 hours
-  const validateTimeRange = (startTime: string, endTime: string) => {
-    if (!startTime || !endTime) {
-      setTimeError(null);
+  // Get readable time format (12-hour format with AM/PM)
+  const getReadableTimeFormat = (time: string): string => {
+    if (!time || !timeRegex.test(time)) return '';
+    
+    const [hours, minutes] = time.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+    
+    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
+  // Handle start time input change
+  const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setStartTime(value);
+    
+    if (value && !timeRegex.test(value)) {
       return;
     }
-
-    const startMinutes = getTimeInMinutes(startTime);
-    const endMinutes = getTimeInMinutes(endTime);
     
+    if (timeRegex.test(value)) {
+      validateAndUpdateTimes(value, endTime);
+    }
+  };
+
+  // Handle end time input change
+  const handleEndTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEndTime(value);
+    
+    if (value && !timeRegex.test(value)) {
+      return;
+    }
+    
+    if (timeRegex.test(value)) {
+      validateAndUpdateTimes(startTime, value);
+    }
+  };
+
+  // Validate time input and update if valid
+  const validateAndUpdateTimes = (start: string, end: string) => {
+    setTimeError(null);
+    
+    // Skip validation if either time is not properly formatted
+    if (!timeRegex.test(start) || !timeRegex.test(end)) {
+      return;
+    }
+    
+    const startMinutes = getTimeInMinutes(start);
+    const endMinutes = getTimeInMinutes(end);
+    
+    // Check if times are within operating hours
+    if (startMinutes < minTimeMinutes || startMinutes > maxTimeMinutes) {
+      setTimeError('Start time must be between 7:00 AM and 10:00 PM');
+      return;
+    }
+    
+    if (endMinutes < minTimeMinutes || endMinutes > maxTimeMinutes) {
+      setTimeError('End time must be between 7:00 AM and 10:00 PM');
+      return;
+    }
+    
+    // Validate time range logic
     if (endMinutes <= startMinutes) {
       setTimeError('End time must be after start time');
       return;
     }
     
     const durationMinutes = endMinutes - startMinutes;
-    
     if (durationMinutes > 180) {
       setTimeError('Consultation duration must be 3 hours or less');
-    } else {
-      setTimeError(null);
+      return;
     }
-  };
-
-  // Filter available end times based on selected start time
-  const getAvailableEndTimes = () => {
-    if (!selectedStartTime) return [];
     
-    const startMinutes = getTimeInMinutes(selectedStartTime);
-    return availableTimes.filter(time => {
-      const minutes = getTimeInMinutes(time.value);
-      return minutes > startMinutes && minutes <= startMinutes + 180;
-    });
+    // If we get here, the times are valid, update the parent
+    onTimeRangeChange(start, end);
   };
 
-  // Find a valid end time when start time changes
+  // Initialize form with existing values
   useEffect(() => {
-    if (selectedStartTime && !selectedEndTime) {
-      const availableEndTimes = getAvailableEndTimes();
-      if (availableEndTimes.length > 0) {
-        // Default to 1 hour consultation
-        const oneHourLaterOption = availableTimes.find(time => 
-          getTimeInMinutes(time.value) === getTimeInMinutes(selectedStartTime) + 60
-        );
-        
-        onTimeRangeChange(
-          selectedStartTime, 
-          oneHourLaterOption ? oneHourLaterOption.value : availableEndTimes[0].value
-        );
-      }
-    }
+    setStartTime(selectedStartTime);
   }, [selectedStartTime]);
+  
+  useEffect(() => {
+    setEndTime(selectedEndTime);
+  }, [selectedEndTime]);
+
+  // Helper function to get duration text
+  const getDurationText = () => {
+    if (!timeRegex.test(startTime) || !timeRegex.test(endTime)) return '';
+    
+    const startMinutes = getTimeInMinutes(startTime);
+    const endMinutes = getTimeInMinutes(endTime);
+    
+    if (endMinutes <= startMinutes) return '';
+    
+    const durationMinutes = endMinutes - startMinutes;
+    const hours = Math.floor(durationMinutes / 60);
+    const minutes = durationMinutes % 60;
+    
+    let result = '';
+    if (hours > 0) {
+      result += `${hours} hour${hours > 1 ? 's' : ''}`;
+    }
+    
+    if (minutes > 0) {
+      result += `${hours > 0 ? ' ' : ''}${minutes} minute${minutes > 1 ? 's' : ''}`;
+    }
+    
+    return result;
+  };
 
   return (
     <div>
@@ -215,62 +201,51 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
         {selectedDate && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
-              {/* Start Time Selector */}
+              {/* Start Time Input */}
               <div className="flex-1">
-                <label className="text-sm font-medium mb-1 block">Start Time</label>
-                <Select value={selectedStartTime} onValueChange={handleStartTimeChange}>
-                  <SelectTrigger className="w-full">
-                    <div className="flex items-center">
-                      <Clock className="mr-2 h-4 w-4" />
-                      <SelectValue placeholder="Select start time" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableTimes.map(time => (
-                      <SelectItem key={`start-${time.value}`} value={time.value}>
-                        {time.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <label className="text-sm font-medium mb-1 block">Start Time (24h format)</label>
+                <div className="relative">
+                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Input
+                    value={startTime}
+                    onChange={handleStartTimeChange}
+                    className="pl-10"
+                    placeholder="HH:MM (e.g. 09:00)"
+                  />
+                </div>
+                {startTime && timeRegex.test(startTime) && (
+                  <p className="text-xs text-gray-500 mt-1">{getReadableTimeFormat(startTime)}</p>
+                )}
               </div>
               
-              {/* End Time Selector */}
+              {/* End Time Input */}
               <div className="flex-1">
-                <label className="text-sm font-medium mb-1 block">End Time</label>
-                <Select 
-                  value={selectedEndTime} 
-                  onValueChange={handleEndTimeChange}
-                  disabled={!selectedStartTime}
-                >
-                  <SelectTrigger className="w-full">
-                    <div className="flex items-center">
-                      <Clock className="mr-2 h-4 w-4" />
-                      <SelectValue placeholder="Select end time" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getAvailableEndTimes().map(time => (
-                      <SelectItem key={`end-${time.value}`} value={time.value}>
-                        {time.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <label className="text-sm font-medium mb-1 block">End Time (24h format)</label>
+                <div className="relative">
+                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Input
+                    value={endTime}
+                    onChange={handleEndTimeChange}
+                    className="pl-10"
+                    placeholder="HH:MM (e.g. 10:00)"
+                  />
+                </div>
+                {endTime && timeRegex.test(endTime) && (
+                  <p className="text-xs text-gray-500 mt-1">{getReadableTimeFormat(endTime)}</p>
+                )}
               </div>
             </div>
             
             {timeError && (
-              <Alert variant="destructive">
+              <Alert variant="warning">
                 <AlertDescription>{timeError}</AlertDescription>
               </Alert>
             )}
             
-            {selectedStartTime && selectedEndTime && !timeError && (
+            {!timeError && timeRegex.test(startTime) && timeRegex.test(endTime) && 
+             getTimeInMinutes(endTime) > getTimeInMinutes(startTime) && (
               <p className="text-sm text-gray-500">
-                Consultation duration: {Math.floor((getTimeInMinutes(selectedEndTime) - getTimeInMinutes(selectedStartTime)) / 60)} hours
-                {(getTimeInMinutes(selectedEndTime) - getTimeInMinutes(selectedStartTime)) % 60 > 0 ? 
-                  ` ${(getTimeInMinutes(selectedEndTime) - getTimeInMinutes(selectedStartTime)) % 60} minutes` : ''}
+                Consultation duration: {getDurationText()}
               </p>
             )}
           </div>
