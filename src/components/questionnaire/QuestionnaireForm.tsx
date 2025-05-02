@@ -47,7 +47,9 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
   // Function to get selected goals (used for goal-specific questions)
   const getSelectedGoals = () => {
     return answers.goals?.filter(goal => 
-      goal.interestLevel !== 'Would not consider'
+      goal.interestLevel === 'already-planned' || 
+      goal.interestLevel === 'strongly-interested' || 
+      goal.interestLevel === 'would-consider'
     ) || [];
   };
 
@@ -75,6 +77,7 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
     if (currentStep >= 10 && currentStep <= 13) {
       if (!selectedGoals.length) {
         // Skip goal-specific questions if no goals were selected
+        setCurrentStep(14); // Skip to behavioral biases question
         return null;
       }
     }
@@ -99,11 +102,31 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
       case 8:
         return selectedGoals.length > 0 ? 
           <GoalPrioritiesQuestion goals={selectedGoals} value={answers.goalPriorities} onChange={(val) => updateAnswer('goalPriorities', val)} /> : 
-          null;
+          <div className="py-4">
+            <p className="text-center text-gray-600">No financial goals selected for prioritization. Let's continue.</p>
+            <div className="flex justify-center mt-4">
+              <button 
+                className="px-4 py-2 bg-black text-white rounded-md"
+                onClick={() => setCurrentStep(currentStep + 1)}
+              >
+                Continue
+              </button>
+            </div>
+          </div>;
       case 9:
         return selectedGoals.length > 0 ? 
           <RiskPreferencesQuestion goals={selectedGoals} value={answers.riskPreferences} onChange={(val) => updateAnswer('riskPreferences', val)} /> : 
-          null;
+          <div className="py-4">
+            <p className="text-center text-gray-600">No financial goals selected for risk preferences. Let's continue.</p>
+            <div className="flex justify-center mt-4">
+              <button 
+                className="px-4 py-2 bg-black text-white rounded-md"
+                onClick={() => setCurrentStep(currentStep + 1)}
+              >
+                Continue
+              </button>
+            </div>
+          </div>;
       case 10:
         return currentGoal ? 
           <GoalTimelineQuestion 

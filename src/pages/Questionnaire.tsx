@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -15,6 +15,7 @@ const Questionnaire = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const totalSteps = 15;
+  const [hasSelectedGoals, setHasSelectedGoals] = useState(true);
 
   // Handle saving the questionnaire state to localStorage
   const handleSave = () => {
