@@ -66,4 +66,16 @@
       transform: scale(1.03);
     }
   }
+
+  /* Fixed position transition */
+  .fixed-position-transition {
+    transition: opacity 0.3s ease-in-out;
+    position: relative;
+  }
+
+  /* Content fade transition */
+  .content-fade-transition {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
 }
+

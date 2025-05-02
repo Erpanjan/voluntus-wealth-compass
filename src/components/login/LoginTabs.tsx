@@ -21,7 +21,7 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
   return (
     <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 transform scale-[0.98]' : 'opacity-100 transform scale-100'}`}>
       {isAdminMode ? (
-        // Admin mode - Single login tab
+        // Admin mode - Single login tab with consistent height
         <Tabs defaultValue="login" className="w-full custom-tabs">
           <div className="px-6">
             <TabsList className="grid grid-cols-1 w-full bg-transparent p-0 h-12 relative">

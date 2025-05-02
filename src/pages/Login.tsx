@@ -56,22 +56,27 @@ const Login = () => {
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
-        {/* Title and admin mode toggle - fixed height container */}
-        <div className="h-24 flex items-center justify-center">
-          <AdminToggle 
-            isAdminMode={isAdminMode}
-            onToggle={handleAdminToggle}
-            isAnimating={isAnimating}
-          />
-        </div>
+        {/* Fixed height container for consistent positioning */}
+        <div className="h-[500px] relative">
+          {/* Title and admin mode toggle - fixed position */}
+          <div className="h-24 flex items-center justify-center absolute top-0 left-0 w-full">
+            <AdminToggle 
+              isAdminMode={isAdminMode}
+              onToggle={handleAdminToggle}
+              isAnimating={isAnimating}
+            />
+          </div>
 
-        {/* Tabs container with fixed position and size */}
-        <LoginTabs 
-          isAdminMode={isAdminMode}
-          isAnimating={isAnimating}
-          onDemoLogin={handleDemoLogin}
-          onRegularLogin={handleRegularLogin}
-        />
+          {/* Tabs container with fixed position and size */}
+          <div className="absolute top-24 left-0 w-full">
+            <LoginTabs 
+              isAdminMode={isAdminMode}
+              isAnimating={isAnimating}
+              onDemoLogin={handleDemoLogin}
+              onRegularLogin={handleRegularLogin}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
