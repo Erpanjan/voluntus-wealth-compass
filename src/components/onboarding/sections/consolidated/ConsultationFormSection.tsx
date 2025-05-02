@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import ConsultationTypeSelector from './consultation/ConsultationTypeSelector';
-import DateTimeSelector from './consultation/DateTimeSelector';
-import { getReadableDateFormat } from './consultation/utils';
+import ConsultationType from './consultation/ConsultationType';
+import ConsultationDateTime from './consultation/ConsultationDateTime';
 
 interface ConsultationFormSectionProps {
   consultationData: {
@@ -66,14 +65,14 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
   return (
     <div className="space-y-8">
       {/* Consultation Type Selection */}
-      <ConsultationTypeSelector 
+      <ConsultationType 
         selectedType={consultationData.type}
         onTypeChange={handleTypeSelection}
       />
 
       {/* Date and Time Selection - Always visible when a type is selected */}
       {consultationData.type && (
-        <DateTimeSelector
+        <ConsultationDateTime
           selectedDate={selectedDate}
           selectedTime={consultationData.time}
           onDateChange={handleDateSelection}
