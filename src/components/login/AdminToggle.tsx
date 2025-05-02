@@ -17,10 +17,18 @@ const AdminToggle: React.FC<AdminToggleProps> = ({
   isDisabled = false 
 }) => {
   return (
-    <div className="flex items-center justify-center relative w-full h-full">
+    <div className="flex items-center justify-center relative w-full h-full prevent-flicker">
       <div className="flex items-center space-x-4">
-        <div className="text-center w-[200px]">
-          <h1 className="text-3xl font-bold transition-all duration-300">
+        <div className="text-center w-[200px] prevent-flicker">
+          <h1 
+            className={`text-3xl font-bold transition-all duration-400 ease-out
+              ${isAnimating ? 'opacity-80 transform scale-[0.98]' : 'opacity-100 transform scale-100'}`}
+            style={{ 
+              willChange: 'opacity, transform',
+              backfaceVisibility: 'hidden',
+              transformStyle: 'preserve-3d'
+            }}
+          >
             {isAdminMode ? 'Admin Portal' : 'Client Portal'}
           </h1>
         </div>

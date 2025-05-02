@@ -20,19 +20,21 @@
     animation: fadeIn 0.8s ease-out forwards;
   }
   
-  /* Login mode transition effect */
+  /* Login mode transition effect - improved and more stable */
   .login-mode-transition {
-    animation: modeTransition 0.3s ease-in-out forwards;
+    animation: smoothModeTransition 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transform-origin: center;
+    backface-visibility: hidden;
   }
   
-  @keyframes modeTransition {
+  @keyframes smoothModeTransition {
     0% {
       opacity: 1;
       transform: scale(1);
     }
     50% {
-      opacity: 0.6;
-      transform: scale(0.98);
+      opacity: 0.8;
+      transform: scale(0.99);
     }
     100% {
       opacity: 1;
@@ -50,35 +52,39 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-black to-[#9F9EA1];
   }
 
-  /* Login transition effect - enhanced */
+  /* Login transition effect - enhanced with smoother cubic-bezier */
   .login-transition {
-    animation: portalTransition 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    animation: smoothPortalTransition 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     pointer-events: none;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
   }
   
-  @keyframes portalTransition {
+  @keyframes smoothPortalTransition {
     0% {
       opacity: 1;
       transform: scale(1);
     }
     100% {
       opacity: 0;
-      transform: scale(1.03);
+      transform: scale(1.01);
     }
   }
 
-  /* Fixed position transition */
+  /* Fixed position transition - improved */
   .fixed-position-transition {
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
-    will-change: opacity;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
   }
 
-  /* Content fade transition */
+  /* Content fade transition - smoother with hardware acceleration */
   .content-fade-transition {
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     will-change: opacity, transform;
     transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   /* Prevent content flicker during transitions */
@@ -88,5 +94,33 @@
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     will-change: opacity, transform;
+  }
+  
+  /* New smooth portal switch animation */
+  .portal-switch {
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: opacity, transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+  
+  .portal-switch-enter {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  
+  .portal-switch-enter-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .portal-switch-exit {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .portal-switch-exit-active {
+    opacity: 0;
+    transform: scale(1.02);
   }
 }
