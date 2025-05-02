@@ -1,4 +1,6 @@
 
+import { ReactNode } from 'react';
+
 export interface GoalType {
   id: string;
   name: string;
