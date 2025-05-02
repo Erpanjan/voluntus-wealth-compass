@@ -12,7 +12,7 @@ interface FinancialGoalType {
   id: string;
   name: string;
   interestLevel: string;
-  isCustom?: boolean;
+  isCustom?: boolean; // Adding the isCustom property as optional
 }
 
 interface FinancialGoalsQuestionProps {
@@ -74,7 +74,7 @@ const FinancialGoalsQuestion: React.FC<FinancialGoalsQuestionProps> = ({ value =
   const handleAddCustomGoal = () => {
     if (!customGoalName.trim()) return;
     
-    const newCustomGoal = {
+    const newCustomGoal: FinancialGoalType = {
       id: uuidv4(),
       name: customGoalName,
       interestLevel: 'strongly-interested',
