@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -19,8 +18,9 @@ const Login = () => {
   
   // Enhanced fade-in animation when component loads
   useEffect(() => {
-    // Remove login-transition class from body if present
+    // Remove animation classes from body
     document.body.classList.remove('login-transition');
+    document.body.classList.remove('login-fade-transition');
     
     // Clear URL parameters when landing on login page
     if (location.search) {

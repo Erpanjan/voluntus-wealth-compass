@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -70,15 +69,13 @@ const Header: React.FC = () => {
       return;
     }
     
-    setIsAnimating(true);
-    
-    // Add a fade-out animation to the entire page with scale effect
-    document.body.classList.add('login-transition');
+    // Use a more subtle fade transition
+    document.body.classList.add('login-fade-transition');
     
     // Navigate after animation completes
     setTimeout(() => {
       navigate('/login');
-    }, 600); // Match this with the CSS animation duration
+    }, 300); // Shorter animation duration for a more responsive feel
   };
 
   return (
