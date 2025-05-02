@@ -9,9 +9,9 @@ import ProfileFormSection from './sections/consolidated/ProfileFormSection';
 import QuestionnaireFormSection from './sections/consolidated/QuestionnaireFormSection';
 import ConsultationFormSection from './sections/consolidated/ConsultationFormSection';
 import OnboardingReview from './sections/consolidated/OnboardingReview';
-import VerticalProgressIndicator from './sections/consolidated/VerticalProgressIndicator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import OnboardingProgressIndicator from './OnboardingProgressIndicator';
 
 interface ConsolidatedOnboardingProps {
   formData: OnboardingFormData;
@@ -48,28 +48,6 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
     formData.profile.email && 
     formData.profile.phone
   );
-  
-  // Determine which steps are completed/active
-  const progressSteps = [
-    { 
-      id: 'profile',
-      title: "Create Your Profile", 
-      completed: isProfileComplete, 
-      active: activeSection === 0 
-    },
-    { 
-      id: 'questionnaire',
-      title: "Financial Questionnaire", 
-      completed: formData.questionnaire.completed, 
-      active: activeSection === 1 
-    },
-    { 
-      id: 'consultation',
-      title: "Schedule Consultation", 
-      completed: formData.consultation.completed, 
-      active: activeSection === 2 
-    }
-  ];
   
   // Setup Intersection Observer for scroll tracking
   useEffect(() => {
@@ -135,17 +113,17 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
   
   return (
     <div className="w-full max-w-5xl mx-auto pb-24">
+      {/* Linear progress indicator */}
+      <div className="mb-8">
+        <OnboardingProgressIndicator 
+          currentStep={activeSection}
+          totalSteps={3}
+        />
+      </div>
+      
       <div className="flex flex-col md:flex-row gap-6 md:gap-10">
-        {/* Vertical progress indicator - repositioned */}
-        <div className={cn(
-          "md:flex md:items-center md:justify-center",
-          isMobile ? "mb-6" : "w-[100px] sticky top-0 self-start h-screen flex items-center"
-        )}>
-          <VerticalProgressIndicator steps={progressSteps} />
-        </div>
-        
         {/* Main content area */}
-        <div className="flex-1 max-w-3xl">
+        <div className="flex-1 max-w-3xl mx-auto">
           {/* Profile Section */}
           <div ref={profileSectionRef} className="mb-16 md:mb-20 animate-fade-in scroll-mt-24">
             <ProfileFormSection 
