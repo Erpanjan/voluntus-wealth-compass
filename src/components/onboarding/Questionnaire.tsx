@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,24 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
-import { CircleCheck, Trophy, Star, Award, GaugeCircle, PiggyBank, BarChart3, Home, Car, Heart, BookOpen, Landmark, Sparkles } from 'lucide-react';
+import { 
+  CircleCheck, 
+  Trophy, 
+  Star, 
+  Award, 
+  GaugeCircle, 
+  PiggyBank, 
+  BarChart3, 
+  Home, 
+  Car, 
+  Heart, 
+  BookOpen, 
+  Landmark, 
+  Sparkles,
+  ArrowUp,
+  ArrowDown,
+  X
+} from 'lucide-react';
 
 interface QuestionnaireProps {
   setCompleted: (completed: boolean) => void;
@@ -30,7 +48,25 @@ const defaultFinancialGoals = [
   { id: 'medical', name: 'Medical & Health', icon: <CircleCheck className="h-5 w-5" /> }
 ];
 
-// Define a type for the behavioral biases object to ensure it's correctly typed
+// Define interest level options for goals
+const interestLevelOptions = [
+  "Already planned",
+  "Strongly interested",
+  "Would consider",
+  "Less likely to consider",
+  "Would not consider"
+];
+
+// Define time horizon options for goals
+const timeHorizonOptions = [
+  "Less than 1 year",
+  "1 to 3 years",
+  "4 to 7 years", 
+  "8 to 15 years",
+  "More than 15 years"
+];
+
+// Define a type for the behavioral biases object
 interface BehavioralBiases {
   sellOnDrop: number;
   emotionalAttachment: number;
@@ -43,24 +79,44 @@ interface BehavioralBiases {
   valueAlignment: number;
 }
 
-// Define the type for the answers object
+// Define a type for the goal interest levels
+interface GoalInterestLevels {
+  [goalId: string]: string;
+}
+
+// Define a type for the answers object
 interface QuestionnairAnswers {
   // Basic Information
   ageGroup: string;
   incomeRange: string;
   netWorth: string;
+  
   // Knowledge & Experience
   investmentKnowledge: string;
   investmentExperience: string;
-  // Complex Products & Investment Composition
+  
+  // Risk Assessment
   complexProducts: number;
   investmentComposition: number;
-  // Goal-specific answers
+  
+  // Goal-specific data
+  goalInterestLevels: GoalInterestLevels;
+  goalPriorities: string[];
+  goalRiskPreferences: string[];
+  goalHorizons: Record<string, string>;
   riskAppetite: Record<string, string>;
   absoluteRiskTolerance: Record<string, string>;
+  
   // Behavioral
   marketVolatilityResponse: string;
   behavioralBiases: BehavioralBiases;
+}
+
+// Goal Financial Questionnaire
+interface Goal {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
 }
 
 // Animation variants
@@ -77,12 +133,9 @@ const scaleIn = {
 const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [progress, setProgress] = useState(0);
-  const [financialGoals, setFinancialGoals] = useState(defaultFinancialGoals);
+  const [financialGoals, setFinancialGoals] = useState<Goal[]>(defaultFinancialGoals);
   const [customGoal, setCustomGoal] = useState('');
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
-  const [goalPriorities, setGoalPriorities] = useState<Record<string, number>>({});
-  const [goalRisks, setGoalRisks] = useState<Record<string, number>>({});
-  const [goalHorizons, setGoalHorizons] = useState<Record<string, string>>({});
   const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
   const [animateStep, setAnimateStep] = useState(true);
   const [achievementUnlocked, setAchievementUnlocked] = useState<string | null>(null);
@@ -93,15 +146,23 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
     ageGroup: '',
     incomeRange: '',
     netWorth: '',
+    
     // Knowledge & Experience
     investmentKnowledge: '',
     investmentExperience: '',
-    // Complex Products & Investment Composition
+    
+    // Risk Assessment
     complexProducts: 3,
     investmentComposition: 3,
-    // Goal-specific answers
+    
+    // Goal-specific data
+    goalInterestLevels: {},
+    goalPriorities: [],
+    goalRiskPreferences: [],
+    goalHorizons: {},
     riskAppetite: {},
     absoluteRiskTolerance: {},
+    
     // Behavioral
     marketVolatilityResponse: '',
     behavioralBiases: {
@@ -145,7 +206,34 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [currentStep]);
+  }, [currentStep, achievementUnlocked]);
+
+  // Initialize goal-specific data after goal selection
+  useEffect(() => {
+    if (selectedGoals.length > 0 && Object.keys(answers.goalInterestLevels).length === 0) {
+      const initialGoalInterestLevels: GoalInterestLevels = {};
+      const initialGoalHorizons: Record<string, string> = {};
+      const initialRiskAppetite: Record<string, string> = {};
+      const initialRiskTolerance: Record<string, string> = {};
+      
+      selectedGoals.forEach(goalId => {
+        initialGoalInterestLevels[goalId] = interestLevelOptions[0];
+        initialGoalHorizons[goalId] = timeHorizonOptions[1]; // Default to "1 to 3 years"
+        initialRiskAppetite[goalId] = '';
+        initialRiskTolerance[goalId] = '';
+      });
+      
+      setAnswers(prev => ({
+        ...prev,
+        goalInterestLevels: initialGoalInterestLevels,
+        goalHorizons: initialGoalHorizons,
+        goalPriorities: [...selectedGoals],
+        goalRiskPreferences: [...selectedGoals],
+        riskAppetite: initialRiskAppetite,
+        absoluteRiskTolerance: initialRiskTolerance
+      }));
+    }
+  }, [selectedGoals]);
 
   // Handle adding a custom financial goal
   const handleAddCustomGoal = () => {
@@ -156,7 +244,7 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
         icon: <Star className="h-5 w-5" />
       };
       setFinancialGoals([...financialGoals, newGoal]);
-      setSelectedGoals([...selectedGoals, newGoal.name]);
+      setSelectedGoals([...selectedGoals, newGoal.id]);
       setCustomGoal('');
       
       // Award points for creativity
@@ -166,68 +254,72 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
   };
 
   // Handle goal selection
-  const handleGoalSelection = (goal: string, isChecked: boolean) => {
+  const handleGoalSelection = (goalId: string, isChecked: boolean) => {
     if (isChecked) {
-      setSelectedGoals([...selectedGoals, goal]);
+      setSelectedGoals([...selectedGoals, goalId]);
       // Award points for each goal selected
       setPoints(prev => prev + 3);
     } else {
-      setSelectedGoals(selectedGoals.filter(g => g !== goal));
+      setSelectedGoals(selectedGoals.filter(g => g !== goalId));
       // Reduce points for removing goals
       setPoints(prev => Math.max(0, prev - 2));
     }
   };
 
   // Handle moving a goal up in priority
-  const moveGoalUp = (index: number) => {
+  const moveGoalUp = (index: number, priorityType: 'priorities' | 'risks') => {
     if (index <= 0) return;
-    const newSelectedGoals = [...selectedGoals];
-    [newSelectedGoals[index], newSelectedGoals[index - 1]] = 
-    [newSelectedGoals[index - 1], newSelectedGoals[index]];
-    setSelectedGoals(newSelectedGoals);
+    
+    if (priorityType === 'priorities') {
+      const newPriorities = [...answers.goalPriorities];
+      [newPriorities[index], newPriorities[index - 1]] = [newPriorities[index - 1], newPriorities[index]];
+      setAnswers({...answers, goalPriorities: newPriorities});
+    } else {
+      const newRiskPreferences = [...answers.goalRiskPreferences];
+      [newRiskPreferences[index], newRiskPreferences[index - 1]] = [newRiskPreferences[index - 1], newRiskPreferences[index]];
+      setAnswers({...answers, goalRiskPreferences: newRiskPreferences});
+    }
   };
 
   // Handle moving a goal down in priority
-  const moveGoalDown = (index: number) => {
-    if (index >= selectedGoals.length - 1) return;
-    const newSelectedGoals = [...selectedGoals];
-    [newSelectedGoals[index], newSelectedGoals[index + 1]] = 
-    [newSelectedGoals[index + 1], newSelectedGoals[index]];
-    setSelectedGoals(newSelectedGoals);
+  const moveGoalDown = (index: number, priorityType: 'priorities' | 'risks') => {
+    const list = priorityType === 'priorities' 
+      ? answers.goalPriorities
+      : answers.goalRiskPreferences;
+      
+    if (index >= list.length - 1) return;
+    
+    if (priorityType === 'priorities') {
+      const newPriorities = [...answers.goalPriorities];
+      [newPriorities[index], newPriorities[index + 1]] = [newPriorities[index + 1], newPriorities[index]];
+      setAnswers({...answers, goalPriorities: newPriorities});
+    } else {
+      const newRiskPreferences = [...answers.goalRiskPreferences];
+      [newRiskPreferences[index], newRiskPreferences[index + 1]] = [newRiskPreferences[index + 1], newRiskPreferences[index]];
+      setAnswers({...answers, goalRiskPreferences: newRiskPreferences});
+    }
+  };
+
+  // Update goal interest level
+  const updateGoalInterestLevel = (goalId: string, level: string) => {
+    setAnswers({
+      ...answers,
+      goalInterestLevels: {
+        ...answers.goalInterestLevels,
+        [goalId]: level
+      }
+    });
+  };
+  
+  // Function to get goal by ID
+  const getGoalById = (goalId: string): Goal | undefined => {
+    return financialGoals.find(goal => goal.id === goalId);
   };
 
   // Handle form submission
   const handleNextStep = () => {
-    // Special case for step 8 (goal selection) - initialize goal-specific state
-    if (currentStep === 8 && selectedGoals.length > 0) {
-      // Initialize state for goal-specific questions
-      const initialGoalPriorities = {};
-      const initialGoalRisks = {};
-      const initialGoalHorizons = {};
-      const initialRiskAppetite = {};
-      const initialRiskTolerance = {};
-      
-      selectedGoals.forEach((goal, index) => {
-        initialGoalPriorities[goal] = index + 1;
-        initialGoalRisks[goal] = index + 1;
-        initialGoalHorizons[goal] = '1-3 years';
-        initialRiskAppetite[goal] = '';
-        initialRiskTolerance[goal] = '';
-      });
-      
-      setGoalPriorities(initialGoalPriorities);
-      setGoalRisks(initialGoalRisks);
-      setGoalHorizons(initialGoalHorizons);
-      
-      setAnswers({
-        ...answers,
-        riskAppetite: initialRiskAppetite,
-        absoluteRiskTolerance: initialRiskTolerance
-      });
-    }
-
     // Special handling for goal-specific questions
-    if (currentStep === 11 || currentStep === 12 || currentStep === 13) {
+    if ((currentStep === 11 || currentStep === 12 || currentStep === 13) && selectedGoals.length > 0) {
       // If we're not at the last goal yet, stay on this question but move to next goal
       if (currentGoalIndex < selectedGoals.length - 1) {
         setCurrentGoalIndex(currentGoalIndex + 1);
@@ -256,7 +348,7 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
 
   const handlePrevStep = () => {
     // Special handling for goal-specific questions
-    if (currentStep === 11 || currentStep === 12 || currentStep === 13) {
+    if ((currentStep === 11 || currentStep === 12 || currentStep === 13) && selectedGoals.length > 0) {
       // If we're not at the first goal yet, stay on this question but move to previous goal
       if (currentGoalIndex > 0) {
         setCurrentGoalIndex(currentGoalIndex - 1);
@@ -275,17 +367,16 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
     }, 200);
   };
 
-  const updateAnswer = (section: string, value: any) => {
+  const updateAnswer = (section: keyof QuestionnairAnswers, value: any) => {
     setAnswers({
       ...answers,
       [section]: value
     });
   };
 
-  // Fix for the spread type error with proper type handling
+  // Update nested answer (for behavioral biases)
   const updateNestedAnswer = (section: string, subsection: string, value: any) => {
     if (section === 'behavioralBiases') {
-      // Use type assertion to tell TypeScript this is a BehavioralBiases object
       const updatedBiases = {
         ...answers.behavioralBiases,
         [subsection]: value
@@ -296,7 +387,6 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
         behavioralBiases: updatedBiases
       });
     } else if (section === 'riskAppetite' || section === 'absoluteRiskTolerance') {
-      // Handle these record types explicitly
       const updatedRecord = {
         ...answers[section as 'riskAppetite' | 'absoluteRiskTolerance'],
         [subsection]: value
@@ -306,26 +396,22 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
         ...answers,
         [section]: updatedRecord
       });
-    } else {
-      // This should never happen with the current structure, but keep it as a fallback
-      setAnswers(prevState => ({
-        ...prevState,
-        [section]: {
-          ...(prevState[section as keyof typeof prevState] as object || {}),
-          [subsection]: value
-        }
-      }));
     }
   };
 
   // Update goal-specific answer
   const updateGoalAnswer = (answerType: 'riskAppetite' | 'absoluteRiskTolerance', value: string) => {
     const currentGoal = selectedGoals[currentGoalIndex];
+    updateNestedAnswer(answerType, currentGoal, value);
+  };
+
+  // Update time horizon for a goal
+  const updateGoalHorizon = (goalId: string, horizon: string) => {
     setAnswers({
       ...answers,
-      [answerType]: {
-        ...answers[answerType],
-        [currentGoal]: value
+      goalHorizons: {
+        ...answers.goalHorizons,
+        [goalId]: horizon
       }
     });
   };
@@ -340,22 +426,6 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
       default: return "Neutral";
     }
   };
-
-  const getGoalInterestOptions = [
-    "Already planned",
-    "Strongly interested",
-    "Would consider",
-    "Less likely to consider",
-    "Would not consider"
-  ];
-
-  const getTimelineOptions = [
-    "Less than 1 year",
-    "1 to 3 years",
-    "4 to 7 years",
-    "8 to 15 years",
-    "More than 15 years"
-  ];
 
   // Map step number to achievement/reward metaphor
   const getStepAchievement = (step: number) => {
@@ -513,9 +583,10 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
                 >
                   {[
                     { value: "below100k", label: "Below HKD 100,000" },
-                    { value: "200k-500k", label: "HKD 200,000 – HKD 500,000" },
-                    { value: "500k-1m", label: "HKD 500,000 – HKD 1,000,000" },
-                    { value: "1m-2m", label: "HKD 1,000,000 – HKD 2,000,000" },
+                    { value: "100k-200k", label: "HKD 100,000 (inclusive) – HKD 200,000 (exclusive)" },
+                    { value: "200k-500k", label: "HKD 200,000 (inclusive) – HKD 500,000 (inclusive)" },
+                    { value: "500k-1m", label: "HKD 500,000 (exclusive) – HKD 1,000,000 (inclusive)" },
+                    { value: "1m-2m", label: "HKD 1,000,000 (exclusive) – HKD 2,000,000 (inclusive)" },
                     { value: "above2m", label: "Above HKD 2,000,000" }
                   ].map((option, index) => (
                     <motion.div 
@@ -567,9 +638,9 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
                 >
                   {[
                     { value: "below1.5m", label: "Below HKD 1,500,000" },
-                    { value: "1.5m-5m", label: "HKD 1,500,000 – HKD 5,000,000" },
-                    { value: "5m-10m", label: "HKD 5,000,000 – HKD 10,000,000" },
-                    { value: "10m-100m", label: "HKD 10,000,000 – HKD 100,000,000" },
+                    { value: "1.5m-5m", label: "HKD 1,500,000 (inclusive) – HKD 5,000,000 (inclusive)" },
+                    { value: "5m-10m", label: "HKD 5,000,000 (exclusive) – HKD 10,000,000 (inclusive)" },
+                    { value: "10m-100m", label: "HKD 10,000,000 (exclusive) – HKD 100,000,000 (inclusive)" },
                     { value: "above100m", label: "Above HKD 100,000,000" }
                   ].map((option, index) => (
                     <motion.div 
@@ -674,9 +745,9 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
                   {[
                     { value: "A", label: "No experience" },
                     { value: "B", label: "Some experience, but less than 2 years" },
-                    { value: "C", label: "Between 2 years and 5 years" },
-                    { value: "D", label: "Between 5 years and 8 years" },
-                    { value: "E", label: "More than 8 years" }
+                    { value: "C", label: "Between 2 years (inclusive) and 5 years (inclusive)" },
+                    { value: "D", label: "Between 5 years (inclusive) and 8 years (inclusive)" },
+                    { value: "E", label: "More than 8 years (exclusive)" }
                   ].map((option, index) => (
                     <motion.div 
                       key={option.value} 
@@ -748,6 +819,517 @@ const Questionnaire = ({ setCompleted }: QuestionnaireProps) => {
                     </div>
                   </motion.div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 7: Investment Composition */}
+        {currentStep === 7 && (
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(7)} text-white flex items-center justify-center font-bold`}>7</div>
+                  <h2 className="text-xl font-semibold">Investment Composition</h2>
+                </div>
+                
+                <div className="space-y-8">
+                  <motion.div 
+                    className="space-y-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <p className="text-sm font-medium">
+                      "My current portfolio includes significant investments in a single asset class (e.g., stocks, bonds) 
+                      or specific products (e.g., real estate, cryptocurrencies)"
+                    </p>
+
+                    <div className="pt-6">
+                      <Slider 
+                        value={[answers.investmentComposition]} 
+                        min={1}
+                        max={5}
+                        step={1}
+                        onValueChange={(value) => updateAnswer('investmentComposition', value[0])}
+                        className="w-full"
+                      />
+                      
+                      <div className="flex justify-between mt-2 text-xs text-gray-500">
+                        <span>Strongly Disagree</span>
+                        <span>Strongly Agree</span>
+                      </div>
+                      
+                      <div className="text-center mt-4 font-medium">
+                        {getLikertScale(answers.investmentComposition)}
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 8: Future Expense Goals */}
+        {currentStep === 8 && (
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(8)} text-white flex items-center justify-center font-bold`}>8</div>
+                  <h2 className="text-xl font-semibold">Future Expense Goals</h2>
+                </div>
+
+                <p className="text-gray-600 text-sm">
+                  Indicate your level of interest in the following future expense items. Select all that apply to you.
+                </p>
+
+                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                  {financialGoals.map((goal) => (
+                    <motion.div 
+                      key={goal.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all"
+                    >
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className="bg-white p-2 rounded-full shadow-sm">
+                          {goal.icon}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <label htmlFor={`goal-${goal.id}`} className="font-medium cursor-pointer">{goal.name}</label>
+                            <Checkbox 
+                              id={`goal-${goal.id}`}
+                              checked={selectedGoals.includes(goal.id)}
+                              onCheckedChange={(checked) => handleGoalSelection(goal.id, checked === true)}
+                              className="h-5 w-5"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {selectedGoals.includes(goal.id) && (
+                        <div className="ml-10 mt-3">
+                          <p className="text-sm text-gray-600 mb-2">Interest level:</p>
+                          <RadioGroup 
+                            value={answers.goalInterestLevels[goal.id] || interestLevelOptions[0]}
+                            onValueChange={(value) => updateGoalInterestLevel(goal.id, value)}
+                            className="flex flex-wrap gap-2"
+                          >
+                            {interestLevelOptions.map((level) => (
+                              <div 
+                                key={`${goal.id}-${level}`}
+                                className={`px-3 py-1 text-xs rounded-full cursor-pointer transition-colors ${
+                                  answers.goalInterestLevels[goal.id] === level 
+                                    ? 'bg-amber-500 text-white' 
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                }`}
+                              >
+                                <RadioGroupItem 
+                                  value={level} 
+                                  id={`${goal.id}-${level}`} 
+                                  className="sr-only" 
+                                />
+                                <Label htmlFor={`${goal.id}-${level}`} className="cursor-pointer">
+                                  {level}
+                                </Label>
+                              </div>
+                            ))}
+                          </RadioGroup>
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="mt-6 flex items-end gap-2">
+                  <div className="flex-1">
+                    <Label htmlFor="custom-goal" className="text-sm font-medium mb-1 block">
+                      Add a custom financial goal
+                    </Label>
+                    <Input 
+                      id="custom-goal"
+                      placeholder="E.g., Start a business"
+                      value={customGoal}
+                      onChange={(e) => setCustomGoal(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleAddCustomGoal}
+                    disabled={!customGoal}
+                    type="button"
+                    className="h-10"
+                  >
+                    Add Goal
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 9: Financial Priorities */}
+        {currentStep === 9 && selectedGoals.length > 0 && (
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(9)} text-white flex items-center justify-center font-bold`}>9</div>
+                  <h2 className="text-xl font-semibold">Financial Priorities</h2>
+                </div>
+
+                <p className="text-gray-600 text-sm">
+                  Rank your financial goals in the order of least acceptable to fail (most important at the top).
+                  Drag or use arrows to reorder.
+                </p>
+
+                <div className="space-y-2 mt-4">
+                  {answers.goalPriorities.map((goalId, index) => {
+                    const goal = getGoalById(goalId);
+                    if (!goal) return null;
+                    
+                    return (
+                      <motion.div 
+                        key={`priority-${goalId}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="flex items-center gap-2 p-3 bg-white border rounded-lg shadow-sm"
+                      >
+                        <div className="text-lg font-bold w-8 text-center">{index + 1}</div>
+                        <div className="flex-1 flex items-center gap-2">
+                          <div className="p-1.5 bg-gray-100 rounded-full">
+                            {goal.icon}
+                          </div>
+                          <span>{goal.name}</span>
+                        </div>
+                        
+                        <div className="flex items-center">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => moveGoalUp(index, 'priorities')} 
+                            disabled={index === 0}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowUp className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => moveGoalDown(index, 'priorities')} 
+                            disabled={index === answers.goalPriorities.length - 1}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowDown className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 10: Risk Preferences */}
+        {currentStep === 10 && selectedGoals.length > 0 && (
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(10)} text-white flex items-center justify-center font-bold`}>10</div>
+                  <h2 className="text-xl font-semibold">Risk Preferences</h2>
+                </div>
+
+                <p className="text-gray-600 text-sm">
+                  Rank your financial goals in terms of the risk you are willing to take with your investments 
+                  (most risk-tolerant at the top).
+                </p>
+
+                <div className="space-y-2 mt-4">
+                  {answers.goalRiskPreferences.map((goalId, index) => {
+                    const goal = getGoalById(goalId);
+                    if (!goal) return null;
+                    
+                    return (
+                      <motion.div 
+                        key={`risk-${goalId}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="flex items-center gap-2 p-3 bg-white border rounded-lg shadow-sm"
+                      >
+                        <div className="text-lg font-bold w-8 text-center">{index + 1}</div>
+                        <div className="flex-1 flex items-center gap-2">
+                          <div className="p-1.5 bg-gray-100 rounded-full">
+                            {goal.icon}
+                          </div>
+                          <span>{goal.name}</span>
+                        </div>
+                        
+                        <div className="flex items-center">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => moveGoalUp(index, 'risks')} 
+                            disabled={index === 0}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowUp className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => moveGoalDown(index, 'risks')} 
+                            disabled={index === answers.goalRiskPreferences.length - 1}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowDown className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 11: Investment Horizon */}
+        {currentStep === 11 && selectedGoals.length > 0 && (
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(11)} text-white flex items-center justify-center font-bold`}>11</div>
+                  <div>
+                    <h2 className="text-xl font-semibold">Investment Horizon</h2>
+                    <p className="text-sm text-gray-600">
+                      Goal {currentGoalIndex + 1} of {selectedGoals.length}: {getGoalById(selectedGoals[currentGoalIndex])?.name}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-white p-2 rounded-full shadow">
+                      {getGoalById(selectedGoals[currentGoalIndex])?.icon}
+                    </div>
+                    <h3 className="text-lg font-medium">
+                      What is the timeline for <span className="font-bold">{getGoalById(selectedGoals[currentGoalIndex])?.name}</span>?
+                    </h3>
+                  </div>
+                  
+                  <RadioGroup 
+                    value={answers.goalHorizons[selectedGoals[currentGoalIndex]] || timeHorizonOptions[1]}
+                    onValueChange={(value) => updateGoalHorizon(selectedGoals[currentGoalIndex], value)}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-2"
+                  >
+                    {timeHorizonOptions.map((horizon) => (
+                      <div
+                        key={`horizon-${horizon}`}
+                        className={`px-4 py-3 rounded-lg cursor-pointer transition-all ${
+                          answers.goalHorizons[selectedGoals[currentGoalIndex]] === horizon
+                            ? 'bg-green-500 text-white shadow-md' 
+                            : 'bg-white hover:bg-gray-100'
+                        }`}
+                      >
+                        <RadioGroupItem 
+                          value={horizon} 
+                          id={`horizon-${horizon}`} 
+                          className="sr-only" 
+                        />
+                        <Label htmlFor={`horizon-${horizon}`} className="block cursor-pointer text-center">
+                          {horizon}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 12: Risk Appetite */}
+        {currentStep === 12 && selectedGoals.length > 0 && (
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(12)} text-white flex items-center justify-center font-bold`}>12</div>
+                  <div>
+                    <h2 className="text-xl font-semibold">Risk Appetite</h2>
+                    <p className="text-sm text-gray-600">
+                      Goal {currentGoalIndex + 1} of {selectedGoals.length}: {getGoalById(selectedGoals[currentGoalIndex])?.name}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-white p-2 rounded-full shadow">
+                      {getGoalById(selectedGoals[currentGoalIndex])?.icon}
+                    </div>
+                    <h3 className="text-lg font-medium">
+                      Which of the following best describes your risk appetite for <span className="font-bold">{getGoalById(selectedGoals[currentGoalIndex])?.name}</span>?
+                    </h3>
+                  </div>
+
+                  <RadioGroup 
+                    value={answers.riskAppetite[selectedGoals[currentGoalIndex]] || ''}
+                    onValueChange={(value) => updateGoalAnswer('riskAppetite', value)}
+                    className="space-y-3"
+                  >
+                    {[
+                      { value: "A", label: "I am risk-averse, do not want to lose my principal, and prefer to achieve stable returns." },
+                      { value: "B", label: "I prefer to preserve my investments, do not want to lose my principal, but am willing to accept a certain level of income fluctuation." },
+                      { value: "C", label: "I seek higher returns and growth for my capital, and am willing to accept limited losses to my principal." },
+                      { value: "D", label: "I aim for high returns and am willing to bear relatively significant losses to my principal to achieve this." }
+                    ].map((option) => (
+                      <div 
+                        key={`risk-appetite-${option.value}`}
+                        className={`p-4 rounded-lg cursor-pointer transition-all ${
+                          answers.riskAppetite[selectedGoals[currentGoalIndex]] === option.value
+                            ? 'bg-emerald-500 text-white shadow-md' 
+                            : 'bg-white hover:bg-gray-100'
+                        }`}
+                      >
+                        <RadioGroupItem 
+                          value={option.value} 
+                          id={`risk-appetite-${option.value}`} 
+                          className="sr-only" 
+                        />
+                        <Label htmlFor={`risk-appetite-${option.value}`} className="block cursor-pointer">
+                          {option.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 13: Absolute Risk Tolerance */}
+        {currentStep === 13 && selectedGoals.length > 0 && (
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(13)} text-white flex items-center justify-center font-bold`}>13</div>
+                  <div>
+                    <h2 className="text-xl font-semibold">Absolute Risk Tolerance</h2>
+                    <p className="text-sm text-gray-600">
+                      Goal {currentGoalIndex + 1} of {selectedGoals.length}: {getGoalById(selectedGoals[currentGoalIndex])?.name}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-white p-2 rounded-full shadow">
+                      {getGoalById(selectedGoals[currentGoalIndex])?.icon}
+                    </div>
+                    <h3 className="text-lg font-medium">
+                      Which of the following best describes the absolute loss you could tolerate for <span className="font-bold">{getGoalById(selectedGoals[currentGoalIndex])?.name}</span>?
+                    </h3>
+                  </div>
+
+                  <RadioGroup 
+                    value={answers.absoluteRiskTolerance[selectedGoals[currentGoalIndex]] || ''}
+                    onValueChange={(value) => updateGoalAnswer('absoluteRiskTolerance', value)}
+                    className="space-y-3"
+                  >
+                    {[
+                      { value: "A", label: "No loss of principal, but the returns fall short of expectations." },
+                      { value: "B", label: "Loss of principal up to 5% (inclusive)." },
+                      { value: "C", label: "Loss of principal between 5% (exclusive) and 10% (inclusive)." },
+                      { value: "D", label: "Loss of principal between 10% (exclusive) and 15% (inclusive)." },
+                      { value: "E", label: "Loss of principal between 15% (exclusive) and 20% (inclusive)." },
+                      { value: "F", label: "Loss of principal exceeding 30%." }
+                    ].map((option) => (
+                      <div 
+                        key={`risk-tolerance-${option.value}`}
+                        className={`p-4 rounded-lg cursor-pointer transition-all ${
+                          answers.absoluteRiskTolerance[selectedGoals[currentGoalIndex]] === option.value
+                            ? 'bg-teal-500 text-white shadow-md' 
+                            : 'bg-white hover:bg-gray-100'
+                        }`}
+                      >
+                        <RadioGroupItem 
+                          value={option.value} 
+                          id={`risk-tolerance-${option.value}`} 
+                          className="sr-only" 
+                        />
+                        <Label htmlFor={`risk-tolerance-${option.value}`} className="block cursor-pointer">
+                          {option.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 14: Behavioral Response to Market Volatility */}
+        {currentStep === 14 && (
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(14)} text-white flex items-center justify-center font-bold`}>14</div>
+                  <h2 className="text-xl font-semibold">Behavioral Response to Market Volatility</h2>
+                </div>
+                
+                <p className="text-gray-600 text-sm">
+                  Imagine your investment portfolio drops by 15% in a short period due to market volatility. 
+                  How would you respond?
+                </p>
+
+                <RadioGroup 
+                  className="grid gap-4"
+                  value={answers.marketVolatilityResponse} 
+                  onValueChange={(value) => updateAnswer('marketVolatilityResponse', value)}
+                >
+                  {[
+                    { value: "A", label: "Sell all investments to prevent further losses." },
+                    { value: "B", label: "Sell a portion of investments to reduce exposure." },
+                    { value: "C", label: "Hold all investments, anticipating a market rebound." },
+                    { value: "D", label: "Invest additional funds to capitalize on lower prices." }
+                  ].map((option, index) => (
+                    <motion.div 
+                      key={option.value} 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all ${
+                        answers.marketVolatilityResponse === option.value ? 
+                          'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-md' : 
+                          'bg-gray-50 hover:bg-gray-100'
+                      }`}>
+                        <RadioGroupItem 
+                          value={option.value} 
+                          id={`volatility-${option.value}`} 
+                          className="sr-only"
+                        />
+                        <Label htmlFor={`volatility-${option.value}`} className="block cursor-pointer">
+                          {option.label}
+                        </Label>
+                      </div>
+                    </motion.div>
+                  ))}
+                </RadioGroup>
               </div>
             </CardContent>
           </Card>

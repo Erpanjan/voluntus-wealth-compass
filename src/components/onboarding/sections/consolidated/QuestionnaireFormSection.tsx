@@ -34,14 +34,50 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
       return 0;
     }
     
-    // Calculate based on filled answers
-    // Assuming we have 5 main questions in questionnaire (adjust according to actual questionnaire)
-    const totalQuestions = 5;
-    const answeredQuestions = Object.keys(questionnaireData.answers).filter(
-      key => questionnaireData.answers[key] !== undefined && questionnaireData.answers[key] !== ''
-    ).length;
+    // Calculate based on filled answers for main categories
+    const requiredCategories = [
+      'ageGroup',
+      'incomeRange',
+      'netWorth',
+      'investmentKnowledge',
+      'investmentExperience',
+      'marketVolatilityResponse'
+    ];
     
-    return Math.round((answeredQuestions / totalQuestions) * 100);
+    let completedCategories = 0;
+    let totalCategories = requiredCategories.length;
+    
+    // Check main categories
+    requiredCategories.forEach(category => {
+      if (questionnaireData.answers[category]) completedCategories++;
+    });
+    
+    // Check if any goals were selected 
+    if (
+      questionnaireData.answers.goalPriorities && 
+      Array.isArray(questionnaireData.answers.goalPriorities) && 
+      questionnaireData.answers.goalPriorities.length > 0
+    ) {
+      completedCategories++;
+      totalCategories++;
+      
+      // Check if goal-specific questions are answered
+      const goalIds = questionnaireData.answers.goalPriorities;
+      const goalSpecificCategories = ['goalHorizons', 'riskAppetite', 'absoluteRiskTolerance'];
+      
+      goalSpecificCategories.forEach(category => {
+        totalCategories++;
+        if (
+          questionnaireData.answers[category] && 
+          Object.keys(questionnaireData.answers[category]).length > 0 &&
+          goalIds.some(id => questionnaireData.answers[category][id])
+        ) {
+          completedCategories++;
+        }
+      });
+    }
+    
+    return Math.round((completedCategories / totalCategories) * 100);
   };
   
   const completionPercentage = calculateCompletionPercentage();
@@ -54,7 +90,7 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
         completed: true
       });
     }
-  }, [completionPercentage, questionnaireData]);
+  }, [completionPercentage, questionnaireData, updateQuestionnaireData]);
   
   return (
     <div className="space-y-6">

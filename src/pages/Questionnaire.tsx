@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft } from 'lucide-react';
 
-// Import the existing Questionnaire component
+// Import the Questionnaire component
 import QuestionnaireComponent from '@/components/onboarding/Questionnaire';
 
 const Questionnaire = () => {
@@ -29,9 +29,22 @@ const Questionnaire = () => {
       const parsedData = JSON.parse(savedData);
       if (parsedData?.questionnaire?.completed) return 100;
       if (parsedData?.questionnaire?.answers) {
-        // Calculate based on number of answers (simple approximation)
-        const answerCount = Object.keys(parsedData.questionnaire.answers).length;
-        return Math.min(Math.round((answerCount / 5) * 100), 99); // Max 99% until marked complete
+        // Calculate based on number of answered categories
+        const answers = parsedData.questionnaire.answers;
+        const mainCategories = ['ageGroup', 'incomeRange', 'netWorth', 'investmentKnowledge', 'investmentExperience'];
+        let completedCategories = mainCategories.filter(key => answers[key]).length;
+        
+        // Check if goals are selected
+        if (answers.goalPriorities && answers.goalPriorities.length > 0) {
+          completedCategories++;
+          
+          // Check goal specific questions
+          if (answers.riskAppetite && Object.keys(answers.riskAppetite).length > 0) completedCategories++;
+          if (answers.absoluteRiskTolerance && Object.keys(answers.absoluteRiskTolerance).length > 0) completedCategories++;
+          if (answers.goalHorizons && Object.keys(answers.goalHorizons).length > 0) completedCategories++;
+        }
+        
+        return Math.min(Math.round((completedCategories / 10) * 100), 99);
       }
     }
     return 0;
@@ -40,11 +53,7 @@ const Questionnaire = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Effect to track progress from the questionnaire component
-  const trackProgress = (newProgress: number) => {
-    setProgress(newProgress);
-  };
-
+  // Update questionnaire completion in localStorage
   const handleCompletion = () => {
     // Update localStorage with completed questionnaire status
     const savedData = localStorage.getItem('onboardingDraft');
@@ -73,6 +82,14 @@ const Questionnaire = () => {
     });
     
     setTimeout(() => navigate('/onboarding'), 1500);
+  };
+
+  // Handle questionnaire completion
+  const handleQuestionnaireCompleted = (completed: boolean) => {
+    setIsCompleted(completed);
+    if (completed) {
+      handleCompletion();
+    }
   };
 
   return (
@@ -112,8 +129,8 @@ const Questionnaire = () => {
             </div>
           </motion.div>
 
-          {/* Pass trackProgress to the Questionnaire component */}
-          <QuestionnaireComponent setCompleted={setIsCompleted} />
+          {/* Pass setCompleted to the Questionnaire component */}
+          <QuestionnaireComponent setCompleted={handleQuestionnaireCompleted} />
 
           <motion.div 
             className="flex justify-end mt-8"
