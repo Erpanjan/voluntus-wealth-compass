@@ -1,11 +1,14 @@
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import confetti from 'canvas-confetti';
+import { motion } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft } from 'lucide-react';
 
-// Import the Questionnaire component
+// Import the existing Questionnaire component
 import QuestionnaireComponent from '@/components/onboarding/Questionnaire';
 
 const Questionnaire = () => {
@@ -26,24 +29,9 @@ const Questionnaire = () => {
       const parsedData = JSON.parse(savedData);
       if (parsedData?.questionnaire?.completed) return 100;
       if (parsedData?.questionnaire?.answers) {
-        // Calculate based on number of answered categories
-        const answers = parsedData.questionnaire.answers;
-        const mainCategories = [
-          'ageGroup', 'incomeRange', 'netWorth', 'investmentKnowledge', 
-          'investmentExperience', 'complexProductsSuitability', 'investmentComposition',
-          'futureExpenseGoals', 'financialPriorities', 'riskPreferences',
-          'behavioralBiases'
-        ];
-        
-        let completedCount = mainCategories.filter(key => answers[key]).length;
-        
-        // Check goal-specific questions
-        if (answers.goalHorizons && Object.keys(answers.goalHorizons).length > 0) completedCount++;
-        if (answers.riskAppetite && Object.keys(answers.riskAppetite).length > 0) completedCount++;
-        if (answers.absoluteRiskTolerance && Object.keys(answers.absoluteRiskTolerance).length > 0) completedCount++;
-        if (answers.marketVolatilityResponse) completedCount++;
-        
-        return Math.min(Math.round((completedCount / 15) * 100), 99);
+        // Calculate based on number of answers (simple approximation)
+        const answerCount = Object.keys(parsedData.questionnaire.answers).length;
+        return Math.min(Math.round((answerCount / 5) * 100), 99); // Max 99% until marked complete
       }
     }
     return 0;
@@ -52,7 +40,11 @@ const Questionnaire = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Update questionnaire completion in localStorage
+  // Effect to track progress from the questionnaire component
+  const trackProgress = (newProgress: number) => {
+    setProgress(newProgress);
+  };
+
   const handleCompletion = () => {
     // Update localStorage with completed questionnaire status
     const savedData = localStorage.getItem('onboardingDraft');
@@ -73,27 +65,25 @@ const Questionnaire = () => {
       description: "Thank you for completing the financial questionnaire. Your answers will help us provide better financial advice.",
     });
     
-    // Navigate back to onboarding page
-    navigate('/onboarding');
-  };
-
-  // Function to update progress state when questionnaire is updated
-  const handleProgressUpdate = (percent: number) => {
-    setProgress(percent);
-  };
-
-  // Handle questionnaire completion
-  const handleQuestionnaireCompleted = (completed: boolean) => {
-    setIsCompleted(completed);
-    if (completed) {
-      handleCompletion();
-    }
+    // Trigger confetti effect
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+    
+    setTimeout(() => navigate('/onboarding'), 1500);
   };
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header with progress */}
-      <header className="border-b py-4">
+      <motion.header 
+        className="border-b py-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="container mx-auto px-6">
           <div className="flex justify-between items-center mb-2">
             <div className="flex items-center">
@@ -106,24 +96,31 @@ const Questionnaire = () => {
           </div>
           <Progress value={progress} className="h-1.5" />
         </div>
-      </header>
+      </motion.header>
 
       {/* Main content */}
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-6">
+          <motion.div 
+            className="mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <div className="flex items-center mb-4">
               <h1 className="text-2xl font-semibold">Financial Questionnaire</h1>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Pass props to the Questionnaire component */}
-          <QuestionnaireComponent 
-            setCompleted={handleQuestionnaireCompleted}
-            updateProgress={handleProgressUpdate}
-          />
+          {/* Pass trackProgress to the Questionnaire component */}
+          <QuestionnaireComponent setCompleted={setIsCompleted} />
 
-          <div className="flex justify-end mt-8">
+          <motion.div 
+            className="flex justify-end mt-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
             <Button 
               onClick={handleCompletion}
               disabled={!isCompleted}
@@ -131,7 +128,7 @@ const Questionnaire = () => {
             >
               Complete & Return to Onboarding
             </Button>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

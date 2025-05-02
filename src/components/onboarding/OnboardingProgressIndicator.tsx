@@ -19,7 +19,7 @@ const OnboardingProgressIndicator: React.FC<OnboardingProgressIndicatorProps> = 
         <span>Step {currentStep + 1} of {totalSteps}</span>
         <span>{Math.round(progressPercentage)}% Complete</span>
       </div>
-      <Progress value={progressPercentage} className="h-2 bg-gray-200" />
+      <Progress value={progressPercentage} className="h-2" />
     </div>
   );
 };

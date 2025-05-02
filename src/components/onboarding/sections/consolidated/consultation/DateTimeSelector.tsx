@@ -1,124 +1,133 @@
 
-import React, { useState, useEffect } from 'react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
-import CalendarSelector from './CalendarSelector';
-import TimeInput from './TimeInput';
-import { useTimeValidation } from '@/hooks/useTimeValidation';
-import { useIsMobile } from '@/hooks/use-mobile';
+import React, { useState } from 'react';
+import { Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface DateTimeSelectorProps {
   selectedDate: Date | undefined;
-  selectedStartTime: string;
-  selectedEndTime: string;
+  selectedTime: string;
   onDateChange: (date: Date | undefined) => void;
-  onTimeRangeChange: (startTime: string, endTime: string) => void;
+  onTimeChange: (time: string) => void;
 }
 
 const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
   selectedDate,
-  selectedStartTime,
-  selectedEndTime,
+  selectedTime,
   onDateChange,
-  onTimeRangeChange
+  onTimeChange
 }) => {
-  const { toast } = useToast();
-  const isMobile = useIsMobile();
-  const [startTime, setStartTime] = useState(selectedStartTime);
-  const [endTime, setEndTime] = useState(selectedEndTime);
-  
-  const {
-    timeError,
-    validateAndUpdateTimes,
-    getReadableTimeFormat,
-    getDurationText,
-    timeRegex
-  } = useTimeValidation(selectedStartTime, selectedEndTime, onTimeRangeChange);
+  // Available times for scheduling, organized by time periods with expanded range
+  const availableTimes = [
+    {
+      label: 'Morning',
+      times: [
+        { value: '07:00', label: '7:00 AM' },
+        { value: '08:00', label: '8:00 AM' },
+        { value: '09:00', label: '9:00 AM' },
+        { value: '10:00', label: '10:00 AM' },
+        { value: '11:00', label: '11:00 AM' },
+      ]
+    },
+    {
+      label: 'Afternoon',
+      times: [
+        { value: '12:00', label: '12:00 PM' },
+        { value: '13:00', label: '1:00 PM' },
+        { value: '14:00', label: '2:00 PM' },
+        { value: '15:00', label: '3:00 PM' },
+        { value: '16:00', label: '4:00 PM' },
+        { value: '17:00', label: '5:00 PM' },
+      ]
+    },
+    {
+      label: 'Evening',
+      times: [
+        { value: '18:00', label: '6:00 PM' },
+        { value: '19:00', label: '7:00 PM' },
+        { value: '20:00', label: '8:00 PM' },
+        { value: '21:00', label: '9:00 PM' },
+        { value: '22:00', label: '10:00 PM' },
+      ]
+    }
+  ];
 
-  // Handle start time input change
-  const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setStartTime(value);
-    
-    if (value && !timeRegex.test(value)) {
-      return;
-    }
-    
-    if (timeRegex.test(value)) {
-      validateAndUpdateTimes(value, endTime);
-    }
+  // Get readable format for selected date
+  const getReadableDateFormat = () => {
+    if (!selectedDate) return '';
+    return format(selectedDate, 'EEEE, MMMM d, yyyy');
   };
-
-  // Handle end time input change
-  const handleEndTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEndTime(value);
-    
-    if (value && !timeRegex.test(value)) {
-      return;
-    }
-    
-    if (timeRegex.test(value)) {
-      validateAndUpdateTimes(startTime, value);
-    }
-  };
-
-  // Initialize form with existing values
-  useEffect(() => {
-    setStartTime(selectedStartTime);
-  }, [selectedStartTime]);
-  
-  useEffect(() => {
-    setEndTime(selectedEndTime);
-  }, [selectedEndTime]);
 
   return (
     <div>
-      <h3 className={`${isMobile ? 'text-xl' : 'text-lg'} font-medium mb-2`}>Select Date & Time</h3>
+      <h3 className="text-lg font-medium mb-2">Select Date & Time</h3>
       <p className="text-sm text-gray-500 mb-4">
         Choose a convenient date and time for your consultation.
       </p>
-      
-      <div className="space-y-6">
+      <div className="flex flex-col md:flex-row gap-4">
         {/* Date Selector */}
-        <CalendarSelector 
-          selectedDate={selectedDate} 
-          onDateChange={onDateChange} 
-        />
+        <div className="flex-1">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !selectedDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? getReadableDateFormat() : <span>Select a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={onDateChange}
+                disabled={(date) => date < new Date()}
+                initialFocus
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
         
-        {selectedDate && (
-          <div className="space-y-4">
-            <div className={`flex flex-col ${!isMobile ? 'sm:flex-row' : ''} gap-4`}>
-              {/* Start Time Input */}
-              <TimeInput
-                label="Start Time"
-                value={startTime}
-                onChange={handleStartTimeChange}
-                readableFormat={startTime && timeRegex.test(startTime) ? getReadableTimeFormat(startTime) : undefined}
-              />
-              
-              {/* End Time Input */}
-              <TimeInput
-                label="End Time"
-                value={endTime}
-                onChange={handleEndTimeChange}
-                readableFormat={endTime && timeRegex.test(endTime) ? getReadableTimeFormat(endTime) : undefined}
-              />
-            </div>
-            
-            {timeError && (
-              <Alert variant="warning" className={`${isMobile ? 'p-3' : ''}`}>
-                <AlertDescription className={`${isMobile ? 'text-sm' : ''}`}>{timeError}</AlertDescription>
-              </Alert>
-            )}
-            
-            {!timeError && timeRegex.test(startTime) && timeRegex.test(endTime) && (
-              <p className={`${isMobile ? 'text-base' : 'text-sm'} text-gray-500`}>
-                Consultation duration: {getDurationText(startTime, endTime)}
-              </p>
-            )}
-          </div>
-        )}
+        {/* Time Selector */}
+        <div className="flex-1">
+          <Select value={selectedTime} onValueChange={onTimeChange}>
+            <SelectTrigger className="w-full">
+              <div className="flex items-center">
+                <Clock className="mr-2 h-4 w-4" />
+                <SelectValue placeholder="Select a time" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              {availableTimes.map(group => (
+                <SelectGroup key={group.label}>
+                  <SelectLabel>{group.label}</SelectLabel>
+                  {group.times.map(time => (
+                    <SelectItem key={time.value} value={time.value}>
+                      {time.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );

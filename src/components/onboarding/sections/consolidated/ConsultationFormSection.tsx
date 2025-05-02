@@ -3,15 +3,15 @@ import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import ConsultationTypeSelector from './consultation/ConsultationTypeSelector';
 import DateTimeSelector from './consultation/DateTimeSelector';
-import { useIsMobile } from '@/hooks/use-mobile';
+import ConsultationConfirmation from './consultation/ConsultationConfirmation';
+import { getReadableDateFormat, getReadableTimeFormat, getAvailableTimes } from './consultation/utils';
 
 interface ConsultationFormSectionProps {
   consultationData: {
     completed: boolean;
     type: string;
     date: string;
-    startTime: string;
-    endTime: string;
+    time: string;
   };
   updateConsultationData: (data: Partial<ConsultationFormSectionProps['consultationData']>) => void;
 }
@@ -21,41 +21,43 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
   updateConsultationData
 }) => {
   const { toast } = useToast();
-  const isMobile = useIsMobile();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     consultationData.date ? new Date(consultationData.date) : undefined
   );
   
+  // Available times for scheduling reference
+  const availableTimes = getAvailableTimes();
+
   // Handle consultation type selection
   const handleTypeSelection = (type: string) => {
     updateConsultationData({ type });
-    checkCompletionStatus(type, consultationData.date, consultationData.startTime, consultationData.endTime);
   };
 
   // Handle date selection from calendar
   const handleDateSelection = (date: Date | undefined) => {
     if (date) {
-      const dateStr = date.toISOString().split('T')[0];
       setSelectedDate(date);
-      updateConsultationData({ date: dateStr });
-      checkCompletionStatus(consultationData.type, dateStr, consultationData.startTime, consultationData.endTime);
+      updateConsultationData({ date: date.toISOString().split('T')[0] });
     }
   };
 
-  // Handle time range selection
-  const handleTimeRangeSelection = (startTime: string, endTime: string) => {
-    updateConsultationData({ startTime, endTime });
-    checkCompletionStatus(consultationData.type, consultationData.date, startTime, endTime);
-  };
-
-  // Helper to check if all required fields are filled
-  const checkCompletionStatus = (type: string, date: string, startTime: string, endTime: string) => {
-    const isComplete = Boolean(type && date && startTime && endTime);
-    updateConsultationData({ completed: isComplete });
+  // Handle time selection
+  const handleTimeSelection = (time: string) => {
+    updateConsultationData({ time });
+    
+    // Auto-complete the consultation when type, date, and time are all selected
+    if (consultationData.type && selectedDate) {
+      updateConsultationData({ completed: true });
+      
+      toast({
+        title: "Consultation Scheduled",
+        description: `Your ${consultationData.type === 'virtual' ? 'Virtual Meeting' : 'In-Person Meeting'} consultation has been scheduled for ${getReadableDateFormat(selectedDate)} at ${getReadableTimeFormat(time, availableTimes)}.`,
+      });
+    }
   };
 
   return (
-    <div className={`space-y-${isMobile ? '6' : '8'}`}>
+    <div className="space-y-8">
       {/* Consultation Type Selection */}
       <ConsultationTypeSelector 
         selectedType={consultationData.type}
@@ -66,10 +68,18 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
       {consultationData.type && (
         <DateTimeSelector
           selectedDate={selectedDate}
-          selectedStartTime={consultationData.startTime}
-          selectedEndTime={consultationData.endTime}
+          selectedTime={consultationData.time}
           onDateChange={handleDateSelection}
-          onTimeRangeChange={handleTimeRangeSelection}
+          onTimeChange={handleTimeSelection}
+        />
+      )}
+
+      {/* Confirmation Display */}
+      {consultationData.completed && (
+        <ConsultationConfirmation
+          consultationType={consultationData.type}
+          dateText={getReadableDateFormat(selectedDate)}
+          timeText={getReadableTimeFormat(consultationData.time, availableTimes)}
         />
       )}
     </div>

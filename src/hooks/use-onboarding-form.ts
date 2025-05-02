@@ -21,8 +21,7 @@ export interface OnboardingFormData {
     completed: boolean;
     type: string;
     date: string;
-    startTime: string;
-    endTime: string;
+    time: string;
   };
 }
 
@@ -47,8 +46,7 @@ export function useOnboardingForm() {
       completed: false,
       type: '',
       date: '',
-      startTime: '',
-      endTime: '',
+      time: '',
     },
   };
 
@@ -61,19 +59,6 @@ export function useOnboardingForm() {
   useEffect(() => {
     localStorage.setItem('onboardingDraft', JSON.stringify(formData));
   }, [formData]);
-
-  // Check if consultation is complete
-  useEffect(() => {
-    if (formData.consultation.type && 
-        formData.consultation.date && 
-        formData.consultation.startTime && 
-        formData.consultation.endTime) {
-      updateConsultationData({ completed: true });
-    } else if (formData.consultation.completed) {
-      // If any required field is missing but completion is marked true, update it
-      updateConsultationData({ completed: false });
-    }
-  }, [formData.consultation.type, formData.consultation.date, formData.consultation.startTime, formData.consultation.endTime]);
 
   // Update individual form sections
   const updateProfileData = (profileData: Partial<OnboardingFormData['profile']>) => {
