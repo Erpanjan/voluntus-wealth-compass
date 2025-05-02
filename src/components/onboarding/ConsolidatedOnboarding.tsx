@@ -1,16 +1,14 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { OnboardingFormData } from '@/hooks/use-onboarding-form';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import ProfileFormSection from './sections/consolidated/ProfileFormSection';
 import QuestionnaireFormSection from './sections/consolidated/QuestionnaireFormSection';
 import ConsultationFormSection from './sections/consolidated/ConsultationFormSection';
-import OnboardingReview from './sections/consolidated/OnboardingReview';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
+import { useSectionTracking } from '@/hooks/use-section-tracking';
+import BottomActionBar from './components/BottomActionBar';
+import PreviewDialog from './components/PreviewDialog';
 
 interface ConsolidatedOnboardingProps {
   formData: OnboardingFormData;
@@ -31,14 +29,15 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
 }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState(0);
   
-  // References to each section for Intersection Observer
-  const profileSectionRef = useRef<HTMLDivElement>(null);
-  const questionnaireSectionRef = useRef<HTMLDivElement>(null);
-  const consultationSectionRef = useRef<HTMLDivElement>(null);
+  // Get section refs and tracking from custom hook
+  const { 
+    activeSection,
+    profileSectionRef,
+    questionnaireSectionRef,
+    consultationSectionRef
+  } = useSectionTracking();
   
   // Check if required profile fields are filled
   const isProfileComplete = Boolean(
@@ -47,41 +46,6 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
     formData.profile.email && 
     formData.profile.phone
   );
-  
-  // Setup Intersection Observer for scroll tracking
-  useEffect(() => {
-    const options = {
-      root: null, // Use viewport as root
-      rootMargin: '-10% 0px -70% 0px', // Trigger when element is 10% from the top and 30% from the bottom
-      threshold: 0 // Trigger when any part of the element is visible
-    };
-    
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          if (entry.target === profileSectionRef.current) {
-            setActiveSection(0);
-          } else if (entry.target === questionnaireSectionRef.current) {
-            setActiveSection(1);
-          } else if (entry.target === consultationSectionRef.current) {
-            setActiveSection(2);
-          }
-        }
-      });
-    };
-    
-    const observer = new IntersectionObserver(observerCallback, options);
-    
-    if (profileSectionRef.current) observer.observe(profileSectionRef.current);
-    if (questionnaireSectionRef.current) observer.observe(questionnaireSectionRef.current);
-    if (consultationSectionRef.current) observer.observe(consultationSectionRef.current);
-    
-    return () => {
-      if (profileSectionRef.current) observer.unobserve(profileSectionRef.current);
-      if (questionnaireSectionRef.current) observer.unobserve(questionnaireSectionRef.current);
-      if (consultationSectionRef.current) observer.unobserve(consultationSectionRef.current);
-    };
-  }, [profileSectionRef.current, questionnaireSectionRef.current, consultationSectionRef.current]);
   
   const handlePreview = () => {
     // Check if required fields are filled
@@ -152,42 +116,19 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
       </div>
       
       {/* Fixed Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-4 px-6 z-[100]">
-        <div className="max-w-5xl mx-auto flex justify-between items-center">
-          <Button variant="outline" onClick={handleSaveDraft}>
-            Save Draft
-          </Button>
-          
-          <div className="flex gap-3">
-            <Button variant="secondary" onClick={handlePreview}>
-              Preview
-            </Button>
-            <Button onClick={handleSubmitForm}>
-              Submit Application
-            </Button>
-          </div>
-        </div>
-      </div>
+      <BottomActionBar
+        handleSaveDraft={handleSaveDraft}
+        handlePreview={handlePreview}
+        handleSubmit={handleSubmitForm}
+      />
       
       {/* Preview Dialog */}
-      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">Review Your Application</DialogTitle>
-          </DialogHeader>
-          
-          <OnboardingReview formData={formData} />
-          
-          <DialogFooter className="pt-6">
-            <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>
-              Close
-            </Button>
-            <Button onClick={handleSubmitForm}>
-              Submit Application
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <PreviewDialog
+        isOpen={isPreviewOpen}
+        setIsOpen={setIsPreviewOpen}
+        formData={formData}
+        handleSubmit={handleSubmitForm}
+      />
     </div>
   );
 };
