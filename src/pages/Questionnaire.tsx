@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -22,6 +23,72 @@ const Questionnaire = () => {
   const questionnaireFormRef = useRef<{ saveProgress: () => Promise<boolean> }>(null);
   // Add a ready state to help prevent loading flicker
   const [isReady, setIsReady] = useState(false);
+  // Track answered questions for progress calculation
+  const [answeredQuestions, setAnsweredQuestions] = useState(0);
+
+  // Calculate the completion percentage based on current step and answers
+  const calculateCompletion = () => {
+    // Get the questionnaire answers from local storage
+    try {
+      const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
+      if (savedQuestionnaire) {
+        const savedData = JSON.parse(savedQuestionnaire);
+        
+        // Count how many questions have been answered
+        let count = 0;
+        
+        // Basic questions count
+        const basicKeys = [
+          'ageGroup', 'income', 'netWorth', 'investmentKnowledge',
+          'investmentExperience', 'complexProducts', 'investmentComposition',
+          'behavioralBiases'
+        ];
+        
+        count += basicKeys.filter(key => 
+          savedData[key] !== undefined && 
+          savedData[key] !== null && 
+          savedData[key] !== ''
+        ).length;
+        
+        // Handle goals section
+        if (savedData.goals && Array.isArray(savedData.goals) && savedData.goals.length > 0) {
+          count += 1;
+          
+          // Check goal priorities
+          if (savedData.goalPriorities && savedData.goalPriorities.length > 0) {
+            count += 1;
+          }
+          
+          // Goal details count
+          if (savedData.goalDetails && typeof savedData.goalDetails === 'object') {
+            count += Math.min(3, Object.keys(savedData.goalDetails).length);
+          }
+        }
+        
+        // Risk preferences
+        if (savedData.riskPreferences) {
+          const riskKeys = ['riskTolerance', 'investmentTimeframe', 'marketResponse'];
+          count += riskKeys.filter(key => 
+            savedData.riskPreferences && 
+            savedData.riskPreferences[key]
+          ).length;
+        }
+        
+        setAnsweredQuestions(count);
+        return count;
+      }
+    } catch (e) {
+      console.error('Error calculating completion:', e);
+    }
+    
+    // Default to current step as fallback
+    return Math.max(1, currentStep);
+  };
+
+  // Update answered questions count when step changes
+  useEffect(() => {
+    calculateCompletion();
+  }, [currentStep]);
 
   // Check authentication status and load previous step
   useEffect(() => {
@@ -39,6 +106,9 @@ const Questionnaire = () => {
               const lastStep = Math.min(Number(savedData.lastCompletedStep) || 0, totalSteps - 1);
               if (isMounted) setCurrentStep(lastStep);
             }
+            
+            // Calculate initial answered questions
+            calculateCompletion();
           } catch (e) {
             console.error('Error parsing saved questionnaire data:', e);
           }
@@ -107,6 +177,9 @@ const Questionnaire = () => {
           const savedData = savedQuestionnaire ? JSON.parse(savedQuestionnaire) : {};
           savedData.lastCompletedStep = Math.max(savedData.lastCompletedStep || 0, newStep);
           localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
+          
+          // Recalculate completion after saving
+          calculateCompletion();
         } catch (e) {
           console.error('Error saving step progress:', e);
         }
@@ -162,6 +235,9 @@ const Questionnaire = () => {
         const saved = await questionnaireFormRef.current.saveProgress();
         setSubmitted(false); // Remove loading state after save attempt
         
+        // Recalculate completion after saving
+        calculateCompletion();
+        
         if (saved) {
           toast({
             title: "Progress Saved",
@@ -203,6 +279,9 @@ const Questionnaire = () => {
       setSubmitted(false); // Remove loading state on error
     }
   };
+
+  // Calculate completion percentage for progress indicator
+  const progressPercentage = Math.min(100, Math.round((answeredQuestions / totalSteps) * 100));
 
   // Show loading state for initial data fetch
   if (loadingInitial) {
@@ -265,7 +344,13 @@ const Questionnaire = () => {
               Back to Onboarding
             </Button>
           </div>
-          <OnboardingProgressIndicator currentStep={currentStep} totalSteps={totalSteps} />
+          <div className="w-full my-4">
+            <div className="flex justify-between text-sm text-gray-500 mb-1">
+              <span>Step {currentStep + 1} of {totalSteps}</span>
+              <span>{progressPercentage}% Complete</span>
+            </div>
+            <Progress value={progressPercentage} className="h-2" />
+          </div>
         </div>
       </motion.header>
 
