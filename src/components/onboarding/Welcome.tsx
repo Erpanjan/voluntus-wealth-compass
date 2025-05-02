@@ -74,8 +74,7 @@ const Welcome = () => {
             <h3 className="text-xl font-semibold">Schedule a Consultation</h3>
           </div>
           <p className="text-gray-600">
-            Book a session with one of our advisors. We'll have an in-depth conversation about your 
-            financial situation and verify key details.
+            Book a session with our advisor. Knowing your financial circumstances is central to what we do.
           </p>
         </motion.div>
       </motion.div>
