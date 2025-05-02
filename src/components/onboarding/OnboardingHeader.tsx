@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
 interface OnboardingHeaderProps {
   currentStep: number;
@@ -18,8 +19,16 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('isAdminMode');
     
-    // Redirect to login
-    navigate('/login');
+    // Sign out from Supabase
+    supabase.auth.signOut();
+    
+    // Add transition effect to the body
+    document.body.classList.add('login-transition');
+    
+    // Redirect to login after a short delay to allow animation to play
+    setTimeout(() => {
+      navigate('/login');
+    }, 300); // Match this with the CSS animation duration in animations.css
   };
   
   return (
