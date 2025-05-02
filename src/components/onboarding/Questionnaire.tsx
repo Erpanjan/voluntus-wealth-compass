@@ -23,8 +23,7 @@ import {
   GoalRiskAppetiteQuestion,
   GoalRiskToleranceQuestion,
   MarketVolatilityQuestion,
-  BehavioralBiasQuestion,
-  GoalPriorityQuestion
+  BehavioralBiasQuestion
 } from './questionnaire/questions';
 import { getGoalById } from './questionnaire/utils';
 
@@ -72,11 +71,9 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     }
   });
   
-  // Total steps in questionnaire
-  const totalSteps = 15;
-  
   // Update progress when current step changes
   useEffect(() => {
+    const totalSteps = 15;
     const currentProgress = Math.round((currentStep / totalSteps) * 100);
     setProgress(currentProgress);
     
@@ -131,22 +128,6 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     }
   };
 
-  // Handle reordering goal priorities
-  const handleReorderGoals = (newOrder: string[]) => {
-    setAnswers(prev => ({
-      ...prev,
-      goalPriorities: newOrder
-    }));
-  };
-
-  // Handle reordering risk preferences
-  const handleReorderRiskPreferences = (newOrder: string[]) => {
-    setAnswers(prev => ({
-      ...prev,
-      goalRiskPreferences: newOrder
-    }));
-  };
-
   // Update a simple answer
   const updateAnswer = (section: keyof QuestionnaireAnswers, value: any) => {
     setAnswers({
@@ -170,7 +151,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     }
     
     // Move to next step
-    if (currentStep < totalSteps) {
+    if (currentStep < 15) {
       setCurrentStep(currentStep + 1);
     } else {
       setCompleted(true);
@@ -273,8 +254,8 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
         return (
           <SliderQuestion
             questionNumber={6}
-            title="Complex Products Suitability"
-            description="I feel confident investing in complex financial products such as derivatives, structured notes, or leveraged instruments, even if they require advanced financial knowledge to understand the risks."
+            title="Complex Financial Products"
+            description="How comfortable are you with complex financial products like derivatives, futures, and options?"
             value={answers.complexProducts}
             onChange={(value) => updateAnswer('complexProducts', value)}
           />
@@ -285,7 +266,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
           <SliderQuestion
             questionNumber={7}
             title="Investment Composition"
-            description="My current portfolio includes significant investments in a single asset class (e.g., stocks, bonds) or specific products (e.g., real estate, cryptocurrencies)"
+            description="I prefer an investment portfolio that contains more high-risk/high-return products."
             value={answers.investmentComposition}
             onChange={(value) => updateAnswer('investmentComposition', value)}
           />
@@ -304,30 +285,25 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
 
       case 9:
         return (
-          <GoalPriorityQuestion
+          <BehavioralBiasQuestion
             questionNumber={9}
-            title="Financial Priorities"
-            description="Rank the financial goals below in the order of least acceptable to fail:"
-            goals={financialGoals}
-            goalOrder={answers.goalPriorities}
-            getGoalById={(goalId) => getGoalById(financialGoals, goalId)}
-            onReorder={handleReorderGoals}
+            title="Financial Decision-Making"
+            description="I tend to sell investments quickly when they decrease in value."
+            biasKey="sellOnDrop"
+            value={answers.behavioralBiases.sellOnDrop}
+            onChange={(value) => updateBehavioralBias('sellOnDrop', value)}
           />
         );
 
       case 10:
         return (
-          <GoalPriorityQuestion
+          <MarketVolatilityQuestion
             questionNumber={10}
-            title="Risk Preferences"
-            description="Rank the following items in terms of the risk you are willing to take with your investments:"
-            goals={financialGoals}
-            goalOrder={answers.goalRiskPreferences}
-            getGoalById={(goalId) => getGoalById(financialGoals, goalId)}
-            onReorder={handleReorderRiskPreferences}
+            value={answers.marketVolatilityResponse}
+            onChange={(value) => updateAnswer('marketVolatilityResponse', value)}
           />
         );
-
+      
       case 11: {
         const currentGoal = getCurrentGoal();
         if (!currentGoal) return null;
@@ -380,10 +356,13 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
 
       case 14:
         return (
-          <MarketVolatilityQuestion
+          <BehavioralBiasQuestion
             questionNumber={14}
-            value={answers.marketVolatilityResponse}
-            onChange={(value) => updateAnswer('marketVolatilityResponse', value)}
+            title="Emotional Investment Attachment"
+            description="I get emotionally attached to specific investments, making it difficult to sell them."
+            biasKey="emotionalAttachment"
+            value={answers.behavioralBiases.emotionalAttachment}
+            onChange={(value) => updateBehavioralBias('emotionalAttachment', value)}
           />
         );
 
@@ -391,11 +370,11 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
         return (
           <BehavioralBiasQuestion
             questionNumber={15}
-            title="Behavioral Biases"
-            description="I would sell an investment if it dropped 25% in value within the first six months, even if there is a chance it could recover in the future."
-            biasKey="sellOnDrop"
-            value={answers.behavioralBiases.sellOnDrop}
-            onChange={(value) => updateBehavioralBias('sellOnDrop', value)}
+            title="Investment Stability Preference"
+            description="I prefer stable, predictable investments over potentially higher-return but more volatile options."
+            biasKey="preferStability"
+            value={answers.behavioralBiases.preferStability}
+            onChange={(value) => updateBehavioralBias('preferStability', value)}
           />
         );
       
@@ -424,17 +403,14 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
       {/* Progress bar */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium">Question {currentStep} of {totalSteps}</span>
+          <span className="text-sm font-medium">Question {currentStep} of 15</span>
           <span className="text-sm font-medium">{progress}% Complete</span>
         </div>
-        <Progress value={progress} className="h-2 bg-amber-100" 
-          style={{ '--tw-bg-opacity': 0.2 }}
-        />
+        <Progress value={progress} className="h-2" />
         
         {/* Display goal progress if on a goal-specific question */}
         {getGoalProgressText() && (
-          <div className="mt-2 text-sm font-medium text-amber-600 flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-amber-600"></div>
+          <div className="mt-2 text-sm font-medium text-gray-600">
             {getGoalProgressText()}
           </div>
         )}
@@ -451,16 +427,15 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
           variant="outline"
           onClick={handlePrevStep}
           disabled={currentStep === 1}
-          className="border-amber-200 text-amber-700 hover:text-amber-900 hover:bg-amber-50"
         >
           Previous
         </Button>
         
         <Button 
           onClick={handleNextStep}
-          className="bg-amber-500 hover:bg-amber-600 text-white"
+          className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
         >
-          {currentStep === totalSteps ? "Complete" : "Next"}
+          {currentStep === 15 ? "Complete" : "Next"}
         </Button>
       </div>
     </div>

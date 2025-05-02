@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { getNumberedBackground } from '../data';
 import { Goal } from '../types';
 
 interface GoalRiskAppetiteQuestionProps {
@@ -19,46 +20,52 @@ const GoalRiskAppetiteQuestion: React.FC<GoalRiskAppetiteQuestionProps> = ({
   onChange 
 }) => {
   return (
-    <Card className="border border-gray-200 shadow-sm overflow-hidden">
+    <Card className="border-0 shadow-lg overflow-hidden">
       <CardContent className="p-6">
         <div className="space-y-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-semibold">{questionNumber}. Risk Appetite</h2>
-            <div className="flex items-center space-x-2 py-2 px-3 bg-amber-50 border border-amber-100 rounded-md">
-              <div className="h-5 w-5 text-amber-600">{goal.icon}</div>
-              <span className="font-medium text-amber-900">{goal.name}</span>
+          <div className="flex items-center space-x-3">
+            <div className={`w-10 h-10 rounded-full ${getNumberedBackground(questionNumber)} text-white flex items-center justify-center font-bold`}>{questionNumber}</div>
+            <div className="space-y-1">
+              <h2 className="text-xl font-semibold">Risk Appetite</h2>
+              <div className="flex items-center space-x-2">
+                <div className="h-5 w-5">{goal.icon}</div>
+                <span className="text-gray-700">{goal.name}</span>
+              </div>
             </div>
-            <p className="text-gray-600 text-sm">
-              Which of the following best describes your risk appetite for the funds allocated to this goal?
-            </p>
           </div>
+          
+          <p className="text-gray-600 text-sm">
+            How much risk are you willing to take to achieve this financial goal?
+          </p>
 
           <RadioGroup 
-            className="grid gap-3"
+            className="grid gap-4"
             value={value} 
             onValueChange={onChange}
           >
             {[
-              { value: "conservative", label: "A. I am risk-averse, do not want to lose my principal, and prefer to achieve stable returns." },
-              { value: "moderate", label: "B. I prefer to preserve my investments, do not want to lose my principal, but am willing to accept a certain level of income fluctuation." },
-              { value: "growth", label: "C. I seek higher returns and growth for my capital, and am willing to accept limited losses to my principal." },
-              { value: "aggressive", label: "D. I aim for high returns and am willing to bear relatively significant losses to my principal to achieve this." }
+              { value: "conservative", label: "Conservative - Prioritize capital preservation with minimal risk" },
+              { value: "moderate", label: "Moderate - Balance between growth and capital preservation" },
+              { value: "aggressive", label: "Aggressive - Maximize growth potential, comfortable with volatility" }
             ].map((option) => (
-              <div key={option.value} className="relative">
-                <RadioGroupItem
-                  value={option.value} 
-                  id={`risk-${option.value}`}
-                  className="peer sr-only"
-                />
-                <Label 
-                  htmlFor={`risk-${option.value}`} 
-                  className="flex p-4 rounded-lg border border-gray-200 
-                    cursor-pointer bg-white hover:bg-gray-50
-                    peer-data-[state=checked]:bg-amber-50 peer-data-[state=checked]:border-amber-300
-                    peer-data-[state=checked]:text-amber-900"
-                >
-                  {option.label}
-                </Label>
+              <div key={option.value}>
+                <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all ${
+                  value === option.value ? 
+                    'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-md' : 
+                    'bg-gray-50 hover:bg-gray-100'
+                }`}>
+                  <RadioGroupItem 
+                    value={option.value} 
+                    id={`risk-${option.value}`} 
+                    className="sr-only"
+                  />
+                  <Label 
+                    htmlFor={`risk-${option.value}`} 
+                    className="block cursor-pointer"
+                  >
+                    {option.label}
+                  </Label>
+                </div>
               </div>
             ))}
           </RadioGroup>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -31,9 +30,9 @@ const Questionnaire = () => {
         const answers = parsedData.questionnaire.answers;
         const mainCategories = [
           'ageGroup', 'incomeRange', 'netWorth', 'investmentKnowledge', 
-          'investmentExperience', 'complexProducts', 'investmentComposition',
-          'goalPriorities', 'goalRiskPreferences',
-          'marketVolatilityResponse', 'behavioralBiases'
+          'investmentExperience', 'complexProductsSuitability', 'investmentComposition',
+          'futureExpenseGoals', 'financialPriorities', 'riskPreferences',
+          'behavioralBiases'
         ];
         
         let completedCount = mainCategories.filter(key => answers[key]).length;
@@ -42,6 +41,7 @@ const Questionnaire = () => {
         if (answers.goalHorizons && Object.keys(answers.goalHorizons).length > 0) completedCount++;
         if (answers.riskAppetite && Object.keys(answers.riskAppetite).length > 0) completedCount++;
         if (answers.absoluteRiskTolerance && Object.keys(answers.absoluteRiskTolerance).length > 0) completedCount++;
+        if (answers.marketVolatilityResponse) completedCount++;
         
         return Math.min(Math.round((completedCount / 15) * 100), 99);
       }
@@ -93,40 +93,28 @@ const Questionnaire = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header with progress */}
-      <header className="border-b py-4 bg-white sticky top-0 z-10">
-        <div className="container mx-auto px-4 sm:px-6">
+      <header className="border-b py-4">
+        <div className="container mx-auto px-6">
           <div className="flex justify-between items-center mb-2">
             <div className="flex items-center">
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate('/onboarding')} 
-                className="mr-2 text-amber-700 hover:text-amber-900 hover:bg-amber-50"
-              >
+              <Button variant="ghost" onClick={() => navigate('/onboarding')} className="mr-2">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Onboarding
               </Button>
             </div>
             <div className="text-sm font-medium">{progress}% Complete</div>
           </div>
-          <Progress 
-            value={progress} 
-            className="h-1.5 bg-amber-100" 
-            style={{ '--tw-bg-opacity': 0.2 }}
-          />
+          <Progress value={progress} className="h-1.5" />
         </div>
       </header>
 
       {/* Main content */}
-      <div className="container mx-auto px-4 sm:px-6 py-8">
-        <div className="max-w-3xl mx-auto">
+      <div className="container mx-auto px-6 py-8">
+        <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <div className="flex items-center mb-4">
               <h1 className="text-2xl font-semibold">Financial Questionnaire</h1>
             </div>
-            <p className="text-gray-600">
-              Please complete this questionnaire to help us understand your financial situation and goals.
-              This information will help us provide personalized recommendations.
-            </p>
           </div>
 
           {/* Pass props to the Questionnaire component */}
@@ -139,7 +127,7 @@ const Questionnaire = () => {
             <Button 
               onClick={handleCompletion}
               disabled={!isCompleted}
-              className="bg-amber-500 hover:bg-amber-600 text-white"
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
             >
               Complete & Return to Onboarding
             </Button>

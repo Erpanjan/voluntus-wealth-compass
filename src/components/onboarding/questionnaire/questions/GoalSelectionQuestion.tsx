@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Star } from 'lucide-react';
 import { Goal } from '../types';
+import { getNumberedBackground } from '../data';
 
 interface GoalSelectionQuestionProps {
   questionNumber: number;
@@ -38,28 +39,25 @@ const GoalSelectionQuestion: React.FC<GoalSelectionQuestionProps> = ({
   };
 
   return (
-    <Card className="border border-gray-200 shadow-sm overflow-hidden">
+    <Card className="border-0 shadow-lg overflow-hidden">
       <CardContent className="p-6">
         <div className="space-y-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-semibold">{questionNumber}. Future Expense Goals</h2>
-            <p className="text-gray-600 text-sm">
-              Indicate your level of interest in the following future expense items:
-            </p>
+          <div className="flex items-center space-x-3">
+            <div className={`w-10 h-10 rounded-full ${getNumberedBackground(questionNumber)} text-white flex items-center justify-center font-bold`}>{questionNumber}</div>
+            <h2 className="text-xl font-semibold">Select your financial goals</h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {goals.map((goal) => (
-              <div key={goal.id} className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+              <div key={goal.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50">
                 <Checkbox
                   id={`goal-${goal.id}`}
                   checked={selectedGoals.includes(goal.id)}
                   onCheckedChange={(checked) => onGoalSelection(goal.id, checked === true)}
-                  className="border-amber-500 data-[state=checked]:bg-amber-500"
                 />
                 <div className="flex items-center space-x-2">
-                  <div className="h-5 w-5 flex items-center justify-center text-amber-600">{goal.icon}</div>
-                  <Label htmlFor={`goal-${goal.id}`} className="cursor-pointer font-medium">
+                  <div className="h-6 w-6 flex items-center justify-center">{goal.icon}</div>
+                  <Label htmlFor={`goal-${goal.id}`} className="cursor-pointer">
                     {goal.name}
                   </Label>
                 </div>
@@ -75,13 +73,13 @@ const GoalSelectionQuestion: React.FC<GoalSelectionQuestionProps> = ({
                 placeholder="Enter a custom goal"
                 value={customGoal}
                 onChange={(e) => setCustomGoal(e.target.value)}
-                className="flex-1 border-amber-200 focus-visible:ring-amber-500"
+                className="flex-1"
               />
               <Button 
                 onClick={handleAddCustomGoal} 
                 type="button" 
                 disabled={!customGoal}
-                className="whitespace-nowrap bg-amber-500 hover:bg-amber-600 text-white"
+                className="whitespace-nowrap"
               >
                 Add Goal
               </Button>
