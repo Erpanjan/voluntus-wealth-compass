@@ -1,9 +1,8 @@
-
 import { useEffect } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
-import { Toast } from '@/hooks/use-toast';
+import { Toast } from '@/hooks/auth/types';
 
 interface UseAuthListenerProps {
   isAdminMode: boolean;
