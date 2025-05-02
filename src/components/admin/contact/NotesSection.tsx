@@ -114,7 +114,7 @@ const NotesSection: React.FC<NotesSectionProps> = ({ notes, onNoteUpdate }) => {
                 </Button>
               </div>
               <div className="text-xs text-gray-500 mt-2 flex justify-between">
-                <span>By: {note.created_by}</span>
+                <span>{note.created_by}</span>
                 <span>{formatDate(note.created_at)}</span>
               </div>
             </>
