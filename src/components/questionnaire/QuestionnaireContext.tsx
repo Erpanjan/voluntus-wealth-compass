@@ -274,10 +274,13 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
       
       console.log('Saving questionnaire data to database:', dataToSave);
       
-      // Save to Supabase
+      // Save to Supabase - now with error logging
       const { error } = await supabase
         .from('questionnaire_responses')
-        .upsert(dataToSave, { onConflict: 'user_id' });
+        .upsert(dataToSave, { 
+          onConflict: 'user_id',
+          ignoreDuplicates: false 
+        });
         
       if (error) {
         console.error('Error saving to database:', error);

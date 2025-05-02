@@ -84,8 +84,15 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
             />
             
             <div className="flex justify-between items-center mt-4">
-              {/* Removed the text content from this div */}
-              <div className="text-sm text-gray-600"></div>
+              <div className="text-sm text-gray-600">
+                {questionnaireData.completed ? (
+                  "Questionnaire completed. You can update it anytime."
+                ) : Object.keys(questionnaireData.answers).length > 0 ? (
+                  "You have partially completed the questionnaire. Continue where you left off."
+                ) : (
+                  "Optional: Complete our questionnaire to help us understand your financial goals."
+                )}
+              </div>
               
               <Button 
                 onClick={handleNavigateToQuestionnaire}

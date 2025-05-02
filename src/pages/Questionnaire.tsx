@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -159,7 +158,10 @@ const Questionnaire = () => {
     try {
       // Use the ref to access the saveProgress method
       if (questionnaireFormRef.current) {
+        setSubmitted(true); // Add loading state while saving
         const saved = await questionnaireFormRef.current.saveProgress();
+        setSubmitted(false); // Remove loading state after save attempt
+        
         if (saved) {
           toast({
             title: "Progress Saved",
@@ -198,6 +200,7 @@ const Questionnaire = () => {
         description: "There was an error saving your progress. Please try again.",
         variant: "destructive"
       });
+      setSubmitted(false); // Remove loading state on error
     }
   };
 
