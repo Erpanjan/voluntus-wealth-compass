@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,15 +7,9 @@ import { Slider } from '@/components/ui/slider';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
-import { motion } from 'framer-motion';
 import { 
   CircleCheck, 
-  Trophy, 
-  Star, 
-  Award, 
-  GaugeCircle, 
   PiggyBank, 
   BarChart3, 
   Home, 
@@ -23,9 +18,9 @@ import {
   BookOpen, 
   Landmark, 
   Sparkles,
+  Star,
   ArrowUp,
-  ArrowDown,
-  X
+  ArrowDown
 } from 'lucide-react';
 
 interface QuestionnaireProps {
@@ -119,17 +114,6 @@ interface Goal {
   icon: React.ReactNode;
 }
 
-// Animation variants
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-};
-
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.9 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } }
-};
-
 const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [progress, setProgress] = useState(0);
@@ -137,9 +121,6 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
   const [customGoal, setCustomGoal] = useState('');
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
-  const [animateStep, setAnimateStep] = useState(true);
-  const [achievementUnlocked, setAchievementUnlocked] = useState<string | null>(null);
-  const [points, setPoints] = useState(0);
 
   const [answers, setAnswers] = useState<QuestionnairAnswers>({
     // Basic Information
@@ -184,32 +165,14 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     const currentProgress = Math.round((currentStep / totalSteps) * 100);
     setProgress(currentProgress);
     
-    // Add points when progressing
-    setPoints(prev => prev + 5);
-
-    // Show achievement notification at key milestones
-    if (currentStep === 5) {
-      setAchievementUnlocked("Basic Profile Completed!");
-    } else if (currentStep === 10) {
-      setAchievementUnlocked("Goal Setting Master!");
-    } else if (currentStep === 15) {
-      setAchievementUnlocked("Financial Strategist!");
-    }
-
-    // Reset animation state
-    setAnimateStep(true);
-    
-    // Hide achievement notification after 3 seconds
-    if (achievementUnlocked) {
-      const timer = setTimeout(() => {
-        setAchievementUnlocked(null);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-
     // Also update the parent component's progress
     updateProgress(currentProgress);
-  }, [currentStep, achievementUnlocked, updateProgress]);
+    
+    // Mark as completed when we reach the end
+    if (currentStep === totalSteps) {
+      setCompleted(true);
+    }
+  }, [currentStep, updateProgress, setCompleted]);
 
   // Initialize goal-specific data after goal selection
   useEffect(() => {
@@ -236,7 +199,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
         absoluteRiskTolerance: initialRiskTolerance
       }));
     }
-  }, [selectedGoals]);
+  }, [selectedGoals, answers.goalInterestLevels]);
 
   // Handle adding a custom financial goal
   const handleAddCustomGoal = () => {
@@ -249,10 +212,6 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
       setFinancialGoals([...financialGoals, newGoal]);
       setSelectedGoals([...selectedGoals, newGoal.id]);
       setCustomGoal('');
-      
-      // Award points for creativity
-      setPoints(prev => prev + 10);
-      setAchievementUnlocked("Creative Thinker!");
     }
   };
 
@@ -260,12 +219,8 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
   const handleGoalSelection = (goalId: string, isChecked: boolean) => {
     if (isChecked) {
       setSelectedGoals([...selectedGoals, goalId]);
-      // Award points for each goal selected
-      setPoints(prev => prev + 3);
     } else {
       setSelectedGoals(selectedGoals.filter(g => g !== goalId));
-      // Reduce points for removing goals
-      setPoints(prev => Math.max(0, prev - 2));
     }
   };
 
@@ -332,21 +287,13 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
         setCurrentGoalIndex(0);
       }
     }
-
-    // Reset animation state
-    setAnimateStep(false);
     
-    // Small delay for animation transition
-    setTimeout(() => {
-      // Move to next step
-      if (currentStep < 15) {
-        setCurrentStep(currentStep + 1);
-      } else {
-        // Complete questionnaire with bonus points
-        setPoints(prev => prev + 25);
-        setCompleted(true);
-      }
-    }, 200);
+    // Move to next step
+    if (currentStep < 15) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      setCompleted(true);
+    }
   };
 
   const handlePrevStep = () => {
@@ -358,16 +305,10 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
         return;
       }
     }
-
-    // Reset animation state
-    setAnimateStep(false);
     
-    // Small delay for animation transition
-    setTimeout(() => {
-      if (currentStep > 1) {
-        setCurrentStep(currentStep - 1);
-      }
-    }, 200);
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   const updateAnswer = (section: keyof QuestionnairAnswers, value: any) => {
@@ -430,26 +371,6 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     }
   };
 
-  // Map step number to achievement/reward metaphor
-  const getStepAchievement = (step: number) => {
-    const achievements = [
-      { name: "Foundation Builder", icon: <GaugeCircle className="h-6 w-6 text-blue-500" />, description: "Building your financial profile" },
-      { name: "Financial Explorer", icon: <Star className="h-6 w-6 text-purple-500" />, description: "Exploring investment expertise" },
-      { name: "Investment Apprentice", icon: <Award className="h-6 w-6 text-amber-500" />, description: "Setting financial goals" },
-      { name: "Goal Hunter", icon: <Trophy className="h-6 w-6 text-green-500" />, description: "Defining your risk tolerance" },
-      { name: "Strategic Planner", icon: <CircleCheck className="h-6 w-6 text-pink-500" />, description: "Completing your financial strategy" }
-    ];
-    
-    // Map step ranges to achievements
-    if (step >= 1 && step <= 3) return achievements[0];
-    if (step >= 4 && step <= 7) return achievements[1];
-    if (step >= 8 && step <= 10) return achievements[2];
-    if (step >= 11 && step <= 13) return achievements[3];
-    return achievements[4];
-  };
-
-  const achievement = getStepAchievement(currentStep);
-
   // Function to get background style for numbered questions
   const getNumberedBackground = (questionNumber: number) => {
     const colors = [
@@ -472,286 +393,150 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     return `bg-gradient-to-br ${colors[questionNumber - 1] || colors[0]}`;
   };
 
+  // Render question based on current step
+  const renderQuestion = () => {
+    switch (currentStep) {
+      case 1: return (
+        <Card className="border-0 shadow-lg overflow-hidden bg-white">
+          <CardContent className="p-6">
+            <div className="space-y-6">
+              <div className="flex items-center space-x-3">
+                <div className={`w-10 h-10 rounded-full ${getNumberedBackground(1)} text-white flex items-center justify-center font-bold`}>1</div>
+                <h2 className="text-xl font-semibold">What is your age group?</h2>
+              </div>
+
+              <RadioGroup 
+                className="grid gap-4 pt-4"
+                value={answers.ageGroup} 
+                onValueChange={(value) => updateAnswer('ageGroup', value)}
+              >
+                {[
+                  { value: "18-25", label: "18–25 years old" },
+                  { value: "26-50", label: "26–50 years old" },
+                  { value: "51-60", label: "51–60 years old" },
+                  { value: "61-64", label: "61–64 years old" },
+                  { value: "65+", label: "65 years old or above" }
+                ].map((option) => (
+                  <div key={option.value}>
+                    <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all ${
+                      answers.ageGroup === option.value ? 
+                        'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' : 
+                        'bg-gray-50 hover:bg-gray-100'
+                    }`}>
+                      <RadioGroupItem 
+                        value={option.value} 
+                        id={`age-${option.value}`} 
+                        className="sr-only"
+                      />
+                      <Label htmlFor={`age-${option.value}`} className="block cursor-pointer">
+                        {option.label}
+                      </Label>
+                    </div>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+          </CardContent>
+        </Card>
+      );
+
+      case 2: return (
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <CardContent className="p-6">
+            <div className="space-y-6">
+              <div className="flex items-center space-x-3">
+                <div className={`w-10 h-10 rounded-full ${getNumberedBackground(2)} text-white flex items-center justify-center font-bold`}>2</div>
+                <h2 className="text-xl font-semibold">What is your average annual income range (in HKD)?</h2>
+              </div>
+              <p className="text-gray-600 text-sm">
+                Includes wages, salaries, business income, interest, financial asset income, rental income, and other non-financial asset income.
+              </p>
+
+              <RadioGroup 
+                className="grid gap-4"
+                value={answers.incomeRange} 
+                onValueChange={(value) => updateAnswer('incomeRange', value)}
+              >
+                {[
+                  { value: "below100k", label: "Below HKD 100,000" },
+                  { value: "100k-200k", label: "HKD 100,000 (inclusive) – HKD 200,000 (exclusive)" },
+                  { value: "200k-500k", label: "HKD 200,000 (inclusive) – HKD 500,000 (inclusive)" },
+                  { value: "500k-1m", label: "HKD 500,000 (exclusive) – HKD 1,000,000 (inclusive)" },
+                  { value: "1m-2m", label: "HKD 1,000,000 (exclusive) – HKD 2,000,000 (inclusive)" },
+                  { value: "above2m", label: "Above HKD 2,000,000" }
+                ].map((option) => (
+                  <div key={option.value}>
+                    <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all ${
+                      answers.incomeRange === option.value ? 
+                        'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md' : 
+                        'bg-gray-50 hover:bg-gray-100'
+                    }`}>
+                      <RadioGroupItem 
+                        value={option.value} 
+                        id={`income-${option.value}`} 
+                        className="sr-only"
+                      />
+                      <Label htmlFor={`income-${option.value}`} className="block cursor-pointer">
+                        {option.label}
+                      </Label>
+                    </div>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+          </CardContent>
+        </Card>
+      );
+      
+      // More cases for other steps would follow here
+      default: return (
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <CardContent className="p-6">
+            <div className="text-center p-8">
+              <h2 className="text-xl font-semibold mb-4">Question {currentStep}</h2>
+              <p>This section is in development. Please continue to the next section.</p>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+  };
+
   return (
     <div className="space-y-6 pb-8">
-      {/* Achievement Notification */}
-      {achievementUnlocked && (
-        <motion.div 
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          className="fixed top-4 right-4 z-50 bg-gradient-to-r from-amber-400 to-amber-600 text-white p-4 rounded-lg shadow-lg"
-        >
-          <div className="flex items-center space-x-3">
-            <Trophy className="h-6 w-6" />
-            <div>
-              <p className="font-bold">Achievement Unlocked!</p>
-              <p>{achievementUnlocked}</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
-      
-      {/* Progress Indicator & Points - Simplified but maintaining point system */}
-      <div className="mb-8">
+      {/* Progress bar */}
+      <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center gap-2">
-            {achievement.icon}
-            <div>
-              <span className="font-medium text-gray-800">{achievement.name}</span>
-            </div>
-          </div>
-          <div className="flex items-center text-amber-500 font-bold">
-            <Star className="h-4 w-4 mr-1" />
-            <span>{points} points</span>
-          </div>
+          <span className="text-sm font-medium">Question {currentStep} of 15</span>
+          <span className="text-sm font-medium">{progress}% Complete</span>
         </div>
+        <Progress value={progress} className="h-2" />
       </div>
 
-      {/* Question Container with Animation */}
-      <motion.div
-        initial="hidden"
-        animate={animateStep ? "visible" : "hidden"}
-        variants={scaleIn}
-        key={`step-${currentStep}-${currentGoalIndex}`}
-        className="mb-6"
-      >
-        {/* Step 1: Age Group */}
-        {currentStep === 1 && (
-          <Card className="border-0 shadow-lg overflow-hidden bg-white">
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(1)} text-white flex items-center justify-center font-bold`}>1</div>
-                  <h2 className="text-xl font-semibold">What is your age group?</h2>
-                </div>
+      {/* Question container */}
+      <div className="mb-6">
+        {renderQuestion()}
+      </div>
 
-                <RadioGroup 
-                  className="grid gap-4 pt-4"
-                  value={answers.ageGroup} 
-                  onValueChange={(value) => updateAnswer('ageGroup', value)}
-                >
-                  {[
-                    { value: "18-25", label: "18–25 years old" },
-                    { value: "26-50", label: "26–50 years old" },
-                    { value: "51-60", label: "51–60 years old" },
-                    { value: "61-64", label: "61–64 years old" },
-                    { value: "65+", label: "65 years old or above" }
-                  ].map((option, index) => (
-                    <motion.div 
-                      key={option.value} 
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all transform hover:scale-102 ${
-                        answers.ageGroup === option.value ? 
-                          'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' : 
-                          'bg-gray-50 hover:bg-gray-100'
-                      }`}>
-                        <RadioGroupItem 
-                          value={option.value} 
-                          id={`age-${option.value}`} 
-                          className="sr-only"
-                        />
-                        <Label htmlFor={`age-${option.value}`} className="block cursor-pointer">
-                          {option.label}
-                        </Label>
-                      </div>
-                    </motion.div>
-                  ))}
-                </RadioGroup>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      {/* Navigation buttons */}
+      <div className="flex justify-between">
+        <Button
+          variant="outline"
+          onClick={handlePrevStep}
+          disabled={currentStep === 1}
+        >
+          Previous
+        </Button>
+        
+        <Button 
+          onClick={handleNextStep}
+          className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+        >
+          {currentStep === 15 ? "Complete" : "Next"}
+        </Button>
+      </div>
+    </div>
+  );
+};
 
-        {/* Step 2: Annual Income Range */}
-        {currentStep === 2 && (
-          <Card className="border-0 shadow-lg overflow-hidden">
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(2)} text-white flex items-center justify-center font-bold`}>2</div>
-                  <h2 className="text-xl font-semibold">What is your average annual income range (in HKD)?</h2>
-                </div>
-                <p className="text-gray-600 text-sm">
-                  Includes wages, salaries, business income, interest, financial asset income, rental income, and other non-financial asset income.
-                </p>
-
-                <RadioGroup 
-                  className="grid gap-4"
-                  value={answers.incomeRange} 
-                  onValueChange={(value) => updateAnswer('incomeRange', value)}
-                >
-                  {[
-                    { value: "below100k", label: "Below HKD 100,000" },
-                    { value: "100k-200k", label: "HKD 100,000 (inclusive) – HKD 200,000 (exclusive)" },
-                    { value: "200k-500k", label: "HKD 200,000 (inclusive) – HKD 500,000 (inclusive)" },
-                    { value: "500k-1m", label: "HKD 500,000 (exclusive) – HKD 1,000,000 (inclusive)" },
-                    { value: "1m-2m", label: "HKD 1,000,000 (exclusive) – HKD 2,000,000 (inclusive)" },
-                    { value: "above2m", label: "Above HKD 2,000,000" }
-                  ].map((option, index) => (
-                    <motion.div 
-                      key={option.value} 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all ${
-                        answers.incomeRange === option.value ? 
-                          'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md' : 
-                          'bg-gray-50 hover:bg-gray-100'
-                      }`}>
-                        <RadioGroupItem 
-                          value={option.value} 
-                          id={`income-${option.value}`} 
-                          className="sr-only"
-                        />
-                        <Label htmlFor={`income-${option.value}`} className="block cursor-pointer">
-                          {option.label}
-                        </Label>
-                      </div>
-                    </motion.div>
-                  ))}
-                </RadioGroup>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step 3: Net Worth */}
-        {currentStep === 3 && (
-          <Card className="border-0 shadow-lg overflow-hidden">
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(3)} text-white flex items-center justify-center font-bold`}>3</div>
-                  <h2 className="text-xl font-semibold">What is your total personal net worth (in HKD)?</h2>
-                </div>
-                <p className="text-gray-600 text-sm">
-                  Including residential properties and operational business assets, cash deposits, stocks, bonds, insurance, 
-                  and physical asset investments, after deducting liabilities such as mortgage loans, credit card debt, etc.
-                </p>
-
-                <RadioGroup 
-                  className="grid gap-4"
-                  value={answers.netWorth} 
-                  onValueChange={(value) => updateAnswer('netWorth', value)}
-                >
-                  {[
-                    { value: "below1.5m", label: "Below HKD 1,500,000" },
-                    { value: "1.5m-5m", label: "HKD 1,500,000 (inclusive) – HKD 5,000,000 (inclusive)" },
-                    { value: "5m-10m", label: "HKD 5,000,000 (exclusive) – HKD 10,000,000 (inclusive)" },
-                    { value: "10m-100m", label: "HKD 10,000,000 (exclusive) – HKD 100,000,000 (inclusive)" },
-                    { value: "above100m", label: "Above HKD 100,000,000" }
-                  ].map((option, index) => (
-                    <motion.div 
-                      key={option.value} 
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all ${
-                        answers.netWorth === option.value ? 
-                          'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md' : 
-                          'bg-gray-50 hover:bg-gray-100'
-                      }`}>
-                        <RadioGroupItem 
-                          value={option.value} 
-                          id={`networth-${option.value}`} 
-                          className="sr-only"
-                        />
-                        <Label htmlFor={`networth-${option.value}`} className="block cursor-pointer">
-                          {option.label}
-                        </Label>
-                      </div>
-                    </motion.div>
-                  ))}
-                </RadioGroup>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step 4: Investment Knowledge */}
-        {currentStep === 4 && (
-          <Card className="border-0 shadow-lg overflow-hidden">
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(4)} text-white flex items-center justify-center font-bold`}>4</div>
-                  <h2 className="text-xl font-semibold">Investment Knowledge and Experience</h2>
-                </div>
-                <p className="text-sm text-gray-600">
-                  Which of the following best describes your investment knowledge and experience?
-                </p>
-
-                <RadioGroup 
-                  className="grid gap-4"
-                  value={answers.investmentKnowledge} 
-                  onValueChange={(value) => updateAnswer('investmentKnowledge', value)}
-                >
-                  {[
-                    { value: "A", label: "Apart from saving deposits, government bonds, and money market funds, I do not invest in other financial products. My investment knowledge is relatively limited." },
-                    { value: "B", label: "Most of my investments are in savings deposits, government bonds, and money market funds, with limited investments in stocks, mutual funds, and riskier products. My investment knowledge is somewhat limited." },
-                    { value: "C", label: "My investments are diversified across savings, government bonds, trust products, stocks, and mutual funds. I have a certain level of investment knowledge." },
-                    { value: "D", label: "Most of my investments are in stocks, mutual funds, forex, and other higher-risk products, with limited investments in savings, government bonds, and money market funds. I have advanced investment knowledge." }
-                  ].map((option, index) => (
-                    <motion.div 
-                      key={option.value} 
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.15 }}
-                    >
-                      <div className={`flex-1 p-4 rounded-lg cursor-pointer transition-all ${
-                        answers.investmentKnowledge === option.value ? 
-                          'bg-gradient-to-r from-fuchsia-500 to-fuchsia-600 text-white shadow-md' : 
-                          'bg-gray-50 hover:bg-gray-100'
-                      }`}>
-                        <RadioGroupItem 
-                          value={option.value} 
-                          id={`knowledge-${option.value}`} 
-                          className="sr-only"
-                        />
-                        <Label htmlFor={`knowledge-${option.value}`} className="block cursor-pointer text-sm">
-                          {option.label}
-                        </Label>
-                      </div>
-                    </motion.div>
-                  ))}
-                </RadioGroup>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step 5: Investment Experience */}
-        {currentStep === 5 && (
-          <Card className="border-0 shadow-lg overflow-hidden">
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-full ${getNumberedBackground(5)} text-white flex items-center justify-center font-bold`}>5</div>
-                  <h2 className="text-xl font-semibold">Investment Experience</h2>
-                </div>
-                <p className="text-sm text-gray-600">
-                  How many years of experience do you have investing in stocks, mutual funds (excluding money market funds), 
-                  forex, and other higher-risk financial products?
-                </p>
-
-                <RadioGroup 
-                  className="grid gap-4"
-                  value={answers.investmentExperience} 
-                  onValueChange={(value) => updateAnswer('investmentExperience', value)}
-                >
-                  {[
-                    { value: "A", label: "No experience" },
-                    { value: "B", label: "Some experience, but less than 2 years" },
-                    { value: "C", label: "Between 2 years (inclusive) and 5 years (inclusive)" },
-                    { value: "D", label: "Between 5 years (inclusive) and 8 years (inclusive)" },
-                    { value: "E", label: "More than 8 years (exclusive)" }
-                  ].map((option, index) => (
-                    <motion.div 
-                      key={option.value} 
-                      initial={{ opacity: 0, scale: 0
+export default Questionnaire;
