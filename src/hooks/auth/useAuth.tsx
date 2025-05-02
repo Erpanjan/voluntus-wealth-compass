@@ -8,7 +8,7 @@ import { useDemoAccount } from './useDemoAccount';
 import { useEffect } from 'react';
 import { useAuthListener } from './useAuthListener';
 import { useAuthSession } from './useAuthSession';
-import { clearUserStateFlags } from './useLocalStorage';
+import { clearUserStateFlags, clearPortalSpecificFlags } from './useLocalStorage';
 import { usePortalContext, PortalType } from './usePortalContext';
 
 export const useAuth = (isAdminMode: boolean = false) => {
@@ -18,12 +18,16 @@ export const useAuth = (isAdminMode: boolean = false) => {
   
   // Determine portal type based on admin mode
   const portalType: PortalType = isAdminMode ? 'admin' : 'client';
-  const { switchToPortal } = usePortalContext(portalType);
+  const { switchToPortal, portalType: currentPortal } = usePortalContext(portalType);
   
   // Update portal context when admin mode changes
   useEffect(() => {
-    switchToPortal(isAdminMode ? 'admin' : 'client');
-  }, [isAdminMode, switchToPortal]);
+    // Only switch if the portal type has changed
+    if (currentPortal !== portalType) {
+      console.log(`Portal context updated from ${currentPortal} to ${portalType}`);
+      switchToPortal(isAdminMode ? 'admin' : 'client');
+    }
+  }, [isAdminMode, switchToPortal, portalType, currentPortal]);
   
   // Demo account functionality
   const { handleDemoLogin } = useDemoAccount(isAdminMode);
@@ -43,7 +47,7 @@ export const useAuth = (isAdminMode: boolean = false) => {
   // Use custom hooks for auth session and listener
   const { checkIsAdmin } = useAuthSession(setIsAdmin);
   
-  // Set up auth state listener
+  // Set up auth state listener with portal awareness
   useAuthListener({
     isAdminMode,
     setSession,
@@ -67,14 +71,16 @@ export const useAuth = (isAdminMode: boolean = false) => {
       
       // Clear state based on current portal context
       if (portalType === 'admin') {
+        clearPortalSpecificFlags('admin');
         localStorage.removeItem('isAdminMode');
+      } else {
+        clearPortalSpecificFlags('client');
       }
       
-      // Always clear authentication state
+      // Always clear authentication state for the current portal
       localStorage.removeItem('isAuthenticated');
-      clearUserStateFlags();
       
-      // Reset portal context to client
+      // Reset portal context to client for login page
       localStorage.setItem('portalContext', 'client');
       switchToPortal('client');
       

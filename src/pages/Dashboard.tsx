@@ -16,14 +16,27 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, loading, handleLogout } = useAuth(false);
-  const { switchToPortal } = usePortalContext('client');
+  const { switchToPortal, enforcePortalBoundary } = usePortalContext('client');
   
   // Ensure we're in client portal context
   useEffect(() => {
+    // Check if we are allowed to be in the client portal
+    const canAccessClientPortal = enforcePortalBoundary('client');
+    
+    if (!canAccessClientPortal) {
+      toast({
+        title: "Access Denied",
+        description: "Please log in to access the client portal.",
+        variant: "destructive"
+      });
+      navigate('/login');
+      return;
+    }
+    
+    // Explicitly set client portal context
     switchToPortal('client');
     localStorage.setItem('portalContext', 'client');
-    localStorage.removeItem('isAdminMode');
-  }, [switchToPortal]);
+  }, [switchToPortal, enforcePortalBoundary, navigate, toast]);
 
   // Show loading state
   if (loading) {

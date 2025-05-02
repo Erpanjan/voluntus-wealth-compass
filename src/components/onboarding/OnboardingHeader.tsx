@@ -4,7 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
+import { clearPortalSpecificFlags } from '@/hooks/auth/useLocalStorage';
+import { usePortalContext } from '@/hooks/auth/usePortalContext';
 
 interface OnboardingHeaderProps {
   currentStep: number;
@@ -13,19 +14,23 @@ interface OnboardingHeaderProps {
 const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { switchToPortal } = usePortalContext('client');
   
   const handleExitSetup = async () => {
     try {
       // Add transition effect to the body
       document.body.classList.add('login-transition');
       
-      // Clear all localStorage flags first
-      clearUserStateFlags();
+      // Clear all client-specific localStorage flags first
+      clearPortalSpecificFlags('client');
       
       // Remove authentication state
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('isAdminMode');
+      
+      // Reset portal context to client
       localStorage.setItem('portalContext', 'client');
+      switchToPortal('client');
       
       // Sign out from Supabase
       await supabase.auth.signOut();

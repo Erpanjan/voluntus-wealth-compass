@@ -1,13 +1,17 @@
+
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Phone, Users, Smartphone, FileText, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { clearPortalSpecificFlags } from '@/hooks/auth/useLocalStorage';
+import { usePortalContext } from '@/hooks/auth/usePortalContext';
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { switchToPortal } = usePortalContext('admin');
   
   const handleLogout = async () => {
     try {
@@ -15,14 +19,15 @@ const AdminSidebar = () => {
       document.body.classList.add('admin-logout-transition');
       
       // Clear only admin-related flags in localStorage
+      clearPortalSpecificFlags('admin');
       localStorage.removeItem('isAdminMode');
       
-      // Keep isAuthenticated flag if user wants to return to client portal
-      // but sign out from Supabase completely
-      localStorage.removeItem('isAuthenticated');
-      
-      // Clear portal context
+      // Reset portal context to client for login page
       localStorage.setItem('portalContext', 'client');
+      switchToPortal('client');
+      
+      // Clear authentication flag - admin users must re-authenticate
+      localStorage.removeItem('isAuthenticated');
       
       // Sign out from Supabase with proper error handling
       await supabase.auth.signOut();

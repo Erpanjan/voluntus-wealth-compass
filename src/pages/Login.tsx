@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import AdminToggle from '@/components/login/AdminToggle';
 import LoginTabs from '@/components/login/LoginTabs';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { usePortalContext } from '@/hooks/auth/usePortalContext';
+import { usePortalContext, PortalContextProvider } from '@/hooks/auth/usePortalContext';
 
 const Login = () => {
   const [pageLoaded, setPageLoaded] = useState(false);
@@ -15,8 +15,8 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Set initial portal context from localStorage or defaulting to client
-  const { switchToPortal } = usePortalContext();
+  // Get the portal context with default client mode
+  const { switchToPortal } = usePortalContext('client');
   
   // Use the custom hook to handle authentication with admin mode
   const { loading, handleDemoLogin, handleRegularLogin } = useAuth(isAdminMode);
@@ -40,6 +40,11 @@ const Login = () => {
     // Set admin mode based on stored preference
     if (storedPortalContext === 'admin' || storedAdminMode) {
       setIsAdminMode(true);
+      switchToPortal('admin');
+    } else {
+      // Explicitly set client mode
+      switchToPortal('client');
+      localStorage.setItem('portalContext', 'client');
     }
     
     // Small delay to ensure the animation is visible
@@ -48,7 +53,7 @@ const Login = () => {
     }, 50);
     
     return () => clearTimeout(timer);
-  }, [navigate, location]);
+  }, [navigate, location, switchToPortal]);
 
   // Handle toggle animation for mode switch
   const handleAdminToggle = (checked: boolean) => {
@@ -60,6 +65,14 @@ const Login = () => {
       
       // Update portal context
       switchToPortal(checked ? 'admin' : 'client');
+      localStorage.setItem('portalContext', checked ? 'admin' : 'client');
+      
+      // Store admin mode in localStorage for this session
+      if (checked) {
+        localStorage.setItem('isAdminMode', 'true');
+      } else {
+        localStorage.removeItem('isAdminMode');
+      }
       
       // Remove animation class after mode has changed
       setTimeout(() => {

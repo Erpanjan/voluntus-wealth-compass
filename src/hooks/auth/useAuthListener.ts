@@ -48,8 +48,9 @@ export const useAuthListener = ({
           const isUserAdmin = await checkIsAdmin(session.user.id);
           setIsAdmin(isUserAdmin);
           
-          // For admin portal or if the user is trying to access admin pages
-          if (portalType === 'admin' || isAdminMode) {
+          // Handle different portal contexts
+          // Admin portal flow with strict admin checking
+          if (portalType === 'admin') {
             // Check if the user has admin privileges
             if (!isUserAdmin) {
               toast({
@@ -66,18 +67,32 @@ export const useAuthListener = ({
               localStorage.setItem('portalContext', 'client');
               navigate('/login');
             } else {
-              // User is admin and in admin portal
+              // User is admin and in admin portal - prioritize this flow
               localStorage.setItem('isAdminMode', 'true');
               localStorage.setItem('portalContext', 'admin');
               setIsAdmin(true);
+              
+              // Admin users always go to the admin dashboard, skip onboarding checks
               navigate('/admin/dashboard');
             }
-          } else {
-            // Handle regular user flow in client portal
+          } 
+          // Client portal flow - only run if explicitly in client portal
+          else if (portalType === 'client') {
+            // Remove admin mode flag if in client portal
             localStorage.removeItem('isAdminMode');
             localStorage.setItem('portalContext', 'client');
             
+            // If admin is accessing client portal, show a message
+            if (isUserAdmin) {
+              toast({
+                title: "Admin Account Notice",
+                description: "You are using an admin account in client portal mode.",
+                duration: 5000,
+              });
+            }
+            
             // Only check onboarding status in client portal context
+            // and only on SIGNED_IN event to prevent unnecessary redirects
             if (event === 'SIGNED_IN') {
               await checkOnboardingStatus(session.user.id);
             }
@@ -104,10 +119,10 @@ export const useAuthListener = ({
         
         // Read the current portal context from localStorage
         const currentPortalContext = localStorage.getItem('portalContext') as PortalType || portalType;
-        const adminMode = localStorage.getItem('isAdminMode') === 'true' || isAdminMode || currentPortalContext === 'admin';
+        const adminMode = localStorage.getItem('isAdminMode') === 'true' || isAdminMode;
         
-        // In admin portal or admin mode - handle admin flow with priority
-        if (portalType === 'admin' || adminMode) {
+        // Admin portal flow - with strict admin checking
+        if (portalType === 'admin') {
           // Verify admin status
           if (isUserAdmin) {
             // Set admin mode and redirect to admin dashboard
@@ -129,21 +144,30 @@ export const useAuthListener = ({
             navigate('/login');
           }
         } 
-        // Client portal flow only when explicitly in client portal
+        // Client portal flow - only when explicitly in client portal
         else if (portalType === 'client') {
-          // If user is admin but in client context, show a message but continue with client flow
+          // If user is admin but in client context, set client context but maintain admin flag
           if (isUserAdmin) {
+            localStorage.setItem('portalContext', 'client');
+            localStorage.setItem('isAdminMode', 'true'); // Keep admin privileges flag
+            
             toast({
-              title: "Admin Account Detected",
-              description: "You are logged in with an admin account. You can access the admin portal.",
+              title: "Admin in Client Mode",
+              description: "You are browsing in client mode with admin privileges.",
               duration: 5000,
             });
+          } else {
+            // Normal client user
+            localStorage.setItem('portalContext', 'client');
+            localStorage.removeItem('isAdminMode');
           }
           
-          // Always do client flow for client portal
-          localStorage.setItem('portalContext', 'client');
+          // Always check onboarding status for client portal regardless of user type
           await checkOnboardingStatus(session.user.id);
         }
+      } else {
+        // No session, make sure we're in the correct flow for login
+        localStorage.setItem('portalContext', portalType);
       }
       
       setSession(session);
