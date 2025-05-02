@@ -13,8 +13,8 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
   const handleExitSetup = () => {
     // Set onboardingComplete to true in localStorage
     localStorage.setItem('onboardingComplete', 'true');
-    // Redirect to dashboard
-    navigate('/dashboard');
+    // Redirect to login instead of dashboard
+    navigate('/login');
   };
   
   return (
