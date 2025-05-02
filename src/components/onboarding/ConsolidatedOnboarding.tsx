@@ -91,7 +91,7 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
       <div>
         <h2 className="text-2xl font-semibold mb-6">Schedule a Consultation</h2>
         <p className="text-gray-600 mb-8">
-          Meet with one of our advisors to discuss your financial goals and investment strategy. This step is required to activate your account.
+          Meet with one of our advisors for an in-depth discussion of your financial situation. We'll also use this session to verify key details and better understand your needs.
         </p>
         
         <ConsultationFormSection
