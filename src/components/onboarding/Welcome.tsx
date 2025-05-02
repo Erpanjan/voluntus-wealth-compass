@@ -49,9 +49,6 @@ const Welcome = () => {
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
               <User className="h-7 w-7 text-black" />
             </div>
-            <div className="flex items-center mb-2">
-              <span className="bg-gray-200 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">1</span>
-            </div>
             <h3 className="text-xl font-semibold">Create Your Profile</h3>
           </div>
           <p className="text-gray-600">
@@ -69,9 +66,6 @@ const Welcome = () => {
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
               <FileText className="h-7 w-7 text-black" />
             </div>
-            <div className="flex items-center mb-2">
-              <span className="bg-gray-200 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">2</span>
-            </div>
             <h3 className="text-xl font-semibold">Complete the Questionnaire</h3>
           </div>
           <p className="text-gray-600">
@@ -88,9 +82,6 @@ const Welcome = () => {
           <div className="mb-8 flex flex-col items-center">
             <div className="bg-[#F1F1F1] p-4 rounded-full mb-5">
               <Calendar className="h-7 w-7 text-black" />
-            </div>
-            <div className="flex items-center mb-2">
-              <span className="bg-gray-200 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">3</span>
             </div>
             <h3 className="text-xl font-semibold">Schedule a Consultation</h3>
           </div>
