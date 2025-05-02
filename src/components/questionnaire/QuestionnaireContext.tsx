@@ -75,6 +75,7 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   
   // State for storing all questionnaire answers
   const [answers, setAnswers] = useState<Record<string, any>>({
@@ -240,6 +241,8 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
   // Save progress to Supabase and update onboarding data
   const saveProgress = async (): Promise<boolean> => {
     setIsSaving(true);
+    setSaveError(null);
+    
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
@@ -250,16 +253,21 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
           title: "Progress Saved Locally",
           description: "Your answers are saved on this device. Log in to save them to your account.",
         });
-        return true;
+        return false; // Return false since we couldn't save to Supabase
       }
       
       // Save to localStorage first to ensure data is not lost
       saveToLocalStorage(answers);
       
+      // Determine completion status
+      // Consider it completed if they reached the final steps or if currentStep is the final step
+      const isCompleted = currentStep >= 14;
+      console.log('Questionnaire completed status:', isCompleted);
+      
       // Format the data for the questionnaire_responses table
       const dataToSave = {
         user_id: session.user.id,
-        completed: currentStep >= 14, // Consider it completed if they reached the final steps
+        completed: isCompleted,
         age_group: answers.ageGroup || null,
         income_level: answers.income || null,
         net_worth: answers.netWorth || null,
@@ -274,40 +282,62 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
       
       console.log('Saving questionnaire data to database:', dataToSave);
       
-      // Save to Supabase - now with error logging
-      const { error } = await supabase
+      // Save to Supabase with detailed error logging
+      const { data, error } = await supabase
         .from('questionnaire_responses')
         .upsert(dataToSave, { 
           onConflict: 'user_id',
           ignoreDuplicates: false 
-        });
+        })
+        .select(); // Add select to get the response data
         
       if (error) {
         console.error('Error saving to database:', error);
+        setSaveError(`Database error: ${error.message}`);
         throw error;
       }
       
-      console.log('Successfully saved questionnaire data to database');
+      console.log('Successfully saved questionnaire data to database:', data);
       
       // Also update the onboarding data to mark questionnaire as completed
-      const onboardingUpdate = {
-        updated_at: new Date().toISOString()
-      };
-      
-      // Fetch current onboarding data first
-      const { data: onboardingData } = await supabase
-        .from('onboarding_data')
-        .select('id')
-        .eq('id', session.user.id)
-        .maybeSingle(); 
-        
-      if (onboardingData) {
-        await supabase
-          .from('onboarding_data')
-          .update(onboardingUpdate)
-          .eq('id', session.user.id);
-        
-        console.log('Updated onboarding data timestamp');
+      if (isCompleted) {
+        try {
+          const onboardingUpdate = {
+            updated_at: new Date().toISOString()
+          };
+          
+          // Fetch current onboarding data first
+          const { data: onboardingData, error: fetchError } = await supabase
+            .from('onboarding_data')
+            .select('*')
+            .eq('id', session.user.id)
+            .maybeSingle(); 
+            
+          if (fetchError) {
+            console.error('Error fetching onboarding data:', fetchError);
+          }
+            
+          if (onboardingData) {
+            const { error: updateError } = await supabase
+              .from('onboarding_data')
+              .update({
+                ...onboardingUpdate,
+                // Update the data to indicate questionnaire is completed
+              })
+              .eq('id', session.user.id);
+            
+            if (updateError) {
+              console.error('Error updating onboarding data:', updateError);
+            } else {
+              console.log('Updated onboarding data timestamp');
+            }
+          } else {
+            console.log('No onboarding data found for user');
+          }
+        } catch (onboardingError) {
+          console.error('Error updating onboarding data:', onboardingError);
+          // Don't throw here, as the main questionnaire data was saved successfully
+        }
       }
       
       toast({
@@ -318,6 +348,7 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
       return true;
     } catch (error) {
       console.error('Error saving questionnaire progress:', error);
+      setSaveError(error instanceof Error ? error.message : 'Unknown error saving data');
       toast({
         title: "Error Saving Data",
         description: "Could not save your answers. Please try again.",

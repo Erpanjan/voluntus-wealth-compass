@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Check, Save } from 'lucide-react';
+import { Check, Save, Loader2, AlertCircle } from 'lucide-react';
 import { useQuestionnaire } from './QuestionnaireContext';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ReviewSubmissionProps {
   answers: Record<string, any>;
@@ -12,7 +14,44 @@ interface ReviewSubmissionProps {
 }
 
 const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ answers, onSubmit }) => {
-  const { isSaving } = useQuestionnaire();
+  const { isSaving, saveProgress } = useQuestionnaire();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [authStatus, setAuthStatus] = useState<'checking' | 'authenticated' | 'unauthenticated'>('checking');
+  
+  // Check authentication status
+  React.useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setAuthStatus(session ? 'authenticated' : 'unauthenticated');
+    };
+    
+    checkAuth();
+  }, []);
+  
+  // Handle the submit process
+  const handleSubmitClick = async () => {
+    try {
+      setIsSubmitting(true);
+      setSubmissionError(null);
+      
+      // First save progress to ensure everything is up-to-date
+      const saved = await saveProgress();
+      
+      if (!saved) {
+        setSubmissionError('Unable to save your questionnaire data. Please try again.');
+        return;
+      }
+      
+      // Trigger the onSubmit callback from parent
+      onSubmit();
+    } catch (error) {
+      console.error('Error during submission:', error);
+      setSubmissionError(error instanceof Error ? error.message : 'An unexpected error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   
   return (
     <motion.div 
@@ -33,15 +72,31 @@ const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ answers, onSubmit }
         <h2 className="text-2xl font-semibold mb-2">Questionnaire Complete!</h2>
         <p className="text-gray-600 mb-8">Thank you for completing the financial questionnaire. Your responses have been saved and will be included in your application.</p>
         
+        {authStatus === 'unauthenticated' && (
+          <Alert variant="warning" className="mb-6 text-left">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            <AlertDescription>
+              You're not currently logged in. To ensure your questionnaire data is saved to your account, please log in before submitting.
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {submissionError && (
+          <Alert variant="destructive" className="mb-6 text-left">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            <AlertDescription>{submissionError}</AlertDescription>
+          </Alert>
+        )}
+        
         <Button 
-          onClick={onSubmit}
+          onClick={handleSubmitClick}
           className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 px-8"
-          disabled={isSaving}
+          disabled={isSubmitting || isSaving}
         >
-          {isSaving ? (
+          {isSubmitting || isSaving ? (
             <>
-              <Save className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {isSaving ? 'Saving...' : 'Submitting...'}
             </>
           ) : "Submit and Return to Onboarding"}
         </Button>

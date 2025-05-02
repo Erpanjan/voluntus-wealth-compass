@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -169,9 +168,7 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
               <Button 
                 onClick={handleNavigateToQuestionnaire}
                 variant={questionnaireData.completed ? "secondary" : "default"}
-                className={questionnaireData.completed 
-                  ? "" 
-                  : ""}
+                className={questionnaireData.completed ? "" : ""}
               >
                 {loading ? (
                   <>

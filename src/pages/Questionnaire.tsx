@@ -18,6 +18,7 @@ const Questionnaire = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const totalSteps = 15;
   // Create the ref with the correct type
   const questionnaireFormRef = useRef<{ saveProgress: () => Promise<boolean> }>(null);
@@ -191,32 +192,77 @@ const Questionnaire = () => {
 
   // Handle submission
   const handleSubmit = async () => {
+    setSubmitError(null); // Reset any previous errors
+    
     try {
       setSubmitted(true);
       
-      // Access the saveProgress method through the ref
-      if (questionnaireFormRef.current) {
-        await questionnaireFormRef.current.saveProgress();
-      } else {
-        console.warn('QuestionnaireForm ref not available, saving to localStorage only');
-        // Fallback to just saving to localStorage
+      // Check auth status before submission
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        setSubmitError("You need to be logged in to submit the questionnaire. Your answers will be saved locally.");
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to submit your questionnaire to the server.",
+          variant: "destructive"
+        });
+        
+        // Save to localStorage as fallback
         const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
         if (savedQuestionnaire) {
           const savedData = JSON.parse(savedQuestionnaire);
           savedData.lastCompletedStep = currentStep;
+          savedData.completed = true; // Mark as completed even if only saved locally
           localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
         }
+        
+        setSubmitted(false);
+        return;
       }
       
-      toast({
-        title: "Questionnaire Submitted",
-        description: "Your questionnaire has been submitted successfully.",
-      });
-      
-      // Navigate back to onboarding after a short delay
-      setTimeout(() => navigate('/onboarding'), 1500);
+      // Access the saveProgress method through the ref
+      if (questionnaireFormRef.current) {
+        console.log('Submitting questionnaire via saveProgress method');
+        const saved = await questionnaireFormRef.current.saveProgress();
+        
+        if (!saved) {
+          throw new Error('Failed to save questionnaire data to Supabase');
+        }
+        
+        // Additional check to verify if data was saved successfully
+        try {
+          const { data, error: fetchError } = await supabase
+            .from('questionnaire_responses')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+          
+          if (fetchError) {
+            console.error('Error verifying submission:', fetchError);
+          } else if (!data) {
+            console.warn('No questionnaire data found after submission');
+          } else {
+            console.log('Questionnaire submission verified successful:', data);
+          }
+        } catch (verifyError) {
+          console.error('Error during verification check:', verifyError);
+        }
+        
+        toast({
+          title: "Questionnaire Submitted",
+          description: "Your questionnaire has been submitted successfully.",
+        });
+        
+        // Navigate back to onboarding after a short delay
+        setTimeout(() => navigate('/onboarding'), 1500);
+      } else {
+        console.error('QuestionnaireForm ref not available');
+        throw new Error('Submission component not available');
+      }
     } catch (error) {
       console.error('Error submitting questionnaire:', error);
+      setSubmitError(error instanceof Error ? error.message : 'Unknown submission error');
       toast({
         title: "Submission Error",
         description: "There was an error submitting your questionnaire. Your answers have been saved, and you can try submitting again.",
@@ -384,6 +430,13 @@ const Questionnaire = () => {
             </p>
           </motion.div>
 
+          {submitError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              <AlertDescription>{submitError}</AlertDescription>
+            </Alert>
+          )}
+
           <QuestionnaireForm 
             currentStep={currentStep}
             setCurrentStep={setCurrentStep}
@@ -420,8 +473,17 @@ const Questionnaire = () => {
               ) : (
                 <Button 
                   onClick={handleSubmit}
+                  disabled={submitted}
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
                 >
-                  Submit
+                  {submitted ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
                 </Button>
               )}
             </div>
