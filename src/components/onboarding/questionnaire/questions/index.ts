@@ -12,3 +12,4 @@ export { default as GoalRiskAppetiteQuestion } from './GoalRiskAppetiteQuestion'
 export { default as GoalRiskToleranceQuestion } from './GoalRiskToleranceQuestion';
 export { default as MarketVolatilityQuestion } from './MarketVolatilityQuestion';
 export { default as BehavioralBiasQuestion } from './BehavioralBiasQuestion';
+export { default as GoalPriorityQuestion } from './GoalPriorityQuestion';

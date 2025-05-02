@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -41,9 +42,10 @@ const Questionnaire = () => {
         if (answers.goalHorizons && Object.keys(answers.goalHorizons).length > 0) completedCount++;
         if (answers.riskAppetite && Object.keys(answers.riskAppetite).length > 0) completedCount++;
         if (answers.absoluteRiskTolerance && Object.keys(answers.absoluteRiskTolerance).length > 0) completedCount++;
+        if (answers.goalPriorities && answers.goalPriorities.length > 0) completedCount++;
         if (answers.marketVolatilityResponse) completedCount++;
         
-        return Math.min(Math.round((completedCount / 15) * 100), 99);
+        return Math.min(Math.round((completedCount / 16) * 100), 99);
       }
     }
     return 0;

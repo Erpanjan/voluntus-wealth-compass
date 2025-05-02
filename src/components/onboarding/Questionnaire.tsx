@@ -23,7 +23,8 @@ import {
   GoalRiskAppetiteQuestion,
   GoalRiskToleranceQuestion,
   MarketVolatilityQuestion,
-  BehavioralBiasQuestion
+  BehavioralBiasQuestion,
+  GoalPriorityQuestion
 } from './questionnaire/questions';
 import { getGoalById } from './questionnaire/utils';
 
@@ -73,7 +74,8 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
   
   // Update progress when current step changes
   useEffect(() => {
-    const totalSteps = 15;
+    // Add a new step for goal prioritization
+    const totalSteps = 16;
     const currentProgress = Math.round((currentStep / totalSteps) * 100);
     setProgress(currentProgress);
     
@@ -128,6 +130,22 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     }
   };
 
+  // Handle reordering goal priorities
+  const handleReorderGoals = (newOrder: string[]) => {
+    setAnswers(prev => ({
+      ...prev,
+      goalPriorities: newOrder
+    }));
+  };
+
+  // Handle reordering risk preferences
+  const handleReorderRiskPreferences = (newOrder: string[]) => {
+    setAnswers(prev => ({
+      ...prev,
+      goalRiskPreferences: newOrder
+    }));
+  };
+
   // Update a simple answer
   const updateAnswer = (section: keyof QuestionnaireAnswers, value: any) => {
     setAnswers({
@@ -139,7 +157,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
   // Handle navigation to next question
   const handleNextStep = () => {
     // Special handling for goal-specific questions
-    if ((currentStep === 11 || currentStep === 12 || currentStep === 13) && selectedGoals.length > 0) {
+    if ((currentStep === 12 || currentStep === 13 || currentStep === 14) && selectedGoals.length > 0) {
       // If we're not at the last goal yet, stay on this question but move to next goal
       if (currentGoalIndex < selectedGoals.length - 1) {
         setCurrentGoalIndex(currentGoalIndex + 1);
@@ -151,7 +169,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
     }
     
     // Move to next step
-    if (currentStep < 15) {
+    if (currentStep < 16) {
       setCurrentStep(currentStep + 1);
     } else {
       setCompleted(true);
@@ -161,7 +179,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
   // Handle navigation to previous question
   const handlePrevStep = () => {
     // Special handling for goal-specific questions
-    if ((currentStep === 11 || currentStep === 12 || currentStep === 13) && selectedGoals.length > 0) {
+    if ((currentStep === 12 || currentStep === 13 || currentStep === 14) && selectedGoals.length > 0) {
       // If we're not at the first goal yet, stay on this question but move to previous goal
       if (currentGoalIndex > 0) {
         setCurrentGoalIndex(currentGoalIndex - 1);
@@ -285,8 +303,34 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
 
       case 9:
         return (
-          <BehavioralBiasQuestion
+          <GoalPriorityQuestion
             questionNumber={9}
+            title="Goal Priority Ranking"
+            description="Drag and drop your financial goals to rank them by priority. The most important goal should be at the top."
+            goals={financialGoals}
+            goalOrder={answers.goalPriorities}
+            getGoalById={(goalId) => getGoalById(financialGoals, goalId)}
+            onReorder={handleReorderGoals}
+          />
+        );
+
+      case 10:
+        return (
+          <GoalPriorityQuestion
+            questionNumber={10}
+            title="Risk Preference Ranking"
+            description="Rank your goals based on how much risk you're willing to take for each. Goals at the top are those you're willing to take more risk for."
+            goals={financialGoals}
+            goalOrder={answers.goalRiskPreferences}
+            getGoalById={(goalId) => getGoalById(financialGoals, goalId)}
+            onReorder={handleReorderRiskPreferences}
+          />
+        );
+
+      case 11:
+        return (
+          <BehavioralBiasQuestion
+            questionNumber={11}
             title="Financial Decision-Making"
             description="I tend to sell investments quickly when they decrease in value."
             biasKey="sellOnDrop"
@@ -295,22 +339,13 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
           />
         );
 
-      case 10:
-        return (
-          <MarketVolatilityQuestion
-            questionNumber={10}
-            value={answers.marketVolatilityResponse}
-            onChange={(value) => updateAnswer('marketVolatilityResponse', value)}
-          />
-        );
-      
-      case 11: {
+      case 12: {
         const currentGoal = getCurrentGoal();
         if (!currentGoal) return null;
         
         return (
           <GoalTimeHorizonQuestion
-            questionNumber={11}
+            questionNumber={12}
             goal={currentGoal}
             value={answers.goalHorizons[currentGoal.id] || ''}
             onChange={(value) => {
@@ -326,13 +361,13 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
         );
       }
       
-      case 12: {
+      case 13: {
         const currentGoal = getCurrentGoal();
         if (!currentGoal) return null;
         
         return (
           <GoalRiskAppetiteQuestion
-            questionNumber={12}
+            questionNumber={13}
             goal={currentGoal}
             value={answers.riskAppetite[currentGoal.id] || ''}
             onChange={(value) => updateGoalAnswer('riskAppetite', value)}
@@ -340,13 +375,13 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
         );
       }
       
-      case 13: {
+      case 14: {
         const currentGoal = getCurrentGoal();
         if (!currentGoal) return null;
         
         return (
           <GoalRiskToleranceQuestion
-            questionNumber={13}
+            questionNumber={14}
             goal={currentGoal}
             value={answers.absoluteRiskTolerance[currentGoal.id] || ''}
             onChange={(value) => updateGoalAnswer('absoluteRiskTolerance', value)}
@@ -354,10 +389,10 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
         );
       }
 
-      case 14:
+      case 15:
         return (
           <BehavioralBiasQuestion
-            questionNumber={14}
+            questionNumber={15}
             title="Emotional Investment Attachment"
             description="I get emotionally attached to specific investments, making it difficult to sell them."
             biasKey="emotionalAttachment"
@@ -366,10 +401,10 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
           />
         );
 
-      case 15:
+      case 16:
         return (
           <BehavioralBiasQuestion
-            questionNumber={15}
+            questionNumber={16}
             title="Investment Stability Preference"
             description="I prefer stable, predictable investments over potentially higher-return but more volatile options."
             biasKey="preferStability"
@@ -389,7 +424,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
 
   // Display goal name and progress for goal-specific questions
   const getGoalProgressText = () => {
-    if (currentStep >= 11 && currentStep <= 13 && selectedGoals.length > 0) {
+    if (currentStep >= 12 && currentStep <= 14 && selectedGoals.length > 0) {
       const currentGoal = getCurrentGoal();
       if (currentGoal) {
         return `Goal ${currentGoalIndex + 1} of ${selectedGoals.length}: ${currentGoal.name}`;
@@ -403,7 +438,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
       {/* Progress bar */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium">Question {currentStep} of 15</span>
+          <span className="text-sm font-medium">Question {currentStep} of 16</span>
           <span className="text-sm font-medium">{progress}% Complete</span>
         </div>
         <Progress value={progress} className="h-2" />
@@ -435,7 +470,7 @@ const Questionnaire = ({ setCompleted, updateProgress }: QuestionnaireProps) => 
           onClick={handleNextStep}
           className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
         >
-          {currentStep === 15 ? "Complete" : "Next"}
+          {currentStep === 16 ? "Complete" : "Next"}
         </Button>
       </div>
     </div>
