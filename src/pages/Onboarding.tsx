@@ -83,7 +83,7 @@ const Onboarding = () => {
       <OnboardingHeader currentStep={currentStep} />
 
       {/* Main content */}
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-6 py-8">
         <div className="max-w-3xl mx-auto">
           {steps[currentStep].component}
           

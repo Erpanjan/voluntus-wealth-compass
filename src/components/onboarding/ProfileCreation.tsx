@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -56,13 +57,13 @@ const ProfileCreation = () => {
 
   return (
     <div>
-      <p className="text-lg mb-8">
+      <p className="text-lg mb-6">
         Let us know more about you; this will help us tailor the experience for you.
       </p>
 
       <div className="w-full max-w-2xl mx-auto">
-        <div className="flex flex-col items-center mb-10">
-          <Avatar className="h-32 w-32 mb-4 cursor-pointer" onClick={triggerFileInput}>
+        <div className="flex flex-col items-center mb-6">
+          <Avatar className="h-28 w-28 mb-3 cursor-pointer" onClick={triggerFileInput}>
             <AvatarImage src={imagePreview || ""} />
             <AvatarFallback className="text-2xl bg-gray-200 flex flex-col items-center justify-center">
               {profile.firstName && profile.lastName ? 
@@ -84,8 +85,8 @@ const ProfileCreation = () => {
           </Button>
         </div>
         
-        <form className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Input
                 id="firstName"
@@ -94,7 +95,7 @@ const ProfileCreation = () => {
                 onChange={handleChange}
                 placeholder="First name*"
                 required
-                className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+                className="border-0 border-b border-gray-300 rounded-none px-0 h-10 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
               />
             </div>
 
@@ -106,7 +107,7 @@ const ProfileCreation = () => {
                 onChange={handleChange}
                 placeholder="Last name*"
                 required
-                className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+                className="border-0 border-b border-gray-300 rounded-none px-0 h-10 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
               />
             </div>
           </div>
@@ -120,7 +121,7 @@ const ProfileCreation = () => {
               onChange={handleChange}
               placeholder="Email address*"
               required
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+              className="border-0 border-b border-gray-300 rounded-none px-0 h-10 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
             />
           </div>
 
@@ -132,7 +133,7 @@ const ProfileCreation = () => {
               onChange={handleChange}
               placeholder="Phone number*"
               required
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+              className="border-0 border-b border-gray-300 rounded-none px-0 h-10 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
             />
           </div>
 
@@ -143,7 +144,7 @@ const ProfileCreation = () => {
               value={profile.preferredCommunication}
               onChange={handleChange}
               placeholder="Preferred communication venue (Email, Phone, WeChat, WhatsApp, etc.)"
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+              className="border-0 border-b border-gray-300 rounded-none px-0 h-10 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
             />
           </div>
 
@@ -154,7 +155,7 @@ const ProfileCreation = () => {
               value={profile.mediaAccountNumber}
               onChange={handleChange}
               placeholder="Media account number"
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+              className="border-0 border-b border-gray-300 rounded-none px-0 h-10 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
             />
           </div>
 
@@ -165,11 +166,11 @@ const ProfileCreation = () => {
               value={profile.address}
               onChange={handleChange}
               placeholder="Address"
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+              className="border-0 border-b border-gray-300 rounded-none px-0 h-10 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
             />
           </div>
           
-          <p className="text-xs text-center text-gray-500 mt-4">
+          <p className="text-xs text-center text-gray-500 mt-3">
             * Required fields
           </p>
         </form>
