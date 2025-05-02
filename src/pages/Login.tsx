@@ -27,6 +27,15 @@ const Login = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Clear any URL parameters that might be affecting the state
+  useEffect(() => {
+    // Check if there are any query parameters that could be affecting rendering
+    if (window.location.search) {
+      // Replace current URL with the same path but without query parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
   // Handle toggle animation for mode switch
   const handleAdminToggle = (checked: boolean) => {
     setIsAnimating(true);
@@ -40,7 +49,7 @@ const Login = () => {
     }, 25); // reduced from 50ms to 25ms for faster response
   };
 
-  // Show loading state
+  // Return loading UI
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -50,15 +59,6 @@ const Login = () => {
       </div>
     );
   }
-
-  // Clear any URL parameters that might be affecting the state
-  useEffect(() => {
-    // Check if there are any query parameters that could be affecting rendering
-    if (window.location.search) {
-      // Replace current URL with the same path but without query parameters
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
 
   return (
     <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-all duration-700 ease-in-out ${
