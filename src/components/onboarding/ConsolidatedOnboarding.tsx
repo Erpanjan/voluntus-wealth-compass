@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { OnboardingFormData } from '@/hooks/use-onboarding-form';
@@ -34,29 +34,81 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState(0);
+  
+  // References to each section for Intersection Observer
+  const profileSectionRef = useRef<HTMLDivElement>(null);
+  const questionnaireSectionRef = useRef<HTMLDivElement>(null);
+  const consultationSectionRef = useRef<HTMLDivElement>(null);
+  
+  // Check if required profile fields are filled
+  const isProfileComplete = Boolean(
+    formData.profile.firstName && 
+    formData.profile.lastName && 
+    formData.profile.email && 
+    formData.profile.phone
+  );
   
   // Determine which steps are completed/active
   const progressSteps = [
     { 
+      id: 'profile',
       title: "Create Your Profile", 
-      completed: Boolean(formData.profile.firstName && formData.profile.lastName && formData.profile.email && formData.profile.phone), 
-      active: true 
+      completed: isProfileComplete, 
+      active: activeSection === 0 
     },
     { 
+      id: 'questionnaire',
       title: "Financial Questionnaire", 
       completed: formData.questionnaire.completed, 
-      active: Boolean(formData.profile.firstName && formData.profile.lastName && formData.profile.email && formData.profile.phone) 
+      active: activeSection === 1 
     },
     { 
+      id: 'consultation',
       title: "Schedule Consultation", 
       completed: formData.consultation.completed, 
-      active: formData.questionnaire.completed || Boolean(formData.profile.firstName && formData.profile.lastName && formData.profile.email && formData.profile.phone) 
+      active: activeSection === 2 
     }
   ];
   
+  // Setup Intersection Observer for scroll tracking
+  useEffect(() => {
+    const options = {
+      root: null, // Use viewport as root
+      rootMargin: '-10% 0px -70% 0px', // Trigger when element is 10% from the top and 30% from the bottom
+      threshold: 0 // Trigger when any part of the element is visible
+    };
+    
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          if (entry.target === profileSectionRef.current) {
+            setActiveSection(0);
+          } else if (entry.target === questionnaireSectionRef.current) {
+            setActiveSection(1);
+          } else if (entry.target === consultationSectionRef.current) {
+            setActiveSection(2);
+          }
+        }
+      });
+    };
+    
+    const observer = new IntersectionObserver(observerCallback, options);
+    
+    if (profileSectionRef.current) observer.observe(profileSectionRef.current);
+    if (questionnaireSectionRef.current) observer.observe(questionnaireSectionRef.current);
+    if (consultationSectionRef.current) observer.observe(consultationSectionRef.current);
+    
+    return () => {
+      if (profileSectionRef.current) observer.unobserve(profileSectionRef.current);
+      if (questionnaireSectionRef.current) observer.unobserve(questionnaireSectionRef.current);
+      if (consultationSectionRef.current) observer.unobserve(consultationSectionRef.current);
+    };
+  }, [profileSectionRef.current, questionnaireSectionRef.current, consultationSectionRef.current]);
+  
   const handlePreview = () => {
     // Check if required fields are filled
-    if (!formData.profile.firstName || !formData.profile.lastName || !formData.profile.email || !formData.profile.phone) {
+    if (!isProfileComplete) {
       toast({
         title: "Required Fields Missing",
         description: "Please fill in all required fields before previewing.",
@@ -87,7 +139,7 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
         {/* Vertical progress indicator - sticky on desktop */}
         <div className={cn(
           "md:sticky md:top-8 md:self-start",
-          isMobile ? "mb-6" : "w-[140px]"
+          isMobile ? "mb-6" : "w-[60px]"
         )}>
           <VerticalProgressIndicator steps={progressSteps} />
         </div>
@@ -95,7 +147,7 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
         {/* Main content area */}
         <div className="flex-1 max-w-3xl">
           {/* Profile Section */}
-          <div className="mb-16 md:mb-20 animate-fade-in">
+          <div ref={profileSectionRef} className="mb-16 md:mb-20 animate-fade-in scroll-mt-24">
             <ProfileFormSection 
               profileData={formData.profile}
               updateProfileData={updateProfileData}
@@ -103,7 +155,7 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
           </div>
           
           {/* Questionnaire Section */}
-          <div className="mb-16 md:mb-20 animate-fade-in">
+          <div ref={questionnaireSectionRef} className="mb-16 md:mb-20 animate-fade-in scroll-mt-24">
             <h2 className="text-2xl font-semibold mb-6">Financial Questionnaire</h2>
             <p className="text-gray-600 mb-8">
               This questionnaire is designed to help us understand your financial circumstances and investment goals. While completing it is optional at this stage, it will be required before we can officially begin our service. You're welcome to skip it for now and return to it during consultation.
@@ -116,7 +168,7 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
           </div>
           
           {/* Consultation Section */}
-          <div className="animate-fade-in">
+          <div ref={consultationSectionRef} className="animate-fade-in scroll-mt-24">
             <h2 className="text-2xl font-semibold mb-6">Schedule a Consultation</h2>
             <p className="text-gray-600 mb-8">
               Meet with one of our advisors for an in-depth discussion of your financial situation. We'll also use this session to verify key details and better understand your needs.

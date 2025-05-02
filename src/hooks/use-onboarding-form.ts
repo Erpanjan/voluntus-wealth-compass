@@ -62,6 +62,16 @@ export function useOnboardingForm() {
     localStorage.setItem('onboardingDraft', JSON.stringify(formData));
   }, [formData]);
 
+  // Check if consultation is complete
+  useEffect(() => {
+    if (formData.consultation.type && 
+        formData.consultation.date && 
+        formData.consultation.startTime && 
+        formData.consultation.endTime) {
+      updateConsultationData({ completed: true });
+    }
+  }, [formData.consultation.type, formData.consultation.date, formData.consultation.startTime, formData.consultation.endTime]);
+
   // Update individual form sections
   const updateProfileData = (profileData: Partial<OnboardingFormData['profile']>) => {
     setFormData(prev => ({
