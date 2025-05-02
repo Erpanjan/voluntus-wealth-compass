@@ -75,7 +75,7 @@ const ConsolidatedOnboarding: React.FC<ConsolidatedOnboardingProps> = ({
       <div className="mb-16">
         <h2 className="text-2xl font-semibold mb-6">Financial Questionnaire</h2>
         <p className="text-gray-600 mb-8">
-          Help us understand your financial goals and preferences. This information will help us provide better recommendations.
+          This questionaire will help us understand your financial circumstances and investment goals, however, its optional at this stage.
         </p>
         
         <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-8">
