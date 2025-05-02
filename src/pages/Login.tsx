@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import AdminToggle from '@/components/login/AdminToggle';
 import LoginTabs from '@/components/login/LoginTabs';
@@ -9,6 +9,7 @@ const Login = () => {
   const [pageLoaded, setPageLoaded] = useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isToggleDisabled, setIsToggleDisabled] = useState(false);
   const { toast } = useToast();
   
   // Use the custom hook to handle authentication
@@ -27,18 +28,29 @@ const Login = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle toggle animation for mode switch
-  const handleAdminToggle = (checked: boolean) => {
+  // Debounced toggle handler with animation safeguards
+  const handleAdminToggle = useCallback((checked: boolean) => {
+    // Prevent rapid toggling
+    if (isToggleDisabled) return;
+    
+    // Disable toggle during animation
+    setIsToggleDisabled(true);
     setIsAnimating(true);
-    // Add animation class
+    
+    // Start animation sequence
     setTimeout(() => {
       setIsAdminMode(checked);
-      // Remove animation class after mode has changed
+      
+      // Complete animation and re-enable toggle with a safety buffer
       setTimeout(() => {
         setIsAnimating(false);
-      }, 300);
+        // Add a small delay before allowing another toggle
+        setTimeout(() => {
+          setIsToggleDisabled(false);
+        }, 300);
+      }, 500);
     }, 50);
-  };
+  }, [isToggleDisabled]);
 
   // Show loading state
   if (loading) {
@@ -64,6 +76,7 @@ const Login = () => {
               isAdminMode={isAdminMode}
               onToggle={handleAdminToggle}
               isAnimating={isAnimating}
+              isDisabled={isToggleDisabled}
             />
           </div>
 

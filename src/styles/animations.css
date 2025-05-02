@@ -71,11 +71,22 @@
   .fixed-position-transition {
     transition: opacity 0.3s ease-in-out;
     position: relative;
+    will-change: opacity;
   }
 
   /* Content fade transition */
   .content-fade-transition {
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+  }
+  
+  /* Prevent content flicker during transitions */
+  .prevent-flicker {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: opacity, transform;
   }
 }
-

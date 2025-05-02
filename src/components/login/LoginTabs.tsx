@@ -19,7 +19,13 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
   onRegularLogin
 }) => {
   return (
-    <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 transform scale-[0.98]' : 'opacity-100 transform scale-100'}`}>
+    <div 
+      className={`transition-all duration-500 ease-in-out ${
+        isAnimating ? 'opacity-50 transform scale-[0.98]' : 'opacity-100 transform scale-100'
+      }`}
+      // Force content to remain in DOM during transitions
+      style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
+    >
       {isAdminMode ? (
         // Admin mode - Single login tab with consistent height
         <Tabs defaultValue="login" className="w-full custom-tabs">
@@ -31,7 +37,12 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
           </div>
 
           <div className="h-[450px] relative overflow-hidden">
-            <TabsContent value="login" className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out">
+            <TabsContent 
+              value="login" 
+              className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out"
+              // Force render even during transitions
+              forceMount={true}
+            >
               <LoginForm onDemoLogin={onDemoLogin} onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
             </TabsContent>
           </div>
@@ -49,15 +60,24 @@ const LoginTabs: React.FC<LoginTabsProps> = ({
           </div>
 
           <div className="h-[450px] relative overflow-hidden">
-            <TabsContent value="login" className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out">
+            <TabsContent 
+              value="login" 
+              className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out"
+            >
               <LoginForm onDemoLogin={onDemoLogin} onRegularLogin={onRegularLogin} isAdminMode={isAdminMode} />
             </TabsContent>
 
-            <TabsContent value="register" className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out">
+            <TabsContent 
+              value="register" 
+              className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out"
+            >
               <RegisterForm isAdminMode={isAdminMode} />
             </TabsContent>
 
-            <TabsContent value="forgot" className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out">
+            <TabsContent 
+              value="forgot" 
+              className="p-6 absolute w-full top-0 left-0 transition-all duration-300 ease-in-out"
+            >
               <ForgotPasswordForm />
             </TabsContent>
           </div>
