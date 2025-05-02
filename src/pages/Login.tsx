@@ -56,8 +56,8 @@ const Login = () => {
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
-        {/* Title and admin mode toggle */}
-        <div className="h-24">
+        {/* Title and admin mode toggle - fixed height container */}
+        <div className="h-24 flex items-center justify-center">
           <AdminToggle 
             isAdminMode={isAdminMode}
             onToggle={handleAdminToggle}
@@ -65,7 +65,7 @@ const Login = () => {
           />
         </div>
 
-        {/* Tabs container */}
+        {/* Tabs container with fixed position and size */}
         <LoginTabs 
           isAdminMode={isAdminMode}
           isAnimating={isAnimating}

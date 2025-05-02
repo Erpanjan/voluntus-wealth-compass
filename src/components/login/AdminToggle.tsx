@@ -11,9 +11,9 @@ interface AdminToggleProps {
 
 const AdminToggle: React.FC<AdminToggleProps> = ({ isAdminMode, onToggle, isAnimating = false }) => {
   return (
-    <div className="flex items-center justify-center relative">
+    <div className="flex items-center justify-center relative w-full">
       <div className="flex items-center space-x-4">
-        <h1 className="text-3xl font-bold transition-all duration-300">
+        <h1 className="text-3xl font-bold transition-all duration-300 min-w-[200px] text-center">
           {isAdminMode ? 'Admin Portal' : 'Client Portal'}
         </h1>
         <div className="flex items-center space-x-2">
