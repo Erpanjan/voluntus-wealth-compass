@@ -22,7 +22,7 @@ const Login = () => {
     // Small delay to ensure the animation is visible
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 100);
+    }, 50); // reduced from 100ms to 50ms for faster initial animation
     
     return () => clearTimeout(timer);
   }, []);
@@ -36,8 +36,8 @@ const Login = () => {
       // Remove animation class after mode has changed
       setTimeout(() => {
         setIsAnimating(false);
-      }, 300);
-    }, 50);
+      }, 150); // reduced from 300ms to 150ms to match the faster animation
+    }, 25); // reduced from 50ms to 25ms for faster response
   };
 
   // Show loading state
