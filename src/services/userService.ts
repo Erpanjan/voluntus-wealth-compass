@@ -11,6 +11,9 @@ export interface UserAccount {
   verified: boolean;
   firstName?: string;
   lastName?: string;
+  phone?: string;
+  createdAt?: string;
+  userNumber?: string; // Added user number field
 }
 
 export const useUserService = () => {
@@ -36,16 +39,22 @@ export const useUserService = () => {
         
         // We'll use the email from the profile if available
         const userEmail = profile.email || 'No email';
+        
+        // Generate a user number based on the first 6 chars of the UUID
+        const userNumber = `USR-${profile.id.substring(0, 6).toUpperCase()}`;
           
         usersWithAuth.push({
           id: profile.id,
           email: userEmail,
           status: profile.is_active === false ? 'Inactive' : 'Active',
           role: 'Client',
-          lastLogin: 'N/A', // We can't get this info without admin access
+          lastLogin: profile.updated_at || 'N/A', // Using updated_at as proxy for last login
           verified: true, // Assuming verified by default
           firstName: profile.first_name || '',
           lastName: profile.last_name || '',
+          createdAt: profile.created_at || 'N/A',
+          userNumber, // Added user number
+          phone: profile.phone || 'N/A'
         });
       }
       
@@ -114,8 +123,70 @@ export const useUserService = () => {
     }
   };
   
+  const deleteUser = async (userId: string): Promise<boolean> => {
+    try {
+      // First try to delete the user from auth (requires admin privileges)
+      try {
+        // Attempt to delete the user using the admin API
+        await supabase.auth.admin.deleteUser(userId);
+        console.log('Successfully deleted user from auth');
+      } catch (authError) {
+        console.log('Could not delete auth user (requires admin permissions):', authError);
+        // We'll fall back to just marking the profile as deleted
+      }
+      
+      // Even if we can't delete the auth user, we can still mark the profile
+      // We'll use a soft delete approach for the profile
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          is_active: false,
+          is_deleted: true,
+          updated_at: new Date().toISOString(),
+          email: `deleted_${userId}@deleted.com` // Anonymize the email
+        })
+        .eq('id', userId);
+      
+      if (error) throw error;
+      
+      return true;
+    } catch (error: any) {
+      console.error(`Error deleting user:`, error);
+      toast({
+        title: 'Error',
+        description: `Failed to delete user account. ${error.message}`,
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+  
+  const getUserDetails = async (userId: string): Promise<any> => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+        
+      if (error) throw error;
+      
+      return data;
+    } catch (error: any) {
+      console.error(`Error fetching user details:`, error);
+      toast({
+        title: 'Error',
+        description: `Failed to fetch user details. ${error.message}`,
+        variant: 'destructive',
+      });
+      return null;
+    }
+  };
+  
   return {
     fetchUsers,
-    updateUserStatus
+    updateUserStatus,
+    deleteUser,
+    getUserDetails
   };
 };

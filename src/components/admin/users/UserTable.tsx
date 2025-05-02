@@ -3,21 +3,27 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, User, AlertCircle } from 'lucide-react';
+import { UserCheck, UserMinus, UserX, User, AlertCircle, Eye } from 'lucide-react';
 import { UserAccount } from '@/services/userService';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { format } from 'date-fns';
 
 interface UserTableProps {
   users: UserAccount[];
   isLoading: boolean;
   onActivate: (user: UserAccount) => void;
   onDeactivate: (user: UserAccount) => void;
+  onDelete: (user: UserAccount) => void;
+  onViewDetails: (user: UserAccount) => void;
 }
 
 export const UserTable: React.FC<UserTableProps> = ({ 
   users, 
   isLoading, 
   onActivate, 
-  onDeactivate 
+  onDeactivate,
+  onDelete,
+  onViewDetails
 }) => {
   if (isLoading) {
     return (
@@ -36,16 +42,25 @@ export const UserTable: React.FC<UserTableProps> = ({
     );
   }
 
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString || dateString === 'N/A') return 'N/A';
+    try {
+      return format(new Date(dateString), 'MMM d, yyyy');
+    } catch (e) {
+      return 'Invalid date';
+    }
+  };
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
+          <TableHead>User #</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead>Verified</TableHead>
-          <TableHead>Last Login</TableHead>
+          <TableHead>Joined</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -62,6 +77,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   : 'Unnamed User'}
               </div>
             </TableCell>
+            <TableCell>{user.userNumber || `USR-${user.id.substring(0, 6).toUpperCase()}`}</TableCell>
             <TableCell>{user.email}</TableCell>
             <TableCell>
               <Badge variant={user.role === 'Advisor' ? 'default' : 'outline'}>
@@ -80,31 +96,71 @@ export const UserTable: React.FC<UserTableProps> = ({
                 {user.status}
               </Badge>
             </TableCell>
-            <TableCell>
-              {user.verified ? 
-                <CheckCircle className="h-5 w-5 text-green-500" /> : 
-                <XCircle className="h-5 w-5 text-red-500" />
-              }
-            </TableCell>
-            <TableCell>{user.lastLogin}</TableCell>
-            <TableCell className="text-right">
-              {user.status === 'Active' ? (
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  onClick={() => onDeactivate(user)}
-                >
-                  Deactivate
-                </Button>
-              ) : (
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => onActivate(user)}
-                >
-                  Activate
-                </Button>
-              )}
+            <TableCell>{formatDate(user.createdAt)}</TableCell>
+            <TableCell className="text-right space-x-1">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-8 w-8 p-0"
+                      onClick={() => onViewDetails(user)}
+                    >
+                      <Eye size={16} />
+                      <span className="sr-only">View details</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>View user details</TooltipContent>
+                </Tooltip>
+
+                {user.status === 'Active' ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-8 w-8 p-0 text-amber-500"
+                        onClick={() => onDeactivate(user)}
+                      >
+                        <UserMinus size={16} />
+                        <span className="sr-only">Deactivate</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Deactivate account</TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        className="h-8 w-8 p-0 text-green-500"
+                        onClick={() => onActivate(user)}
+                      >
+                        <UserCheck size={16} />
+                        <span className="sr-only">Activate</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Activate account</TooltipContent>
+                  </Tooltip>
+                )}
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-8 w-8 p-0 text-red-500"
+                      onClick={() => onDelete(user)}
+                    >
+                      <UserX size={16} />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete account</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </TableCell>
           </TableRow>
         ))}
