@@ -48,6 +48,7 @@ export const UserTable: React.FC<UserTableProps> = ({
     try {
       return format(new Date(dateString), 'MMM d, yyyy');
     } catch (e) {
+      console.error('Error formatting date:', dateString, e);
       return 'Invalid date';
     }
   };

@@ -11,7 +11,7 @@ export interface UserAccount {
   verified: boolean;
   firstName?: string;
   lastName?: string;
-  phone?: string; // Made optional
+  phone?: string; // Made optional since it may not exist in profiles table
   createdAt?: string;
   userNumber?: string;
 }
@@ -61,24 +61,25 @@ export const useUserService = () => {
         // Generate a user number based on the first 6 chars of the UUID
         const userNumber = `USR-${profile.id.substring(0, 6).toUpperCase()}`;
           
-        const userAccount = {
+        // Create a user account object with all required fields
+        const userAccount: UserAccount = {
           id: profile.id,
           email: userEmail,
           status: profile.is_active === false ? 'Inactive' : 'Active',
-          role: profile.is_admin ? 'Admin' : 'Client',
+          role: 'Client', // Non-admin users are always clients
           lastLogin: profile.updated_at || 'N/A', // Using updated_at as proxy for last login
           verified: true, // Assuming verified by default
           firstName: profile.first_name || '',
           lastName: profile.last_name || '',
           createdAt: profile.created_at || 'N/A',
-          userNumber, // Added user number
+          userNumber,
         };
         
-        // Add phone only if it exists in profile
-        // This fixes the TypeScript error by avoiding direct access to a potentially non-existent property
-        if ('phone' in profile && profile.phone) {
-          userAccount.phone = profile.phone;
-        }
+        // The profiles table doesn't have a phone field, so we don't add it
+        // If in the future it's added, we can enable this code:
+        // if ('phone' in profile && profile.phone) {
+        //   userAccount.phone = profile.phone;
+        // }
         
         console.log(`Added user account:`, userAccount);
         usersWithAuth.push(userAccount);

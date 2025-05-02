@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { AlertsSection } from '@/components/admin/users/AlertsSection';
 import { UserFilter } from '@/components/admin/users/UserFilter';
 import { UserAccountList } from '@/components/admin/users/UserAccountList';
-import { supabase } from '@/integrations/supabase/client'; // Added the correct import
+import { supabase } from '@/integrations/supabase/client';
 
 const UserAccountManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,19 +35,30 @@ const UserAccountManagement = () => {
     setIsLoading(true);
     console.log('Loading users...');
     
-    const fetchedUsers = await fetchUsers();
-    console.log('Fetched users:', fetchedUsers);
-    
-    // Filter out any admin users that might have slipped through
-    const clientUsers = fetchedUsers.filter(user => user.role !== 'Admin');
-    console.log('Client users only:', clientUsers);
-    
-    setUsers(clientUsers);
-    setNoUsersFound(clientUsers.length === 0);
-    
-    // We know we have limited permissions, so no need to check
-    setAdminPermissionsLimited(true);
-    setIsLoading(false);
+    try {
+      const fetchedUsers = await fetchUsers();
+      console.log('Fetched users:', fetchedUsers);
+      
+      // Filter out any admin users that might have slipped through
+      const clientUsers = fetchedUsers.filter(user => user.role !== 'Admin');
+      console.log('Client users only:', clientUsers);
+      
+      setUsers(clientUsers);
+      setNoUsersFound(clientUsers.length === 0);
+      
+      // We know we have limited permissions, so no need to check
+      setAdminPermissionsLimited(true);
+    } catch (error) {
+      console.error('Error loading users:', error);
+      setNoUsersFound(true);
+      toast({
+        title: 'Error',
+        description: 'Failed to load user accounts.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Handle user account activation/deactivation
@@ -128,10 +139,11 @@ const UserAccountManagement = () => {
 
   // Filter users based on search query
   const filteredUsers = users.filter(user => {
-    return user.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      (user.userNumber && user.userNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (user.firstName && user.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (user.lastName && user.lastName.toLowerCase().includes(searchQuery.toLowerCase()));
+    const searchLower = searchQuery.toLowerCase();
+    return user.email.toLowerCase().includes(searchLower) || 
+      (user.userNumber && user.userNumber.toLowerCase().includes(searchLower)) ||
+      (user.firstName && user.firstName.toLowerCase().includes(searchLower)) ||
+      (user.lastName && user.lastName.toLowerCase().includes(searchLower));
   });
   
   return (
