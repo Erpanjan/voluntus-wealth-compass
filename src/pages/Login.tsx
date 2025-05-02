@@ -57,7 +57,7 @@ const Login = () => {
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
         {/* Increased height container for better form display */}
-        <div className="h-[600px] relative">
+        <div className="h-[700px] relative">
           {/* Title and admin mode toggle - fixed position */}
           <div className="h-20 flex items-center justify-center absolute top-0 left-0 w-full">
             <AdminToggle 
