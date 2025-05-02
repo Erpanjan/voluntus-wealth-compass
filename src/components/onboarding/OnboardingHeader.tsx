@@ -3,7 +3,6 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 interface OnboardingHeaderProps {
@@ -12,41 +11,30 @@ interface OnboardingHeaderProps {
 
 const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   
   const handleExitSetup = async () => {
     try {
-      // Clear all localStorage flags first
-      clearUserStateFlags();
+      // Get user ID before signing out
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
       
-      // Remove authentication state
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('isAdminMode');
-      
-      // Sign out from Supabase
+      // Sign out from Supabase first
       await supabase.auth.signOut();
+      
+      // Clear all user-specific flags
+      clearUserStateFlags(userId);
       
       // Add transition effect to the body
       document.body.classList.add('login-transition');
       
-      // Provide feedback to user
-      toast({
-        title: "Logged out successfully",
-        description: "You have been signed out of your account."
-      });
-      
-      // Redirect to login after a short delay to allow animation to play
-      // and ensure session is properly cleared
+      // Redirect to login after a short delay to ensure session changes are processed
       setTimeout(() => {
-        navigate('/login');
-      }, 500);
+        navigate('/login', { replace: true });
+      }, 500); // Increased from 300ms to 500ms for more reliable session clearing
     } catch (error) {
       console.error('Error during logout:', error);
-      toast({
-        title: "Logout Error",
-        description: "There was a problem signing you out. Please try again.",
-        variant: "destructive"
-      });
+      // Fallback navigation in case of error
+      navigate('/login', { replace: true });
     }
   };
   
@@ -60,8 +48,10 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
             className="h-16" 
           />
         </Link>
-        {/* Show Exit Setup button on all onboarding pages */}
-        <Button variant="link" onClick={handleExitSetup}>
+        <Button 
+          variant="link" 
+          onClick={handleExitSetup}
+        >
           Exit Setup
         </Button>
       </div>
