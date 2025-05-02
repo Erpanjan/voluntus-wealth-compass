@@ -34,10 +34,6 @@ const AdminSidebar = () => {
 
   return (
     <div className="w-64 bg-white border-r h-full flex flex-col">
-      <div className="p-6 border-b">
-        <h2 className="text-xl font-semibold">Financial Dashboard</h2>
-        <p className="text-xs text-[#9F9EA1] mt-1">Admin Portal</p>
-      </div>
       
       <nav className="flex-1 p-4">
         <ul className="space-y-6">
