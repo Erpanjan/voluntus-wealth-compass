@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -25,7 +24,8 @@ const Welcome = () => {
           
           <p className="text-sm md:text-base font-inter text-gray-600 mb-10 max-w-3xl mx-auto">
             We're excited to have you on board. Before we can begin offering our services, 
-            we kindly ask you to complete a few important steps:
+            we kindly ask you to complete a few important steps. Once you've completed the these steps, 
+            our team will review your application and follow up shortly.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
