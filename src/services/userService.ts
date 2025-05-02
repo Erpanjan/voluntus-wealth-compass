@@ -72,9 +72,13 @@ export const useUserService = () => {
           lastName: profile.last_name || '',
           createdAt: profile.created_at || 'N/A',
           userNumber, // Added user number
-          // Don't include phone property if it doesn't exist in profile
-          ...(profile.phone && { phone: profile.phone })
         };
+        
+        // Add phone only if it exists in profile
+        // This fixes the TypeScript error by avoiding direct access to a potentially non-existent property
+        if ('phone' in profile && profile.phone) {
+          userAccount.phone = profile.phone;
+        }
         
         console.log(`Added user account:`, userAccount);
         usersWithAuth.push(userAccount);
