@@ -23,6 +23,8 @@ const UserAccountManagement = () => {
   const [showActivateDialog, setShowActivateDialog] = useState(false);
   const [databaseError, setDatabaseError] = useState<string | undefined>(undefined);
   const [connectError, setConnectError] = useState(false);
+  const [userDetailsLoading, setUserDetailsLoading] = useState(false);
+  const [userDetails, setUserDetails] = useState<any>(null);
   
   const userService = useUserService();
   const { toast } = useToast();
@@ -60,7 +62,7 @@ const UserAccountManagement = () => {
       
       if (loadingTimeout) clearTimeout(loadingTimeout);
     }
-  }, [userService, toast]);
+  }, [userService, toast, loadingTimeout]);
 
   useEffect(() => {
     fetchUsers();
@@ -68,7 +70,7 @@ const UserAccountManagement = () => {
     return () => {
       if (loadingTimeout) clearTimeout(loadingTimeout);
     };
-  }, [fetchUsers]);
+  }, [fetchUsers, loadingTimeout]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -87,6 +89,24 @@ const UserAccountManagement = () => {
     setFilteredUsers(filtered);
   }, [searchQuery, users]);
 
+  const fetchUserDetails = useCallback(async (userId: string) => {
+    setUserDetailsLoading(true);
+    try {
+      const details = await userService.getUserDetails(userId);
+      setUserDetails(details);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load user details",
+        variant: "destructive"
+      });
+      setUserDetails(null);
+    } finally {
+      setUserDetailsLoading(false);
+    }
+  }, [userService, toast]);
+
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
   };
@@ -98,6 +118,7 @@ const UserAccountManagement = () => {
   const handleViewDetails = (user: UserAccount) => {
     setSelectedUser(user);
     setShowDetailsDialog(true);
+    fetchUserDetails(user.id);
   };
 
   const handleDelete = (user: UserAccount) => {
@@ -184,37 +205,35 @@ const UserAccountManagement = () => {
         {selectedUser && (
           <>
             <UserDetailsDialog 
-              user={selectedUser}
               isOpen={showDetailsDialog}
               onClose={() => setShowDetailsDialog(false)}
+              user={selectedUser}
+              userDetails={userDetails}
+              isLoading={userDetailsLoading}
             />
             
             <ConfirmationDialog 
               isOpen={showDeleteDialog}
               onClose={() => setShowDeleteDialog(false)}
               onConfirm={confirmDelete}
-              title="Delete User"
-              description={`Are you sure you want to delete ${selectedUser.firstName} ${selectedUser.lastName}? This action cannot be undone.`}
-              confirmLabel="Delete"
-              destructive
+              user={selectedUser}
+              actionType="delete"
             />
             
             <ConfirmationDialog 
               isOpen={showDeactivateDialog}
               onClose={() => setShowDeactivateDialog(false)}
               onConfirm={confirmDeactivate}
-              title="Deactivate User"
-              description={`Are you sure you want to deactivate ${selectedUser.firstName} ${selectedUser.lastName}? They will no longer be able to access the system.`}
-              confirmLabel="Deactivate"
+              user={selectedUser}
+              actionType="deactivate"
             />
             
             <ConfirmationDialog 
               isOpen={showActivateDialog}
               onClose={() => setShowActivateDialog(false)}
               onConfirm={confirmActivate}
-              title="Activate User"
-              description={`Are you sure you want to activate ${selectedUser.firstName} ${selectedUser.lastName}? They will be able to access the system.`}
-              confirmLabel="Activate"
+              user={selectedUser}
+              actionType="activate"
             />
           </>
         )}
