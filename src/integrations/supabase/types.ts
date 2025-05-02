@@ -266,10 +266,19 @@ export type Database = {
       questionnaire_responses: {
         Row: {
           additional_info: string | null
+          age_group: string | null
+          answers_json: Json | null
+          behavioral_biases: string | null
           completed: boolean | null
+          complex_products: number | null
           created_at: string
           id: string
+          income_level: string | null
+          investment_composition: string | null
+          investment_experience: string | null
           investment_goals: string | null
+          investment_knowledge: string | null
+          net_worth: string | null
           risk_tolerance: string | null
           time_horizon: string | null
           updated_at: string
@@ -277,10 +286,19 @@ export type Database = {
         }
         Insert: {
           additional_info?: string | null
+          age_group?: string | null
+          answers_json?: Json | null
+          behavioral_biases?: string | null
           completed?: boolean | null
+          complex_products?: number | null
           created_at?: string
           id?: string
+          income_level?: string | null
+          investment_composition?: string | null
+          investment_experience?: string | null
           investment_goals?: string | null
+          investment_knowledge?: string | null
+          net_worth?: string | null
           risk_tolerance?: string | null
           time_horizon?: string | null
           updated_at?: string
@@ -288,10 +306,19 @@ export type Database = {
         }
         Update: {
           additional_info?: string | null
+          age_group?: string | null
+          answers_json?: Json | null
+          behavioral_biases?: string | null
           completed?: boolean | null
+          complex_products?: number | null
           created_at?: string
           id?: string
+          income_level?: string | null
+          investment_composition?: string | null
+          investment_experience?: string | null
           investment_goals?: string | null
+          investment_knowledge?: string | null
+          net_worth?: string | null
           risk_tolerance?: string | null
           time_horizon?: string | null
           updated_at?: string

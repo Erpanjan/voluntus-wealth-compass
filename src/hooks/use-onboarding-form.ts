@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -25,6 +24,32 @@ export interface OnboardingFormData {
     date: string;
     time: string;
   };
+}
+
+// Define an interface for the questionnaire response data
+interface QuestionnaireResponseData {
+  id: string;
+  user_id: string;
+  completed?: boolean;
+  investment_goals?: string;
+  risk_tolerance?: string;
+  time_horizon?: string;
+  additional_info?: string;
+  age_group?: string;
+  income_level?: string;
+  net_worth?: string;
+  investment_knowledge?: string;
+  investment_experience?: string;
+  complex_products?: number;
+  investment_composition?: string;
+  behavioral_biases?: string;
+  answers_json?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export function useOnboarding() {
+  
 }
 
 export function useOnboardingForm() {
@@ -103,6 +128,9 @@ export function useOnboardingForm() {
           console.error('Error fetching questionnaire data:', questionnaireError);
         }
 
+        // Cast to our interface for type safety
+        const typedQuestionnaireData = questionnaireData as QuestionnaireResponseData | null;
+
         if (onboardingData) {
           // Map database fields to form fields
           const updatedFormData = {
@@ -117,12 +145,23 @@ export function useOnboardingForm() {
               imageUrl: onboardingData.image_url || null,
             },
             questionnaire: {
-              completed: questionnaireData?.completed || false,
+              completed: typedQuestionnaireData?.completed || false,
               answers: {
-                investmentGoals: questionnaireData?.investment_goals || '',
-                riskTolerance: questionnaireData?.risk_tolerance || '',
-                timeHorizon: questionnaireData?.time_horizon || '',
-                additionalInfo: questionnaireData?.additional_info || '',
+                investmentGoals: typedQuestionnaireData?.investment_goals || '',
+                riskTolerance: typedQuestionnaireData?.risk_tolerance || '',
+                timeHorizon: typedQuestionnaireData?.time_horizon || '',
+                additionalInfo: typedQuestionnaireData?.additional_info || '',
+                // Add the new fields
+                ageGroup: typedQuestionnaireData?.age_group || '',
+                income: typedQuestionnaireData?.income_level || '',
+                netWorth: typedQuestionnaireData?.net_worth || '',
+                investmentKnowledge: typedQuestionnaireData?.investment_knowledge || '',
+                investmentExperience: typedQuestionnaireData?.investment_experience || '',
+                complexProducts: typedQuestionnaireData?.complex_products || null,
+                investmentComposition: typedQuestionnaireData?.investment_composition || '',
+                behavioralBiases: typedQuestionnaireData?.behavioral_biases || '',
+                // Load from answers_json if available
+                ...(typedQuestionnaireData?.answers_json ? JSON.parse(typedQuestionnaireData.answers_json) : {}),
               },
             },
             consultation: {
@@ -204,6 +243,15 @@ export function useOnboardingForm() {
             risk_tolerance: newFormData.questionnaire.answers.riskTolerance || null,
             time_horizon: newFormData.questionnaire.answers.timeHorizon || null,
             additional_info: newFormData.questionnaire.answers.additionalInfo || null,
+            age_group: newFormData.questionnaire.answers.ageGroup || null,
+            income_level: newFormData.questionnaire.answers.income || null,
+            net_worth: newFormData.questionnaire.answers.netWorth || null,
+            investment_knowledge: newFormData.questionnaire.answers.investmentKnowledge || null,
+            investment_experience: newFormData.questionnaire.answers.investmentExperience || null,
+            complex_products: newFormData.questionnaire.answers.complexProducts || null,
+            investment_composition: newFormData.questionnaire.answers.investmentComposition || null,
+            behavioral_biases: newFormData.questionnaire.answers.behavioralBiases || null,
+            answers_json: JSON.stringify(newFormData.questionnaire.answers),
             updated_at: new Date().toISOString(),
           }, { onConflict: 'user_id' });
 

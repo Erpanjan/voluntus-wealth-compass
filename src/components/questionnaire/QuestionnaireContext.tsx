@@ -29,6 +29,28 @@ interface QuestionnaireState {
   isSaving: boolean;
 }
 
+// Define an interface for the questionnaire data from the database
+interface QuestionnaireResponseData {
+  id: string;
+  user_id: string;
+  completed?: boolean;
+  investment_goals?: string;
+  risk_tolerance?: string;
+  time_horizon?: string;
+  additional_info?: string;
+  age_group?: string;
+  income_level?: string;
+  net_worth?: string;
+  investment_knowledge?: string;
+  investment_experience?: string;
+  complex_products?: number;
+  investment_composition?: string;
+  behavioral_biases?: string;
+  answers_json?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const QuestionnaireContext = createContext<QuestionnaireState | null>(null);
 
 export const useQuestionnaire = () => {
@@ -83,19 +105,22 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
             .single();
             
           if (data && !error) {
+            // Cast data to our interface for type safety
+            const responseData = data as QuestionnaireResponseData;
+            
             // If we have database data, convert and use it
             const dbAnswers = {
               ...loadedAnswers, // Keep any local data not stored in DB schema
-              ageGroup: data.age_group,
-              income: data.income_level,
-              netWorth: data.net_worth,
-              investmentKnowledge: data.investment_knowledge,
-              investmentExperience: data.investment_experience,
-              complexProducts: data.complex_products,
-              investmentComposition: data.investment_composition,
-              behavioralBiases: data.behavioral_biases,
+              ageGroup: responseData.age_group,
+              income: responseData.income_level,
+              netWorth: responseData.net_worth,
+              investmentKnowledge: responseData.investment_knowledge,
+              investmentExperience: responseData.investment_experience,
+              complexProducts: responseData.complex_products,
+              investmentComposition: responseData.investment_composition,
+              behavioralBiases: responseData.behavioral_biases,
               // For complete answers JSON data
-              ...(data.answers_json ? JSON.parse(data.answers_json) : {})
+              ...(responseData.answers_json ? JSON.parse(responseData.answers_json) : {})
             };
             
             loadedAnswers = dbAnswers;
@@ -238,6 +263,23 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // Function to save to localStorage
+  const saveToLocalStorage = (data: Record<string, any>) => {
+    localStorage.setItem('questionnaireAnswers', JSON.stringify(data));
+  };
+
+  // Handle answer updates
+  const updateAnswer = (questionId: string, value: any) => {
+    console.log(`Updating ${questionId} with:`, value);
+    setAnswers(prev => {
+      const updatedAnswers = {
+        ...prev,
+        [questionId]: value
+      };
+      return updatedAnswers;
+    });
   };
 
   // Function to get selected goals (used for goal-specific questions)

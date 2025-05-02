@@ -50,7 +50,8 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
           // Combine data sources with priority to database
           const combinedAnswers = {
             ...parsedLocalData,
-            ...((data.answers_json ? JSON.parse(data.answers_json) : {})),
+            // Use optional chaining and nullish coalescing to safely access potentially missing properties
+            ...((data.answers_json ? JSON.parse(data.answers_json as string) : {})),
           };
           
           // Update onboarding form data with latest questionnaire status
