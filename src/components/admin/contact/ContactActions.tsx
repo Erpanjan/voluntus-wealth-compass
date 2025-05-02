@@ -15,13 +15,6 @@ const ContactActions: React.FC<ContactActionsProps> = ({
 }) => {
   return (
     <div className="flex flex-wrap gap-2 mb-3">
-      <Button 
-        size="sm" 
-        variant="default" 
-        onClick={onReply}
-      >
-        Reply
-      </Button>
       {status === 'New' ? (
         <Button 
           size="sm" 
