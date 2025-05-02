@@ -13,7 +13,7 @@ const AdminToggle: React.FC<AdminToggleProps> = ({ isAdminMode, onToggle, isAnim
   return (
     <div className="flex items-center justify-center relative">
       <div className="flex items-center space-x-4">
-        <h1 className="text-3xl font-bold transition-all duration-300">
+        <h1 className={`text-3xl font-bold transition-all duration-500 ease-in-out ${isAnimating ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'}`}>
           {isAdminMode ? 'Admin Portal' : 'Client Portal'}
         </h1>
         <div className="flex items-center space-x-2">
@@ -21,7 +21,7 @@ const AdminToggle: React.FC<AdminToggleProps> = ({ isAdminMode, onToggle, isAnim
             id="admin-mode"
             checked={isAdminMode}
             onCheckedChange={onToggle}
-            className="transition-all duration-300"
+            className="transition-all duration-300 ease-in-out"
           />
           <Label htmlFor="admin-mode" className="text-sm text-gray-600"></Label>
         </div>
