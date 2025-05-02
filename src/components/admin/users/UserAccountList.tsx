@@ -18,23 +18,27 @@ interface UserAccountListProps {
 
 export const UserAccountList: React.FC<UserAccountListProps> = ({
   users,
-  isLoading
+  isLoading,
+  onActivate,
+  onDeactivate,
+  onDelete,
+  onViewDetails
 }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>User Accounts</CardTitle>
-        <CardDescription>Manage client user accounts and their status</CardDescription>
+        <CardTitle>Client Accounts</CardTitle>
+        <CardDescription>View and manage client user accounts and their status</CardDescription>
       </CardHeader>
       
       <CardContent>
         <UserTable 
           users={users}
           isLoading={isLoading}
-          onActivate={() => {}}
-          onDeactivate={() => {}}
-          onDelete={() => {}}
-          onViewDetails={() => {}}
+          onActivate={onActivate}
+          onDeactivate={onDeactivate}
+          onDelete={onDelete}
+          onViewDetails={onViewDetails}
         />
       </CardContent>
     </Card>

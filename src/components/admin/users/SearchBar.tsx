@@ -6,7 +6,7 @@ import { Search } from 'lucide-react';
 interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  onRefresh?: () => void; // Made optional since it's not used in this component
+  onRefresh?: () => void;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ 

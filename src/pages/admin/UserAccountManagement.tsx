@@ -1,38 +1,123 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { UserAccountList } from '@/components/admin/users/UserAccountList';
+import { AlertsSection } from '@/components/admin/users/AlertsSection';
+import { UserFilter } from '@/components/admin/users/UserFilter';
+import { useUserService, UserAccount } from '@/services/userService';
+import { useToast } from '@/hooks/use-toast';
 
 const UserAccountManagement = () => {
+  const [users, setUsers] = useState<UserAccount[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserAccount[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [adminPermissionsLimited, setAdminPermissionsLimited] = useState(false);
+  const { fetchUsers } = useUserService();
+  const { toast } = useToast();
+
+  // Fetch users on page load
+  useEffect(() => {
+    const loadUsers = async () => {
+      setIsLoading(true);
+      try {
+        const userData = await fetchUsers();
+        setUsers(userData);
+        setFilteredUsers(userData);
+      } catch (error) {
+        console.error('Error loading users:', error);
+        toast({
+          title: "Error loading users",
+          description: "Please try again later or contact support",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, [fetchUsers, toast]);
+
+  // Filter users based on search query
+  useEffect(() => {
+    if (!searchQuery) {
+      setFilteredUsers(users);
+      return;
+    }
+    
+    const query = searchQuery.toLowerCase();
+    const filtered = users.filter(user => 
+      user.email?.toLowerCase().includes(query) ||
+      user.firstName?.toLowerCase().includes(query) ||
+      user.lastName?.toLowerCase().includes(query) ||
+      user.userNumber?.toLowerCase().includes(query)
+    );
+    
+    setFilteredUsers(filtered);
+  }, [searchQuery, users]);
+
+  // Handle search input change
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  // Handle refresh button click
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    try {
+      const userData = await fetchUsers();
+      setUsers(userData);
+      setFilteredUsers(userData);
+      toast({
+        title: "Refreshed",
+        description: "User data has been refreshed",
+      });
+    } catch (error) {
+      console.error('Error refreshing users:', error);
+      toast({
+        title: "Error refreshing users",
+        description: "Please try again later",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Placeholder handler functions to pass to components
+  const handleActivate = (user: UserAccount) => {};
+  const handleDeactivate = (user: UserAccount) => {};
+  const handleDelete = (user: UserAccount) => {};
+  const handleViewDetails = (user: UserAccount) => {};
+
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">User Account Management</h1>
-        </div>
+        <UserFilter 
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          onRefresh={handleRefresh}
+          isLoading={isLoading}
+        />
         
-        <Alert variant="warning" className="border-amber-300 bg-amber-50">
-          <AlertTriangle className="h-4 w-4 text-amber-500" />
-          <AlertDescription className="text-amber-800">
-            The user account management functionality is currently being updated. Please check back later.
-          </AlertDescription>
-        </Alert>
+        <AlertsSection 
+          adminPermissionsLimited={adminPermissionsLimited}
+          noUsersFound={!isLoading && filteredUsers.length === 0}
+          isLoading={isLoading}
+        />
         
-        <Card>
-          <CardHeader>
-            <CardTitle>User Accounts</CardTitle>
-            <CardDescription>Manage client user accounts and their status</CardDescription>
-          </CardHeader>
-          
-          <CardContent>
-            <div className="text-center py-10">
-              <p className="text-gray-500">User account management is currently unavailable.</p>
-              <p className="text-sm text-gray-400 mt-2">We're working on improving this feature for better performance.</p>
-            </div>
-          </CardContent>
-        </Card>
+        <UserAccountList 
+          users={filteredUsers}
+          isLoading={isLoading}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          onRefresh={handleRefresh}
+          onActivate={handleActivate}
+          onDeactivate={handleDeactivate}
+          onDelete={handleDelete}
+          onViewDetails={handleViewDetails}
+        />
       </div>
     </AdminLayout>
   );
