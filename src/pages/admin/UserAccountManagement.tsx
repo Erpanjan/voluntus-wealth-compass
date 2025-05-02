@@ -1,29 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { ConfirmationDialog } from '@/components/admin/users/ConfirmationDialog';
-import { UserDetailsDialog } from '@/components/admin/users/UserDetailsDialog';
-import { useUserService, UserAccount } from '@/services/userService';
+import { useUserService, UserProfile } from '@/services/userService';
 import { useToast } from '@/hooks/use-toast';
 import { AlertsSection } from '@/components/admin/users/AlertsSection';
 import { UserFilter } from '@/components/admin/users/UserFilter';
 import { UserAccountList } from '@/components/admin/users/UserAccountList';
-import { supabase } from '@/integrations/supabase/client'; // Added the correct import
 
 const UserAccountManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [users, setUsers] = useState<UserAccount[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState<UserAccount | null>(null);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [isUserDetailsDialogOpen, setIsUserDetailsDialogOpen] = useState(false);
-  const [userDetails, setUserDetails] = useState<any>(null);
-  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
-  const [actionType, setActionType] = useState<'activate' | 'deactivate' | 'delete'>('activate');
-  const { fetchUsers, updateUserStatus, deleteUser, getUserDetails } = useUserService();
-  const { toast } = useToast();
-  const [adminPermissionsLimited, setAdminPermissionsLimited] = useState(true); // Default to true since we know we have limited permissions
   const [noUsersFound, setNoUsersFound] = useState(false);
+  const { fetchUsers } = useUserService();
+  const { toast } = useToast();
   
   // Fetch users on component mount
   useEffect(() => {
@@ -33,92 +23,26 @@ const UserAccountManagement = () => {
   // Load users from the service
   const loadUsers = async () => {
     setIsLoading(true);
-    console.log('Loading users...');
+    console.log('Loading profiles...');
     
-    const fetchedUsers = await fetchUsers();
-    console.log('Fetched users:', fetchedUsers);
-    
-    // Filter out any admin users that might have slipped through
-    const clientUsers = fetchedUsers.filter(user => user.role !== 'Admin');
-    console.log('Client users only:', clientUsers);
-    
-    setUsers(clientUsers);
-    setNoUsersFound(clientUsers.length === 0);
-    
-    // We know we have limited permissions, so no need to check
-    setAdminPermissionsLimited(true);
-    setIsLoading(false);
-  };
-
-  // Handle user account activation/deactivation
-  const handleUserStatusChange = (user: UserAccount, action: 'activate' | 'deactivate') => {
-    setSelectedUser(user);
-    setActionType(action);
-    setIsConfirmDialogOpen(true);
-  };
-  
-  // Handle user deletion
-  const handleUserDelete = (user: UserAccount) => {
-    setSelectedUser(user);
-    setActionType('delete');
-    setIsConfirmDialogOpen(true);
-  };
-  
-  // Handle user details view
-  const handleViewUserDetails = async (user: UserAccount) => {
-    setSelectedUser(user);
-    setIsUserDetailsDialogOpen(true);
-    setIsLoadingDetails(true);
-    
-    const details = await getUserDetails(user.id);
-    setUserDetails(details);
-    setIsLoadingDetails(false);
-  };
-
-  // Confirm and execute status change or deletion
-  const confirmAction = async () => {
-    if (!selectedUser) return;
-    
-    let success = false;
-    
-    if (actionType === 'delete') {
-      success = await deleteUser(selectedUser.id);
+    try {
+      const fetchedProfiles = await fetchUsers();
+      console.log('Fetched profiles:', fetchedProfiles);
       
-      if (success) {
-        // Remove from UI
-        setUsers(prevUsers => prevUsers.filter(u => u.id !== selectedUser.id));
-        
+      setUsers(fetchedProfiles);
+      setNoUsersFound(fetchedProfiles.length === 0);
+      
+      if (fetchedProfiles.length > 0) {
         toast({
           title: 'Success',
-          description: `User account deleted successfully.`,
+          description: `Loaded ${fetchedProfiles.length} user profiles`,
         });
       }
-    } else {
-      // Activate or deactivate
-      success = await updateUserStatus(
-        selectedUser.id, 
-        actionType === 'activate'
-      );
-      
-      if (success) {
-        // Update local state
-        setUsers(prevUsers => 
-          prevUsers.map(u => 
-            u.id === selectedUser.id
-              ? { ...u, status: actionType === 'activate' ? 'Active' : 'Inactive' }
-              : u
-          )
-        );
-        
-        toast({
-          title: 'Success',
-          description: `User account ${actionType === 'activate' ? 'activated' : 'deactivated'} successfully.`,
-        });
-      }
+    } catch (error) {
+      console.error('Error loading profiles:', error);
+    } finally {
+      setIsLoading(false);
     }
-    
-    // Close dialog
-    setIsConfirmDialogOpen(false);
   };
 
   // Handle search query change
@@ -128,10 +52,12 @@ const UserAccountManagement = () => {
 
   // Filter users based on search query
   const filteredUsers = users.filter(user => {
-    return user.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      (user.userNumber && user.userNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (user.firstName && user.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (user.lastName && user.lastName.toLowerCase().includes(searchQuery.toLowerCase()));
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      (user.email && user.email.toLowerCase().includes(searchLower)) || 
+      (user.first_name && user.first_name.toLowerCase().includes(searchLower)) ||
+      (user.last_name && user.last_name.toLowerCase().includes(searchLower))
+    );
   });
   
   return (
@@ -145,7 +71,6 @@ const UserAccountManagement = () => {
         />
         
         <AlertsSection 
-          adminPermissionsLimited={adminPermissionsLimited}
           noUsersFound={noUsersFound}
           isLoading={isLoading}
         />
@@ -156,28 +81,8 @@ const UserAccountManagement = () => {
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           onRefresh={loadUsers}
-          onActivate={(user) => handleUserStatusChange(user, 'activate')}
-          onDeactivate={(user) => handleUserStatusChange(user, 'deactivate')}
-          onDelete={handleUserDelete}
-          onViewDetails={handleViewUserDetails}
         />
       </div>
-
-      <ConfirmationDialog
-        isOpen={isConfirmDialogOpen}
-        onClose={() => setIsConfirmDialogOpen(false)}
-        onConfirm={confirmAction}
-        user={selectedUser}
-        actionType={actionType}
-      />
-      
-      <UserDetailsDialog 
-        isOpen={isUserDetailsDialogOpen}
-        onClose={() => setIsUserDetailsDialogOpen(false)}
-        user={selectedUser}
-        userDetails={userDetails}
-        isLoading={isLoadingDetails}
-      />
     </AdminLayout>
   );
 };

@@ -24,7 +24,6 @@ export const UserFilter: React.FC<UserFilterProps> = ({
         <SearchBar 
           searchQuery={searchQuery} 
           onSearchChange={onSearchChange}
-          onRefresh={onRefresh}
         />
         <Button 
           variant="outline" 

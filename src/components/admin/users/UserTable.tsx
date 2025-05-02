@@ -2,31 +2,18 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { UserCheck, UserMinus, UserX, Eye } from 'lucide-react';
-import { UserAccount } from '@/services/userService';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
+import { UserProfile } from '@/services/userService';
 
 interface UserTableProps {
-  users: UserAccount[];
+  users: UserProfile[];
   isLoading: boolean;
-  onActivate: (user: UserAccount) => void;
-  onDeactivate: (user: UserAccount) => void;
-  onDelete: (user: UserAccount) => void;
-  onViewDetails: (user: UserAccount) => void;
 }
 
 export const UserTable: React.FC<UserTableProps> = ({ 
   users, 
-  isLoading, 
-  onActivate, 
-  onDeactivate,
-  onDelete,
-  onViewDetails
+  isLoading
 }) => {
-  console.log('UserTable rendering with users:', users);
-  
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -43,8 +30,8 @@ export const UserTable: React.FC<UserTableProps> = ({
     );
   }
 
-  const formatDate = (dateString: string | undefined) => {
-    if (!dateString || dateString === 'N/A') return 'N/A';
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return 'N/A';
     try {
       return format(new Date(dateString), 'MMM d, yyyy');
     } catch (e) {
@@ -56,94 +43,35 @@ export const UserTable: React.FC<UserTableProps> = ({
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead>Phone</TableHead>
           <TableHead>Joined</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {users.map(user => (
           <TableRow key={user.id}>
-            <TableCell>{user.email}</TableCell>
+            <TableCell className="font-medium">
+              {user.first_name || user.last_name ? 
+                `${user.first_name || ''} ${user.last_name || ''}`.trim() : 
+                'Not provided'}
+            </TableCell>
+            <TableCell>{user.email || 'N/A'}</TableCell>
             <TableCell>
               <Badge 
                 variant="outline" 
                 className={
-                  user.status === 'Active' ? 'border-green-500 text-green-500' :
-                  user.status === 'Inactive' ? 'border-gray-400 text-gray-400' :
-                  'border-amber-500 text-amber-500'
+                  user.is_active === true ? 'border-green-500 text-green-500' : 
+                  'border-gray-400 text-gray-400'
                 }
               >
-                {user.status}
+                {user.is_active === true ? 'Active' : 'Inactive'}
               </Badge>
             </TableCell>
-            <TableCell>{formatDate(user.createdAt)}</TableCell>
-            <TableCell className="text-right space-x-1">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="h-8 w-8 p-0"
-                      onClick={() => onViewDetails(user)}
-                    >
-                      <Eye size={16} />
-                      <span className="sr-only">View details</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>View user details</TooltipContent>
-                </Tooltip>
-
-                {user.status === 'Active' ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="h-8 w-8 p-0 text-amber-500"
-                        onClick={() => onDeactivate(user)}
-                      >
-                        <UserMinus size={16} />
-                        <span className="sr-only">Deactivate</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Deactivate account</TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        size="sm" 
-                        variant="ghost"
-                        className="h-8 w-8 p-0 text-green-500"
-                        onClick={() => onActivate(user)}
-                      >
-                        <UserCheck size={16} />
-                        <span className="sr-only">Activate</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Activate account</TooltipContent>
-                  </Tooltip>
-                )}
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="h-8 w-8 p-0 text-red-500"
-                      onClick={() => onDelete(user)}
-                    >
-                      <UserX size={16} />
-                      <span className="sr-only">Delete</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Delete account</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </TableCell>
+            <TableCell>{user.phone || 'N/A'}</TableCell>
+            <TableCell>{formatDate(user.created_at)}</TableCell>
           </TableRow>
         ))}
       </TableBody>
