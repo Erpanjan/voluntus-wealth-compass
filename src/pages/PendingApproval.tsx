@@ -5,8 +5,6 @@ import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
 import { CheckCircle, Clock } from 'lucide-react';
 
 const PendingApproval = () => {
-  // Removed automatic redirect timer to avoid state conflicts
-  
   return (
     <div className="min-h-screen bg-white">
       <OnboardingHeader currentStep={3} />

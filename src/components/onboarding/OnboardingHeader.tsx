@@ -24,6 +24,11 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
       // Clear all user-specific flags
       clearUserStateFlags(userId);
       
+      // Remove all auth flags
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('isAdminMode');
+      localStorage.removeItem('onboardingComplete');
+      
       // Add transition effect to the body
       document.body.classList.add('login-transition');
       
@@ -33,6 +38,13 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
       }, 500); // Increased from 300ms to 500ms for more reliable session clearing
     } catch (error) {
       console.error('Error during logout:', error);
+      
+      // Clear all flags even on error
+      clearUserStateFlags();
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('isAdminMode');
+      localStorage.removeItem('onboardingComplete');
+      
       // Fallback navigation in case of error
       navigate('/login', { replace: true });
     }

@@ -5,9 +5,10 @@ export const useAuthSession = (setIsAdmin: (isAdmin: boolean) => void) => {
   // Check if user is an admin
   const checkIsAdmin = async (userId: string): Promise<boolean> => {
     try {
+      // Now checking admin_users table instead of profiles table
       const { data, error } = await supabase
-        .from('profiles')
-        .select('is_admin')
+        .from('admin_users')
+        .select('id')
         .eq('id', userId)
         .single();
       
@@ -16,7 +17,8 @@ export const useAuthSession = (setIsAdmin: (isAdmin: boolean) => void) => {
         return false;
       }
       
-      return !!data?.is_admin;
+      // If record exists in admin_users, user is an admin
+      return !!data;
     } catch (error) {
       console.error('Unexpected error checking admin status:', error);
       return false;

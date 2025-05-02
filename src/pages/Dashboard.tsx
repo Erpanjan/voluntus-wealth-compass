@@ -8,6 +8,7 @@ import AdvisorChat from '@/components/dashboard/AdvisorChat';
 import PolicyReview from '@/components/dashboard/PolicyReview';
 import AccountManagement from '@/components/dashboard/AccountManagement';
 import { supabase } from '@/integrations/supabase/client';
+import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 const Dashboard = () => {
   // Use state for session management
@@ -64,9 +65,18 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try {
-      console.log('Logging out...');
+      console.log('Client logout initiated');
+      
+      // Get user ID before signing out
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      
       await supabase.auth.signOut();
       
+      // Clear all user-specific flags
+      clearUserStateFlags(userId);
+      
+      // Remove client-specific flags
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('isAdminMode');
       localStorage.removeItem('onboardingComplete');
@@ -79,11 +89,19 @@ const Dashboard = () => {
       navigate('/login');
     } catch (error: any) {
       console.error('Logout error:', error);
+      
+      // Force clear local storage even if API call fails
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('isAdminMode');
+      localStorage.removeItem('onboardingComplete');
+      
       toast({
         title: "Error logging out",
         description: error.message || "There was a problem logging you out.",
         variant: "destructive"
       });
+      
+      navigate('/login');
     }
   };
 

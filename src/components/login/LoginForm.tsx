@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,41 +58,38 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       localStorage.setItem('isAuthenticated', 'true');
       
       if (isAdminMode) {
-        // Check if user is an admin
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('is_admin')
+        // Check if user is in admin_users table
+        const { data: adminData, error: adminError } = await supabase
+          .from('admin_users')
+          .select('id')
           .eq('id', data.user.id)
           .single();
         
-        if (profileError) {
-          console.error('Error fetching profile:', profileError);
+        if (adminError) {
+          console.error('Error fetching admin status:', adminError);
           throw new Error('Could not verify admin status');
         }
         
-        if (!profileData?.is_admin) {
+        if (!adminData) {
           throw new Error('Your account does not have admin privileges');
         }
         
         // Set admin mode in localStorage if user is an admin
         localStorage.setItem('isAdminMode', 'true');
+        navigate('/admin/dashboard');
       } else {
         localStorage.removeItem('isAdminMode');
+        // Check onboarding status - this will handle navigation
+        if (onRegularLogin) {
+          onRegularLogin();
+        }
       }
-      
-      // Clear any user-specific flags for this user
-      clearUserStateFlags(data.user.id);
       
       toast({
         title: "Login successful",
         description: `Welcome back to ${isAdminMode ? 'Admin' : 'Client'} Portal.`,
         duration: 5000,
       });
-      
-      // Call the onRegularLogin prop if it exists
-      if (onRegularLogin) {
-        onRegularLogin();
-      }
       
     } catch (error: any) {
       console.error('Login error:', error);

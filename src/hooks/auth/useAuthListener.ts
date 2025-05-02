@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,8 +38,9 @@ export const useAuthListener = ({
         if (session) {
           localStorage.setItem('isAuthenticated', 'true');
           
-          // Check if the user is an admin by querying the profiles table
+          // Check if trying to access admin portal
           if (isAdminMode) {
+            // Check admin status using admin_users table
             const isUserAdmin = await checkIsAdmin(session.user.id);
             
             if (!isUserAdmin) {
@@ -55,11 +57,13 @@ export const useAuthListener = ({
               localStorage.removeItem('isAdminMode');
               navigate('/login');
             } else {
+              // Set admin mode and navigate to admin dashboard
               localStorage.setItem('isAdminMode', 'true');
               setIsAdmin(true);
               navigate('/admin/dashboard');
             }
           } else {
+            // Handle regular client flow
             localStorage.removeItem('isAdminMode');
             
             // Handle regular user flow based on onboarding status
@@ -86,6 +90,7 @@ export const useAuthListener = ({
         const adminMode = localStorage.getItem('isAdminMode') === 'true';
         
         if (adminMode || isAdminMode) {
+          // Check if user is in admin_users table
           const isUserAdmin = await checkIsAdmin(session.user.id);
           
           setIsAdmin(isUserAdmin);

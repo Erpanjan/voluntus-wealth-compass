@@ -41,20 +41,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         
         console.log('Supabase session found, checking admin status');
         
-        // Check if user is an admin
+        // Check if user is an admin using admin_users table
         const { data, error } = await supabase
-          .from('profiles')
-          .select('is_admin')
+          .from('admin_users')
+          .select('id')
           .eq('id', session.user.id)
           .single();
         
-        if (error) {
-          throw error;
-        }
-        
-        console.log('Admin status check result:', data);
-        
-        if (!data?.is_admin) {
+        if (error || !data) {
           throw new Error('Not authorized as admin');
         }
         
