@@ -24,27 +24,6 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
     navigate('/questionnaire');
   };
   
-  // Calculate completion percentage
-  const calculateCompletionPercentage = (): number => {
-    if (questionnaireData.completed) return 100;
-    
-    // If there are no answers, return 0
-    if (!questionnaireData.answers || Object.keys(questionnaireData.answers).length === 0) {
-      return 0;
-    }
-    
-    // Calculate based on filled answers
-    // Assuming we have 5 main questions in questionnaire (adjust according to actual questionnaire)
-    const totalQuestions = 5;
-    const answeredQuestions = Object.keys(questionnaireData.answers).filter(
-      key => questionnaireData.answers[key] !== undefined && questionnaireData.answers[key] !== ''
-    ).length;
-    
-    return Math.round((answeredQuestions / totalQuestions) * 100);
-  };
-  
-  const completionPercentage = calculateCompletionPercentage();
-  
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden border border-gray-200">
@@ -59,16 +38,21 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
                 )}
                 <h3 className="font-medium">Financial Questionnaire</h3>
               </div>
-              <span className="text-sm font-medium">{completionPercentage}% Complete</span>
+              <span className="text-sm font-medium">
+                {questionnaireData.completed ? '100' : '0'}% Complete
+              </span>
             </div>
             
-            <Progress value={completionPercentage} className="h-2" />
+            <Progress 
+              value={questionnaireData.completed ? 100 : 0} 
+              className="h-2" 
+            />
             
             <div className="flex justify-between items-center mt-4">
               <div className="text-sm text-gray-600">
                 {questionnaireData.completed 
-                  ? "Thanks for completing the questionnaire!" 
-                  : "Help us understand your financial goals and preferences."}
+                  ? "Questionnaire completed. You can update it anytime." 
+                  : "Optional: Complete our questionnaire to help us understand your financial goals."}
               </div>
               
               <Button 
