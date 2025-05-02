@@ -72,7 +72,7 @@ export const useContactInquiries = () => {
     }
   };
 
-  const handleDeleteInquiry = async (id: string) => {
+  const handleDeleteInquiry = async (id: string): Promise<void> => {
     console.log("Hook: Starting deletion process for inquiry ID:", id);
     
     try {
@@ -113,8 +113,6 @@ export const useContactInquiries = () => {
         title: "Inquiry deleted",
         description: "The contact inquiry has been deleted successfully.",
       });
-      
-      return true;
     } catch (error) {
       console.error('Hook: Error in deletion process:', error);
       toast({
