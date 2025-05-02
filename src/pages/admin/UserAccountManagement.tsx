@@ -29,7 +29,7 @@ const UserAccountManagement = () => {
   const { toast } = useToast();
   const [adminPermissionsLimited, setAdminPermissionsLimited] = useState(false);
   const [noUsersFound, setNoUsersFound] = useState(false);
-  const [showAdminAccounts, setShowAdminAccounts] = useState(false);
+  const [showAdminAccounts, setShowAdminAccounts] = useState(false); // Default to false to hide admin accounts
   
   // Fetch users on component mount
   useEffect(() => {
@@ -137,19 +137,16 @@ const UserAccountManagement = () => {
 
   // Filter users based on search query and admin toggle
   const filteredUsers = users.filter(user => {
-    // First filter by search query
-    const matchesSearch = 
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      (user.userNumber && user.userNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (user.firstName && user.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (user.lastName && user.lastName.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    // Then filter by admin status if needed
+    // First filter by admin status
     if (!showAdminAccounts && user.role === 'Admin') {
       return false;
     }
     
-    return matchesSearch;
+    // Then filter by search query
+    return user.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (user.userNumber && user.userNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (user.firstName && user.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (user.lastName && user.lastName.toLowerCase().includes(searchQuery.toLowerCase()));
   });
   
   return (
