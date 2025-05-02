@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -10,11 +10,45 @@ import { motion } from 'framer-motion';
 import QuestionnaireComponent from '@/components/onboarding/Questionnaire';
 
 const Questionnaire = () => {
-  const [isCompleted, setIsCompleted] = useState(false);
+  // Get questionnaire data from localStorage if it exists
+  const [isCompleted, setIsCompleted] = useState<boolean>(() => {
+    const savedData = localStorage.getItem('onboardingDraft');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      return parsedData?.questionnaire?.completed || false;
+    }
+    return false;
+  });
+  
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Effect to check if the questionnaire was already completed
+  useEffect(() => {
+    const savedData = localStorage.getItem('onboardingDraft');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      if (parsedData?.questionnaire?.completed) {
+        setIsCompleted(true);
+      }
+    }
+  }, []);
+
   const handleCompletion = () => {
+    // Update localStorage with completed questionnaire status
+    const savedData = localStorage.getItem('onboardingDraft');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      const updatedData = {
+        ...parsedData,
+        questionnaire: {
+          ...parsedData.questionnaire,
+          completed: true
+        }
+      };
+      localStorage.setItem('onboardingDraft', JSON.stringify(updatedData));
+    }
+    
     toast({
       title: "Questionnaire Completed",
       description: "Thank you for completing the financial questionnaire. Your answers will help us provide better financial advice.",

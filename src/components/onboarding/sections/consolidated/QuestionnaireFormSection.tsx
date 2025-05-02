@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { CheckCircle, ClipboardList } from 'lucide-react';
 
 interface QuestionnaireFormSectionProps {
   questionnaireData: {
@@ -13,104 +14,122 @@ interface QuestionnaireFormSectionProps {
 }
 
 const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
-  questionnaireData,
-  updateQuestionnaireData
+  questionnaireData
 }) => {
-  const [answers, setAnswers] = useState<Record<string, any>>(questionnaireData.answers || {});
-
-  // Sample questions - in a real app these might come from an API
-  const questions = [
-    {
-      id: 'investmentGoals',
-      question: 'What are your primary investment goals?',
-      type: 'radio',
-      options: [
-        { value: 'retirement', label: 'Retirement Planning' },
-        { value: 'wealth', label: 'Wealth Accumulation' },
-        { value: 'income', label: 'Regular Income' },
-        { value: 'education', label: 'Education Funding' },
-        { value: 'other', label: 'Other Goals' }
-      ]
-    },
-    {
-      id: 'riskTolerance',
-      question: 'How would you describe your risk tolerance?',
-      type: 'radio',
-      options: [
-        { value: 'conservative', label: 'Conservative - Preserve capital with minimal risk' },
-        { value: 'moderate', label: 'Moderate - Balance between growth and capital preservation' },
-        { value: 'aggressive', label: 'Aggressive - Maximize growth, comfortable with volatility' }
-      ]
-    },
-    {
-      id: 'timeHorizon',
-      question: 'What is your investment time horizon?',
-      type: 'radio',
-      options: [
-        { value: 'short', label: 'Short term (1-3 years)' },
-        { value: 'medium', label: 'Medium term (3-10 years)' },
-        { value: 'long', label: 'Long term (10+ years)' }
-      ]
-    },
-    {
-      id: 'additionalInfo',
-      question: 'Is there anything else about your financial situation we should know?',
-      type: 'textarea'
-    }
-  ];
-
-  const handleAnswerChange = (questionId: string, value: any) => {
-    const newAnswers = { ...answers, [questionId]: value };
-    setAnswers(newAnswers);
+  const navigate = useNavigate();
+  
+  // Function to navigate to the questionnaire page
+  const handleNavigateToQuestionnaire = () => {
+    navigate('/questionnaire');
+  };
+  
+  // Function to get a summary of answers for display
+  const getAnswersSummary = () => {
+    if (!questionnaireData.answers) return null;
     
-    // Update parent component state
-    updateQuestionnaireData({
-      completed: isQuestionnaireComplete(newAnswers),
-      answers: newAnswers
-    });
+    const questionLabels: Record<string, string> = {
+      investmentGoals: 'Investment Goals',
+      riskTolerance: 'Risk Tolerance',
+      timeHorizon: 'Time Horizon'
+    };
+    
+    const answerLabels: Record<string, Record<string, string>> = {
+      investmentGoals: {
+        retirement: 'Retirement Planning',
+        wealth: 'Wealth Accumulation',
+        income: 'Regular Income',
+        education: 'Education Funding',
+        other: 'Other Goals'
+      },
+      riskTolerance: {
+        conservative: 'Conservative',
+        moderate: 'Moderate',
+        aggressive: 'Aggressive'
+      },
+      timeHorizon: {
+        short: 'Short term (1-3 years)',
+        medium: 'Medium term (3-10 years)',
+        long: 'Long term (10+ years)'
+      }
+    };
+    
+    // Get answers that have keys in questionLabels
+    const relevantAnswers = Object.entries(questionnaireData.answers)
+      .filter(([key]) => questionLabels[key])
+      .map(([key, value]) => {
+        const questionLabel = questionLabels[key];
+        const answerLabel = answerLabels[key]?.[value] || value;
+        return { question: questionLabel, answer: answerLabel };
+      });
+    
+    return relevantAnswers;
   };
-
-  const isQuestionnaireComplete = (currentAnswers: Record<string, any>) => {
-    // In a real app, you might have more complex validation
-    return questions.filter(q => q.type !== 'textarea').every(q => currentAnswers[q.id]);
-  };
-
+  
+  const answersSummary = getAnswersSummary();
+  
   return (
-    <div className="space-y-10">
-      {questions.map((question) => (
-        <div key={question.id} className="space-y-4">
-          <h3 className="text-lg font-medium">{question.question}</h3>
-          
-          {question.type === 'radio' && question.options && (
-            <RadioGroup
-              value={answers[question.id] || ''}
-              onValueChange={(value) => handleAnswerChange(question.id, value)}
-              className="space-y-3"
-            >
-              {question.options.map((option) => (
-                <div key={option.value} className="flex items-start space-x-2">
-                  <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
-                  <Label 
-                    htmlFor={`${question.id}-${option.value}`}
-                    className="cursor-pointer"
-                  >
-                    {option.label}
-                  </Label>
+    <div className="space-y-6">
+      <Card className="overflow-hidden border border-gray-200">
+        <CardContent className="p-6">
+          {questionnaireData.completed ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-emerald-600 mb-4">
+                <CheckCircle className="h-6 w-6" />
+                <span className="font-medium">Questionnaire Completed</span>
+              </div>
+              
+              {answersSummary && answersSummary.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium text-gray-900">Your Responses Summary:</h4>
+                  <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                    {answersSummary.map((item, index) => (
+                      <div key={index} className="grid grid-cols-2 gap-2 text-sm">
+                        <span className="text-gray-600">{item.question}:</span>
+                        <span className="font-medium">{item.answer}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </RadioGroup>
+              )}
+              
+              <Button 
+                variant="outline"
+                onClick={handleNavigateToQuestionnaire}
+                className="mt-2"
+              >
+                Review & Edit Questionnaire
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <div className="rounded-full bg-amber-100 p-2">
+                  <ClipboardList className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">Financial Questionnaire</h3>
+                  <p className="text-gray-600 text-sm mt-1">
+                    Help us understand your financial goals and preferences by completing our questionnaire. This will help us tailor our recommendations.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-amber-800 text-sm">
+                  This questionnaire is optional but will help us provide personalized financial advice.
+                </p>
+              </div>
+              
+              <Button 
+                onClick={handleNavigateToQuestionnaire}
+                className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+              >
+                Complete Questionnaire
+              </Button>
+            </div>
           )}
-          
-          {question.type === 'textarea' && (
-            <Textarea
-              value={answers[question.id] || ''}
-              onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-              placeholder="Your response (optional)"
-              className="min-h-[100px]"
-            />
-          )}
-        </div>
-      ))}
+        </CardContent>
+      </Card>
     </div>
   );
 };
