@@ -11,7 +11,7 @@ export interface UserAccount {
   verified: boolean;
   firstName?: string;
   lastName?: string;
-  phone?: string;
+  phone?: string; // Made optional
   createdAt?: string;
   userNumber?: string;
 }
@@ -36,6 +36,13 @@ export const useUserService = () => {
       console.log(`Fetched ${profiles?.length || 0} profiles from database:`, profiles);
       
       const usersWithAuth: UserAccount[] = [];
+      
+      // Map profiles to user accounts
+      if (profiles) {
+        console.log(`Processing ${profiles.length} profiles...`);
+      } else {
+        console.log('No profiles found in the database');
+      }
       
       // Map profiles to user accounts
       for (const profile of profiles || []) {
@@ -65,7 +72,8 @@ export const useUserService = () => {
           lastName: profile.last_name || '',
           createdAt: profile.created_at || 'N/A',
           userNumber, // Added user number
-          phone: profile.phone || 'N/A'
+          // Don't include phone property if it doesn't exist in profile
+          ...(profile.phone && { phone: profile.phone })
         };
         
         console.log(`Added user account:`, userAccount);
@@ -73,9 +81,6 @@ export const useUserService = () => {
       }
       
       console.log(`Processed ${usersWithAuth.length} users to display:`, usersWithAuth);
-      
-      // We no longer try to get users from auth.users since we don't have adequate permissions
-      // and we're already getting what we need from profiles
       
       return usersWithAuth;
     } catch (error) {
@@ -102,18 +107,8 @@ export const useUserService = () => {
       
       if (error) throw error;
       
-      // Try to update auth status if we have permissions
-      try {
-        await supabase.auth.admin.updateUserById(
-          userId,
-          { 
-            ban_duration: isActive ? null : 'infinite' 
-          }
-        );
-      } catch (authError) {
-        console.log('Could not update auth user status (requires admin permissions):', authError);
-        // We'll continue anyway since we updated the profiles table
-      }
+      // We know we can't update auth status, so we'll just skip that part
+      console.log('Updated user status in profiles table only (limited admin permissions)');
       
       return true;
     } catch (error: any) {
@@ -129,18 +124,9 @@ export const useUserService = () => {
   
   const deleteUser = async (userId: string): Promise<boolean> => {
     try {
-      // First try to delete the user from auth (requires admin privileges)
-      try {
-        // Attempt to delete the user using the admin API
-        await supabase.auth.admin.deleteUser(userId);
-        console.log('Successfully deleted user from auth');
-      } catch (authError) {
-        console.log('Could not delete auth user (requires admin permissions):', authError);
-        // We'll fall back to just marking the profile as deleted
-      }
+      console.log(`Attempting to delete user ${userId} (soft delete in profiles table)`);
       
-      // Even if we can't delete the auth user, we can still mark the profile
-      // We'll use a soft delete approach for the profile
+      // We'll use a soft delete approach for the profile since we can't delete auth users
       const { error } = await supabase
         .from('profiles')
         .update({ 
@@ -153,6 +139,7 @@ export const useUserService = () => {
       
       if (error) throw error;
       
+      console.log(`Successfully soft-deleted user ${userId} in profiles table`);
       return true;
     } catch (error: any) {
       console.error(`Error deleting user:`, error);

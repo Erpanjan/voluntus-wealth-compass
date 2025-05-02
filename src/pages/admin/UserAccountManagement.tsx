@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { AlertsSection } from '@/components/admin/users/AlertsSection';
 import { UserFilter } from '@/components/admin/users/UserFilter';
 import { UserAccountList } from '@/components/admin/users/UserAccountList';
+import { supabase } from '@/integrations/supabase/client'; // Added the correct import
 
 const UserAccountManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,7 +22,7 @@ const UserAccountManagement = () => {
   const [actionType, setActionType] = useState<'activate' | 'deactivate' | 'delete'>('activate');
   const { fetchUsers, updateUserStatus, deleteUser, getUserDetails } = useUserService();
   const { toast } = useToast();
-  const [adminPermissionsLimited, setAdminPermissionsLimited] = useState(false);
+  const [adminPermissionsLimited, setAdminPermissionsLimited] = useState(true); // Default to true since we know we have limited permissions
   const [noUsersFound, setNoUsersFound] = useState(false);
   
   // Fetch users on component mount
@@ -44,19 +45,8 @@ const UserAccountManagement = () => {
     setUsers(clientUsers);
     setNoUsersFound(clientUsers.length === 0);
     
-    // Check if we got a permission error
-    if (fetchedUsers.length > 0) {
-      try {
-        await supabase.auth.admin.listUsers();
-        setAdminPermissionsLimited(false);
-      } catch (error) {
-        console.log('Admin permissions limited:', error);
-        setAdminPermissionsLimited(true);
-      }
-    } else {
-      setAdminPermissionsLimited(true);
-    }
-    
+    // We know we have limited permissions, so no need to check
+    setAdminPermissionsLimited(true);
     setIsLoading(false);
   };
 

@@ -6,12 +6,12 @@ import { Search } from 'lucide-react';
 interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  onRefresh: () => void;
+  onRefresh?: () => void; // Made optional since it's not used in this component
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ 
   searchQuery, 
-  onSearchChange
+  onSearchChange 
 }) => {
   return (
     <div className="relative flex-1">
