@@ -73,7 +73,17 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
             // Parse any stored JSON answers
             if (data.answers_json) {
               try {
-                const dbAnswers = JSON.parse(data.answers_json);
+                // Fix here: Ensure we're properly handling the JSON data
+                const dbAnswers = typeof data.answers_json === 'string' 
+                  ? JSON.parse(data.answers_json) 
+                  : data.answers_json;
+                
+                // Make sure lastCompletedStep is a number
+                if (dbAnswers.lastCompletedStep !== undefined) {
+                  const lastStep = Number(dbAnswers.lastCompletedStep);
+                  dbAnswers.lastCompletedStep = isNaN(lastStep) ? 0 : lastStep;
+                }
+                
                 combinedAnswers = { ...combinedAnswers, ...dbAnswers };
               } catch (e) {
                 console.error('Error parsing database JSON answers:', e);
