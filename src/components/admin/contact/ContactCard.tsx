@@ -51,7 +51,6 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
   const [newNote, setNewNote] = useState('');
   const [showNotes, setShowNotes] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
   const handleAddNote = async () => {
@@ -94,7 +93,6 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
 
   const handleDelete = async () => {
     try {
-      setIsDeleting(true);
       console.log("ContactCard: Initiating delete for inquiry ID:", inquiry.id);
       
       // Use the onDelete function passed from the parent component
@@ -103,13 +101,7 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
       // Close the dialog after successful deletion
       setIsDeleteDialogOpen(false);
       
-      // Refresh inquiries to update the UI
-      refreshInquiries();
-      
-      toast({
-        title: "Success",
-        description: "Contact inquiry deleted successfully."
-      });
+      // No need to refresh inquiries here as it will be handled in the hook
     } catch (error) {
       console.error('Error in ContactCard delete handler:', error);
       toast({
@@ -117,8 +109,6 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
         description: "Failed to delete inquiry.",
         variant: "destructive"
       });
-    } finally {
-      setIsDeleting(false);
       setIsDeleteDialogOpen(false);
     }
   };
@@ -184,13 +174,9 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDelete} 
-              className="bg-red-500 hover:bg-red-600"
-              disabled={isDeleting}
-            >
-              {isDeleting ? 'Deleting...' : 'Delete'}
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600">
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
