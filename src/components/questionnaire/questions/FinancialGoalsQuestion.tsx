@@ -7,6 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import QuestionCard from '../QuestionCard';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface FinancialGoalType {
   id: string;
@@ -97,44 +105,59 @@ const FinancialGoalsQuestion: React.FC<FinancialGoalsQuestionProps> = ({ value =
   // Get custom goals
   const customGoals = goals.filter(goal => goal.isCustom === true);
 
+  // Get standard goals
+  const standardGoals = goals.filter(goal => !goal.isCustom);
+
   return (
     <QuestionCard 
       question="Indicate your level of interest in the following future expense items."
       description="For each goal, select your level of interest. You can also add custom goals."
     >
-      <div className="space-y-8">
-        {/* Predefined goals */}
-        <div className="space-y-6">
-          {goals.filter(goal => !goal.isCustom).map((goal) => (
-            <div key={goal.id} className="border rounded-lg p-4">
-              <div className="font-medium mb-3">{goal.name}</div>
-              <RadioGroup 
-                value={goal.interestLevel} 
-                onValueChange={(value) => handleInterestChange(goal.id, value)}
-                className="flex flex-wrap gap-3"
-              >
-                {interestLevels.map((level) => (
-                  <div key={level.value} className="flex items-center space-x-2 bg-white border rounded-lg px-3 py-2 hover:bg-gray-50">
-                    <RadioGroupItem value={level.value} id={`${goal.id}-${level.value}`} />
-                    <Label 
-                      htmlFor={`${goal.id}-${level.value}`}
-                      className="cursor-pointer text-sm"
+      <div className="space-y-6">
+        {/* Predefined goals - Table layout */}
+        <div className="rounded-md border overflow-hidden">
+          <Table>
+            <TableHeader className="bg-gray-50">
+              <TableRow>
+                <TableHead className="w-1/3">Financial Goal</TableHead>
+                <TableHead>Level of Interest</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {standardGoals.map((goal) => (
+                <TableRow key={goal.id} className="hover:bg-gray-50">
+                  <TableCell className="font-medium">{goal.name}</TableCell>
+                  <TableCell>
+                    <RadioGroup 
+                      value={goal.interestLevel} 
+                      onValueChange={(value) => handleInterestChange(goal.id, value)}
+                      className="flex flex-wrap gap-2"
                     >
-                      {level.label}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-          ))}
+                      {interestLevels.map((level) => (
+                        <div key={level.value} className="flex items-center space-x-1.5 bg-white border rounded-lg px-2 py-1 hover:bg-gray-50">
+                          <RadioGroupItem value={level.value} id={`${goal.id}-${level.value}`} />
+                          <Label 
+                            htmlFor={`${goal.id}-${level.value}`}
+                            className="cursor-pointer text-xs whitespace-nowrap"
+                          >
+                            {level.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
         
         {/* Custom goals section */}
-        <div className="border-t pt-6">
+        <div className="pt-4">
           <h3 className="font-medium mb-4">Custom Goals</h3>
           
           {/* Add custom goal input */}
-          <div className="flex gap-3 mb-6">
+          <div className="flex gap-3 mb-4">
             <Input
               placeholder="Enter custom goal name"
               value={customGoalName}
@@ -144,47 +167,64 @@ const FinancialGoalsQuestion: React.FC<FinancialGoalsQuestionProps> = ({ value =
             <Button 
               onClick={handleAddCustomGoal}
               disabled={!customGoalName.trim()}
+              size="sm"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Custom Goal
+              <Plus className="h-4 w-4 mr-1" />
+              Add
             </Button>
           </div>
           
           {/* List of custom goals */}
-          {customGoals.length > 0 && (
-            <div className="space-y-4">
-              {customGoals.map((goal) => (
-                <div key={goal.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <div className="font-medium">{goal.name}</div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleDeleteCustomGoal(goal.id)}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                  <RadioGroup 
-                    value={goal.interestLevel} 
-                    onValueChange={(value) => handleInterestChange(goal.id, value)}
-                    className="flex flex-wrap gap-3"
-                  >
-                    {interestLevels.map((level) => (
-                      <div key={level.value} className="flex items-center space-x-2 bg-white border rounded-lg px-3 py-2 hover:bg-gray-50">
-                        <RadioGroupItem value={level.value} id={`${goal.id}-${level.value}`} />
-                        <Label 
-                          htmlFor={`${goal.id}-${level.value}`}
-                          className="cursor-pointer text-sm"
+          {customGoals.length > 0 ? (
+            <div className="rounded-md border overflow-hidden">
+              <Table>
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead className="w-1/3">Custom Goal</TableHead>
+                    <TableHead>Level of Interest</TableHead>
+                    <TableHead className="w-20">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {customGoals.map((goal) => (
+                    <TableRow key={goal.id} className="hover:bg-gray-50">
+                      <TableCell className="font-medium">{goal.name}</TableCell>
+                      <TableCell>
+                        <RadioGroup 
+                          value={goal.interestLevel} 
+                          onValueChange={(value) => handleInterestChange(goal.id, value)}
+                          className="flex flex-wrap gap-2"
                         >
-                          {level.label}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </div>
-              ))}
+                          {interestLevels.map((level) => (
+                            <div key={level.value} className="flex items-center space-x-1.5 bg-white border rounded-lg px-2 py-1 hover:bg-gray-50">
+                              <RadioGroupItem value={level.value} id={`${goal.id}-${level.value}`} />
+                              <Label 
+                                htmlFor={`${goal.id}-${level.value}`}
+                                className="cursor-pointer text-xs whitespace-nowrap"
+                              >
+                                {level.label}
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      </TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleDeleteCustomGoal(goal.id)}
+                          className="text-gray-500 hover:text-red-500"
+                        >
+                          Remove
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
+          ) : (
+            <p className="text-gray-500 text-sm italic">No custom goals added yet.</p>
           )}
         </div>
       </div>
