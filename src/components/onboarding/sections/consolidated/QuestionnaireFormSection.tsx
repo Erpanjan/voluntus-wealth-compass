@@ -1,12 +1,12 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, ClipboardList, Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { CheckCircle, ClipboardList, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface QuestionnaireFormSectionProps {
   questionnaireData: {
@@ -22,58 +22,130 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
 }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   // Fetch the latest questionnaire data from Supabase
   useEffect(() => {
+    let isMounted = true; // Flag to prevent state updates after unmount
+    const abortController = new AbortController(); // For aborting fetch operations
+    
     const fetchLatestData = async () => {
       try {
-        setLoading(true);
+        if (isMounted) setLoading(true);
+        setError(null);
         
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user) return;
+        if (!session?.user) {
+          if (isMounted) {
+            setLoading(false);
+            // No need to set error for unauthenticated users
+          }
+          return;
+        }
         
         // Get latest questionnaire data
         const { data, error } = await supabase
           .from('questionnaire_responses')
           .select('*')
           .eq('user_id', session.user.id)
-          .single();
+          .maybeSingle(); // Using maybeSingle instead of single to avoid errors
           
-        if (data && !error) {
-          // Also check localStorage for any additional data
-          const localData = localStorage.getItem('questionnaireAnswers');
-          let parsedLocalData = {};
-          if (localData) {
-            parsedLocalData = JSON.parse(localData);
+        if (error) {
+          console.error('Error fetching questionnaire data:', error);
+          if (isMounted) {
+            setError('Could not load questionnaire data');
+            setLoading(false);
           }
-          
+          return;
+        }
+        
+        // Also check localStorage for any additional data
+        const localData = localStorage.getItem('questionnaireAnswers');
+        let parsedLocalData = {};
+        if (localData) {
+          try {
+            parsedLocalData = JSON.parse(localData);
+          } catch (e) {
+            console.error('Error parsing localStorage data:', e);
+          }
+        }
+        
+        if (isMounted) {
           // Combine data sources with priority to database
           const combinedAnswers = {
             ...parsedLocalData,
             // Use optional chaining and nullish coalescing to safely access potentially missing properties
-            ...((data.answers_json ? JSON.parse(data.answers_json as string) : {})),
+            ...((data?.answers_json ? JSON.parse(data.answers_json as string) : {})),
           };
           
           // Update onboarding form data with latest questionnaire status
           updateQuestionnaireData({
-            completed: data.completed || false,
+            completed: data?.completed || false,
             answers: combinedAnswers,
           });
+          setLoading(false);
         }
       } catch (err) {
         console.error('Error fetching questionnaire data:', err);
-      } finally {
-        setLoading(false);
+        if (isMounted) {
+          setError('An unexpected error occurred');
+          setLoading(false);
+        }
       }
     };
     
     fetchLatestData();
+    
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (loading && isMounted) {
+        setLoading(false);
+        setError('Loading took too long. Please try again later.');
+      }
+    }, 10000); // 10 seconds timeout
+    
+    return () => {
+      isMounted = false; // Prevent state updates after unmount
+      clearTimeout(timeoutId);
+      abortController.abort(); // Cancel any pending fetch operations
+    };
   }, [updateQuestionnaireData]);
   
   // Function to navigate to the questionnaire page
   const handleNavigateToQuestionnaire = () => {
     navigate('/questionnaire');
   };
+
+  // If there's an error, show an error message
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <Card className="overflow-hidden border border-gray-200">
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <Alert variant="warning" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+              
+              <div className="flex justify-between items-center mt-4">
+                <div className="text-sm text-gray-600">
+                  You can still continue with the questionnaire.
+                </div>
+                
+                <Button 
+                  onClick={handleNavigateToQuestionnaire}
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+                >
+                  Complete Questionnaire
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">

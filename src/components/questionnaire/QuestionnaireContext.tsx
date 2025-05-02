@@ -87,8 +87,11 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
 
   // Load saved answers from Supabase and localStorage on initial render
   useEffect(() => {
+    let isMounted = true; // Flag to prevent state updates after unmount
+    const abortController = new AbortController(); // For aborting fetch operations
+    
     const loadSavedAnswers = async () => {
-      setIsLoading(true);
+      if (isMounted) setIsLoading(true);
       try {
         // Try loading from localStorage first for quick rendering
         const localData = localStorage.getItem('questionnaireAnswers');
@@ -102,7 +105,7 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
             .from('questionnaire_responses')
             .select('*')
             .eq('user_id', session.user.id)
-            .single();
+            .maybeSingle(); // Using maybeSingle to avoid errors
             
           if (data && !error) {
             // Cast data to our interface for type safety
@@ -131,23 +134,40 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
         }
         
         // Set the answers state if we found data
-        if (loadedAnswers) {
+        if (loadedAnswers && isMounted) {
           setAnswers(loadedAnswers);
           console.log('Loaded saved answers:', loadedAnswers);
         }
       } catch (error) {
         console.error('Error loading saved answers:', error);
-        toast({
-          title: "Error Loading Data",
-          description: "Could not load your previous answers. You may need to start fresh.",
-          variant: "destructive"
-        });
+        if (isMounted) {
+          toast({
+            title: "Error Loading Data",
+            description: "Could not load your previous answers. You may need to start fresh.",
+            variant: "destructive"
+          });
+        }
       } finally {
-        setIsLoading(false);
+        // Always set loading to false to prevent UI freeze
+        if (isMounted) setIsLoading(false);
       }
     };
     
     loadSavedAnswers();
+    
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (isLoading && isMounted) {
+        setIsLoading(false);
+        console.warn('Loading timeout reached, forcing loading state to complete');
+      }
+    }, 10000); // 10 seconds timeout
+    
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+      abortController.abort();
+    };
   }, [toast]);
 
   // Autosave functionality - debounced to avoid too many saves
@@ -235,7 +255,7 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
         .from('onboarding_data')
         .select('id')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle(); // Using maybeSingle to avoid errors
         
       if (onboardingData) {
         await supabase
@@ -297,7 +317,9 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
       setCurrentGoalIndex(0); // Reset for potential back navigation
       
       // Save progress when moving to the next major section
-      saveProgress();
+      saveProgress().catch(err => {
+        console.error('Error saving progress:', err);
+      });
     }
   };
 

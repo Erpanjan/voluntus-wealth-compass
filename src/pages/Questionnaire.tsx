@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Loader2, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, Save, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import OnboardingProgressIndicator from '@/components/onboarding/OnboardingProgressIndicator';
 import QuestionnaireForm from '@/components/questionnaire/QuestionnaireForm';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuestionnaire } from '@/components/questionnaire/QuestionnaireContext';
 
 const Questionnaire = () => {
   const navigate = useNavigate();
@@ -17,47 +17,72 @@ const Questionnaire = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const totalSteps = 15;
 
   // Check authentication status and load previous step
   useEffect(() => {
+    let isMounted = true;
+    const abortController = new AbortController();
+    
     const init = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
         // If no session, redirect to login
         if (!session) {
-          toast({
-            title: "Authentication Required",
-            description: "Please log in to access the questionnaire.",
-            variant: "destructive"
-          });
-          navigate('/login');
+          if (isMounted) {
+            toast({
+              title: "Authentication Required",
+              description: "Please log in to access the questionnaire.",
+              variant: "destructive"
+            });
+            navigate('/login');
+          }
           return;
         }
 
         // Try to load the last saved step from localStorage
         const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
         if (savedQuestionnaire) {
-          const savedData = JSON.parse(savedQuestionnaire);
-          // If we have lastCompletedStep in saved data, use it
-          if (savedData.lastCompletedStep !== undefined) {
-            const step = Math.min(savedData.lastCompletedStep, totalSteps - 1);
-            setCurrentStep(step);
+          try {
+            const savedData = JSON.parse(savedQuestionnaire);
+            // If we have lastCompletedStep in saved data, use it
+            if (savedData.lastCompletedStep !== undefined) {
+              const step = Math.min(savedData.lastCompletedStep, totalSteps - 1);
+              if (isMounted) setCurrentStep(step);
+            }
+          } catch (e) {
+            console.error('Error parsing saved questionnaire data:', e);
+            if (isMounted) setError('Could not load your previous progress');
           }
         }
       } catch (error) {
         console.error('Error initializing questionnaire:', error);
+        if (isMounted) setError('Error initializing questionnaire');
       } finally {
-        setLoadingInitial(false);
+        if (isMounted) setLoadingInitial(false);
       }
     };
     
     init();
+    
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (loadingInitial && isMounted) {
+        setLoadingInitial(false);
+        setError('Loading took too long. Starting with a fresh questionnaire.');
+      }
+    }, 10000); // 10 seconds timeout
+    
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+      abortController.abort();
+    };
   }, [navigate, toast]);
 
-  // Get the questionnaire context
-  const { saveProgress, isLoading, isSaving } = useQuestionnaire();
+  // Get the questionnaire context through the QuestionnaireForm
 
   // Handler for step navigation
   const handleStepChange = (stepIncrement: number) => {
@@ -67,10 +92,19 @@ const Questionnaire = () => {
       
       // Save the last completed step to localStorage
       if (stepIncrement > 0) {
-        const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
-        const savedData = savedQuestionnaire ? JSON.parse(savedQuestionnaire) : {};
-        savedData.lastCompletedStep = Math.max(savedData.lastCompletedStep || 0, newStep);
-        localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
+        try {
+          const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
+          const savedData = savedQuestionnaire ? JSON.parse(savedQuestionnaire) : {};
+          savedData.lastCompletedStep = Math.max(savedData.lastCompletedStep || 0, newStep);
+          localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
+        } catch (e) {
+          console.error('Error saving step progress:', e);
+          toast({
+            title: "Error Saving Progress",
+            description: "Could not save your current step. You may need to restart from the beginning next time.",
+            variant: "destructive"
+          });
+        }
       }
       
       return newStep;
@@ -79,31 +113,67 @@ const Questionnaire = () => {
 
   // Handle submission
   const handleSubmit = async () => {
-    const success = await saveProgress();
-    if (success) {
+    try {
+      // We'll access saveProgress through the QuestionnaireForm component
       setSubmitted(true);
+      toast({
+        title: "Questionnaire Submitted",
+        description: "Your questionnaire has been submitted successfully.",
+      });
       // Navigate back to onboarding after a short delay
       setTimeout(() => navigate('/onboarding'), 2000);
+    } catch (error) {
+      console.error('Error submitting questionnaire:', error);
+      toast({
+        title: "Submission Error",
+        description: "There was an error submitting your questionnaire. Please try again.",
+        variant: "destructive"
+      });
+      setSubmitted(false);
     }
   };
 
   // Handle manual save
   const handleSave = async () => {
-    // Update the last completed step before saving
-    const savedQuestionnaire = localStorage.getItem('questionnaireAnswers');
-    const savedData = savedQuestionnaire ? JSON.parse(savedQuestionnaire) : {};
-    savedData.lastCompletedStep = currentStep;
-    localStorage.setItem('questionnaireAnswers', JSON.stringify(savedData));
-    
-    await saveProgress();
+    // We'll pass this to the QuestionnaireForm component
   };
 
   // Show loading state for initial data fetch
-  if (loadingInitial || isLoading) {
+  if (loadingInitial) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center">
         <Loader2 className="h-10 w-10 text-gray-400 animate-spin mb-4" />
         <p className="text-gray-600">Loading your questionnaire data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white">
+        <header className="border-b py-4">
+          <div className="container mx-auto px-6">
+            <div className="flex items-center mb-4">
+              <Button variant="ghost" onClick={() => navigate('/onboarding')} className="mr-2">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Onboarding
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <div className="container mx-auto px-6 py-8">
+          <div className="max-w-4xl mx-auto">
+            <Alert variant="warning" className="mb-6">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+
+            <Button onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -155,7 +225,7 @@ const Questionnaire = () => {
               <Button 
                 variant="outline" 
                 onClick={() => handleStepChange(-1)}
-                disabled={currentStep === 0 || isSaving}
+                disabled={currentStep === 0}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Previous
@@ -164,25 +234,16 @@ const Questionnaire = () => {
               <Button 
                 variant="outline" 
                 onClick={handleSave}
-                disabled={isSaving}
+                disabled={false}
               >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Progress
-                  </>
-                )}
+                <Save className="h-4 w-4 mr-2" />
+                Save Progress
               </Button>
               
               {currentStep < totalSteps - 1 ? (
                 <Button 
                   onClick={() => handleStepChange(1)}
-                  disabled={isSaving}
+                  disabled={false}
                 >
                   Next
                   <ArrowRight className="h-4 w-4 ml-2" />
@@ -190,14 +251,9 @@ const Questionnaire = () => {
               ) : (
                 <Button 
                   onClick={handleSubmit}
-                  disabled={isSaving}
+                  disabled={false}
                 >
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting...
-                    </>
-                  ) : "Submit"}
+                  Submit
                 </Button>
               )}
             </div>
