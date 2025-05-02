@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { clearUserStateFlags, clearPortalSpecificFlags } from '@/hooks/auth/useLocalStorage';
+import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 interface LoginFormProps {
   onDemoLogin: () => void;
@@ -39,17 +38,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
     setIsSubmitting(true);
 
     try {
-      console.log(`Attempting to sign in to ${isAdminMode ? 'admin' : 'client'} portal with:`, loginData.email);
+      console.log('Attempting to sign in with:', loginData.email);
       
-      // Clear portal-specific flags before login
-      if (isAdminMode) {
-        clearPortalSpecificFlags('admin');
-      } else {
-        clearPortalSpecificFlags('client');
-      }
-      
-      // Explicitly set portal context in localStorage before authentication
-      localStorage.setItem('portalContext', isAdminMode ? 'admin' : 'client');
+      // Clear any existing state flags before login
+      clearUserStateFlags();
       
       // Attempt to sign in with Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -83,21 +75,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
         
         // Set admin mode in localStorage if user is an admin
         localStorage.setItem('isAdminMode', 'true');
-        // Set the portal context for routing guards
-        localStorage.setItem('portalContext', 'admin');
-        
-        // Admin users skip onboarding steps completely
-        console.log('Admin login successful - redirecting to admin dashboard');
       } else {
-        // Client portal flow
         localStorage.removeItem('isAdminMode');
-        localStorage.setItem('portalContext', 'client');
-        console.log('Client login successful - onboarding status will be checked');
       }
+      
+      // Clear any user-specific flags for this user
+      clearUserStateFlags(data.user.id);
       
       toast({
         title: "Login successful",
-        description: `Welcome to the ${isAdminMode ? 'Admin' : 'Client'} Portal.`,
+        description: `Welcome back to ${isAdminMode ? 'Admin' : 'Client'} Portal.`,
         duration: 5000,
       });
       
@@ -106,7 +93,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
         onRegularLogin();
       }
       
-      // Navigation happens in useAuthListener based on portal context
     } catch (error: any) {
       console.error('Login error:', error);
       toast({
@@ -119,7 +105,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       // Clear authentication flags on error
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('isAdminMode');
-      localStorage.setItem('portalContext', 'client');
     } finally {
       setIsSubmitting(false);
     }

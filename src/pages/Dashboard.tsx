@@ -8,35 +8,42 @@ import AdvisorChat from '@/components/dashboard/AdvisorChat';
 import PolicyReview from '@/components/dashboard/PolicyReview';
 import AccountManagement from '@/components/dashboard/AccountManagement';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/auth/useAuth';
-import { usePortalContext } from '@/hooks/auth/usePortalContext';
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = React.useState('advisor');
-  const navigate = useNavigate();
+  // Use state for session management
+  const [user, setUser] = useState<any>(null);
+  const [session, setSession] = useState<any>(null);
   const { toast } = useToast();
-  const { user, loading, handleLogout } = useAuth(false);
-  const { switchToPortal, enforcePortalBoundary } = usePortalContext('client');
-  
-  // Ensure we're in client portal context
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = React.useState('advisor');
+  const [loading, setLoading] = useState(true);
+
+  // Subscribe to auth state changes
   useEffect(() => {
-    // Check if we are allowed to be in the client portal
-    const canAccessClientPortal = enforcePortalBoundary('client');
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Auth state changed:', event, session);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
     
-    if (!canAccessClientPortal) {
-      toast({
-        title: "Access Denied",
-        description: "Please log in to access the client portal.",
-        variant: "destructive"
-      });
-      navigate('/login');
-      return;
-    }
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session);
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
     
-    // Explicitly set client portal context
-    switchToPortal('client');
-    localStorage.setItem('portalContext', 'client');
-  }, [switchToPortal, enforcePortalBoundary, navigate, toast]);
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+  }, []);
 
   // Show loading state
   if (loading) {
@@ -54,6 +61,31 @@ const Dashboard = () => {
     console.log('Not authenticated, redirecting to login');
     return <Navigate to="/login" />;
   }
+
+  const handleLogout = async () => {
+    try {
+      console.log('Logging out...');
+      await supabase.auth.signOut();
+      
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('isAdminMode');
+      localStorage.removeItem('onboardingComplete');
+      
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account."
+      });
+      
+      navigate('/login');
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Error logging out",
+        description: error.message || "There was a problem logging you out.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white flex">
@@ -115,7 +147,7 @@ const Dashboard = () => {
         <div className="p-6 border-t">
           <Button 
             variant="outline" 
-            onClick={() => handleLogout('/login')}
+            onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 text-[#9F9EA1] hover:text-[#333333]"
           >
             <LogOut size={16} />

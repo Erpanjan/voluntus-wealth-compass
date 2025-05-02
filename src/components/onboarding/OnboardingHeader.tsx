@@ -4,8 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { clearPortalSpecificFlags } from '@/hooks/auth/useLocalStorage';
-import { usePortalContext } from '@/hooks/auth/usePortalContext';
+import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 interface OnboardingHeaderProps {
   currentStep: number;
@@ -14,26 +13,21 @@ interface OnboardingHeaderProps {
 const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { switchToPortal } = usePortalContext('client');
   
   const handleExitSetup = async () => {
     try {
-      // Add transition effect to the body
-      document.body.classList.add('login-transition');
-      
-      // Clear all client-specific localStorage flags first
-      clearPortalSpecificFlags('client');
+      // Clear all localStorage flags first
+      clearUserStateFlags();
       
       // Remove authentication state
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('isAdminMode');
       
-      // Reset portal context to client
-      localStorage.setItem('portalContext', 'client');
-      switchToPortal('client');
-      
       // Sign out from Supabase
       await supabase.auth.signOut();
+      
+      // Add transition effect to the body
+      document.body.classList.add('login-transition');
       
       // Provide feedback to user
       toast({
@@ -53,11 +47,6 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
         description: "There was a problem signing you out. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      // Clean up transition class after navigation
-      setTimeout(() => {
-        document.body.classList.remove('login-transition');
-      }, 1000);
     }
   };
   
