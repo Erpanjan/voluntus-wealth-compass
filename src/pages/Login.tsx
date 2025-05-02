@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AdminToggle from '@/components/login/AdminToggle';
 import LoginTabs from '@/components/login/LoginTabs';
 import { useAuth } from '@/hooks/useAuth';
@@ -10,6 +11,8 @@ const Login = () => {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
   
   // Use the custom hook to handle authentication
   const { loading, handleDemoLogin, handleRegularLogin } = useAuth(isAdminMode);
@@ -19,13 +22,18 @@ const Login = () => {
     // Remove login-transition class from body if present
     document.body.classList.remove('login-transition');
     
+    // Clear URL parameters when landing on login page
+    if (location.search) {
+      navigate('/login', { replace: true });
+    }
+    
     // Small delay to ensure the animation is visible
     const timer = setTimeout(() => {
       setPageLoaded(true);
     }, 50); // reduced from 100ms to 50ms for faster initial animation
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigate, location]);
 
   // Handle toggle animation for mode switch
   const handleAdminToggle = (checked: boolean) => {
