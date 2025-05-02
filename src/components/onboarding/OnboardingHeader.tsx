@@ -3,6 +3,8 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { LogOut } from 'lucide-react';
+import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
 
 interface OnboardingHeaderProps {
   currentStep: number;
@@ -11,16 +13,20 @@ interface OnboardingHeaderProps {
 const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
   const navigate = useNavigate();
   
-  const handleExitSetup = () => {
-    // Set onboardingComplete to true in localStorage
-    localStorage.setItem('onboardingComplete', 'true');
+  const handleExitSetup = async () => {
+    // Get user ID before signing out
+    const { data: { session } } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
+    
+    // Clear all user-specific flags
+    clearUserStateFlags(userId);
     
     // Remove authentication state to properly log out the user
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('isAdminMode');
     
     // Sign out from Supabase
-    supabase.auth.signOut();
+    await supabase.auth.signOut();
     
     // Add transition effect to the body
     document.body.classList.add('login-transition');
@@ -41,11 +47,14 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
             className="h-16" 
           />
         </Link>
-        {currentStep < 3 && (
-          <Button variant="link" onClick={handleExitSetup}>
-            Exit Setup
-          </Button>
-        )}
+        <Button 
+          variant="outline" 
+          onClick={handleExitSetup} 
+          className="flex items-center gap-2"
+        >
+          <LogOut className="h-4 w-4" />
+          Exit Setup
+        </Button>
       </div>
     </header>
   );
