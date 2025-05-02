@@ -34,14 +34,16 @@ const OnboardingSectionContainer: React.FC<OnboardingSectionContainerProps> = ({
     });
   };
 
-  // Clone children and inject refs and navigation function
-  const childrenWithProps = React.Children.map(children, (child) => {
+  // Instead of cloning children and injecting refs, we'll wrap them with div elements that have the refs
+  const modifiedChildren = React.Children.map(children, (child) => {
     if (React.isValidElement(child)) {
       const sectionId = child.props.id;
       if (sectionId && sectionRefs[sectionId as keyof typeof sectionRefs]) {
-        return React.cloneElement(child, {
-          ref: sectionRefs[sectionId as keyof typeof sectionRefs]
-        });
+        return (
+          <div ref={sectionRefs[sectionId as keyof typeof sectionRefs]} id={sectionId}>
+            {child}
+          </div>
+        );
       }
     }
     return child;
@@ -56,7 +58,7 @@ const OnboardingSectionContainer: React.FC<OnboardingSectionContainerProps> = ({
       />
       <div className="container mx-auto px-6 py-8 mb-20">
         <div className="max-w-4xl mx-auto">
-          {childrenWithProps}
+          {modifiedChildren}
         </div>
       </div>
     </>
