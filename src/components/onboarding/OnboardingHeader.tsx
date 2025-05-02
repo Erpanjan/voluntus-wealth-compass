@@ -16,18 +16,19 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
   
   const handleExitSetup = async () => {
     try {
+      // Add transition effect to the body
+      document.body.classList.add('login-transition');
+      
       // Clear all localStorage flags first
       clearUserStateFlags();
       
       // Remove authentication state
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('isAdminMode');
+      localStorage.setItem('portalContext', 'client');
       
       // Sign out from Supabase
       await supabase.auth.signOut();
-      
-      // Add transition effect to the body
-      document.body.classList.add('login-transition');
       
       // Provide feedback to user
       toast({
@@ -47,6 +48,11 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
         description: "There was a problem signing you out. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      // Clean up transition class after navigation
+      setTimeout(() => {
+        document.body.classList.remove('login-transition');
+      }, 1000);
     }
   };
   

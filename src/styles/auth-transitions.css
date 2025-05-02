@@ -1,0 +1,16 @@
+
+/* Authentication transitions */
+.login-transition {
+  opacity: 0.5;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.logout-transition {
+  opacity: 0.5;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.admin-logout-transition {
+  opacity: 0.5;
+  transition: opacity 0.3s ease-in-out;
+}

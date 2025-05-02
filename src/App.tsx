@@ -26,6 +26,7 @@ import ArticleEditor from "./pages/admin/ArticleEditor";
 import ContactManagement from "./pages/admin/ContactManagement";
 import UserAccountManagement from "./pages/admin/UserAccountManagement";
 import ClientAppManagement from "./pages/admin/ClientAppManagement";
+import "./styles/auth-transitions.css"; // Import our new auth transitions
 
 const queryClient = new QueryClient();
 
@@ -39,8 +40,12 @@ const PrivateRoute = ({ children }) => {
 const AdminRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   const isAdminMode = localStorage.getItem('isAdminMode') === 'true';
+  const portalContext = localStorage.getItem('portalContext');
   
-  return isAuthenticated && isAdminMode ? children : <Navigate to="/login" />;
+  // Allow access if authenticated and either in admin mode or in admin portal context
+  return isAuthenticated && (isAdminMode || portalContext === 'admin') ? 
+    children : 
+    <Navigate to="/login" />;
 };
 
 const App = () => (

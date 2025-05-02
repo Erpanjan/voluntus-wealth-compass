@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import AdminToggle from '@/components/login/AdminToggle';
 import LoginTabs from '@/components/login/LoginTabs';
 import { useAuth } from '@/hooks/auth/useAuth';
+import { usePortalContext } from '@/hooks/auth/usePortalContext';
 
 const Login = () => {
   const [pageLoaded, setPageLoaded] = useState(false);
@@ -14,23 +15,37 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Use the custom hook to handle authentication
+  // Set initial portal context from localStorage or defaulting to client
+  const { switchToPortal } = usePortalContext();
+  
+  // Use the custom hook to handle authentication with admin mode
   const { loading, handleDemoLogin, handleRegularLogin } = useAuth(isAdminMode);
   
   // Enhanced fade-in animation when component loads
   useEffect(() => {
     // Remove login-transition class from body if present
     document.body.classList.remove('login-transition');
+    document.body.classList.remove('logout-transition');
+    document.body.classList.remove('admin-logout-transition');
     
     // Clear URL parameters when landing on login page
     if (location.search) {
       navigate('/login', { replace: true });
     }
     
+    // Check if there's a stored admin mode preference
+    const storedAdminMode = localStorage.getItem('isAdminMode') === 'true';
+    const storedPortalContext = localStorage.getItem('portalContext');
+    
+    // Set admin mode based on stored preference
+    if (storedPortalContext === 'admin' || storedAdminMode) {
+      setIsAdminMode(true);
+    }
+    
     // Small delay to ensure the animation is visible
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 50); // reduced from 100ms to 50ms for faster initial animation
+    }, 50);
     
     return () => clearTimeout(timer);
   }, [navigate, location]);
@@ -38,14 +53,19 @@ const Login = () => {
   // Handle toggle animation for mode switch
   const handleAdminToggle = (checked: boolean) => {
     setIsAnimating(true);
+    
     // Add animation class
     setTimeout(() => {
       setIsAdminMode(checked);
+      
+      // Update portal context
+      switchToPortal(checked ? 'admin' : 'client');
+      
       // Remove animation class after mode has changed
       setTimeout(() => {
         setIsAnimating(false);
-      }, 150); // reduced from 300ms to 150ms to match the faster animation
-    }, 25); // reduced from 50ms to 25ms for faster response
+      }, 150);
+    }, 25);
   };
 
   // Show loading state

@@ -4,6 +4,7 @@ import { NavigateFunction } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { Toast } from '@/hooks/auth/types';
+import { PortalType } from './usePortalContext';
 
 interface UseAuthListenerProps {
   isAdminMode: boolean;
@@ -15,6 +16,7 @@ interface UseAuthListenerProps {
   checkOnboardingStatus: (userId: string) => Promise<void>;
   navigate: NavigateFunction;
   toast: Toast;
+  portalType?: PortalType;
 }
 
 export const useAuthListener = ({
@@ -26,23 +28,29 @@ export const useAuthListener = ({
   checkIsAdmin,
   checkOnboardingStatus,
   navigate,
-  toast
+  toast,
+  portalType = 'client'
 }: UseAuthListenerProps) => {
   // Listen for auth state changes and check for existing session
   useEffect(() => {
+    // Update portal context in localStorage
+    localStorage.setItem('portalContext', portalType);
+    
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
+        console.log(`Auth state changed in ${portalType} portal:`, event, session?.user?.id);
         
         if (session) {
           localStorage.setItem('isAuthenticated', 'true');
           
           // Check if the user is an admin by querying the profiles table
           const isUserAdmin = await checkIsAdmin(session.user.id);
+          setIsAdmin(isUserAdmin);
           
-          if (isAdminMode || isUserAdmin) {
-            // Handle admin authentication flow
+          // For admin portal or if the user is trying to access admin pages
+          if (portalType === 'admin' || isAdminMode) {
+            // Check if the user has admin privileges
             if (!isUserAdmin) {
               toast({
                 title: "Access Denied",
@@ -55,23 +63,27 @@ export const useAuthListener = ({
               await supabase.auth.signOut();
               localStorage.removeItem('isAuthenticated');
               localStorage.removeItem('isAdminMode');
+              localStorage.setItem('portalContext', 'client');
               navigate('/login');
             } else {
-              // User is admin and trying to access admin portal
+              // User is admin and in admin portal
               localStorage.setItem('isAdminMode', 'true');
+              localStorage.setItem('portalContext', 'admin');
               setIsAdmin(true);
               navigate('/admin/dashboard');
             }
           } else {
-            // Handle regular user flow
+            // Handle regular user flow in client portal
             localStorage.removeItem('isAdminMode');
+            localStorage.setItem('portalContext', 'client');
             
-            // Only check onboarding status for non-admin mode
+            // Only check onboarding status in client portal context
             if (event === 'SIGNED_IN') {
               await checkOnboardingStatus(session.user.id);
             }
           }
         }
+        
         setSession(session);
         setUser(session?.user || null);
         setLoading(false);
@@ -81,7 +93,7 @@ export const useAuthListener = ({
     // Check for existing session
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      console.log('Initial session check:', session?.user?.id);
+      console.log(`Initial session check in ${portalType} portal:`, session?.user?.id);
       
       if (session) {
         localStorage.setItem('isAuthenticated', 'true');
@@ -90,43 +102,46 @@ export const useAuthListener = ({
         const isUserAdmin = await checkIsAdmin(session.user.id);
         setIsAdmin(isUserAdmin);
         
-        // Check localStorage for admin mode
-        const adminMode = localStorage.getItem('isAdminMode') === 'true';
+        // Read the current portal context from localStorage
+        const currentPortalContext = localStorage.getItem('portalContext') as PortalType || portalType;
+        const adminMode = localStorage.getItem('isAdminMode') === 'true' || isAdminMode || currentPortalContext === 'admin';
         
-        // Admin flow has priority - if admin mode is active or user is admin
-        if (adminMode || isAdminMode) {
+        // In admin portal or admin mode - handle admin flow with priority
+        if (portalType === 'admin' || adminMode) {
+          // Verify admin status
           if (isUserAdmin) {
-            // User is verified admin, set admin mode and redirect
+            // Set admin mode and redirect to admin dashboard
             localStorage.setItem('isAdminMode', 'true');
+            localStorage.setItem('portalContext', 'admin');
             navigate('/admin/dashboard');
           } else {
             // Not an admin but trying to access admin routes
             localStorage.removeItem('isAdminMode');
+            localStorage.setItem('portalContext', 'client');
             
-            if (isAdminMode) {
-              toast({
-                title: "Access Denied",
-                description: "Your account does not have admin privileges.",
-                variant: "destructive",
-                duration: 5000,
-              });
-              navigate('/login');
-            } else {
-              // Check onboarding for regular users
-              await checkOnboardingStatus(session.user.id);
-            }
+            toast({
+              title: "Access Denied",
+              description: "Your account does not have admin privileges.",
+              variant: "destructive",
+              duration: 5000,
+            });
+            
+            navigate('/login');
           }
-        } else if (isUserAdmin) {
-          // User is admin but not in admin mode, ask if they want to go to admin dashboard
-          toast({
-            title: "Admin Account Detected",
-            description: "You are logged in as an admin. You can access the admin dashboard.",
-            duration: 5000,
-          });
-          // Still follow regular flow for now
-          await checkOnboardingStatus(session.user.id);
-        } else {
-          // Regular user flow
+        } 
+        // Client portal flow only when explicitly in client portal
+        else if (portalType === 'client') {
+          // If user is admin but in client context, show a message but continue with client flow
+          if (isUserAdmin) {
+            toast({
+              title: "Admin Account Detected",
+              description: "You are logged in with an admin account. You can access the admin portal.",
+              duration: 5000,
+            });
+          }
+          
+          // Always do client flow for client portal
+          localStorage.setItem('portalContext', 'client');
           await checkOnboardingStatus(session.user.id);
         }
       }
@@ -143,5 +158,5 @@ export const useAuthListener = ({
         subscription.unsubscribe();
       }
     };
-  }, [navigate, isAdminMode, toast, checkOnboardingStatus, checkIsAdmin, setSession, setUser, setLoading, setIsAdmin]);
+  }, [navigate, isAdminMode, toast, checkOnboardingStatus, checkIsAdmin, setSession, setUser, setLoading, setIsAdmin, portalType]);
 };

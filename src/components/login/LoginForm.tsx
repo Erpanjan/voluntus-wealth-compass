@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,10 +39,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
     setIsSubmitting(true);
 
     try {
-      console.log('Attempting to sign in with:', loginData.email);
+      console.log(`Attempting to sign in to ${isAdminMode ? 'admin' : 'client'} portal with:`, loginData.email);
       
       // Clear any existing state flags before login
       clearUserStateFlags();
+      
+      // Set portal context in localStorage
+      localStorage.setItem('portalContext', isAdminMode ? 'admin' : 'client');
       
       // Attempt to sign in with Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -105,6 +109,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
       // Clear authentication flags on error
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('isAdminMode');
+      localStorage.setItem('portalContext', 'client');
     } finally {
       setIsSubmitting(false);
     }

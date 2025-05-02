@@ -9,11 +9,23 @@ import { useEffect } from 'react';
 import { useAuthListener } from './useAuthListener';
 import { useAuthSession } from './useAuthSession';
 import { clearUserStateFlags } from './useLocalStorage';
+import { usePortalContext, PortalType } from './usePortalContext';
 
 export const useAuth = (isAdminMode: boolean = false) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { checkOnboardingStatus } = useOnboardingStatus(navigate);
+  
+  // Determine portal type based on admin mode
+  const portalType: PortalType = isAdminMode ? 'admin' : 'client';
+  const { switchToPortal } = usePortalContext(portalType);
+  
+  // Update portal context when admin mode changes
+  useEffect(() => {
+    switchToPortal(isAdminMode ? 'admin' : 'client');
+  }, [isAdminMode, switchToPortal]);
+  
+  // Demo account functionality
   const { handleDemoLogin } = useDemoAccount(isAdminMode);
   
   // Get auth state from the hook
@@ -41,12 +53,63 @@ export const useAuth = (isAdminMode: boolean = false) => {
     checkIsAdmin,
     checkOnboardingStatus,
     navigate,
-    toast
+    toast,
+    portalType
   });
 
-  // Handle regular login success
+  // Handle logout with portal context awareness
+  const handleLogout = async (redirectTo: string = '/login') => {
+    try {
+      console.log(`Logging out from ${portalType} portal...`);
+      
+      // Add transition class for visual feedback
+      document.body.classList.add('logout-transition');
+      
+      // Clear state based on current portal context
+      if (portalType === 'admin') {
+        localStorage.removeItem('isAdminMode');
+      }
+      
+      // Always clear authentication state
+      localStorage.removeItem('isAuthenticated');
+      clearUserStateFlags();
+      
+      // Reset portal context to client
+      localStorage.setItem('portalContext', 'client');
+      switchToPortal('client');
+      
+      // Sign out from Supabase
+      await supabase.auth.signOut();
+      
+      toast({
+        title: "Logged out successfully",
+        description: `You have been logged out of the ${portalType} portal.`
+      });
+      
+      // Small delay for transitioning
+      setTimeout(() => {
+        navigate(redirectTo);
+      }, 300);
+    } catch (error: any) {
+      console.error(`Logout error in ${portalType} portal:`, error);
+      
+      toast({
+        title: "Error logging out",
+        description: error.message || "There was a problem logging you out.",
+        variant: "destructive"
+      });
+    } finally {
+      // Remove transition class
+      setTimeout(() => {
+        document.body.classList.remove('logout-transition');
+      }, 500);
+    }
+  };
+
+  // Handle regular login success with portal awareness
   const handleRegularLogin = () => {
     // Navigation is already handled in the auth state change listener
+    switchToPortal(isAdminMode ? 'admin' : 'client');
   };
 
   return {
@@ -54,9 +117,12 @@ export const useAuth = (isAdminMode: boolean = false) => {
     isAdmin,
     session,
     user,
+    portalType,
     handleDemoLogin,
     handleRegularLogin,
-    clearUserStateFlags
+    handleLogout,
+    clearUserStateFlags,
+    switchToPortal
   };
 };
 
