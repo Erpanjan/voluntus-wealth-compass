@@ -57,7 +57,7 @@ const ProfileCreation = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold mb-6">Create Your Profile</h1>
+      <h1 className="text-3xl font-semibold mb-6">Your Information</h1>
       <p className="text-lg mb-8">
         Please provide your personal information to help us better understand your needs.
       </p>
