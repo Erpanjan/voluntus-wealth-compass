@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import ArticleTable from '@/components/admin/articles/ArticleTable';
 import ArticleSearch from '@/components/admin/articles/ArticleSearch';
-import DatabaseNotice from '@/components/admin/articles/DatabaseNotice';
 import { useArticles } from '@/hooks/useArticles';
 import { Card, CardContent } from '@/components/ui/card';
 import ArticleFilters from '@/components/admin/articles/ArticleFilters';
@@ -91,8 +90,6 @@ const ArticlesManagement = () => {
           Create New Article
         </Button>
       </div>
-      
-      <DatabaseNotice />
       
       <Card className="border-none shadow-sm">
         <CardContent className="p-0">
