@@ -60,8 +60,8 @@ const Welcome = () => {
             <h3 className="text-xl font-semibold">Complete the Questionnaire</h3>
           </div>
           <p className="text-gray-600">
-            Help us understand your financial circumstances and investment goals. This step is optional, 
-            but it allows us to provide more relevant and meaningful advice.
+            This questionnaire will help us understand your financial circumstances. It is a mandatory step 
+            before we offer the service; however, you can skip it and complete it during our consultation.
           </p>
         </motion.div>
         
