@@ -14,7 +14,7 @@ const ClientAppManagement = () => {
   const [loading, setLoading] = useState(true);
   const [selectedApplication, setSelectedApplication] = useState<ApplicationData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const { toast } = useToast();
 
   // Fetch applications on component mount
@@ -58,7 +58,7 @@ const ClientAppManagement = () => {
     }
     
     // Apply status filter
-    if (statusFilter) {
+    if (statusFilter && statusFilter !== 'all') {
       filtered = filtered.filter(app => app.status === statusFilter);
     }
     
@@ -67,7 +67,7 @@ const ClientAppManagement = () => {
   
   const handleResetFilters = () => {
     setSearchTerm('');
-    setStatusFilter('');
+    setStatusFilter('all');
   };
   
   const handleViewDetails = (application: ApplicationData) => {
