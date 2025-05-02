@@ -1,22 +1,18 @@
 
 import React from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, DatabaseIcon } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 interface AlertsSectionProps {
   adminPermissionsLimited: boolean;
   noUsersFound: boolean;
   isLoading: boolean;
-  databaseError?: string;
-  connectError?: boolean;
 }
 
 export const AlertsSection: React.FC<AlertsSectionProps> = ({
   adminPermissionsLimited,
   noUsersFound,
-  isLoading,
-  databaseError,
-  connectError
+  isLoading
 }) => {
   if (isLoading) return null;
   
@@ -31,25 +27,7 @@ export const AlertsSection: React.FC<AlertsSectionProps> = ({
         </Alert>
       )}
 
-      {connectError && (
-        <Alert variant="destructive" className="border-red-300 bg-red-50">
-          <DatabaseIcon className="h-4 w-4 text-red-500" />
-          <AlertDescription className="text-red-800">
-            Database connection error. Please check your network connection and Supabase configuration.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {databaseError && (
-        <Alert variant="destructive" className="border-red-300 bg-red-50">
-          <DatabaseIcon className="h-4 w-4 text-red-500" />
-          <AlertDescription className="text-red-800">
-            {databaseError}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {noUsersFound && !databaseError && !connectError && (
+      {noUsersFound && (
         <Alert variant="warning" className="border-amber-300 bg-amber-50">
           <AlertTriangle className="h-4 w-4 text-amber-500" />
           <AlertDescription className="text-amber-800">
