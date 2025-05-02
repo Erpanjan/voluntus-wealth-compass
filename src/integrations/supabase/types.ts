@@ -282,6 +282,10 @@ export type Database = {
           authors: Json
         }[]
       }
+      is_admin_user: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
       slugify: {
         Args: { "": string }
         Returns: string

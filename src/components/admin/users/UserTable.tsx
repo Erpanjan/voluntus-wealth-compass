@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { UserProfile } from '@/services/userService';
 import { Button } from '@/components/ui/button';
-import { Eye, UserCheck, UserX, MoreHorizontal } from 'lucide-react';
+import { Eye, UserCheck, UserX, MoreHorizontal, Shield } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -94,6 +94,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Role</TableHead>
             <TableHead>Phone</TableHead>
             <TableHead>Joined</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -118,6 +119,18 @@ export const UserTable: React.FC<UserTableProps> = ({
                 >
                   {user.is_active === true ? 'Active' : 'Inactive'}
                 </Badge>
+              </TableCell>
+              <TableCell>
+                {user.is_admin === true ? (
+                  <Badge variant="outline" className="border-blue-500 text-blue-500 flex items-center gap-1">
+                    <Shield className="h-3 w-3" />
+                    Admin
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="border-gray-400 text-gray-400">
+                    User
+                  </Badge>
+                )}
               </TableCell>
               <TableCell>{user.phone || 'N/A'}</TableCell>
               <TableCell>{formatDate(user.created_at)}</TableCell>

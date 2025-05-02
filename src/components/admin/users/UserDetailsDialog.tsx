@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { UserProfile } from '@/services/userService';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { Shield } from 'lucide-react';
 
 interface UserDetailsDialogProps {
   isOpen: boolean;
@@ -101,21 +102,26 @@ export const UserDetailsDialog: React.FC<UserDetailsDialogProps> = ({
                   </div>
                 </div>
                 
-                {userDetails && (
-                  <div className="pt-2 border-t">
-                    <h4 className="text-sm font-medium mb-2">Additional Information</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-gray-500">Phone</p>
-                        <p className="text-sm">{user.phone || 'Not provided'}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-gray-500">Role</p>
-                        <p className="text-sm">{user.is_admin ? 'Admin' : 'Client'}</p>
-                      </div>
+                <div className="pt-2 border-t">
+                  <h4 className="text-sm font-medium mb-2">Additional Information</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-gray-500">Phone</p>
+                      <p className="text-sm">{user.phone || 'Not provided'}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-gray-500">Role</p>
+                      {user.is_admin ? (
+                        <div className="flex items-center gap-1">
+                          <Shield className="h-3 w-3 text-blue-500" />
+                          <span className="text-sm text-blue-500 font-medium">Admin</span>
+                        </div>
+                      ) : (
+                        <span className="text-sm">User</span>
+                      )}
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             )}
           </>
