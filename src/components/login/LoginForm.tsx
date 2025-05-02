@@ -33,12 +33,24 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, onRegularLogin, isAd
     }));
   };
 
+  const clearUserStateFlags = () => {
+    // Reset all user state flags in localStorage
+    localStorage.removeItem('onboardingComplete');
+    localStorage.removeItem('applicationSubmitted');
+    localStorage.removeItem('isAdminMode');
+    
+    console.log('Cleared all user state flags from localStorage during login');
+  };
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
       console.log('Attempting to sign in with:', loginData.email);
+      
+      // Clear any existing state flags before login
+      clearUserStateFlags();
       
       // Attempt to sign in with Supabase
       const { data, error } = await supabase.auth.signInWithPassword({

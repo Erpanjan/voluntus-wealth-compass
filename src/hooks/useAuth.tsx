@@ -13,44 +13,52 @@ export const useAuth = (isAdminMode: boolean) => {
 
   // Helper function to check onboarding data status and redirect accordingly
   const checkOnboardingStatus = async (userId: string) => {
-    // Check if this is a first-time user (onboarding not complete)
-    const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
-    const applicationSubmitted = localStorage.getItem('applicationSubmitted') === 'true';
-    
-    if (!onboardingComplete) {
-      if (applicationSubmitted) {
-        // If application is submitted but not yet approved, go to pending approval
-        navigate('/pending-approval');
-      } else {
-        // Check if user has any draft onboarding data
-        const { data, error } = await supabase
-          .from('onboarding_data')
-          .select('id, status')
-          .eq('id', userId)
-          .single();
-        
-        if (error) {
-          console.error('Error checking onboarding data:', error);
-          // If error, default to welcome page for safety
-          navigate('/welcome');
-        } else if (data) {
-          // User has onboarding data, check status
-          if (data.status === 'draft') {
-            // User has draft data but hasn't submitted it yet, go to onboarding
-            navigate('/onboarding');
-          } else if (data.status === 'submitted') {
-            // Application is submitted, go to pending approval
-            localStorage.setItem('applicationSubmitted', 'true');
-            navigate('/pending-approval');
-          }
-        } else {
-          // No onboarding data found, direct to welcome page
-          navigate('/welcome');
-        }
+    try {
+      console.log('Checking onboarding status for user:', userId);
+      
+      // First check database for onboarding data - prioritize this over localStorage
+      const { data, error } = await supabase
+        .from('onboarding_data')
+        .select('id, status')
+        .eq('id', userId)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error checking onboarding data:', error);
+        // If error, default to welcome page for safety
+        navigate('/welcome');
+        return;
       }
-    } else {
-      // Onboarding is complete, go to dashboard
-      navigate('/dashboard');
+      
+      // Based on database onboarding data status
+      if (data) {
+        console.log('Onboarding data found:', data);
+        
+        if (data.status === 'draft') {
+          // User has draft data but hasn't submitted it yet, go to onboarding
+          localStorage.setItem('applicationSubmitted', 'false');
+          localStorage.setItem('onboardingComplete', 'false');
+          navigate('/onboarding');
+        } else if (data.status === 'submitted') {
+          // Application is submitted, go to pending approval
+          localStorage.setItem('applicationSubmitted', 'true');
+          localStorage.setItem('onboardingComplete', 'false');
+          navigate('/pending-approval');
+        } else if (data.status === 'approved') {
+          // Application is approved, go to dashboard
+          localStorage.setItem('onboardingComplete', 'true');
+          navigate('/dashboard');
+        }
+      } else {
+        // No onboarding data found, direct to welcome page
+        console.log('No onboarding data found, directing to welcome page');
+        localStorage.setItem('applicationSubmitted', 'false');
+        localStorage.setItem('onboardingComplete', 'false');
+        navigate('/welcome');
+      }
+    } catch (err) {
+      console.error('Unexpected error in checkOnboardingStatus:', err);
+      navigate('/welcome');
     }
   };
 

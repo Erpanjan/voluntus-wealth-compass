@@ -35,6 +35,15 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
     }));
   };
 
+  const clearUserStateFlags = () => {
+    // Clear all localStorage flags related to user state
+    localStorage.removeItem('onboardingComplete');
+    localStorage.removeItem('applicationSubmitted');
+    localStorage.removeItem('isAdminMode');
+    
+    console.log('Cleared all user state flags from localStorage');
+  };
+
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -51,6 +60,9 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
     setIsSubmitting(true);
     
     try {
+      // Clear any potentially leftover localStorage flags first
+      clearUserStateFlags();
+      
       // Handle registration with Supabase via email
       const { data, error } = await supabase.auth.signUp({
         email: registerData.email,
@@ -61,9 +73,6 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
       });
       
       if (error) throw error;
-      
-      // Remove onboarding complete flag for new users
-      localStorage.removeItem('onboardingComplete');
       
       toast({
         title: "Registration successful",
