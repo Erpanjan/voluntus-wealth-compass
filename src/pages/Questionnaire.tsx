@@ -1,16 +1,20 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
-import OnboardingProgressIndicator from '@/components/onboarding/OnboardingProgressIndicator';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import OnboardingProgressIndicator from '@/components/onboarding/OnboardingProgressIndicator';
+import QuestionnaireForm from '@/components/questionnaire/QuestionnaireForm';
 
 const Questionnaire = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+  const totalSteps = 15;
 
   // Handle saving the questionnaire state to localStorage
   const handleSave = () => {
@@ -30,12 +34,30 @@ const Questionnaire = () => {
 
     // Show success message
     toast({
-      title: "Questionnaire Skipped",
-      description: "You can always come back to complete the questionnaire later.",
+      title: "Questionnaire Saved",
+      description: "Your responses have been saved successfully.",
     });
     
     // Navigate back to onboarding
     navigate('/onboarding');
+  };
+
+  const handleStepChange = (stepIncrement: number) => {
+    setCurrentStep(prev => {
+      const newStep = prev + stepIncrement;
+      return Math.max(0, Math.min(newStep, totalSteps));
+    });
+  };
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    toast({
+      title: "Questionnaire Submitted",
+      description: "Thank you for completing the financial questionnaire.",
+    });
+    
+    // Save to localStorage
+    handleSave();
   };
 
   return (
@@ -54,7 +76,7 @@ const Questionnaire = () => {
               Back to Onboarding
             </Button>
           </div>
-          <OnboardingProgressIndicator currentStep={0} totalSteps={1} />
+          <OnboardingProgressIndicator currentStep={currentStep} totalSteps={totalSteps} />
         </div>
       </motion.header>
 
@@ -68,25 +90,44 @@ const Questionnaire = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <h1 className="text-2xl font-semibold mb-2">Financial Questionnaire</h1>
-            <p className="text-gray-600">This questionnaire is currently being updated.</p>
+            <p className="text-gray-600">
+              This questionnaire will help us understand your financial goals and preferences.
+            </p>
           </motion.div>
 
-          <Card className="mb-8">
-            <CardContent className="p-6">
-              <div className="text-center py-12">
-                <p className="text-gray-500 mb-6">
-                  The questionnaire is optional and not required to complete your application.
-                  You may skip it now and come back later if you wish.
-                </p>
-                <Button 
-                  onClick={handleSave}
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-                >
-                  Skip and Return to Onboarding
+          <QuestionnaireForm 
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            onComplete={handleSubmit}
+          />
+          
+          {!submitted && (
+            <div className="flex justify-between mt-8">
+              <Button 
+                variant="outline" 
+                onClick={() => handleStepChange(-1)}
+                disabled={currentStep === 0}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Previous
+              </Button>
+              
+              <Button variant="outline" onClick={handleSave}>
+                Save Progress
+              </Button>
+              
+              {currentStep < totalSteps - 1 ? (
+                <Button onClick={() => handleStepChange(1)}>
+                  Next
+                  <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+              ) : (
+                <Button onClick={handleSubmit}>
+                  Submit
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
