@@ -2,11 +2,10 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Section from '@/components/ui/Section';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import ConsultationTypeSelector from './consultation/ConsultationTypeSelector';
+import ConsultationDateTimeSelector from './consultation/ConsultationDateTimeSelector';
+import ConsultationConfirmationDialog from './consultation/ConsultationConfirmationDialog';
 
 interface ConsultationSectionProps {
   consultationData: {
@@ -31,7 +30,7 @@ const ConsultationSection: React.FC<ConsultationSectionProps> = ({
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Available dates and times for scheduling
+  // Available dates and times for scheduling (needed for label lookup)
   const availableDates = [
     { id: 'date-1', value: '2025-05-05', label: 'Monday, May 5' },
     { id: 'date-2', value: '2025-05-06', label: 'Tuesday, May 6' },
@@ -91,86 +90,20 @@ const ConsultationSection: React.FC<ConsultationSectionProps> = ({
     >
       <div className="w-full max-w-2xl mx-auto">
         <div className="space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Select Consultation Type</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <RadioGroup 
-                value={consultationData.type} 
-                onValueChange={(value) => updateConsultationData({ type: value })}
-                className="grid grid-cols-1 md:grid-cols-2 gap-4"
-              >
-                <div className="flex">
-                  <div className="border rounded-lg p-4 w-full hover:border-black transition-colors cursor-pointer">
-                    <RadioGroupItem value="virtual" id="virtual" className="sr-only" />
-                    <Label htmlFor="virtual" className="cursor-pointer">
-                      <div className="font-medium text-lg mb-2">Virtual Meeting</div>
-                      <p className="text-gray-600">
-                        Schedule a video call with one of our advisors. Discuss your financial goals from the comfort of your home.
-                      </p>
-                    </Label>
-                  </div>
-                </div>
+          {/* Consultation Type Selection */}
+          <ConsultationTypeSelector
+            selectedType={consultationData.type}
+            onTypeChange={(value) => updateConsultationData({ type: value })}
+          />
 
-                <div className="flex">
-                  <div className="border rounded-lg p-4 w-full hover:border-black transition-colors cursor-pointer">
-                    <RadioGroupItem value="in-person" id="in-person" className="sr-only" />
-                    <Label htmlFor="in-person" className="cursor-pointer">
-                      <div className="font-medium text-lg mb-2">In-Person Meeting</div>
-                      <p className="text-gray-600">
-                        Visit our office for a face-to-face consultation with our financial experts.
-                      </p>
-                    </Label>
-                  </div>
-                </div>
-              </RadioGroup>
-            </CardContent>
-          </Card>
-
+          {/* Date and Time Selection */}
           {consultationData.type && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Select Date & Time</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div>
-                    <Label className="block mb-3">Available Dates</Label>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                      {availableDates.map(date => (
-                        <Button
-                          key={date.id}
-                          variant={consultationData.date === date.value ? 'default' : 'outline'}
-                          className="w-full flex-grow"
-                          onClick={() => updateConsultationData({ date: date.value })}
-                        >
-                          {date.label}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {consultationData.date && (
-                    <div>
-                      <Label className="block mb-3">Available Times</Label>
-                      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-                        {availableTimes.map(time => (
-                          <Button
-                            key={time.id}
-                            variant={consultationData.time === time.value ? 'default' : 'outline'}
-                            className="w-full"
-                            onClick={() => updateConsultationData({ time: time.value })}
-                          >
-                            {time.label}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <ConsultationDateTimeSelector
+              selectedDate={consultationData.date}
+              selectedTime={consultationData.time}
+              onDateChange={(date) => updateConsultationData({ date })}
+              onTimeChange={(time) => updateConsultationData({ time })}
+            />
           )}
         </div>
         
@@ -187,46 +120,15 @@ const ConsultationSection: React.FC<ConsultationSectionProps> = ({
         </div>
       </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Your Consultation</DialogTitle>
-            <DialogDescription>
-              Please review the details of your scheduled consultation.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4">
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Consultation Type:</span>
-                <span className="font-medium">{consultationData.type === 'virtual' ? 'Virtual Meeting' : 'In-Person Meeting'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Date:</span>
-                <span className="font-medium">{getDateLabel()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Time:</span>
-                <span className="font-medium">{getTimeLabel()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Duration:</span>
-                <span className="font-medium">45 minutes</span>
-              </div>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={confirmSchedule}>
-              Confirm Booking
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Confirmation Dialog */}
+      <ConsultationConfirmationDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        consultationType={consultationData.type}
+        dateLabel={getDateLabel()}
+        timeLabel={getTimeLabel()}
+        onConfirm={confirmSchedule}
+      />
     </Section>
   );
 };
