@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -84,8 +83,7 @@ const ArticlesManagement = () => {
     <AdminLayout>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Articles Management</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage your blog articles, insights, and publications</p>
+          {/* Title and subtitle removed as requested */}
         </div>
         
         <Button onClick={handleCreateNew}>
