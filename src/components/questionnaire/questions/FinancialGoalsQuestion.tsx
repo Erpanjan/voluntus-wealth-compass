@@ -48,17 +48,19 @@ const FinancialGoalsQuestion: React.FC<FinancialGoalsQuestionProps> = ({ value =
   const [customGoalName, setCustomGoalName] = useState('');
   
   // Initialize goals if empty
-  const goals = value.length > 0 ? value : [
+  const goals: FinancialGoalType[] = value.length > 0 ? value : [
     ...predefinedGoals.map(name => ({
       id: uuidv4(),
       name,
       interestLevel: 'would-not-consider',
+      isCustom: false // Explicitly set isCustom to false for predefined goals
     })),
     // Add 'Other' as a special case
     {
       id: 'other',
       name: 'Other',
       interestLevel: 'would-not-consider',
+      isCustom: false // Explicitly set isCustom to false for the 'Other' option
     }
   ];
 
@@ -92,7 +94,7 @@ const FinancialGoalsQuestion: React.FC<FinancialGoalsQuestionProps> = ({ value =
   };
 
   // Get custom goals
-  const customGoals = goals.filter(goal => goal.isCustom);
+  const customGoals = goals.filter(goal => goal.isCustom === true);
 
   return (
     <QuestionCard 
