@@ -21,7 +21,11 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
     <header className="border-b py-4">
       <div className="container mx-auto px-6 flex justify-between items-center">
         <Link to="/" className="flex items-center">
-          <span className="font-bold text-xl">VOLUNTUS</span>
+          <img 
+            src="/lovable-uploads/e4b4f8b7-8d82-468f-b861-b6a593038f7c.png" 
+            alt="Voluntus Logo" 
+            className="h-16" 
+          />
         </Link>
         {currentStep < 3 && (
           <Button variant="link" onClick={handleExitSetup}>
