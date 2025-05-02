@@ -52,10 +52,14 @@ export const useAuth = (isAdminMode: boolean) => {
             
             // Check if this is a first-time user (onboarding not complete)
             const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+            const applicationSubmitted = localStorage.getItem('applicationSubmitted') === 'true';
             
-            // For new users or users who haven't completed onboarding, redirect to onboarding
             if (!onboardingComplete && event === 'SIGNED_IN') {
-              navigate('/onboarding');
+              if (!applicationSubmitted) {
+                navigate('/welcome');
+              } else {
+                navigate('/pending-approval');
+              }
             } else {
               navigate('/dashboard');
             }
@@ -105,8 +109,14 @@ export const useAuth = (isAdminMode: boolean) => {
             } else {
               // Check if onboarding is complete
               const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+              const applicationSubmitted = localStorage.getItem('applicationSubmitted') === 'true';
+              
               if (!onboardingComplete) {
-                navigate('/onboarding');
+                if (!applicationSubmitted) {
+                  navigate('/welcome');
+                } else {
+                  navigate('/pending-approval');
+                }
               } else {
                 navigate('/dashboard');
               }
@@ -115,8 +125,14 @@ export const useAuth = (isAdminMode: boolean) => {
         } else {
           // Check if onboarding is complete for regular users
           const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+          const applicationSubmitted = localStorage.getItem('applicationSubmitted') === 'true';
+          
           if (!onboardingComplete) {
-            navigate('/onboarding');
+            if (!applicationSubmitted) {
+              navigate('/welcome');
+            } else {
+              navigate('/pending-approval');
+            }
           } else {
             navigate('/dashboard');
           }
@@ -147,8 +163,8 @@ export const useAuth = (isAdminMode: boolean) => {
       navigate('/admin/dashboard');
     } else {
       localStorage.removeItem('isAdminMode');
-      // Demo users go directly to onboarding
-      navigate('/onboarding');
+      // Demo users go directly to welcome page
+      navigate('/welcome');
     }
     
     toast({

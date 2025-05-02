@@ -17,6 +17,8 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
+import Welcome from "./pages/Welcome";
+import PendingApproval from "./pages/PendingApproval";
 import Questionnaire from "./pages/Questionnaire";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ArticlesManagement from "./pages/admin/ArticlesManagement";
@@ -50,6 +52,8 @@ const App = () => (
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
+            <Route path="/welcome" element={null} />
+            <Route path="/pending-approval" element={null} />
             <Route path="/questionnaire" element={null} />
             <Route path="/admin/*" element={null} />
             <Route path="*" element={<Header />} />
@@ -65,6 +69,15 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/welcome" element={<Welcome />} />
+              <Route 
+                path="/pending-approval" 
+                element={
+                  <PrivateRoute>
+                    <PendingApproval />
+                  </PrivateRoute>
+                }
+              />
               <Route 
                 path="/dashboard" 
                 element={
@@ -156,6 +169,8 @@ const App = () => (
           <Routes>
             <Route path="/dashboard" element={null} />
             <Route path="/onboarding" element={null} />
+            <Route path="/welcome" element={null} />
+            <Route path="/pending-approval" element={null} />
             <Route path="/login" element={null} />
             <Route path="/questionnaire" element={null} />
             <Route path="/admin/*" element={null} />

@@ -86,11 +86,11 @@ const Onboarding = () => {
       // Clear localStorage draft since it's now submitted
       localStorage.removeItem('onboardingDraft');
       
-      // For demo purposes, simulate immediate approval
-      setTimeout(() => {
-        localStorage.setItem('onboardingComplete', 'true');
-        navigate('/dashboard');
-      }, 3000);
+      // Set application submitted flag
+      localStorage.setItem('applicationSubmitted', 'true');
+      
+      // Navigate to pending approval page
+      navigate('/pending-approval');
     }
   };
 
