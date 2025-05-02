@@ -12,7 +12,6 @@ interface UserAccountListProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onRefresh: () => void;
-  onUpdateUserStatus?: (userId: string, isActive: boolean) => Promise<void>;
 }
 
 export const UserAccountList: React.FC<UserAccountListProps> = ({
@@ -20,8 +19,7 @@ export const UserAccountList: React.FC<UserAccountListProps> = ({
   isLoading,
   searchQuery,
   onSearchChange,
-  onRefresh,
-  onUpdateUserStatus
+  onRefresh
 }) => {
   return (
     <Card>
@@ -49,7 +47,6 @@ export const UserAccountList: React.FC<UserAccountListProps> = ({
         <UserTable 
           users={users}
           isLoading={isLoading}
-          onUpdateUserStatus={onUpdateUserStatus}
         />
       </CardContent>
     </Card>
