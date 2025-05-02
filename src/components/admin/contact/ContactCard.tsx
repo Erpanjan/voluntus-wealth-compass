@@ -91,13 +91,20 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
 
   const handleDeleteInquiry = async () => {
     try {
+      console.log("Attempting to delete inquiry with ID:", inquiry.id);
+      
       // First delete associated notes
       const { error: notesError } = await supabase
         .from('contact_notes')
         .delete()
         .eq('contact_id', inquiry.id);
       
-      if (notesError) throw notesError;
+      if (notesError) {
+        console.error('Error deleting associated notes:', notesError);
+        throw notesError;
+      }
+      
+      console.log("Associated notes deleted successfully");
       
       // Then delete the inquiry
       const { error } = await supabase
@@ -105,23 +112,28 @@ const ContactCard: React.FC<ContactInquiryProps> = ({
         .delete()
         .eq('id', inquiry.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting inquiry:', error);
+        throw error;
+      }
+      
+      console.log("Inquiry deleted successfully");
 
       toast({
         title: "Success",
         description: "Contact inquiry deleted successfully.",
       });
       
-      // Refresh the inquiries list
+      // Close the dialog and refresh the inquiries list
+      setIsDeleteDialogOpen(false);
       refreshInquiries();
     } catch (error) {
-      console.error('Error deleting inquiry:', error);
+      console.error('Error in deletion process:', error);
       toast({
         title: "Error",
         description: "Failed to delete inquiry.",
         variant: "destructive"
       });
-    } finally {
       setIsDeleteDialogOpen(false);
     }
   };
