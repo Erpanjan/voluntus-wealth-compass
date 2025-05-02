@@ -63,10 +63,6 @@ const Welcome = () => {
             </div>
           </div>
           
-          <p className="text-gray-600 font-inter font-light text-sm mb-10 max-w-3xl mx-auto">
-            Once you've completed the steps above, our team will review your application and follow up shortly.
-          </p>
-          
           <Button onClick={handleGetStarted} size="lg" className="font-inter">
             Get Started
           </Button>
