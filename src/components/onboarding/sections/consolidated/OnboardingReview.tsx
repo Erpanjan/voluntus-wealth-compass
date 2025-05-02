@@ -1,8 +1,6 @@
-
 import React from 'react';
 import { OnboardingFormData } from '@/hooks/use-onboarding-form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Check } from 'lucide-react';
 
 interface OnboardingReviewProps {
   formData: OnboardingFormData;
@@ -150,18 +148,11 @@ const OnboardingReview: React.FC<OnboardingReviewProps> = ({ formData }) => {
         <h3 className="text-xl font-semibold mb-4">Consultation Details</h3>
         
         {formData.consultation.completed ? (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-start">
-              <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
-                <Check className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <p className="font-medium">Consultation Scheduled</p>
-                <p className="text-gray-600">
-                  {getConsultationTypeLabel(formData.consultation.type)} on {getDateLabel(formData.consultation.date)} at {getTimeLabel(formData.consultation.time)}
-                </p>
-              </div>
-            </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+            <p className="font-medium mb-1">Consultation Scheduled</p>
+            <p className="text-gray-700">
+              Your {getConsultationTypeLabel(formData.consultation.type)} consultation has been scheduled for {getDateLabel(formData.consultation.date)} at {getTimeLabel(formData.consultation.time)}.
+            </p>
           </div>
         ) : (
           <p className="text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-4">
