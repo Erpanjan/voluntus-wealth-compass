@@ -41,11 +41,11 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
       'netWorth',
       'investmentKnowledge',
       'investmentExperience',
-      'complexProductsSuitability',
+      'complexProducts',
       'investmentComposition',
-      'futureExpenseGoals',
-      'financialPriorities',
-      'riskPreferences',
+      'goalInterestLevels',
+      'goalPriorities',
+      'goalRiskPreferences',
       'goalHorizons',
       'riskAppetite',
       'absoluteRiskTolerance',
@@ -67,6 +67,12 @@ const QuestionnaireFormSection: React.FC<QuestionnaireFormSectionProps> = ({
         } else if (category === 'behavioralBiases') {
           // Check if behavioral biases section has at least one answer
           if (Object.keys(questionnaireData.answers[category] || {}).length > 0) {
+            completedCategories++;
+          }
+        } else if (category === 'goalInterestLevels' || category === 'goalPriorities' || category === 'goalRiskPreferences') {
+          // Check if goals have been selected
+          if (Array.isArray(questionnaireData.answers[category]) && questionnaireData.answers[category].length > 0 || 
+              Object.keys(questionnaireData.answers[category] || {}).length > 0) {
             completedCategories++;
           }
         } else {
