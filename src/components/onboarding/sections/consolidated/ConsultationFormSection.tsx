@@ -42,11 +42,13 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
     { id: 'in-person', label: 'In-Person Meeting', description: 'Visit our office for a face-to-face consultation with our financial experts.' }
   ];
 
-  // Available times for scheduling, organized by time periods
+  // Available times for scheduling, organized by time periods with expanded range
   const availableTimes = [
     {
       label: 'Morning',
       times: [
+        { value: '07:00', label: '7:00 AM' },
+        { value: '08:00', label: '8:00 AM' },
         { value: '09:00', label: '9:00 AM' },
         { value: '10:00', label: '10:00 AM' },
         { value: '11:00', label: '11:00 AM' },
@@ -55,9 +57,22 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
     {
       label: 'Afternoon',
       times: [
+        { value: '12:00', label: '12:00 PM' },
+        { value: '13:00', label: '1:00 PM' },
         { value: '14:00', label: '2:00 PM' },
         { value: '15:00', label: '3:00 PM' },
         { value: '16:00', label: '4:00 PM' },
+        { value: '17:00', label: '5:00 PM' },
+      ]
+    },
+    {
+      label: 'Evening',
+      times: [
+        { value: '18:00', label: '6:00 PM' },
+        { value: '19:00', label: '7:00 PM' },
+        { value: '20:00', label: '8:00 PM' },
+        { value: '21:00', label: '9:00 PM' },
+        { value: '22:00', label: '10:00 PM' },
       ]
     }
   ];
@@ -142,75 +157,67 @@ const ConsultationFormSection: React.FC<ConsultationFormSectionProps> = ({
         </div>
       </div>
 
-      {/* Date Selection with Calendar */}
+      {/* Date and Time Selection - Combined with side-by-side layout */}
       {consultationData.type && (
         <div>
-          <h3 className="text-lg font-medium mb-4">Select Date</h3>
-          <div className="flex flex-col gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full md:w-[300px] justify-start text-left font-normal",
-                    !selectedDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selectedDate ? getReadableDateFormat() : <span>Select a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={handleDateSelection}
-                  disabled={(date) => date < new Date()}
-                  initialFocus
-                  className="p-3 pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+          <h3 className="text-lg font-medium mb-4">Select Date & Time</h3>
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Date Selector */}
+            <div className="flex-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !selectedDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? getReadableDateFormat() : <span>Select a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateSelection}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
             
-            {selectedDate && (
-              <p className="text-sm text-gray-500">
-                Select a convenient date for your consultation.
-              </p>
-            )}
+            {/* Time Selector */}
+            <div className="flex-1">
+              <Select value={consultationData.time} onValueChange={handleTimeSelection}>
+                <SelectTrigger className="w-full">
+                  <div className="flex items-center">
+                    <Clock className="mr-2 h-4 w-4" />
+                    <SelectValue placeholder="Select a time" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {availableTimes.map(group => (
+                    <SelectGroup key={group.label}>
+                      <SelectLabel>{group.label}</SelectLabel>
+                      {group.times.map(time => (
+                        <SelectItem key={time.value} value={time.value}>
+                          {time.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Time Selection */}
-      {consultationData.type && consultationData.date && (
-        <div>
-          <h3 className="text-lg font-medium mb-4">Select Time</h3>
-          <div className="flex flex-col gap-2">
-            <Select value={consultationData.time} onValueChange={handleTimeSelection}>
-              <SelectTrigger className="w-full md:w-[300px]">
-                <div className="flex items-center">
-                  <Clock className="mr-2 h-4 w-4" />
-                  <SelectValue placeholder="Select a time" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                {availableTimes.map(group => (
-                  <SelectGroup key={group.label}>
-                    <SelectLabel>{group.label}</SelectLabel>
-                    {group.times.map(time => (
-                      <SelectItem key={time.value} value={time.value}>
-                        {time.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <p className="text-sm text-gray-500">
-              Choose a time that works best for you.
-            </p>
-          </div>
+          
+          <p className="text-sm text-gray-500 mt-2">
+            Choose a convenient date and time for your consultation.
+          </p>
         </div>
       )}
 
