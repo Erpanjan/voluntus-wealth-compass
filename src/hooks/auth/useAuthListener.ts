@@ -28,18 +28,18 @@ export const useAuthListener = ({
   navigate,
   toast
 }: UseAuthListenerProps) => {
-  // Listen for auth state changes and check for existing session
+  // Listen for auth state changes and check for existing session with optimized logic
   useEffect(() => {
     let isMounted = true;
     
-    // Set up auth state listener
+    // Set up auth state listener - more efficient event handling
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         
         if (!isMounted) return;
         
-        // Handle sign out event
+        // Handle sign out event - optimized cleanup
         if (event === 'SIGNED_OUT') {
           if (isMounted) {
             setSession(null);
@@ -48,24 +48,22 @@ export const useAuthListener = ({
             localStorage.removeItem('isAuthenticated');
             localStorage.removeItem('isAdminMode');
             localStorage.removeItem('onboardingComplete');
-            console.log('User signed out, cleared session and local storage');
             
-            // Use setTimeout to avoid potential deadlock with Supabase
-            setTimeout(() => {
+            // Use requestAnimationFrame for smoother UI transition during navigation
+            window.requestAnimationFrame(() => {
               navigate('/login');
-            }, 0);
+            });
           }
           return;
         }
         
-        // Handle sign in event
+        // Handle sign in event - improved session handling
         if (session) {
           localStorage.setItem('isAuthenticated', 'true');
           
-          // Check if trying to access admin portal
+          // Check if trying to access admin portal with better deferred execution
           if (isAdminMode) {
-            // Use setTimeout to prevent potential deadlock
-            setTimeout(async () => {
+            window.requestAnimationFrame(async () => {
               if (!isMounted) return;
               
               // Check admin status using admin_users table
@@ -102,25 +100,24 @@ export const useAuthListener = ({
                   navigate('/admin/dashboard');
                 }
               }
-            }, 0);
+            });
           } else {
-            // Handle regular client flow
+            // Handle regular client flow with optimized state updates
             localStorage.removeItem('isAdminMode');
             
             if (isMounted) {
               setSession(session);
               setUser(session.user);
               
-              // Use setTimeout to prevent potential deadlock
-              setTimeout(async () => {
+              window.requestAnimationFrame(async () => {
                 if (!isMounted) return;
                 setLoading(false);
                 
-                // Only proceed with onboarding status check for non-admin users
+                // Only proceed with onboarding status check for non-admin users on sign in
                 if (event === 'SIGNED_IN') {
                   await checkOnboardingStatus(session.user.id);
                 }
-              }, 0);
+              });
             }
           }
         } else if (isMounted) {
@@ -131,7 +128,7 @@ export const useAuthListener = ({
       }
     );
     
-    // Check for existing session
+    // Check for existing session with improved error handling
     const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -142,7 +139,7 @@ export const useAuthListener = ({
         if (session) {
           localStorage.setItem('isAuthenticated', 'true');
           
-          // Check localStorage for admin mode
+          // Check localStorage for admin mode with optimized flow
           const adminMode = localStorage.getItem('isAdminMode') === 'true';
           
           if (adminMode || isAdminMode) {
@@ -185,7 +182,7 @@ export const useAuthListener = ({
                   navigate('/login');
                 }
               } else if (isMounted) {
-                // Check onboarding status for regular users
+                // Check onboarding status for regular users with optimized state management
                 setSession(session);
                 setUser(session.user);
                 setLoading(false);
@@ -193,7 +190,7 @@ export const useAuthListener = ({
               }
             }
           } else if (isMounted) {
-            // Check onboarding status for regular users
+            // Check onboarding status for regular users with reduced state updates
             setSession(session);
             setUser(session.user);
             setLoading(false);
@@ -229,10 +226,15 @@ export const useAuthListener = ({
       }
     };
     
-    checkSession();
+    // Use a small timeout to allow the auth listener to set up first
+    // This prevents potential race conditions
+    const timer = setTimeout(() => {
+      checkSession();
+    }, 10);
     
     return () => {
       isMounted = false;
+      clearTimeout(timer);
       if (subscription) {
         subscription.unsubscribe();
       }

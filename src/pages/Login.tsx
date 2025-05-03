@@ -19,8 +19,10 @@ const Login = () => {
   // Use the custom hook to handle authentication
   const { loading, handleRegularLogin } = useAuth(isAdminMode);
   
-  // Check if user is already authenticated and redirect if needed
+  // Check if user is already authenticated and redirect if needed - optimized with proper dependencies
   useEffect(() => {
+    if (loading) return; // Skip check if still loading
+    
     const checkExistingAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -54,7 +56,7 @@ const Login = () => {
           }
         } else {
           // Regular user already authenticated, defer to useAuth for routing decision
-          handleRegularLogin();
+          await handleRegularLogin();
         }
       } catch (error) {
         console.error('Error checking auth:', error);
@@ -63,12 +65,10 @@ const Login = () => {
       }
     };
     
-    if (!loading) {
-      checkExistingAuth();
-    }
+    checkExistingAuth();
   }, [loading, isAdminMode, navigate, toast, handleRegularLogin]);
   
-  // Enhanced fade-in animation when component loads
+  // Enhanced fade-in animation when component loads - improved timing
   useEffect(() => {
     // Remove login-transition class from body if present
     document.body.classList.remove('login-transition');
@@ -78,40 +78,35 @@ const Login = () => {
       navigate('/login', { replace: true });
     }
     
-    // Small delay to ensure the animation is visible
-    const timer = setTimeout(() => {
-      setPageLoaded(true);
-    }, 50);
-    
-    return () => clearTimeout(timer);
+    // Reduced delay for faster loading perception
+    setPageLoaded(true);
   }, [navigate, location]);
 
-  // Handle toggle animation for mode switch
+  // Handle toggle animation for mode switch - optimized
   const handleAdminToggle = (checked: boolean) => {
     setIsAnimating(true);
-    // Add animation class
+    setIsAdminMode(checked);
+    
+    // Reduced animation time for better UX
     setTimeout(() => {
-      setIsAdminMode(checked);
-      // Remove animation class after mode has changed
-      setTimeout(() => {
-        setIsAnimating(false);
-      }, 150);
-    }, 25);
+      setIsAnimating(false);
+    }, 100);
   };
 
-  // Show loading state
+  // Show loading state with improved visualization
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Loading...</p>
+          <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-current border-t-transparent text-gray-600 mb-2"></div>
+          <p className="text-gray-600">Connecting to portal...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-all duration-700 ease-in-out ${
+    <div className={`min-h-screen flex items-center justify-center bg-white py-12 px-4 transition-all duration-300 ease-in-out ${
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
       <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">

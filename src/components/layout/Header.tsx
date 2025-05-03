@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -18,23 +17,27 @@ const Header: React.FC = () => {
     return location.pathname === path;
   };
 
+  // Optimized scroll handler with throttling
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const offset = window.scrollY;
-      if (offset > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const offset = window.scrollY;
+          setScrolled(offset > 50);
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  // Add effect to scroll to top when route changes
+  // Add effect to scroll to top when route changes - optimized
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
@@ -54,13 +57,16 @@ const Header: React.FC = () => {
       setIsMenuOpen(false);
     }
     
-    // Scroll to top of the page
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
+    // Scroll to top of the page using requestAnimationFrame for smoother scrolling
+    window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     });
   };
   
+  // Optimized login handling
   const handleLoginClick = (e) => {
     e.preventDefault();
     
@@ -75,10 +81,13 @@ const Header: React.FC = () => {
     // Add a fade-out animation to the entire page with scale effect
     document.body.classList.add('login-transition');
     
-    // Navigate after animation completes
-    setTimeout(() => {
-      navigate('/login');
-    }, 600); // Match this with the CSS animation duration
+    // Navigate after animation begins for perceived performance improvement
+    window.requestAnimationFrame(() => {
+      // Use a shorter timeout for faster transition
+      setTimeout(() => {
+        navigate('/login');
+      }, 300); // Reduced from 600ms
+    });
   };
 
   return (

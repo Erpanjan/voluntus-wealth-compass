@@ -8,12 +8,27 @@ export const useOnboardingStatus = (navigate: NavigateFunction) => {
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
 
   // Helper function to check onboarding data status and redirect accordingly
+  // Optimized for performance
   const checkOnboardingStatus = async (userId: string) => {
     if (isCheckingStatus) return;
     
     try {
       setIsCheckingStatus(true);
       console.log('Checking onboarding status for user:', userId);
+      
+      // Check localStorage first for potential cache hit to avoid DB query
+      const cachedStatus = localStorage.getItem(getUserStorageKey(userId, 'onboardingStatus'));
+      const cachedTimestamp = localStorage.getItem(getUserStorageKey(userId, 'onboardingStatusTimestamp'));
+      
+      // Use cached status if it's less than 5 minutes old (timestamp is in milliseconds)
+      const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+      const now = Date.now();
+      
+      if (cachedStatus && cachedTimestamp && now - parseInt(cachedTimestamp, 10) < CACHE_TTL) {
+        // Route based on cached status to avoid database query
+        routeBasedOnStatus(cachedStatus, userId);
+        return;
+      }
       
       // Ensure we're authenticated before proceeding
       const { data: { session } } = await supabase.auth.getSession();
@@ -23,10 +38,10 @@ export const useOnboardingStatus = (navigate: NavigateFunction) => {
         return;
       }
       
-      // First check database for onboarding data - prioritize this over localStorage
+      // Query database for onboarding data with optimized select query
       const { data, error } = await supabase
         .from('onboarding_data')
-        .select('id, status, first_name, last_name, email, phone')
+        .select('status, first_name, last_name, email, phone')
         .eq('id', userId)
         .maybeSingle();
       
@@ -46,72 +61,92 @@ export const useOnboardingStatus = (navigate: NavigateFunction) => {
         
         // Try to create an onboarding record for new users
         try {
-          const { error: insertError } = await supabase
+          await supabase
             .from('onboarding_data')
             .insert({ id: userId, status: 'draft' });
-            
-          if (insertError) {
-            console.error('Failed to create onboarding record:', insertError);
-          }
         } catch (createError) {
           console.error('Error creating onboarding record:', createError);
         }
         
         // Set consistent localStorage state
-        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
-        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
-        localStorage.setItem('onboardingComplete', 'false');
+        setLocalStorageState(userId, 'draft');
         navigate('/welcome');
         return;
       }
 
-      // Based on database onboarding data status
-      // Check if it's an empty draft (created by trigger but user never started onboarding)
-      const isEmptyDraft = data.status === 'draft' && 
-                          !data.first_name && 
-                          !data.last_name && 
-                          !data.email && 
-                          !data.phone;
-                          
-      console.log('Is this an empty draft record?', isEmptyDraft);
+      // Cache status in localStorage
+      localStorage.setItem(getUserStorageKey(userId, 'onboardingStatus'), data.status);
+      localStorage.setItem(getUserStorageKey(userId, 'onboardingStatusTimestamp'), now.toString());
       
-      // Set consistent localStorage state based on status
-      if (isEmptyDraft) {
-        // It's a new user with an auto-created empty draft - send to welcome page
-        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
-        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
-        localStorage.setItem('onboardingComplete', 'false');
-        navigate('/welcome');
-      } else if (data.status === 'draft') {
-        // User has draft data but hasn't submitted it yet, go to onboarding
-        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
-        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
-        localStorage.setItem('onboardingComplete', 'false');
-        navigate('/onboarding');
-      } else if (data.status === 'submitted' || data.status === 'pending') {
-        // Application is submitted/pending, go to pending approval
-        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'true');
-        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
-        localStorage.setItem('onboardingComplete', 'false');
-        navigate('/pending-approval');
-      } else if (data.status === 'approved') {
-        // Application is approved, go to dashboard
-        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'true');
-        localStorage.setItem('onboardingComplete', 'true');
-        navigate('/dashboard');
-      } else {
-        // Unknown status, default to welcome page
-        console.log('Unknown application status:', data.status);
-        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
-        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
-        localStorage.setItem('onboardingComplete', 'false');
-        navigate('/welcome');
-      }
+      // Route based on status
+      routeBasedOnStatus(data.status, userId, data);
+      
     } catch (err) {
       console.error('Unexpected error in checkOnboardingStatus:', err);
       navigate('/welcome');
     } finally {
       setIsCheckingStatus(false);
+    }
+  };
+
+  // Helper function to set localStorage consistently
+  const setLocalStorageState = (userId: string, status: string) => {
+    switch (status) {
+      case 'draft':
+        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
+        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+        localStorage.setItem('onboardingComplete', 'false');
+        break;
+      case 'submitted':
+      case 'pending':
+        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'true');
+        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+        localStorage.setItem('onboardingComplete', 'false');
+        break;
+      case 'approved':
+        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'true');
+        localStorage.setItem('onboardingComplete', 'true');
+        break;
+      default:
+        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
+        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+        localStorage.setItem('onboardingComplete', 'false');
+    }
+  };
+  
+  // Helper function to route based on status
+  const routeBasedOnStatus = (status: string, userId: string, data?: any) => {
+    // Check if it's an empty draft (created by trigger but user never started onboarding)
+    const isEmptyDraft = status === 'draft' && data && 
+                        !data.first_name && 
+                        !data.last_name && 
+                        !data.email && 
+                        !data.phone;
+                        
+    console.log('Is this an empty draft record?', isEmptyDraft);
+    
+    // Route based on status
+    if (isEmptyDraft) {
+      // It's a new user with an auto-created empty draft - send to welcome page
+      setLocalStorageState(userId, 'draft');
+      navigate('/welcome', { replace: true });
+    } else if (status === 'draft') {
+      // User has draft data but hasn't submitted it yet, go to onboarding
+      setLocalStorageState(userId, 'draft');
+      navigate('/onboarding', { replace: true });
+    } else if (status === 'submitted' || status === 'pending') {
+      // Application is submitted/pending, go to pending approval
+      setLocalStorageState(userId, 'submitted');
+      navigate('/pending-approval', { replace: true });
+    } else if (status === 'approved') {
+      // Application is approved, go to dashboard
+      setLocalStorageState(userId, 'approved');
+      navigate('/dashboard', { replace: true });
+    } else {
+      // Unknown status, default to welcome page
+      console.log('Unknown application status:', status);
+      setLocalStorageState(userId, 'draft');
+      navigate('/welcome', { replace: true });
     }
   };
 

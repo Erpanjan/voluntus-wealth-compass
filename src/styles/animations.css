@@ -1,8 +1,8 @@
 
 @layer utilities {
-  /* Improved consistent fade in animation - made faster */
+  /* Improved consistent fade in animation - made even faster */
   .animate-fade-in {
-    animation: fadeIn 0.4s ease-out forwards; /* reduced from 0.8s to 0.4s */
+    animation: fadeIn 0.3s ease-out forwards; /* reduced from 0.4s to 0.3s */
   }
 
   @keyframes fadeIn {
@@ -17,12 +17,12 @@
   }
   
   .animate-fade-in-up {
-    animation: fadeIn 0.4s ease-out forwards; /* reduced from 0.8s to 0.4s */
+    animation: fadeIn 0.3s ease-out forwards; /* reduced from 0.4s to 0.3s */
   }
   
   /* Login mode transition effect - made faster */
   .login-mode-transition {
-    animation: modeTransition 0.15s ease-in-out forwards; /* reduced from 0.3s to 0.15s */
+    animation: modeTransition 0.1s ease-in-out forwards; /* reduced from 0.15s to 0.1s */
   }
   
   @keyframes modeTransition {
@@ -52,7 +52,7 @@
 
   /* Login transition effect - enhanced and made faster */
   .login-transition {
-    animation: portalTransition 0.3s cubic-bezier(0.65, 0, 0.35, 1) forwards; /* reduced from 0.6s to 0.3s */
+    animation: portalTransition 0.25s cubic-bezier(0.65, 0, 0.35, 1) forwards; /* reduced from 0.3s to 0.25s */
     pointer-events: none;
   }
   
@@ -63,18 +63,18 @@
     }
     100% {
       opacity: 0;
-      transform: scale(1.03);
+      transform: scale(1.02); /* reduced from 1.03 to 1.02 for subtler effect */
     }
   }
 
   /* Fixed position transition - made faster */
   .fixed-position-transition {
-    transition: opacity 0.15s ease-in-out; /* reduced from 0.3s to 0.15s */
+    transition: opacity 0.1s ease-in-out; /* reduced from 0.15s to 0.1s */
     position: relative;
   }
 
   /* Content fade transition - made faster */
   .content-fade-transition {
-    transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out; /* reduced from 0.3s to 0.15s */
+    transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out; /* reduced from 0.15s to 0.1s */
   }
 }

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { LogOut } from 'lucide-react';
@@ -21,8 +21,10 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
 
-  // Check authentication and approval status
+  // Check authentication and approval status - optimized
   useEffect(() => {
+    let isMounted = true;
+    
     const checkAuthAndApproval = async () => {
       try {
         // Verify session exists
@@ -34,54 +36,80 @@ const Dashboard = () => {
           return;
         }
         
-        setUser(session.user);
-        setSession(session);
+        if (isMounted) {
+          setUser(session.user);
+          setSession(session);
+        }
         
         // Verify this is the correct page based on onboarding status
-        const { data, error } = await supabase
-          .from('onboarding_data')
-          .select('status')
-          .eq('id', session.user.id)
-          .maybeSingle();
-          
-        if (error) {
-          console.error('Error checking onboarding status:', error);
-          // Show an error but allow access on error
-          toast({
-            title: "Warning",
-            description: "Could not verify your account status. Some features may be limited.",
-            variant: "destructive",
-          });
-          setAuthorized(true);
-        } else if (data) {
-          // If user hasn't submitted application yet, redirect to welcome
-          if (data.status === 'draft') {
-            navigate('/welcome', { replace: true });
-            return;
-          }
-          // If user's application is pending, redirect to pending page
-          else if (data.status === 'submitted' || data.status === 'pending') {
-            navigate('/pending-approval', { replace: true });
-            return;
-          }
-          // If approved, this is the correct page
-          else if (data.status === 'approved') {
-            setAuthorized(true);
+        // Use cached status if available to avoid DB query
+        const cachedStatus = localStorage.getItem(`user:${session.user.id}:onboardingStatus`);
+        const cachedTimestamp = localStorage.getItem(`user:${session.user.id}:onboardingStatusTimestamp`);
+        const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+        const now = Date.now();
+        
+        if (cachedStatus && cachedTimestamp && now - parseInt(cachedTimestamp, 10) < CACHE_TTL) {
+          if (cachedStatus === 'approved') {
+            if (isMounted) setAuthorized(true);
           } else {
-            // Unknown status
-            navigate('/welcome', { replace: true });
-            return;
+            // Not approved or status changed - verify with database
+            checkDatabaseStatus();
           }
         } else {
-          // No onboarding data, redirect to welcome
-          navigate('/welcome', { replace: true });
-          return;
+          // No cached status or cache expired - check database
+          checkDatabaseStatus();
+        }
+        
+        async function checkDatabaseStatus() {
+          const { data, error } = await supabase
+            .from('onboarding_data')
+            .select('status')
+            .eq('id', session.user.id)
+            .maybeSingle();
+            
+          if (error) {
+            console.error('Error checking onboarding status:', error);
+            // Show an error but allow access on error
+            toast({
+              title: "Warning",
+              description: "Could not verify your account status. Some features may be limited.",
+              variant: "destructive",
+            });
+            if (isMounted) setAuthorized(true);
+          } else if (data) {
+            // Cache the result in localStorage
+            localStorage.setItem(`user:${session.user.id}:onboardingStatus`, data.status);
+            localStorage.setItem(`user:${session.user.id}:onboardingStatusTimestamp`, now.toString());
+            
+            // If user hasn't submitted application yet, redirect to welcome
+            if (data.status === 'draft') {
+              navigate('/welcome', { replace: true });
+              return;
+            }
+            // If user's application is pending, redirect to pending page
+            else if (data.status === 'submitted' || data.status === 'pending') {
+              navigate('/pending-approval', { replace: true });
+              return;
+            }
+            // If approved, this is the correct page
+            else if (data.status === 'approved') {
+              if (isMounted) setAuthorized(true);
+            } else {
+              // Unknown status
+              navigate('/welcome', { replace: true });
+              return;
+            }
+          } else {
+            // No onboarding data, redirect to welcome
+            navigate('/welcome', { replace: true });
+            return;
+          }
         }
       } catch (error) {
         console.error('Auth check error:', error);
         navigate('/login', { replace: true });
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
     
@@ -95,52 +123,43 @@ const Dashboard = () => {
     });
     
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
 
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="p-8 max-w-md w-full">
-          <Skeleton className="h-8 w-40 mb-4" />
-          <Skeleton className="h-4 w-64 mb-8" />
-          <Skeleton className="h-64 w-full mb-6 rounded-lg" />
-          <Skeleton className="h-10 w-24" />
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render anything while redirecting
-  if (!authorized) {
-    return null;
-  }
-
-  const handleLogout = async () => {
+  // Memoized logout handler to avoid recreating function on each render
+  const handleLogout = useCallback(async () => {
     try {
       console.log('Client logout initiated');
       
       // Get user ID before signing out
       const userId = session?.user?.id;
       
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
+      // Add transition class for smooth logout experience
+      document.body.classList.add('login-transition');
       
-      if (error) {
-        throw error;
+      // Start the Supabase sign out process immediately
+      const signOutPromise = supabase.auth.signOut();
+      
+      // Clear all user-specific flags from localStorage immediately
+      // This makes logout feel faster while the API call completes
+      if (userId) {
+        clearUserStateFlags(userId);
+      } else {
+        clearUserStateFlags();
       }
       
-      // Clear all user-specific flags and Supabase session
-      clearUserStateFlags(userId);
-      
+      // Show toast notification immediately for perceived speed
       toast({
-        title: "Logged out successfully",
-        description: "You have been logged out of your account."
+        title: "Logging out...",
+        description: "You will be redirected to the login page."
       });
       
-      // Hard redirect to login page (forces page reload)
+      // Wait for the API call to complete
+      await signOutPromise;
+      
+      // Hard redirect to login page to ensure clean state
       window.location.href = '/login';
     } catch (error: any) {
       console.error('Logout error:', error);
@@ -157,7 +176,26 @@ const Dashboard = () => {
       // Hard redirect to login page (forces page reload)
       window.location.href = '/login';
     }
-  };
+  }, [session, toast]);
+
+  // Show optimized loading state with smoother animation
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="p-8 max-w-md w-full animate-fade-in">
+          <Skeleton className="h-8 w-40 mb-4" />
+          <Skeleton className="h-4 w-64 mb-8" />
+          <Skeleton className="h-64 w-full mb-6 rounded-lg" />
+          <Skeleton className="h-10 w-24" />
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything while redirecting
+  if (!authorized) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-white flex">
