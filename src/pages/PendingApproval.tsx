@@ -1,10 +1,89 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
 import { CheckCircle, Clock } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const PendingApproval = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
+
+  // Add authentication check and status verification
+  useEffect(() => {
+    const checkAuthAndStatus = async () => {
+      try {
+        // Verify session exists
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          console.log('No valid session found in PendingApproval page, redirecting to login');
+          navigate('/login', { replace: true });
+          return;
+        }
+        
+        // Verify this is the correct page based on onboarding status
+        const { data, error } = await supabase
+          .from('onboarding_data')
+          .select('status')
+          .eq('id', session.user.id)
+          .maybeSingle();
+          
+        if (error) {
+          console.error('Error checking onboarding status:', error);
+          // Show the pending page anyway on error
+          setAuthorized(true);
+        } else if (data) {
+          // If user hasn't submitted application yet, redirect to welcome or onboarding
+          if (data.status === 'draft') {
+            navigate('/welcome', { replace: true });
+            return;
+          }
+          // If user's application is approved, redirect to dashboard
+          else if (data.status === 'approved') {
+            navigate('/dashboard', { replace: true });
+            return;
+          }
+          // Otherwise, this is the correct page for a submitted/pending application
+          setAuthorized(true);
+        } else {
+          // No onboarding data, redirect to welcome
+          navigate('/welcome', { replace: true });
+          return;
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        navigate('/login', { replace: true });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    checkAuthAndStatus();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <OnboardingHeader currentStep={3} />
+        <div className="container mx-auto px-6 py-8">
+          <div className="text-center max-w-3xl mx-auto">
+            <Skeleton className="h-10 w-3/4 mx-auto mb-6" />
+            <Skeleton className="h-6 w-full mx-auto mb-8" />
+            <Skeleton className="h-64 w-full max-w-lg mx-auto mb-8 rounded-lg" />
+            <Skeleton className="h-24 w-full max-w-lg mx-auto rounded-lg" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!authorized) {
+    return null; // Will navigate away, no need to render anything
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <OnboardingHeader currentStep={3} />

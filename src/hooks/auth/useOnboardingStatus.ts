@@ -32,7 +32,7 @@ export const useOnboardingStatus = (navigate: NavigateFunction) => {
       
       if (error) {
         console.error('Error checking onboarding data:', error);
-        // If error, default to welcome page for safety
+        // If error, redirect to welcome page for safety
         navigate('/welcome');
         return;
       }
@@ -40,8 +40,24 @@ export const useOnboardingStatus = (navigate: NavigateFunction) => {
       console.log('Onboarding data found:', data);
 
       // If no data found, the application might have been deleted (rejected)
+      // or this is a new user
       if (!data) {
-        console.log('No onboarding data found - application may have been rejected or deleted');
+        console.log('No onboarding data found - directing to welcome page');
+        
+        // Try to create an onboarding record for new users
+        try {
+          const { error: insertError } = await supabase
+            .from('onboarding_data')
+            .insert({ id: userId, status: 'draft' });
+            
+          if (insertError) {
+            console.error('Failed to create onboarding record:', insertError);
+          }
+        } catch (createError) {
+          console.error('Error creating onboarding record:', createError);
+        }
+        
+        // Set consistent localStorage state
         localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
         localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
         localStorage.setItem('onboardingComplete', 'false');
@@ -59,6 +75,7 @@ export const useOnboardingStatus = (navigate: NavigateFunction) => {
                           
       console.log('Is this an empty draft record?', isEmptyDraft);
       
+      // Set consistent localStorage state based on status
       if (isEmptyDraft) {
         // It's a new user with an auto-created empty draft - send to welcome page
         localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');

@@ -6,6 +6,7 @@ import Section from '@/components/ui/Section';
 import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
 import { User, FileText, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Welcome = () => {
   const navigate = useNavigate();
@@ -16,12 +17,41 @@ const Welcome = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Verify session exists
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
           console.log('No valid session found in Welcome page, redirecting to login');
           navigate('/login', { replace: true });
           return;
+        }
+        
+        // Double check that this is where the user should be based on onboarding status
+        const { data, error } = await supabase
+          .from('onboarding_data')
+          .select('status, first_name, last_name')
+          .eq('id', session.user.id)
+          .maybeSingle();
+          
+        if (error) {
+          console.error('Error checking onboarding status:', error);
+          // Continue showing welcome page on error
+        } else if (data) {
+          // If user has already submitted their application, redirect to pending page
+          if (data.status === 'submitted' || data.status === 'pending') {
+            navigate('/pending-approval', { replace: true });
+            return;
+          }
+          // If user's application is approved, redirect to dashboard
+          else if (data.status === 'approved') {
+            navigate('/dashboard', { replace: true });
+            return;
+          }
+          // If user has started onboarding but not submitted, redirect to onboarding
+          else if (data.status === 'draft' && (data.first_name || data.last_name)) {
+            navigate('/onboarding', { replace: true });
+            return;
+          }
         }
         
         setAuthenticated(true);
@@ -43,9 +73,21 @@ const Welcome = () => {
   // Only render content when authenticated, otherwise show loading
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <p className="text-gray-600">Verifying authentication...</p>
+      <div className="min-h-screen bg-white">
+        <OnboardingHeader currentStep={0} />
+        <div className="container mx-auto px-6 py-8">
+          <div className="max-w-4xl mx-auto">
+            <Skeleton className="h-10 w-3/4 mx-auto mb-6" />
+            <Skeleton className="h-6 w-full mx-auto mb-8" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {[1, 2, 3].map(i => (
+                <Skeleton key={i} className="h-64 w-full rounded-3xl" />
+              ))}
+            </div>
+            
+            <Skeleton className="h-12 w-40 mx-auto" />
+          </div>
         </div>
       </div>
     );

@@ -1,5 +1,6 @@
+
 import React, { useEffect, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import PolicyReview from '@/components/dashboard/PolicyReview';
 import AccountManagement from '@/components/dashboard/AccountManagement';
 import { supabase } from '@/integrations/supabase/client';
 import { clearUserStateFlags } from '@/hooks/auth/useLocalStorage';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard = () => {
   // Use state for session management
@@ -17,60 +19,103 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState('advisor');
   const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
 
-  // Subscribe to auth state changes
+  // Check authentication and approval status
   useEffect(() => {
-    let isMounted = true;
-    
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log('Dashboard auth state changed:', event, session);
-        if (isMounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
+    const checkAuthAndApproval = async () => {
+      try {
+        // Verify session exists
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          console.log('No valid session found in Dashboard page, redirecting to login');
+          navigate('/login', { replace: true });
+          return;
         }
-      }
-    );
-    
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Dashboard initial session check:', session);
-      if (isMounted) {
+        
+        setUser(session.user);
         setSession(session);
-        setUser(session?.user ?? null);
+        
+        // Verify this is the correct page based on onboarding status
+        const { data, error } = await supabase
+          .from('onboarding_data')
+          .select('status')
+          .eq('id', session.user.id)
+          .maybeSingle();
+          
+        if (error) {
+          console.error('Error checking onboarding status:', error);
+          // Show an error but allow access on error
+          toast({
+            title: "Warning",
+            description: "Could not verify your account status. Some features may be limited.",
+            variant: "destructive",
+          });
+          setAuthorized(true);
+        } else if (data) {
+          // If user hasn't submitted application yet, redirect to welcome
+          if (data.status === 'draft') {
+            navigate('/welcome', { replace: true });
+            return;
+          }
+          // If user's application is pending, redirect to pending page
+          else if (data.status === 'submitted' || data.status === 'pending') {
+            navigate('/pending-approval', { replace: true });
+            return;
+          }
+          // If approved, this is the correct page
+          else if (data.status === 'approved') {
+            setAuthorized(true);
+          } else {
+            // Unknown status
+            navigate('/welcome', { replace: true });
+            return;
+          }
+        } else {
+          // No onboarding data, redirect to welcome
+          navigate('/welcome', { replace: true });
+          return;
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        navigate('/login', { replace: true });
+      } finally {
         setLoading(false);
+      }
+    };
+    
+    checkAuthAndApproval();
+    
+    // Also set up auth state listener for session changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/login', { replace: true });
       }
     });
     
     return () => {
-      isMounted = false;
-      if (subscription) {
-        subscription.unsubscribe();
-      }
+      subscription.unsubscribe();
     };
-  }, []);
-
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    
-    if (!session && !isAuthenticated && !loading) {
-      console.log('Dashboard: Not authenticated, redirecting to login');
-      navigate('/login');
-    }
-  }, [session, navigate, loading]);
+  }, [navigate, toast]);
 
   // Show loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Loading...</p>
+        <div className="p-8 max-w-md w-full">
+          <Skeleton className="h-8 w-40 mb-4" />
+          <Skeleton className="h-4 w-64 mb-8" />
+          <Skeleton className="h-64 w-full mb-6 rounded-lg" />
+          <Skeleton className="h-10 w-24" />
         </div>
       </div>
     );
+  }
+
+  // Don't render anything while redirecting
+  if (!authorized) {
+    return null;
   }
 
   const handleLogout = async () => {
@@ -78,7 +123,6 @@ const Dashboard = () => {
       console.log('Client logout initiated');
       
       // Get user ID before signing out
-      const { data: { session } } = await supabase.auth.getSession();
       const userId = session?.user?.id;
       
       // Sign out from Supabase

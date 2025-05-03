@@ -34,7 +34,7 @@ export const useAuthListener = ({
     
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         
         if (!isMounted) return;
@@ -49,7 +49,11 @@ export const useAuthListener = ({
             localStorage.removeItem('isAdminMode');
             localStorage.removeItem('onboardingComplete');
             console.log('User signed out, cleared session and local storage');
-            navigate('/login');
+            
+            // Use setTimeout to avoid potential deadlock with Supabase
+            setTimeout(() => {
+              navigate('/login');
+            }, 0);
           }
           return;
         }
@@ -60,40 +64,45 @@ export const useAuthListener = ({
           
           // Check if trying to access admin portal
           if (isAdminMode) {
-            // Check admin status using admin_users table
-            const isUserAdmin = await checkIsAdmin(session.user.id);
-            
-            if (!isUserAdmin) {
-              toast({
-                title: "Access Denied",
-                description: "Your account does not have admin privileges.",
-                variant: "destructive",
-                duration: 5000,
-              });
+            // Use setTimeout to prevent potential deadlock
+            setTimeout(async () => {
+              if (!isMounted) return;
               
-              // Sign out if not an admin but trying to access admin portal
-              await supabase.auth.signOut();
-              localStorage.removeItem('isAuthenticated');
-              localStorage.removeItem('isAdminMode');
+              // Check admin status using admin_users table
+              const isUserAdmin = await checkIsAdmin(session.user.id);
               
-              if (isMounted) {
-                setSession(null);
-                setUser(null);
-                setIsAdmin(false);
-                navigate('/login');
+              if (!isUserAdmin) {
+                toast({
+                  title: "Access Denied",
+                  description: "Your account does not have admin privileges.",
+                  variant: "destructive",
+                  duration: 5000,
+                });
+                
+                // Sign out if not an admin but trying to access admin portal
+                await supabase.auth.signOut();
+                localStorage.removeItem('isAuthenticated');
+                localStorage.removeItem('isAdminMode');
+                
+                if (isMounted) {
+                  setSession(null);
+                  setUser(null);
+                  setIsAdmin(false);
+                  navigate('/login');
+                }
+              } else {
+                // Set admin mode and navigate to admin dashboard
+                localStorage.setItem('isAdminMode', 'true');
+                
+                if (isMounted) {
+                  setIsAdmin(true);
+                  setSession(session);
+                  setUser(session.user);
+                  setLoading(false);
+                  navigate('/admin/dashboard');
+                }
               }
-            } else {
-              // Set admin mode and navigate to admin dashboard
-              localStorage.setItem('isAdminMode', 'true');
-              
-              if (isMounted) {
-                setIsAdmin(true);
-                setSession(session);
-                setUser(session.user);
-                setLoading(false);
-                navigate('/admin/dashboard');
-              }
-            }
+            }, 0);
           } else {
             // Handle regular client flow
             localStorage.removeItem('isAdminMode');
@@ -101,12 +110,17 @@ export const useAuthListener = ({
             if (isMounted) {
               setSession(session);
               setUser(session.user);
-              setLoading(false);
               
-              // Handle regular user flow based on onboarding status
-              if (event === 'SIGNED_IN') {
-                await checkOnboardingStatus(session.user.id);
-              }
+              // Use setTimeout to prevent potential deadlock
+              setTimeout(async () => {
+                if (!isMounted) return;
+                setLoading(false);
+                
+                // Only proceed with onboarding status check for non-admin users
+                if (event === 'SIGNED_IN') {
+                  await checkOnboardingStatus(session.user.id);
+                }
+              }, 0);
             }
           }
         } else if (isMounted) {
@@ -165,8 +179,8 @@ export const useAuthListener = ({
                 });
                 
                 if (isMounted) {
-                  setSession(session);
-                  setUser(session.user);
+                  setSession(null);
+                  setUser(null);
                   setLoading(false);
                   navigate('/login');
                 }
@@ -206,6 +220,11 @@ export const useAuthListener = ({
           setSession(null);
           setUser(null);
           setLoading(false);
+          
+          // Always redirect to login on error for security
+          if (window.location.pathname !== '/login') {
+            navigate('/login');
+          }
         }
       }
     };

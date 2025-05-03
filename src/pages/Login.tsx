@@ -25,33 +25,36 @@ const Login = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
-        if (session) {
-          // User is already authenticated, check if they're an admin in admin mode
-          if (isAdminMode) {
-            const { data, error } = await supabase
-              .from('admin_users')
-              .select('id')
-              .eq('id', session.user.id)
-              .single();
-              
-            if (data && !error) {
-              navigate('/admin/dashboard', { replace: true });
-            } else {
-              // Not an admin but trying to access admin mode
-              toast({
-                title: "Access Denied",
-                description: "Your account does not have admin privileges.",
-                variant: "destructive",
-              });
-              
-              // Clear session since they don't have admin privileges
-              await supabase.auth.signOut();
-              clearUserStateFlags(session.user.id);
-            }
+        if (!session) {
+          // Not logged in, stay on login page
+          return;
+        }
+        
+        // User is already authenticated, check if they're an admin in admin mode
+        if (isAdminMode) {
+          const { data, error } = await supabase
+            .from('admin_users')
+            .select('id')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (data && !error) {
+            navigate('/admin/dashboard', { replace: true });
           } else {
-            // Regular user already authenticated, check onboarding status
-            navigate('/welcome', { replace: true });
+            // Not an admin but trying to access admin mode
+            toast({
+              title: "Access Denied",
+              description: "Your account does not have admin privileges.",
+              variant: "destructive",
+            });
+            
+            // Clear session since they don't have admin privileges
+            await supabase.auth.signOut();
+            clearUserStateFlags(session.user.id);
           }
+        } else {
+          // Regular user already authenticated, defer to useAuth for routing decision
+          handleRegularLogin();
         }
       } catch (error) {
         console.error('Error checking auth:', error);
@@ -63,7 +66,7 @@ const Login = () => {
     if (!loading) {
       checkExistingAuth();
     }
-  }, [loading, isAdminMode, navigate, toast]);
+  }, [loading, isAdminMode, navigate, toast, handleRegularLogin]);
   
   // Enhanced fade-in animation when component loads
   useEffect(() => {
@@ -78,7 +81,7 @@ const Login = () => {
     // Small delay to ensure the animation is visible
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 50); // reduced from 100ms to 50ms for faster initial animation
+    }, 50);
     
     return () => clearTimeout(timer);
   }, [navigate, location]);
@@ -92,8 +95,8 @@ const Login = () => {
       // Remove animation class after mode has changed
       setTimeout(() => {
         setIsAnimating(false);
-      }, 150); // reduced from 300ms to 150ms to match the faster animation
-    }, 25); // reduced from 50ms to 25ms for faster response
+      }, 150);
+    }, 25);
   };
 
   // Show loading state
