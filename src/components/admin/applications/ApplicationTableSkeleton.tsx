@@ -5,9 +5,9 @@ import { TableBody, TableCell, TableRow } from '@/components/ui/table';
 
 const ApplicationTableSkeleton: React.FC = () => {
   return (
-    <TableBody className="relative">
-      {/* Loading overlay with messaging */}
-      <tr className="absolute inset-0 bg-white bg-opacity-60 z-10 pointer-events-none">
+    <TableBody>
+      {/* Overlay message that's less intrusive */}
+      <tr className="absolute inset-0 bg-white bg-opacity-50 z-10 pointer-events-none">
         <td className="w-full h-full">
           <div className="flex items-center justify-center h-full">
             <p className="text-gray-500 font-medium">Loading applications...</p>
@@ -15,9 +15,9 @@ const ApplicationTableSkeleton: React.FC = () => {
         </td>
       </tr>
       
-      {/* Skeleton rows for better visual indication */}
+      {/* Skeleton rows for visual feedback */}
       {Array.from({ length: 5 }).map((_, i) => (
-        <TableRow key={i}>
+        <TableRow key={i} className="relative">
           <TableCell><Skeleton className="h-5 w-32" /></TableCell>
           <TableCell><Skeleton className="h-5 w-40" /></TableCell>
           <TableCell><Skeleton className="h-5 w-28" /></TableCell>

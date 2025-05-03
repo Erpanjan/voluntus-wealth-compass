@@ -41,22 +41,37 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({
   // If there's an error, display it
   if (error) {
     return (
-      <TableBody>
-        <TableRow>
-          <TableCell colSpan={7} className="text-center py-10">
-            <div className="flex flex-col items-center justify-center">
-              <AlertTriangle className="h-10 w-10 text-amber-500 mb-3" />
-              <p className="text-gray-700 font-medium">Error Loading Applications</p>
-              <p className="text-sm text-gray-500 mt-1">{error}</p>
-            </div>
-          </TableCell>
-        </TableRow>
-      </TableBody>
+      <div className="w-full">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-gray-50">
+              <TableHead className="font-medium text-gray-700">Name</TableHead>
+              <TableHead className="font-medium text-gray-700">Email</TableHead>
+              <TableHead className="font-medium text-gray-700">Phone</TableHead>
+              <TableHead className="font-medium text-gray-700">Status</TableHead>
+              <TableHead className="font-medium text-gray-700">Questionnaire</TableHead>
+              <TableHead className="font-medium text-gray-700">Application Date</TableHead>
+              <TableHead className="font-medium text-gray-700 text-right pr-4">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={7} className="text-center py-10">
+                <div className="flex flex-col items-center justify-center">
+                  <AlertTriangle className="h-10 w-10 text-amber-500 mb-3" />
+                  <p className="text-gray-700 font-medium">Error Loading Applications</p>
+                  <p className="text-sm text-gray-500 mt-1">{error}</p>
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
     );
   }
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full overflow-hidden relative">
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-50">
@@ -108,7 +123,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({
                   />
                 </TableCell>
                 <TableCell className="text-gray-600 text-sm">
-                  {new Date(app.created_at).toLocaleDateString()}
+                  {app.created_at ? new Date(app.created_at).toLocaleDateString() : '-'}
                 </TableCell>
                 <TableCell className="text-right">
                   <ApplicationActions 

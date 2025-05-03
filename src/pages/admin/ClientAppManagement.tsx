@@ -42,7 +42,7 @@ const ClientAppManagement: React.FC = () => {
       (app.first_name?.toLowerCase().includes(searchTermLower)) || 
       (app.last_name?.toLowerCase().includes(searchTermLower)) ||
       (app.email?.toLowerCase().includes(searchTermLower)) ||
-      (app.status.toLowerCase().includes(searchTermLower))
+      (app.status?.toLowerCase().includes(searchTermLower))
     );
   }, [searchTerm, applications]);
   
@@ -59,13 +59,18 @@ const ClientAppManagement: React.FC = () => {
 
   // Load applications data with improved error handling
   const loadApplications = useCallback(async () => {
+    if (isRefreshing) {
+      console.log("Already refreshing, skipping duplicate load");
+      return;
+    }
+    
     try {
       console.log('Starting to load applications...');
       setIsLoading(true);
       setLoadError(null);
       
       const data = await fetchApplications();
-      console.log(`Successfully loaded ${data.length} applications`);
+      console.log(`Successfully loaded ${data.length} applications`, data);
       
       if (data.length === 0 && !isRefreshing) {
         toast({
@@ -93,6 +98,7 @@ const ClientAppManagement: React.FC = () => {
 
   // Initial data loading
   useEffect(() => {
+    console.log('Initial load effect running');
     loadApplications();
   }, [loadApplications]);
 

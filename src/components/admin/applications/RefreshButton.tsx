@@ -29,7 +29,7 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({ isRefreshing, handleRefre
       size="sm" 
       onClick={handleClick}
       disabled={isRefreshing}
-      className="transition-all duration-200 border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+      className="transition-all duration-200 border-gray-300 hover:border-gray-400 hover:bg-gray-50 px-4 py-2 h-10"
     >
       <RefreshCw className={`mr-2 h-4 w-4 transition-all ${isRefreshing ? 'animate-spin text-gray-600' : 'text-gray-500'}`} />
       {isRefreshing ? 'Refreshing...' : 'Refresh'}

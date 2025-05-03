@@ -49,7 +49,6 @@ export const useApplicationService = () => {
       if (questionnaireError) {
         console.error('Error fetching questionnaire data:', questionnaireError);
         // Don't throw here, we can still show onboarding data without questionnaire data
-        // Just log and continue
       }
       
       console.log('Fetched questionnaire data:', questionnaireData);
@@ -58,10 +57,12 @@ export const useApplicationService = () => {
       const questionnaireMap = new Map();
       if (questionnaireData) {
         questionnaireData.forEach(item => {
-          questionnaireMap.set(item.user_id, {
-            completed: item.completed,
-            id: item.id
-          });
+          if (item.user_id) {
+            questionnaireMap.set(item.user_id, {
+              completed: item.completed || false,
+              id: item.id
+            });
+          }
         });
       }
       
@@ -69,11 +70,11 @@ export const useApplicationService = () => {
       const applications = onboardingData.map(item => ({
         id: item.id,
         user_id: item.id, // Using onboarding data id as user_id
-        first_name: item.first_name,
-        last_name: item.last_name,
-        email: item.email,
-        phone: item.phone,
-        status: item.status,
+        first_name: item.first_name || '',
+        last_name: item.last_name || '',
+        email: item.email || '',
+        phone: item.phone || '',
+        status: item.status || 'pending',
         application_type: 'Onboarding',
         created_at: item.created_at,
         has_questionnaire: questionnaireMap.has(item.id),
@@ -84,12 +85,7 @@ export const useApplicationService = () => {
       return applications;
     } catch (error: any) {
       console.error('Error in fetchApplications:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch applications. Please try again later.',
-        variant: 'destructive',
-      });
-      return []; // Return empty array instead of throwing to prevent UI crashes
+      throw error; // Let the calling component handle the error
     }
   };
   
@@ -109,11 +105,6 @@ export const useApplicationService = () => {
       console.log('Successfully updated application status');
     } catch (error: any) {
       console.error('Error updating application status:', error);
-      toast({
-        title: 'Error',
-        description: `Failed to update application status: ${error.message || 'Unknown error'}`,
-        variant: 'destructive',
-      });
       throw error;
     }
   };
@@ -133,7 +124,7 @@ export const useApplicationService = () => {
         // Continue with deletion of onboarding data even if questionnaire deletion fails
       }
       
-      // Then delete the onboarding data
+      // Delete the onboarding data
       const { error: onboardingError } = await supabase
         .from('onboarding_data')
         .delete()
@@ -144,29 +135,19 @@ export const useApplicationService = () => {
         throw onboardingError;
       }
       
-      // Delete the user from auth.users using Supabase admin functions
-      // Note: This requires a server-side function with proper permissions
+      // Delete the user from auth.users using Supabase edge function
       const { error: userDeletionError } = await supabase.functions.invoke('delete-user', {
         body: { user_id: applicationId }
       });
       
       if (userDeletionError) {
         console.error('Error deleting user account:', userDeletionError);
-        toast({
-          title: 'Partial Deletion',
-          description: 'Application data was removed, but user account deletion failed. Please contact support.',
-          variant: 'destructive',
-        });
-      } else {
-        console.log('Successfully deleted user account and application');
+        throw userDeletionError;
       }
+      
+      console.log('Successfully deleted user account and application');
     } catch (error: any) {
       console.error('Error deleting application:', error);
-      toast({
-        title: 'Error',
-        description: `Failed to delete application. ${error.message || 'Unknown error'}`,
-        variant: 'destructive',
-      });
       throw error;
     }
   };
