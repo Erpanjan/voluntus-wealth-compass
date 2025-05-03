@@ -22,7 +22,7 @@ export const useApplicationService = () => {
   
   const fetchApplications = async (): Promise<ApplicationData[]> => {
     try {
-      console.log('Fetching applications from Supabase...');
+      console.log('Fetching applications from Supabase as admin...');
       
       // First get onboarding data
       const { data: onboardingData, error: onboardingError } = await supabase
@@ -69,7 +69,7 @@ export const useApplicationService = () => {
         questionnaire_completed: questionnaireMap.get(item.id)?.completed || false
       })) || [];
       
-      console.log(`Fetched ${applications.length} applications`);
+      console.log(`Fetched ${applications.length} applications as admin`);
       return applications;
     } catch (error: any) {
       console.error('Error in fetchApplications:', error);

@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, ChevronDown, CheckCircle, XCircle } from 'lucide-react';
+import { Search, ChevronDown, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ApplicationData, useApplicationService } from '@/services/applicationService';
 import { useToast } from '@/hooks/use-toast';
@@ -27,24 +27,31 @@ const ClientAppManagement: React.FC = () => {
   const [applications, setApplications] = useState<ApplicationData[]>([]);
   const [filteredApplications, setFilteredApplications] = useState<ApplicationData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { fetchApplications, updateApplicationStatus } = useApplicationService();
   const { toast } = useToast();
 
-  useEffect(() => {
-    const loadApplications = async () => {
-      try {
-        setIsLoading(true);
-        const data = await fetchApplications();
-        setApplications(data);
-        setFilteredApplications(data);
-      } catch (error) {
-        console.error('Failed to load applications', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const loadApplications = async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetchApplications();
+      setApplications(data);
+      setFilteredApplications(data);
+    } catch (error) {
+      console.error('Failed to load applications', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load application data. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
 
+  useEffect(() => {
     loadApplications();
   }, [fetchApplications]);
 
@@ -69,6 +76,11 @@ const ClientAppManagement: React.FC = () => {
     } catch (error) {
       console.error('Failed to update status', error);
     }
+  };
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    loadApplications();
   };
 
   const getStatusBadge = (status: string) => {
@@ -106,6 +118,15 @@ const ClientAppManagement: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+          >
+            <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
         </div>
         
         <Card>
