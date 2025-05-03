@@ -18,10 +18,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, ChevronDown, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { Search, ChevronDown, CheckCircle, XCircle, RefreshCw, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ApplicationData, useApplicationService } from '@/services/applicationService';
 import { useToast } from '@/hooks/use-toast';
+import ConfirmationDialog from '@/components/admin/applications/ConfirmationDialog';
 
 const ClientAppManagement: React.FC = () => {
   const [applications, setApplications] = useState<ApplicationData[]>([]);
@@ -29,7 +30,11 @@ const ClientAppManagement: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const { fetchApplications, updateApplicationStatus } = useApplicationService();
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState<ApplicationData | null>(null);
+  const [confirmAction, setConfirmAction] = useState<'approve' | 'pending' | 'delete'>('approve');
+  
+  const { fetchApplications, updateApplicationStatus, deleteApplication } = useApplicationService();
   const { toast } = useToast();
 
   const loadApplications = async () => {
@@ -67,16 +72,33 @@ const ClientAppManagement: React.FC = () => {
     setFilteredApplications(filtered);
   }, [searchTerm, applications]);
 
-  const handleStatusChange = async (applicationId: string, newStatus: string) => {
+  const openConfirmDialog = (app: ApplicationData, action: 'approve' | 'pending' | 'delete') => {
+    setSelectedApplication(app);
+    setConfirmAction(action);
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!selectedApplication) return;
+    
     try {
-      await updateApplicationStatus(applicationId, newStatus);
-      
-      // Update local state
-      setApplications(prev => prev.map(app => 
-        app.id === applicationId ? {...app, status: newStatus} : app
-      ));
+      if (confirmAction === 'delete') {
+        await deleteApplication(selectedApplication.id);
+        // Remove the application from the local state
+        setApplications(prev => prev.filter(app => app.id !== selectedApplication.id));
+      } else {
+        const newStatus = confirmAction === 'approve' ? 'approved' : 'pending';
+        await updateApplicationStatus(selectedApplication.id, newStatus);
+        // Update the application status in local state
+        setApplications(prev => prev.map(app => 
+          app.id === selectedApplication.id ? {...app, status: newStatus} : app
+        ));
+      }
     } catch (error) {
-      console.error('Failed to update status', error);
+      console.error('Failed to process action', error);
+    } finally {
+      setConfirmDialogOpen(false);
+      setSelectedApplication(null);
     }
   };
 
@@ -193,27 +215,32 @@ const ClientAppManagement: React.FC = () => {
                         {new Date(app.created_at).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              Change Status <ChevronDown className="ml-2 h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => handleStatusChange(app.id, 'draft')}>
-                              Draft
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleStatusChange(app.id, 'pending')}>
-                              Pending
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleStatusChange(app.id, 'approved')}>
-                              Approved
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleStatusChange(app.id, 'rejected')}>
-                              Rejected
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex space-x-2">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                Change Status <ChevronDown className="ml-2 h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem onClick={() => openConfirmDialog(app, 'approve')}>
+                                Approve
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => openConfirmDialog(app, 'pending')}>
+                                Mark as Pending
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                          
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-red-500 hover:text-red-700 border-red-200 hover:border-red-300"
+                            onClick={() => openConfirmDialog(app, 'delete')}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
@@ -223,6 +250,14 @@ const ClientAppManagement: React.FC = () => {
           </div>
         </Card>
       </div>
+      
+      <ConfirmationDialog
+        isOpen={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={handleConfirmAction}
+        application={selectedApplication}
+        actionType={confirmAction}
+      />
     </AdminLayout>
   );
 };

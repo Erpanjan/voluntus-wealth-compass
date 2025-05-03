@@ -111,8 +111,49 @@ export const useApplicationService = () => {
     }
   };
   
+  const deleteApplication = async (applicationId: string): Promise<void> => {
+    try {
+      console.log('Deleting application:', applicationId);
+      
+      // First delete any associated questionnaire responses
+      const { error: questionnaireError } = await supabase
+        .from('questionnaire_responses')
+        .delete()
+        .eq('user_id', applicationId);
+      
+      if (questionnaireError) {
+        console.error('Error deleting questionnaire data:', questionnaireError);
+        // Continue with deletion of onboarding data even if questionnaire deletion fails
+      }
+      
+      // Then delete the onboarding data
+      const { error: onboardingError } = await supabase
+        .from('onboarding_data')
+        .delete()
+        .eq('id', applicationId);
+      
+      if (onboardingError) {
+        throw onboardingError;
+      }
+      
+      toast({
+        title: 'Application Deleted',
+        description: `Application has been permanently removed.`,
+      });
+    } catch (error: any) {
+      console.error('Error deleting application:', error);
+      toast({
+        title: 'Error',
+        description: `Failed to delete application. ${error.message || ''}`,
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+  
   return {
     fetchApplications,
-    updateApplicationStatus
+    updateApplicationStatus,
+    deleteApplication
   };
 };

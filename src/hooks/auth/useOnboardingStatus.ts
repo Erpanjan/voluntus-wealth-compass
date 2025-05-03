@@ -39,44 +39,52 @@ export const useOnboardingStatus = (navigate: NavigateFunction) => {
       
       console.log('Onboarding data found:', data);
 
+      // If no data found, the application might have been deleted (rejected)
+      if (!data) {
+        console.log('No onboarding data found - application may have been rejected or deleted');
+        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
+        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+        localStorage.setItem('onboardingComplete', 'false');
+        navigate('/welcome');
+        return;
+      }
+
       // Based on database onboarding data status
-      if (data) {
-        // Check if it's an empty draft (created by trigger but user never started onboarding)
-        const isEmptyDraft = data.status === 'draft' && 
-                            !data.first_name && 
-                            !data.last_name && 
-                            !data.email && 
-                            !data.phone;
-                            
-        console.log('Is this an empty draft record?', isEmptyDraft);
-        
-        if (isEmptyDraft) {
-          // It's a new user with an auto-created empty draft - send to welcome page
-          localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
-          localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
-          localStorage.setItem('onboardingComplete', 'false');
-          navigate('/welcome');
-        } else if (data.status === 'draft') {
-          // User has draft data but hasn't submitted it yet, go to onboarding
-          localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
-          localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
-          localStorage.setItem('onboardingComplete', 'false');
-          navigate('/onboarding');
-        } else if (data.status === 'submitted') {
-          // Application is submitted, go to pending approval
-          localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'true');
-          localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
-          localStorage.setItem('onboardingComplete', 'false');
-          navigate('/pending-approval');
-        } else if (data.status === 'approved') {
-          // Application is approved, go to dashboard
-          localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'true');
-          localStorage.setItem('onboardingComplete', 'true');
-          navigate('/dashboard');
-        }
+      // Check if it's an empty draft (created by trigger but user never started onboarding)
+      const isEmptyDraft = data.status === 'draft' && 
+                          !data.first_name && 
+                          !data.last_name && 
+                          !data.email && 
+                          !data.phone;
+                          
+      console.log('Is this an empty draft record?', isEmptyDraft);
+      
+      if (isEmptyDraft) {
+        // It's a new user with an auto-created empty draft - send to welcome page
+        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
+        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+        localStorage.setItem('onboardingComplete', 'false');
+        navigate('/welcome');
+      } else if (data.status === 'draft') {
+        // User has draft data but hasn't submitted it yet, go to onboarding
+        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
+        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+        localStorage.setItem('onboardingComplete', 'false');
+        navigate('/onboarding');
+      } else if (data.status === 'submitted' || data.status === 'pending') {
+        // Application is submitted/pending, go to pending approval
+        localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'true');
+        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
+        localStorage.setItem('onboardingComplete', 'false');
+        navigate('/pending-approval');
+      } else if (data.status === 'approved') {
+        // Application is approved, go to dashboard
+        localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'true');
+        localStorage.setItem('onboardingComplete', 'true');
+        navigate('/dashboard');
       } else {
-        // No onboarding data found, direct to welcome page
-        console.log('No onboarding data found, directing to welcome page');
+        // Unknown status, default to welcome page
+        console.log('Unknown application status:', data.status);
         localStorage.setItem(getUserStorageKey(userId, 'applicationSubmitted'), 'false');
         localStorage.setItem(getUserStorageKey(userId, 'onboardingComplete'), 'false');
         localStorage.setItem('onboardingComplete', 'false');
