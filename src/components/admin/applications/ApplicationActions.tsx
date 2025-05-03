@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from '@/components/ui/button';
-import { ChevronDown } from 'lucide-react';
+import { Check, ChevronDown, X, Trash } from 'lucide-react';
 import { ApplicationData } from '@/services/applicationService';
 
 interface ApplicationActionsProps {
@@ -20,29 +20,38 @@ const ApplicationActions: React.FC<ApplicationActionsProps> = ({
   openConfirmDialog 
 }) => {
   return (
-    <div className="flex space-x-2">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm">
-            Actions <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => openConfirmDialog(application, 'approve')}>
-            Approve
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openConfirmDialog(application, 'pending')}>
-            Mark as Pending
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={() => openConfirmDialog(application, 'delete')}
-            className="text-red-500 hover:text-red-700"
-          >
-            Delete Application
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" className="h-8 px-2 py-0">
+          Actions <ChevronDown className="ml-1 h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem 
+          onClick={() => openConfirmDialog(application, 'approve')}
+          className="cursor-pointer"
+        >
+          <Check className="mr-2 h-4 w-4 text-green-500" />
+          <span>Approve</span>
+        </DropdownMenuItem>
+        
+        <DropdownMenuItem 
+          onClick={() => openConfirmDialog(application, 'pending')}
+          className="cursor-pointer"
+        >
+          <X className="mr-2 h-4 w-4 text-amber-500" />
+          <span>Mark as Pending</span>
+        </DropdownMenuItem>
+        
+        <DropdownMenuItem 
+          onClick={() => openConfirmDialog(application, 'delete')}
+          className="text-red-500 cursor-pointer"
+        >
+          <Trash className="mr-2 h-4 w-4" />
+          <span>Delete Application</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

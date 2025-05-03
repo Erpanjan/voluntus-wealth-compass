@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, CircleDashed } from 'lucide-react';
 
 interface QuestionnaireStatusProps {
   hasQuestionnaire: boolean;
@@ -16,14 +16,14 @@ const QuestionnaireStatus: React.FC<QuestionnaireStatusProps> = ({
       return (
         <div className="flex items-center">
           <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-          <span>Completed</span>
+          <span className="text-sm">Completed</span>
         </div>
       );
     } else {
       return (
         <div className="flex items-center">
-          <XCircle className="h-4 w-4 text-amber-500 mr-1" />
-          <span>Incomplete</span>
+          <CircleDashed className="h-4 w-4 text-amber-500 mr-1" />
+          <span className="text-sm">Incomplete</span>
         </div>
       );
     }
@@ -31,7 +31,7 @@ const QuestionnaireStatus: React.FC<QuestionnaireStatusProps> = ({
     return (
       <div className="flex items-center">
         <XCircle className="h-4 w-4 text-gray-400 mr-1" />
-        <span>None</span>
+        <span className="text-sm text-gray-500">None</span>
       </div>
     );
   }
