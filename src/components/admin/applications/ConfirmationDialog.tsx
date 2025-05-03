@@ -66,10 +66,10 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
     <AlertDialog open={isOpen}>
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader className="space-y-3">
-          <AlertDialogTitle className="text-xl">
+          <AlertDialogTitle className="text-xl font-semibold">
             {getTitle()}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-base">
+          <AlertDialogDescription className="text-base text-gray-600">
             {getDescription()}
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -91,17 +91,17 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         <AlertDialogFooter className="gap-2 mt-4">
           <AlertDialogCancel 
             onClick={onClose}
-            className="font-normal"
+            className="font-normal border-gray-300"
           >
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction 
             onClick={onConfirm}
             className={actionType === 'delete' 
-              ? 'bg-red-500 hover:bg-red-600' 
+              ? 'bg-red-600 hover:bg-red-700' 
               : actionType === 'approve'
                 ? 'bg-green-600 hover:bg-green-700'
-                : ''}
+                : 'bg-amber-600 hover:bg-amber-700'}
           >
             {getButtonText()}
           </AlertDialogAction>

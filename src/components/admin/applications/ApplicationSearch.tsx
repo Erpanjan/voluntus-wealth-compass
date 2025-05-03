@@ -15,11 +15,11 @@ const ApplicationSearch: React.FC<ApplicationSearchProps> = ({
   placeholder = "Search applications..." 
 }) => {
   return (
-    <div className="relative w-full max-w-sm">
-      <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+    <div className="relative w-full max-w-md">
+      <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
       <Input
         placeholder={placeholder}
-        className="pl-10 h-10 bg-white"
+        className="pl-10 h-10 bg-white border-gray-300 focus:border-gray-400 focus:ring-gray-400"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />

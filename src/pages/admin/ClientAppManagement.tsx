@@ -18,6 +18,7 @@ const ClientAppManagement: React.FC = () => {
   const [applications, setApplications] = useState<ApplicationData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   
   // Search and pagination
   const [searchTerm, setSearchTerm] = useState('');
@@ -55,31 +56,42 @@ const ClientAppManagement: React.FC = () => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  // Load applications data
+  // Load applications data with improved error handling
   const loadApplications = useCallback(async () => {
     try {
+      console.log('Starting to load applications...');
       setIsLoading(true);
+      setLoadError(null);
+      
+      // Add a small delay to ensure loading state is visible for testing
       const data = await fetchApplications();
+      console.log(`Successfully loaded ${data.length} applications`);
+      
       setApplications(data);
-    } catch (error) {
+      setLoadError(null);
+    } catch (error: any) {
       console.error('Failed to load applications', error);
+      setLoadError('Failed to load application data. Please try refreshing.');
       toast({
         title: 'Error',
         description: 'Failed to load application data. Please try again.',
         variant: 'destructive',
       });
     } finally {
+      console.log('Finishing load applications, setting isLoading to false');
       setIsLoading(false);
       setIsRefreshing(false);
     }
   }, [fetchApplications, toast]);
 
+  // Initial data loading
   useEffect(() => {
     loadApplications();
   }, [loadApplications]);
 
   // Handle refresh button click
   const handleRefresh = useCallback(() => {
+    console.log('Refresh button clicked');
     setIsRefreshing(true);
     loadApplications();
   }, [loadApplications]);
@@ -87,6 +99,7 @@ const ClientAppManagement: React.FC = () => {
   // Debounced search term setter
   const debouncedSetSearchTerm = useCallback(
     debounce((value: string) => {
+      console.log('Setting search term:', value);
       setSearchTerm(value);
     }, 300),
     []
@@ -154,6 +167,10 @@ const ClientAppManagement: React.FC = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-semibold text-gray-800">Client Applications</h1>
+        </div>
+        
         {/* Search and controls section */}
         <div className="flex flex-col sm:flex-row justify-between gap-4 items-center">
           <ApplicationSearch 
@@ -164,8 +181,22 @@ const ClientAppManagement: React.FC = () => {
           <RefreshButton isRefreshing={isRefreshing} handleRefresh={handleRefresh} />
         </div>
         
+        {/* Error display */}
+        {loadError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong className="font-bold">Error: </strong>
+            <span className="block sm:inline">{loadError}</span>
+            <button 
+              onClick={handleRefresh}
+              className="underline ml-2 font-medium hover:text-red-800"
+            >
+              Try again
+            </button>
+          </div>
+        )}
+        
         {/* Applications table card */}
-        <Card className="shadow-sm">
+        <Card className="shadow-sm overflow-hidden">
           <ApplicationTable 
             applications={filteredApplications}
             isLoading={isLoading}
@@ -175,8 +206,8 @@ const ClientAppManagement: React.FC = () => {
           />
           
           {/* Pagination */}
-          {filteredApplications.length > 0 && (
-            <div className="flex justify-center py-2">
+          {!isLoading && filteredApplications.length > 0 && (
+            <div className="flex justify-center py-4 border-t border-gray-100">
               <ApplicationPagination
                 currentPage={currentPage}
                 totalPages={totalPages}

@@ -36,7 +36,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({
   );
 
   return (
-    <div className="rounded-md border overflow-hidden">
+    <div className="w-full overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-50">
@@ -55,15 +55,15 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({
         ) : paginatedApplications.length === 0 ? (
           <TableBody>
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-10">
+              <TableCell colSpan={7} className="text-center py-16">
                 {applications.length === 0 ? (
                   <div className="py-8">
-                    <p className="text-gray-500 mb-2">No applications found</p>
+                    <p className="text-gray-500 font-medium mb-2">No applications found</p>
                     <p className="text-sm text-gray-400">Try refreshing or adjusting your search criteria</p>
                   </div>
                 ) : (
                   <div className="py-8">
-                    <p className="text-gray-500">No matching applications for your search</p>
+                    <p className="text-gray-500 font-medium">No matching applications for your search</p>
                   </div>
                 )}
               </TableCell>
@@ -76,8 +76,8 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({
                 <TableCell className="font-medium">
                   {app.first_name} {app.last_name || ''}
                 </TableCell>
-                <TableCell>{app.email}</TableCell>
-                <TableCell>{app.phone}</TableCell>
+                <TableCell>{app.email || '-'}</TableCell>
+                <TableCell>{app.phone || '-'}</TableCell>
                 <TableCell>
                   <StatusBadge status={app.status} />
                 </TableCell>

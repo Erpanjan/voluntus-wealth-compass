@@ -15,22 +15,22 @@ const QuestionnaireStatus: React.FC<QuestionnaireStatusProps> = ({
     if (isCompleted) {
       return (
         <div className="flex items-center">
-          <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-          <span className="text-sm">Completed</span>
+          <CheckCircle className="h-4 w-4 text-green-500 mr-1.5" />
+          <span className="text-sm text-gray-700">Completed</span>
         </div>
       );
     } else {
       return (
         <div className="flex items-center">
-          <CircleDashed className="h-4 w-4 text-amber-500 mr-1" />
-          <span className="text-sm">Incomplete</span>
+          <CircleDashed className="h-4 w-4 text-amber-500 mr-1.5" />
+          <span className="text-sm text-gray-700">Incomplete</span>
         </div>
       );
     }
   } else {
     return (
       <div className="flex items-center">
-        <XCircle className="h-4 w-4 text-gray-400 mr-1" />
+        <XCircle className="h-4 w-4 text-gray-400 mr-1.5" />
         <span className="text-sm text-gray-500">None</span>
       </div>
     );

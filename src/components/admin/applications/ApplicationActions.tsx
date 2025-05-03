@@ -22,14 +22,15 @@ const ApplicationActions: React.FC<ApplicationActionsProps> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 px-2 py-0">
+        <Button variant="outline" size="sm" className="h-8 px-3 py-0 text-gray-700 border-gray-300 hover:bg-gray-50">
           Actions <ChevronDown className="ml-1 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="w-48 p-1">
         <DropdownMenuItem 
           onClick={() => openConfirmDialog(application, 'approve')}
-          className="cursor-pointer"
+          className="cursor-pointer rounded-md hover:bg-green-50"
+          disabled={application.status === 'approved'}
         >
           <Check className="mr-2 h-4 w-4 text-green-500" />
           <span>Approve</span>
@@ -37,7 +38,8 @@ const ApplicationActions: React.FC<ApplicationActionsProps> = ({
         
         <DropdownMenuItem 
           onClick={() => openConfirmDialog(application, 'pending')}
-          className="cursor-pointer"
+          className="cursor-pointer rounded-md hover:bg-yellow-50"
+          disabled={application.status === 'pending'}
         >
           <X className="mr-2 h-4 w-4 text-amber-500" />
           <span>Mark as Pending</span>
@@ -45,7 +47,7 @@ const ApplicationActions: React.FC<ApplicationActionsProps> = ({
         
         <DropdownMenuItem 
           onClick={() => openConfirmDialog(application, 'delete')}
-          className="text-red-500 cursor-pointer"
+          className="text-red-600 cursor-pointer rounded-md hover:bg-red-50"
         >
           <Trash className="mr-2 h-4 w-4" />
           <span>Delete Application</span>
