@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Phone, Users, Smartphone, FileText, LogOut } from 'lucide-react';
+import { LayoutDashboard, Phone, Users, FileText, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -52,7 +53,7 @@ const AdminSidebar = () => {
     }
   };
 
-  // Updated order: Dashboard, Contact Us, User Account, Client Application, Articles
+  // Updated order: Dashboard, Contact Us, User Account, Articles
   const navItems = [{
     path: '/admin/dashboard',
     label: 'DASHBOARD',
@@ -65,10 +66,6 @@ const AdminSidebar = () => {
     path: '/admin/user-account',
     label: 'USER ACCOUNT',
     icon: Users
-  }, {
-    path: '/admin/client-app',
-    label: 'CLIENT APPLICATION',
-    icon: Smartphone
   }, {
     path: '/admin/articles',
     label: 'ARTICLES',
