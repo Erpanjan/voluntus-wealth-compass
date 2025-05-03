@@ -13,6 +13,7 @@ import StatusBadge from './StatusBadge';
 import QuestionnaireStatus from './QuestionnaireStatus';
 import ApplicationActions from './ApplicationActions';
 import ApplicationTableSkeleton from './ApplicationTableSkeleton';
+import { AlertTriangle } from 'lucide-react';
 
 interface ApplicationTableProps {
   applications: ApplicationData[];
@@ -20,6 +21,7 @@ interface ApplicationTableProps {
   openConfirmDialog: (app: ApplicationData, action: 'approve' | 'pending' | 'delete') => void;
   page: number;
   pageSize: number;
+  error?: string | null;
 }
 
 const ApplicationTable: React.FC<ApplicationTableProps> = ({ 
@@ -27,13 +29,31 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({
   isLoading, 
   openConfirmDialog,
   page,
-  pageSize
+  pageSize,
+  error
 }) => {
   // Calculate the visible applications for the current page
   const paginatedApplications = applications.slice(
     (page - 1) * pageSize,
     page * pageSize
   );
+
+  // If there's an error, display it
+  if (error) {
+    return (
+      <TableBody>
+        <TableRow>
+          <TableCell colSpan={7} className="text-center py-10">
+            <div className="flex flex-col items-center justify-center">
+              <AlertTriangle className="h-10 w-10 text-amber-500 mb-3" />
+              <p className="text-gray-700 font-medium">Error Loading Applications</p>
+              <p className="text-sm text-gray-500 mt-1">{error}</p>
+            </div>
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    );
+  }
 
   return (
     <div className="w-full overflow-hidden">

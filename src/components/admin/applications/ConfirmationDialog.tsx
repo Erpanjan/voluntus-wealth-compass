@@ -19,6 +19,7 @@ interface ConfirmationDialogProps {
   onConfirm: () => void;
   application: ApplicationData | null;
   actionType: 'approve' | 'pending' | 'delete';
+  isProcessing?: boolean;
 }
 
 export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
@@ -27,6 +28,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   onConfirm,
   application,
   actionType,
+  isProcessing = false,
 }) => {
   const getTitle = () => {
     switch (actionType) {
@@ -43,11 +45,13 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       case 'pending': 
         return 'This will mark the application as pending, and the user will see the pending approval screen.';
       case 'delete': 
-        return 'This will permanently delete the application and all associated data. This action cannot be undone.';
+        return 'This will permanently delete the application, user account, and all associated data. This action cannot be undone.';
     }
   };
 
   const getButtonText = () => {
+    if (isProcessing) return 'Processing...';
+    
     switch (actionType) {
       case 'approve': return 'Approve';
       case 'pending': return 'Mark as Pending';
@@ -78,7 +82,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           <div className="flex items-center gap-2 p-3 bg-red-50 text-red-800 rounded-md my-2">
             <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
             <p className="text-sm font-medium">
-              Warning: This action cannot be undone. The application will be permanently deleted.
+              Warning: This action cannot be undone. The application and user account will be permanently deleted.
             </p>
           </div>
         )}
@@ -92,16 +96,20 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           <AlertDialogCancel 
             onClick={onClose}
             className="font-normal border-gray-300"
+            disabled={isProcessing}
           >
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction 
             onClick={onConfirm}
-            className={actionType === 'delete' 
-              ? 'bg-red-600 hover:bg-red-700' 
-              : actionType === 'approve'
-                ? 'bg-green-600 hover:bg-green-700'
-                : 'bg-amber-600 hover:bg-amber-700'}
+            className={`${isProcessing ? 'opacity-75 cursor-not-allowed' : ''} ${
+              actionType === 'delete' 
+                ? 'bg-red-600 hover:bg-red-700' 
+                : actionType === 'approve'
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : 'bg-amber-600 hover:bg-amber-700'
+            }`}
+            disabled={isProcessing}
           >
             {getButtonText()}
           </AlertDialogAction>

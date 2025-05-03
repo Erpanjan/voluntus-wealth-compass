@@ -89,7 +89,7 @@ export const useApplicationService = () => {
         description: 'Failed to fetch applications. Please try again later.',
         variant: 'destructive',
       });
-      throw error; // Re-throw to allow component to handle it
+      return []; // Return empty array instead of throwing to prevent UI crashes
     }
   };
   
@@ -120,7 +120,7 @@ export const useApplicationService = () => {
   
   const deleteApplication = async (applicationId: string): Promise<void> => {
     try {
-      console.log('Deleting application:', applicationId);
+      console.log('Deleting application and user account:', applicationId);
       
       // First delete any associated questionnaire responses
       const { error: questionnaireError } = await supabase
@@ -144,7 +144,22 @@ export const useApplicationService = () => {
         throw onboardingError;
       }
       
-      console.log('Successfully deleted application');
+      // Delete the user from auth.users using Supabase admin functions
+      // Note: This requires a server-side function with proper permissions
+      const { error: userDeletionError } = await supabase.functions.invoke('delete-user', {
+        body: { user_id: applicationId }
+      });
+      
+      if (userDeletionError) {
+        console.error('Error deleting user account:', userDeletionError);
+        toast({
+          title: 'Partial Deletion',
+          description: 'Application data was removed, but user account deletion failed. Please contact support.',
+          variant: 'destructive',
+        });
+      } else {
+        console.log('Successfully deleted user account and application');
+      }
     } catch (error: any) {
       console.error('Error deleting application:', error);
       toast({

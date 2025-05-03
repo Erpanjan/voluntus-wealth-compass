@@ -28,6 +28,7 @@ const ClientAppManagement: React.FC = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<ApplicationData | null>(null);
   const [confirmAction, setConfirmAction] = useState<'approve' | 'pending' | 'delete'>('approve');
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const { fetchApplications, updateApplicationStatus, deleteApplication } = useApplicationService();
   const { toast } = useToast();
@@ -63,9 +64,15 @@ const ClientAppManagement: React.FC = () => {
       setIsLoading(true);
       setLoadError(null);
       
-      // Add a small delay to ensure loading state is visible for testing
       const data = await fetchApplications();
       console.log(`Successfully loaded ${data.length} applications`);
+      
+      if (data.length === 0 && !isRefreshing) {
+        toast({
+          title: "No applications found",
+          description: "There are no client applications in the system.",
+        });
+      }
       
       setApplications(data);
       setLoadError(null);
@@ -78,11 +85,11 @@ const ClientAppManagement: React.FC = () => {
         variant: 'destructive',
       });
     } finally {
-      console.log('Finishing load applications, setting isLoading to false');
+      console.log('Finishing load applications, setting isLoading and isRefreshing to false');
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [fetchApplications, toast]);
+  }, [fetchApplications, toast, isRefreshing]);
 
   // Initial data loading
   useEffect(() => {
@@ -97,11 +104,11 @@ const ClientAppManagement: React.FC = () => {
   }, [loadApplications]);
   
   // Debounced search term setter
-  const debouncedSetSearchTerm = useCallback(
+  const debouncedSetSearchTerm = useMemo(() => 
     debounce((value: string) => {
       console.log('Setting search term:', value);
       setSearchTerm(value);
-    }, 300),
+    }, 300), 
     []
   );
 
@@ -117,6 +124,8 @@ const ClientAppManagement: React.FC = () => {
     if (!selectedApplication) return;
     
     try {
+      setIsProcessing(true);
+      
       if (confirmAction === 'delete') {
         await deleteApplication(selectedApplication.id);
         // Remove the application from the local state
@@ -150,6 +159,7 @@ const ClientAppManagement: React.FC = () => {
     } finally {
       setConfirmDialogOpen(false);
       setSelectedApplication(null);
+      setIsProcessing(false);
     }
   };
   
@@ -203,6 +213,7 @@ const ClientAppManagement: React.FC = () => {
             openConfirmDialog={openConfirmDialog}
             page={currentPage}
             pageSize={PAGE_SIZE}
+            error={loadError}
           />
           
           {/* Pagination */}
@@ -225,6 +236,7 @@ const ClientAppManagement: React.FC = () => {
         onConfirm={handleConfirmAction}
         application={selectedApplication}
         actionType={confirmAction}
+        isProcessing={isProcessing}
       />
     </AdminLayout>
   );
