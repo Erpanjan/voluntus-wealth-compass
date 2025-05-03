@@ -44,27 +44,16 @@ export const useAuth = (isAdminMode: boolean = false) => {
   
   // Handle successful login by verifying current session and enforcing route protection
   const handleRegularLogin = async () => {
-    // Set loading to true during login handling
-    setLoading(true);
+    // Additional check to verify session is valid before navigating
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
     
-    try {
-      // Additional check to verify session is valid before navigating
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
-      
-      if (currentSession) {
-        console.log("Login confirmed, proceeding with onboarding status check");
-        // The navigation will be handled by the checkOnboardingStatus function
-        await checkOnboardingStatus(currentSession.user.id);
-      } else {
-        console.log("Session verification failed after login attempt");
-        navigate('/login');
-      }
-    } catch (error) {
-      console.error("Error handling login:", error);
+    if (currentSession) {
+      console.log("Login confirmed, proceeding with onboarding status check");
+      // The navigation will be handled by the checkOnboardingStatus function
+      await checkOnboardingStatus(currentSession.user.id);
+    } else {
+      console.log("Session verification failed after login attempt");
       navigate('/login');
-    } finally {
-      // Always set loading to false when done
-      setLoading(false);
     }
   };
 

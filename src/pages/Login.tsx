@@ -17,21 +17,16 @@ const Login = () => {
   const location = useLocation();
   
   // Use the custom hook to handle authentication
-  const { loading: authLoading, handleRegularLogin } = useAuth(isAdminMode);
+  const { loading, handleRegularLogin } = useAuth(isAdminMode);
   
   // Check if user is already authenticated and redirect if needed
   useEffect(() => {
-    let isMounted = true;
     const checkExistingAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
           // Not logged in, stay on login page
-          if (isMounted) {
-            // Show page once we confirm not logged in
-            setPageLoaded(true);
-          }
           return;
         }
         
@@ -56,11 +51,6 @@ const Login = () => {
             // Clear session since they don't have admin privileges
             await supabase.auth.signOut();
             clearUserStateFlags(session.user.id);
-            
-            if (isMounted) {
-              // Show page after clearing sessions
-              setPageLoaded(true);
-            }
           }
         } else {
           // Regular user already authenticated, defer to useAuth for routing decision
@@ -70,25 +60,13 @@ const Login = () => {
         console.error('Error checking auth:', error);
         // Clear any potentially corrupted session data
         clearUserStateFlags();
-        
-        if (isMounted) {
-          // Show page even after error
-          setPageLoaded(true);
-        }
       }
     };
     
-    if (!authLoading) {
+    if (!loading) {
       checkExistingAuth();
-    } else {
-      // If auth is still loading, we'll wait for it to complete
-      // Don't show page yet
     }
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [authLoading, isAdminMode, navigate, toast, handleRegularLogin]);
+  }, [loading, isAdminMode, navigate, toast, handleRegularLogin]);
   
   // Enhanced fade-in animation when component loads
   useEffect(() => {
@@ -102,13 +80,11 @@ const Login = () => {
     
     // Small delay to ensure the animation is visible
     const timer = setTimeout(() => {
-      if (!authLoading) {
-        setPageLoaded(true);
-      }
+      setPageLoaded(true);
     }, 50);
     
     return () => clearTimeout(timer);
-  }, [navigate, location, authLoading]);
+  }, [navigate, location]);
 
   // Handle toggle animation for mode switch
   const handleAdminToggle = (checked: boolean) => {
@@ -123,14 +99,12 @@ const Login = () => {
     }, 25);
   };
 
-  // Better loading state with improved UI
-  if (authLoading && !pageLoaded) {
+  // Show loading state
+  if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white py-12 px-4">
-        <div className="animate-pulse flex flex-col items-center justify-center space-y-4 w-full max-w-md">
-          <div className="h-8 w-48 bg-gray-200 rounded"></div>
-          <div className="h-4 w-32 bg-gray-200 rounded"></div>
-          <div className="h-[300px] w-full max-w-md bg-gray-100 rounded-lg"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Loading...</p>
         </div>
       </div>
     );
