@@ -1,28 +1,13 @@
 
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead,
-  TableHeader,
-  TableRow 
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Search, ChevronDown, CheckCircle, XCircle, RefreshCw, Trash2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { ApplicationData, useApplicationService } from '@/services/applicationService';
 import { useToast } from '@/hooks/use-toast';
 import ConfirmationDialog from '@/components/admin/applications/ConfirmationDialog';
+import ApplicationSearch from '@/components/admin/applications/ApplicationSearch';
+import RefreshButton from '@/components/admin/applications/RefreshButton';
+import ApplicationTable from '@/components/admin/applications/ApplicationTable';
 
 const ClientAppManagement: React.FC = () => {
   const [applications, setApplications] = useState<ApplicationData[]>([]);
@@ -126,138 +111,20 @@ const ClientAppManagement: React.FC = () => {
     loadApplications();
   };
 
-  const getStatusBadge = (status: string) => {
-    switch(status.toLowerCase()) {
-      case 'approved':
-        return <Badge className="bg-green-500">Approved</Badge>;
-      case 'pending':
-      case 'submitted':
-        return <Badge className="bg-yellow-500">Pending</Badge>;
-      case 'rejected':
-        return <Badge className="bg-red-500">Rejected</Badge>;
-      case 'draft':
-        return <Badge className="bg-gray-500">Draft</Badge>;
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
-
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <div className="relative w-64">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search applications..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+          <ApplicationSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+          <RefreshButton isRefreshing={isRefreshing} handleRefresh={handleRefresh} />
         </div>
         
         <Card>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Questionnaire</TableHead>
-                  <TableHead>Application Date</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-10">
-                      Loading applications...
-                    </TableCell>
-                  </TableRow>
-                ) : filteredApplications.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-10">
-                      No applications found. Try refreshing or check your database connection.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredApplications.map((app) => (
-                    <TableRow key={app.id}>
-                      <TableCell>
-                        {app.first_name} {app.last_name}
-                      </TableCell>
-                      <TableCell>{app.email}</TableCell>
-                      <TableCell>{app.phone}</TableCell>
-                      <TableCell>
-                        {getStatusBadge(app.status)}
-                      </TableCell>
-                      <TableCell>
-                        {app.has_questionnaire ? (
-                          app.questionnaire_completed ? (
-                            <div className="flex items-center">
-                              <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                              <span>Completed</span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center">
-                              <XCircle className="h-4 w-4 text-amber-500 mr-1" />
-                              <span>Incomplete</span>
-                            </div>
-                          )
-                        ) : (
-                          <div className="flex items-center">
-                            <XCircle className="h-4 w-4 text-gray-400 mr-1" />
-                            <span>None</span>
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(app.created_at).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                Actions <ChevronDown className="ml-2 h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem onClick={() => openConfirmDialog(app, 'approve')}>
-                                Approve
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => openConfirmDialog(app, 'pending')}>
-                                Mark as Pending
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => openConfirmDialog(app, 'delete')}
-                                className="text-red-500 hover:text-red-700"
-                              >
-                                Delete Application
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <ApplicationTable 
+            applications={filteredApplications}
+            isLoading={isLoading}
+            openConfirmDialog={openConfirmDialog}
+          />
         </Card>
       </div>
       
