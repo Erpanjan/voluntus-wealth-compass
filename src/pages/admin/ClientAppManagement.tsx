@@ -35,7 +35,9 @@ const ClientAppManagement: React.FC = () => {
   const loadApplications = async () => {
     try {
       setIsLoading(true);
+      console.log("Starting to load applications...");
       const data = await fetchApplications();
+      console.log("Applications loaded:", data);
       setApplications(data);
       setFilteredApplications(data);
     } catch (error) {
@@ -53,7 +55,7 @@ const ClientAppManagement: React.FC = () => {
 
   useEffect(() => {
     loadApplications();
-  }, [fetchApplications]);
+  }, []);
 
   useEffect(() => {
     const filtered = applications.filter(app => 
@@ -153,7 +155,7 @@ const ClientAppManagement: React.FC = () => {
                 ) : filteredApplications.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-10">
-                      No applications found.
+                      No applications found. Try refreshing or check your database connection.
                     </TableCell>
                   </TableRow>
                 ) : (

@@ -27,13 +27,14 @@ export const useApplicationService = () => {
       // First get onboarding data
       const { data: onboardingData, error: onboardingError } = await supabase
         .from('onboarding_data')
-        .select('id, status, first_name, last_name, email, phone, created_at')
-        .order('created_at', { ascending: false });
+        .select('id, status, first_name, last_name, email, phone, created_at');
       
       if (onboardingError) {
         console.error('Error fetching onboarding data:', onboardingError);
         throw onboardingError;
       }
+      
+      console.log('Fetched onboarding data:', onboardingData);
       
       // Get questionnaire responses
       const { data: questionnaireData, error: questionnaireError } = await supabase
@@ -44,6 +45,8 @@ export const useApplicationService = () => {
         console.error('Error fetching questionnaire data:', questionnaireError);
         throw questionnaireError;
       }
+      
+      console.log('Fetched questionnaire data:', questionnaireData);
       
       // Create a map of questionnaire data by user_id
       const questionnaireMap = new Map();
@@ -69,7 +72,7 @@ export const useApplicationService = () => {
         questionnaire_completed: questionnaireMap.get(item.id)?.completed || false
       })) || [];
       
-      console.log(`Fetched ${applications.length} applications as admin`);
+      console.log(`Fetched ${applications.length} applications as admin:`, applications);
       return applications;
     } catch (error: any) {
       console.error('Error in fetchApplications:', error);
