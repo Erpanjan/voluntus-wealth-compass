@@ -1,10 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Logo from './Logo';
+import NavLinks from './navigation/NavLinks';
+import MobileMenu from './navigation/MobileMenu';
+import LoginButton from './navigation/LoginButton';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,10 +17,6 @@ const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,10 +48,19 @@ const Header: React.FC = () => {
     { name: 'CONTACT US', path: '/contact' },
   ];
 
-  const handleNavLinkClick = () => {
+  const handleNavLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, isActive: boolean) => {
     // Close mobile menu if it's open
     if (isMenuOpen) {
       setIsMenuOpen(false);
+    }
+    
+    // If already on the page, prevent navigation and just scroll to top
+    if (isActive) {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     }
     
     // Scroll to top of the page
@@ -61,7 +70,7 @@ const Header: React.FC = () => {
     });
   };
   
-  const handleLoginClick = (e) => {
+  const handleLoginClick = (e: React.MouseEvent) => {
     e.preventDefault();
     
     // Check if user is already on the login page
@@ -90,75 +99,19 @@ const Header: React.FC = () => {
     >
       <div className="container-custom py-4 flex justify-between items-center relative">
         {/* Logo on the left */}
-        <Link to="/" className="flex items-center ml-[-20px]" onClick={handleNavLinkClick}>
-          {isMobile ? (
-            // Stacked logo for mobile
-            <div className="flex flex-col items-center">
-              <img 
-                src="/lovable-uploads/e4b4f8b7-8d82-468f-b861-b6a593038f7c.png" 
-                alt="Voluntus Logo" 
-                className="h-16" 
-              />
-            </div>
-          ) : (
-            // Horizontal logo for desktop
-            <div className="flex items-center">
-              <img 
-                src="/lovable-uploads/e4b4f8b7-8d82-468f-b861-b6a593038f7c.png" 
-                alt="Voluntus Logo" 
-                className="h-16" 
-              />
-            </div>
-          )}
-        </Link>
+        <Logo isMobile={isMobile} onClick={() => setIsMenuOpen(false)} />
 
         {/* Navigation centered absolutely */}
         <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 items-center">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              onClick={(e) => {
-                if (isActive(link.path)) {
-                  e.preventDefault();
-                  window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                  });
-                } else {
-                  handleNavLinkClick();
-                }
-              }}
-              className={cn(
-                "px-5 py-2 text-xs tracking-wide transition-all duration-300",
-                isActive(link.path) 
-                  ? 'font-semibold text-black' 
-                  : 'font-normal text-[#9F9EA1] hover:text-black'
-              )}
-            >
-              {link.name}
-            </Link>
-          ))}
+          <NavLinks links={navLinks} onLinkClick={handleNavLinkClick} />
         </nav>
 
         {/* Login button on the right */}
         <div className="flex items-center">
-          <button 
-            onClick={handleLoginClick} 
-            className="hidden lg:block text-[#9F9EA1] hover:text-black text-xs tracking-wide border border-[#9F9EA1] hover:border-black rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
-            aria-label="Login to client portal"
-          >
-            LOGIN
-          </button>
+          <LoginButton onClick={handleLoginClick} />
           
           <div className="flex lg:hidden space-x-4 items-center">
-            <button 
-              onClick={handleLoginClick}
-              className="text-[#9F9EA1] hover:text-black text-xs border border-[#9F9EA1] hover:border-black rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
-              aria-label="Login to client portal"
-            >
-              LOGIN
-            </button>
+            <LoginButton onClick={handleLoginClick} isMobile />
             <Button 
               variant="ghost" 
               size="icon"
@@ -171,38 +124,11 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      {isMenuOpen && (
-        <div className="container-custom lg:hidden pb-6 animate-fade-in">
-          <nav className="flex flex-col space-y-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                onClick={(e) => {
-                  if (isActive(link.path)) {
-                    e.preventDefault();
-                    window.scrollTo({
-                      top: 0,
-                      behavior: 'smooth'
-                    });
-                    setIsMenuOpen(false);
-                  } else {
-                    handleNavLinkClick();
-                  }
-                }}
-                className={cn(
-                  'py-2 text-sm transition-all duration-300',
-                  isActive(link.path) 
-                    ? 'font-semibold text-black border-l-2 border-black pl-3' 
-                    : 'font-normal text-[#9F9EA1] hover:text-black pl-3'
-                )}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
+      <MobileMenu 
+        isOpen={isMenuOpen} 
+        links={navLinks} 
+        onLinkClick={handleNavLinkClick} 
+      />
     </header>
   );
 };
