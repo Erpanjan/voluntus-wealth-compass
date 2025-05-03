@@ -93,13 +93,9 @@ export const useApplicationService = () => {
         .eq('id', applicationId);
       
       if (error) {
+        console.error('Error updating application status:', error);
         throw error;
       }
-      
-      toast({
-        title: 'Success',
-        description: `Application status updated to ${status}.`,
-      });
     } catch (error: any) {
       console.error('Error updating application status:', error);
       toast({
@@ -133,13 +129,9 @@ export const useApplicationService = () => {
         .eq('id', applicationId);
       
       if (onboardingError) {
+        console.error('Error deleting onboarding data:', onboardingError);
         throw onboardingError;
       }
-      
-      toast({
-        title: 'Application Deleted',
-        description: `Application has been permanently removed.`,
-      });
     } catch (error: any) {
       console.error('Error deleting application:', error);
       toast({

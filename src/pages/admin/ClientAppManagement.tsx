@@ -94,12 +94,31 @@ const ClientAppManagement: React.FC = () => {
           app.id === selectedApplication.id ? {...app, status: newStatus} : app
         ));
       }
+      
+      toast({
+        title: confirmAction === 'delete' 
+          ? 'Application Deleted' 
+          : `Status Updated to ${confirmAction === 'approve' ? 'Approved' : 'Pending'}`,
+        description: confirmAction === 'delete'
+          ? 'Application has been permanently removed.'
+          : 'Application status has been updated successfully.',
+      });
     } catch (error) {
       console.error('Failed to process action', error);
+      toast({
+        title: 'Error',
+        description: `Failed to ${confirmAction} application. Please try again.`,
+        variant: 'destructive',
+      });
     } finally {
       setConfirmDialogOpen(false);
       setSelectedApplication(null);
     }
+  };
+
+  const handleCloseDialog = () => {
+    setConfirmDialogOpen(false);
+    setSelectedApplication(null);
   };
 
   const handleRefresh = () => {
@@ -112,6 +131,7 @@ const ClientAppManagement: React.FC = () => {
       case 'approved':
         return <Badge className="bg-green-500">Approved</Badge>;
       case 'pending':
+      case 'submitted':
         return <Badge className="bg-yellow-500">Pending</Badge>;
       case 'rejected':
         return <Badge className="bg-red-500">Rejected</Badge>;
@@ -125,13 +145,6 @@ const ClientAppManagement: React.FC = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-semibold tracking-tight mb-2">Client Applications</h2>
-          <p className="text-muted-foreground">
-            Manage and review client onboarding applications.
-          </p>
-        </div>
-        
         <div className="flex justify-between items-center">
           <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -219,7 +232,7 @@ const ClientAppManagement: React.FC = () => {
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="outline" size="sm">
-                                Change Status <ChevronDown className="ml-2 h-4 w-4" />
+                                Actions <ChevronDown className="ml-2 h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
@@ -229,17 +242,14 @@ const ClientAppManagement: React.FC = () => {
                               <DropdownMenuItem onClick={() => openConfirmDialog(app, 'pending')}>
                                 Mark as Pending
                               </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => openConfirmDialog(app, 'delete')}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                Delete Application
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
-                          
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            className="text-red-500 hover:text-red-700 border-red-200 hover:border-red-300"
-                            onClick={() => openConfirmDialog(app, 'delete')}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -253,7 +263,7 @@ const ClientAppManagement: React.FC = () => {
       
       <ConfirmationDialog
         isOpen={confirmDialogOpen}
-        onClose={() => setConfirmDialogOpen(false)}
+        onClose={handleCloseDialog}
         onConfirm={handleConfirmAction}
         application={selectedApplication}
         actionType={confirmAction}

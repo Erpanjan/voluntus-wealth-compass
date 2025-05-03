@@ -51,7 +51,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
     switch (actionType) {
       case 'approve': return 'Approve';
       case 'pending': return 'Mark as Pending';
-      case 'delete': return 'Delete Application';
+      case 'delete': return 'Delete';
     }
   };
 
@@ -63,7 +63,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   };
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={onClose}>
+    <AlertDialog open={isOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
