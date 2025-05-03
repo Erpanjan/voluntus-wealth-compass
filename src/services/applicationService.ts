@@ -36,6 +36,12 @@ export const useApplicationService = () => {
       
       console.log('Fetched onboarding data:', onboardingData);
       
+      // Early return if no onboarding data is found
+      if (!onboardingData || onboardingData.length === 0) {
+        console.log('No onboarding data found');
+        return [];
+      }
+      
       // Get questionnaire responses
       const { data: questionnaireData, error: questionnaireError } = await supabase
         .from('questionnaire_responses')
@@ -50,15 +56,17 @@ export const useApplicationService = () => {
       
       // Create a map of questionnaire data by user_id
       const questionnaireMap = new Map();
-      questionnaireData?.forEach(item => {
-        questionnaireMap.set(item.user_id, {
-          completed: item.completed,
-          id: item.id
+      if (questionnaireData && questionnaireData.length > 0) {
+        questionnaireData.forEach(item => {
+          questionnaireMap.set(item.user_id, {
+            completed: item.completed,
+            id: item.id
+          });
         });
-      });
+      }
       
       // Map onboarding data to our ApplicationData format
-      const applications = onboardingData?.map(item => ({
+      const applications = onboardingData.map(item => ({
         id: item.id,
         user_id: item.id, // Using onboarding data id as user_id
         first_name: item.first_name,
@@ -70,7 +78,7 @@ export const useApplicationService = () => {
         created_at: item.created_at,
         has_questionnaire: questionnaireMap.has(item.id),
         questionnaire_completed: questionnaireMap.get(item.id)?.completed || false
-      })) || [];
+      }));
       
       console.log(`Fetched ${applications.length} applications as admin:`, applications);
       return applications;
@@ -87,14 +95,19 @@ export const useApplicationService = () => {
   
   const updateApplicationStatus = async (applicationId: string, status: string): Promise<void> => {
     try {
+      console.log(`Updating application status for ID ${applicationId} to ${status}...`);
+      
       const { error } = await supabase
         .from('onboarding_data')
         .update({ status, updated_at: new Date().toISOString() })
         .eq('id', applicationId);
       
       if (error) {
+        console.error('Error updating application status:', error);
         throw error;
       }
+      
+      console.log(`Successfully updated application status to ${status}`);
       
       toast({
         title: 'Success',

@@ -38,11 +38,17 @@ export const useClientApplications = () => {
   }, [loadApplications]);
 
   useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredApplications(applications);
+      return;
+    }
+    
+    const searchTermLower = searchTerm.toLowerCase();
     const filtered = applications.filter(app => 
-      (app.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      app.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.status.toLowerCase().includes(searchTerm.toLowerCase()))
+      (app.first_name?.toLowerCase().includes(searchTermLower) || 
+      app.last_name?.toLowerCase().includes(searchTermLower) ||
+      app.email?.toLowerCase().includes(searchTermLower) ||
+      app.status.toLowerCase().includes(searchTermLower))
     );
     setFilteredApplications(filtered);
   }, [searchTerm, applications]);

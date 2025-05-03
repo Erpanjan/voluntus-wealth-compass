@@ -11,7 +11,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ApplicationData } from '@/services/applicationService';
 import StatusDropdown from './StatusDropdown';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
 interface ClientAppTableProps {
   applications: ApplicationData[];
@@ -52,13 +52,19 @@ const ClientAppTable: React.FC<ClientAppTableProps> = ({ applications, isLoading
         {isLoading ? (
           <TableRow>
             <TableCell colSpan={7} className="text-center py-10">
-              Loading applications...
+              <div className="flex flex-col items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2"></div>
+                <span>Loading applications...</span>
+              </div>
             </TableCell>
           </TableRow>
         ) : applications.length === 0 ? (
           <TableRow>
             <TableCell colSpan={7} className="text-center py-10">
-              No applications found. Try refreshing or check your database connection.
+              <div className="flex flex-col items-center justify-center">
+                <AlertCircle className="h-8 w-8 text-gray-400 mb-2" />
+                <span>No applications found. Try refreshing or check your database.</span>
+              </div>
             </TableCell>
           </TableRow>
         ) : (
