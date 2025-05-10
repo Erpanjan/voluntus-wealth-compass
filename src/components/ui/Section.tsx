@@ -2,6 +2,7 @@
 import React, { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SectionProps {
   id?: string;
@@ -15,6 +16,9 @@ interface SectionProps {
   titleClassName?: string;
   subtitleClassName?: string;
   contentClassName?: string;
+  titleKey?: string;
+  subtitleKey?: string;
+  section?: string;
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -28,15 +32,23 @@ const Section: React.FC<SectionProps> = ({
   carouselItem = false,
   titleClassName = '',
   subtitleClassName = '',
-  contentClassName = ''
+  contentClassName = '',
+  titleKey,
+  subtitleKey,
+  section
 }) => {
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
   
   const bgClasses = {
     'white': 'bg-white',
     'light': 'bg-[#F1F1F1]',
     'dark': 'bg-black text-white',
   };
+
+  // Get translated content if keys are provided
+  const translatedTitle = titleKey && section ? t(titleKey, section) : title;
+  const translatedSubtitle = subtitleKey && section ? t(subtitleKey, section) : subtitle;
 
   return (
     <section id={id} className={cn(
@@ -46,7 +58,7 @@ const Section: React.FC<SectionProps> = ({
       className
     )}>
       <div className={cn("container-custom flex flex-col justify-center h-full px-3 md:px-6", carouselItem && "h-full")}>
-        {(title || subtitle) && (
+        {(translatedTitle || translatedSubtitle) && (
           <div 
             className={cn(
               'mb-5 sm:mb-6 md:mb-12', 
@@ -54,7 +66,7 @@ const Section: React.FC<SectionProps> = ({
             )}
             data-section-header="true"
           >
-            {title && (
+            {translatedTitle && (
               <h2 
                 className={cn(
                   "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-semibold mb-3 md:mb-6 tracking-tight animate-fade-in",
@@ -63,10 +75,10 @@ const Section: React.FC<SectionProps> = ({
                 )}
                 data-section-title="true"
               >
-                {title}
+                {translatedTitle}
               </h2>
             )}
-            {subtitle && (
+            {translatedSubtitle && (
               <p 
                 className={cn(
                   "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in mobile-text-base",
@@ -75,7 +87,7 @@ const Section: React.FC<SectionProps> = ({
                 )}
                 data-section-subtitle="true"
               > 
-                {subtitle}
+                {translatedSubtitle}
               </p>
             )}
           </div>

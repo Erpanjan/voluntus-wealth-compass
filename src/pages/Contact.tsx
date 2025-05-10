@@ -8,8 +8,9 @@ const Contact = () => {
     <div className="min-h-screen">
       {/* Hero Section */}
       <Hero 
-        title="Join Our Waitlist" 
-        subtitle="Be among the first to experience our service when we launch" 
+        titleKey="hero_title"
+        subtitleKey="hero_subtitle"
+        section="contact"
       />
 
       {/* Waitlist Form Section */}

@@ -3,6 +3,7 @@ import { Menu, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import NavLinks from './NavLinks';
 import LoginButton from './LoginButton';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface MobileMenuProps {
   isMenuOpen: boolean;
@@ -23,6 +24,7 @@ const MobileMenu = ({
 }: MobileMenuProps) => {
   return (
     <div className="flex lg:hidden space-x-4 items-center">
+      <LanguageSwitcher isMobile={true} />
       <LoginButton handleLoginClick={handleLoginClick} isMobile={true} />
       <Button 
         variant="ghost" 

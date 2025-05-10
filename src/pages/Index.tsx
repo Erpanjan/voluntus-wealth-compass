@@ -9,21 +9,24 @@ import WaitlistForm from '@/components/WaitlistForm';
 import { Button } from '@/components/ui/button';
 import SectionCarousel from '@/components/SectionCarousel';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
+  const { t } = useLanguage();
+
   // Define the carousel sections
   const carouselSections = [
     {
       id: "gambling",
-      title: "Tired of Feeling Like You're Gambling With Your Money?",
+      title: t('question_gambling', 'home'),
       background: "light" as const,
       content: (
         <>
           <p className="mb-3 mobile-text-base">
-            Managing your wealth shouldn't feel like placing bets in a game where the odds are stacked against you. But for many, that's exactly what it is: guesswork, conflicting advice, and a constant fear of making the wrong move.
+            {t('gambling_desc1', 'home')}
           </p>
           <p className="mb-4 mobile-text-base">
-            It is time for a strategic and systematic approach to financial success.
+            {t('gambling_desc2', 'home')}
           </p>
           <Button 
             asChild 
@@ -31,7 +34,7 @@ const Index = () => {
             className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-2"
           >
             <Link to="/services" className="inline-flex items-center">
-              How We Can Help <ArrowRight size={18} className="ml-2" />
+              {t('services_button', 'home')} <ArrowRight size={18} className="ml-2" />
             </Link>
           </Button>
         </>
@@ -39,15 +42,15 @@ const Index = () => {
     },
     {
       id: "complicated",
-      title: "Does Managing Your Wealth Have to Be So Complicated and Expensive?",
+      title: t('question_complicated', 'home'),
       background: "light" as const,
       content: (
         <>
           <p className="mb-3 mobile-text-base">
-            Investing can feel overwhelming—endless strategies, intricate products, and expensive fees. But does it really need to be this way?
+            {t('complicated_desc1', 'home')}
           </p>
           <p className="mb-4 mobile-text-base">
-            Complexity provides only marginal value and oftentimes drives up the cost, while simplicity delivers clarity and confidence.
+            {t('complicated_desc2', 'home')}
           </p>
           <Button 
             asChild 
@@ -55,7 +58,7 @@ const Index = () => {
             className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-2"
           >
             <Link to="/services" className="inline-flex items-center">
-              How We Can Help <ArrowRight size={18} className="ml-2" />
+              {t('services_button', 'home')} <ArrowRight size={18} className="ml-2" />
             </Link>
           </Button>
         </>
@@ -63,15 +66,15 @@ const Index = () => {
     },
     {
       id: "best-interest",
-      title: "Can Financial Advice Ever Be in Your Best Interest?",
+      title: t('question_best_interest', 'home'),
       background: "light" as const,
       content: (
         <>
           <p className="mb-3 mobile-text-base">
-            Everywhere you turn, you're bombarded with financial advice, all telling you what to do with your money. But most of this 'advice' comes with a catch: it's incentivized to get you to trade, transact, and eventually buy products.
+            {t('best_interest_desc1', 'home')}
           </p>
           <p className="mb-4 mobile-text-base">
-            Commission-based advice is not in your best interest, so we offer a subscription-based service.
+            {t('best_interest_desc2', 'home')}
           </p>
           <Button 
             asChild 
@@ -79,7 +82,7 @@ const Index = () => {
             className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-2"
           >
             <Link to="/services" className="inline-flex items-center">
-              How We Can Help <ArrowRight size={18} className="ml-2" />
+              {t('services_button', 'home')} <ArrowRight size={18} className="ml-2" />
             </Link>
           </Button>
         </>
@@ -87,15 +90,15 @@ const Index = () => {
     },
     {
       id: "accountability",
-      title: "Does Investing End Once the Product is Purchased?",
+      title: t('question_accountability', 'home'),
       background: "light" as const,
       content: (
         <>
           <p className="mb-3 mobile-text-base">
-            Investment products are so much accessible, but what happens after the purchase? Once decisions are made, people are often left navigating the market volatility on their own.
+            {t('accountability_desc1', 'home')}
           </p>
           <p className="mb-4 mobile-text-base">
-            Purchasing a product is only the start of the journey, what matters is what comes after the purchase.
+            {t('accountability_desc2', 'home')}
           </p>
           <Button 
             asChild 
@@ -103,7 +106,7 @@ const Index = () => {
             className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-2"
           >
             <Link to="/services" className="inline-flex items-center">
-              How We Can Help <ArrowRight size={18} className="ml-2" />
+              {t('services_button', 'home')} <ArrowRight size={18} className="ml-2" />
             </Link>
           </Button>
         </>
@@ -115,8 +118,9 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <Hero 
-        title="We're There With You Every Step of The Way"
-        subtitle="Access professional investment management service through a simple monthly subscription, with reduced costs and service tailored to you."
+        titleKey="hero_title"
+        subtitleKey="hero_subtitle"
+        section="home"
         background="transparent"
       >
         <div className="flex flex-wrap justify-center gap-4">
@@ -126,14 +130,14 @@ const Index = () => {
             className="bg-black/80 hover:bg-black text-white transition-all duration-300"
           >
             <Link to="/services" className="inline-flex items-center">
-              Our Services <ArrowRight size={18} className="ml-2" />
+              {t('services_button', 'home')} <ArrowRight size={18} className="ml-2" />
             </Link>
           </Button>
         </div>
       </Hero>
 
       {/* Updated Section with auto height */}
-      <Section id="how-we-can-help" background="white" className="py-6 md:py-12">
+      <Section id="how-we-can-help" background="white" className="py-6 md:py-12" titleKey="how_we_can_help" section="home">
         <div className="w-full">
           <SectionCarousel sections={carouselSections} />
         </div>

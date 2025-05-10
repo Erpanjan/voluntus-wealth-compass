@@ -8,11 +8,13 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { usePublishedArticles } from '@/hooks/usePublishedArticles';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Insight = () => {
   const { articles, loading } = usePublishedArticles();
   const [currentPage, setCurrentPage] = useState(1);
   const articlesPerPage = 4;
+  const { t } = useLanguage();
   
   // Calculate pagination
   const totalPages = Math.max(1, Math.ceil(articles.length / articlesPerPage));
@@ -46,13 +48,14 @@ const Insight = () => {
     <div className="min-h-screen">
       {/* Hero Section */}
       <Hero 
-        title="Market Insight"
-        subtitle="Our insights guide us in formulating and updating Financial Planning Policies for clients, ensuring they remain consistently informed about the market and their progress."
+        titleKey="hero_title"
+        subtitleKey="hero_subtitle"
+        section="insight"
         background="light"
       />
 
       {/* Latest Research Section */}
-      <Section title="Latest Research" titleCentered={true}>
+      <Section titleKey="latest_research" section="insight" titleCentered={true}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
           {loading ? renderSkeletons() : (
             displayedArticles.map((article) => (
@@ -71,8 +74,8 @@ const Insight = () => {
           
           {!loading && articles.length === 0 && (
             <div className="col-span-full text-center py-16">
-              <h3 className="text-xl font-medium text-gray-600">No articles found</h3>
-              <p className="mt-2 text-gray-500">Check back soon for new insights</p>
+              <h3 className="text-xl font-medium text-gray-600">{t('no_articles', 'insight')}</h3>
+              <p className="mt-2 text-gray-500">{t('check_back', 'insight')}</p>
             </div>
           )}
         </div>

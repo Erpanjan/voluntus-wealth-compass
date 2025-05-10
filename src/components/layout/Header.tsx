@@ -6,6 +6,7 @@ import Logo from './header/Logo';
 import NavLinks from './header/NavLinks';
 import LoginButton from './header/LoginButton';
 import MobileMenu from './header/MobileMenu';
+import LanguageSwitcher from './header/LanguageSwitcher';
 
 const Header = () => {
   const {
@@ -46,8 +47,9 @@ const Header = () => {
           handleNavLinkClick={(e, isActivePath) => handleNavLinkClick(e, isActivePath)} 
         />
 
-        {/* Login button and mobile menu */}
-        <div className="flex items-center">
+        {/* Language switcher and Login button */}
+        <div className="flex items-center space-x-2">
+          <LanguageSwitcher />
           <LoginButton handleLoginClick={handleLoginClick} />
           <MobileMenu
             isMenuOpen={isMenuOpen}
