@@ -21,7 +21,7 @@ const NavLinks = ({ navLinks, isActive, handleNavLinkClick, isMobile = false }: 
             className={cn(
               'py-4 text-base transition-all duration-300 flex items-center',
               isActive(link.path) 
-                ? 'font-semibold text-[#333333] border-l-2 border-[#333333] pl-4' 
+                ? 'font-semibold text-[#333333] pl-4' 
                 : 'font-normal text-[#666666] hover:text-[#333333] pl-4'
             )}
           >
