@@ -48,9 +48,9 @@ const Index = () => {
     {
       id: "complicated",
       title: "Does Managing Your Wealth Have to Be So Complicated and Expensive?",
-      background: "white" as const,
+      background: "light" as const, // Changed from white to light
       content: (
-        <Section id="complicated" background="white" carouselItem={true}>
+        <Section id="complicated" background="light" carouselItem={true}> {/* Changed from white to light */}
           <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto pt-16">
             <div className="space-y-8">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
@@ -114,9 +114,9 @@ const Index = () => {
     {
       id: "accountability",
       title: "Does Investing End Once the Product is Purchased?",
-      background: "white" as const,
+      background: "light" as const, // Changed from white to light
       content: (
-        <Section id="accountability" background="white" carouselItem={true}>
+        <Section id="accountability" background="light" carouselItem={true}> {/* Changed from white to light */}
           <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto pt-16">
             <div className="space-y-8">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
@@ -150,8 +150,8 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <Hero 
-        title="We're There With You Every Step of The Way"
-        subtitle="Access professional investment management service through a simple monthly subscription, with reduced costs and service tailored to you."
+        title="Access professional investment management service through a simple monthly subscription, with reduced costs and service tailored to you."
+        subtitle="We're there with you every step of the way."
         background="transparent"
       >
         <div className="flex flex-wrap justify-center gap-4">
@@ -167,8 +167,8 @@ const Index = () => {
         </div>
       </Hero>
 
-      {/* Enhanced Carousel Section with a clear title */}
-      <Section id="how-we-can-help" background="white" className="py-16">
+      {/* Enhanced Carousel Section with updated heading style */}
+      <Section id="how-we-can-help" background="light" className="py-16"> {/* Changed from white to light */}
         <div className="min-h-[80vh]">
           <SectionCarousel sections={carouselSections} />
         </div>

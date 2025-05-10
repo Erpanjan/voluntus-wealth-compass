@@ -66,10 +66,28 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
 
   return (
     <div className="relative h-full flex flex-col">
-      {/* Enhanced title section */}
-      <div className="text-center mb-8 mt-6">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-2">How We Can Help</h2>
-        <div className="w-20 h-1 bg-black mx-auto"></div>
+      {/* Redesigned header section - title with navigation dots next to it */}
+      <div className="flex justify-between items-center mb-10 mt-6">
+        <h2 className="text-3xl md:text-4xl font-semibold">How We Can Help</h2>
+        
+        {/* Navigation dots moved next to title */}
+        <div className="flex gap-3 items-center">
+          {sections.map((section, index) => (
+            <Button
+              key={section.id}
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "w-3 h-3 p-0 rounded-full transition-all duration-300",
+                current === index 
+                  ? "bg-black scale-110" 
+                  : "bg-gray-300 hover:bg-gray-400"
+              )}
+              onClick={() => scrollToSection(index)}
+              aria-label={`Go to section ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
       
       <div 
@@ -79,27 +97,6 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
         onTouchStart={handleMouseEnter}
         onTouchEnd={handleMouseLeave}
       >
-        {/* Navigation dots moved to bottom and enhanced */}
-        <div className="absolute bottom-4 left-0 w-full z-10 flex justify-center">
-          <div className="flex gap-3 items-center">
-            {sections.map((section, index) => (
-              <Button
-                key={section.id}
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  "w-3 h-3 p-0 rounded-full transition-all duration-300",
-                  current === index 
-                    ? "bg-black scale-110" 
-                    : "bg-gray-300 hover:bg-gray-400"
-                )}
-                onClick={() => scrollToSection(index)}
-                aria-label={`Go to section ${index + 1}`}
-              />
-            ))}
-          </div>
-        </div>
-        
         <Carousel
           setApi={setApi}
           className="w-full h-full"
