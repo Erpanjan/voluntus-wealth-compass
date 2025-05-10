@@ -1,19 +1,14 @@
 
 import React, { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface HeroProps {
-  title?: string; // Make title optional
+  title: string;
   subtitle?: string;
   className?: string;
   children?: ReactNode;
   collaboration?: string;
   background?: 'light' | 'dark' | 'transparent';
-  titleKey?: string;
-  subtitleKey?: string;
-  collaborationKey?: string;
-  section?: string;
 }
 
 const Hero: React.FC<HeroProps> = ({ 
@@ -22,24 +17,13 @@ const Hero: React.FC<HeroProps> = ({
   className, 
   children,
   collaboration,
-  background = 'transparent',
-  titleKey,
-  subtitleKey,
-  collaborationKey,
-  section
+  background = 'transparent'
 }) => {
-  const { t, language } = useLanguage();
-  
   const bgClasses = {
     'light': 'bg-[#F1F1F1]',
     'dark': 'bg-black text-white',
     'transparent': 'bg-transparent',
   };
-
-  // Get translated content if keys are provided
-  const translatedTitle = titleKey && section ? t(titleKey, section) : title;
-  const translatedSubtitle = subtitleKey && section ? t(subtitleKey, section) : subtitle;
-  const translatedCollaboration = collaborationKey && section ? t(collaborationKey, section) : collaboration;
 
   return (
     <section className={cn(
@@ -50,18 +34,18 @@ const Hero: React.FC<HeroProps> = ({
       <div className="container-custom relative z-10 flex flex-col justify-center py-12 sm:py-16 md:py-20">
         <div className="max-w-3xl mx-auto px-4 md:px-0">
           <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 md:mb-6 tracking-tight animate-fade-in text-center">
-            {translatedTitle}
+            {title}
           </h1>
           
-          {translatedSubtitle && (
+          {subtitle && (
             <p className="text-base sm:text-lg md:text-xl text-[#666666] font-light mb-6 md:mb-10 animate-fade-in max-w-2xl mx-auto text-center mobile-text-base">
-              {translatedSubtitle}
+              {subtitle}
             </p>
           )}
           
-          {translatedCollaboration && (
+          {collaboration && (
             <p className="text-sm text-[#666666] italic mb-5 md:mb-8 animate-fade-in mobile-text-sm">
-              {translatedCollaboration}
+              {collaboration}
             </p>
           )}
           

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { LanguageProvider } from "@/contexts/LanguageContext";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import Index from "./pages/Index";
@@ -134,143 +132,141 @@ const AdminRoute = ({ children }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <BrowserRouter>
-        <TooltipProvider>
-          <div className="flex flex-col min-h-screen">
-            {/* Header only on non-dashboard/non-onboarding/non-questionnaire/non-admin pages */}
+    <BrowserRouter>
+      <TooltipProvider>
+        <div className="flex flex-col min-h-screen">
+          {/* Header only on non-dashboard/non-onboarding/non-questionnaire/non-admin pages */}
+          <Routes>
+            <Route path="/dashboard" element={null} />
+            <Route path="/onboarding" element={null} />
+            <Route path="/welcome" element={null} />
+            <Route path="/pending-approval" element={null} />
+            <Route path="/questionnaire" element={null} />
+            <Route path="/admin/*" element={null} />
+            <Route path="*" element={<Header />} />
+          </Routes>
+          
+          <main className="flex-grow">
             <Routes>
-              <Route path="/dashboard" element={null} />
-              <Route path="/onboarding" element={null} />
-              <Route path="/welcome" element={null} />
-              <Route path="/pending-approval" element={null} />
-              <Route path="/questionnaire" element={null} />
-              <Route path="/admin/*" element={null} />
-              <Route path="*" element={<Header />} />
+              <Route path="/" element={<Index />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/insight" element={<Insight />} />
+              <Route path="/insight/:id" element={<ArticleDetail />} />
+              <Route path="/event" element={<Event />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/login" element={<Login />} />
+              <Route 
+                path="/welcome" 
+                element={
+                  <PrivateRoute>
+                    <Welcome />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/pending-approval" 
+                element={
+                  <PrivateRoute>
+                    <PendingApproval />
+                  </PrivateRoute>
+                }
+              />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/onboarding" 
+                element={
+                  <PrivateRoute>
+                    <Onboarding />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/questionnaire" 
+                element={
+                  <PrivateRoute>
+                    <Questionnaire />
+                  </PrivateRoute>
+                } 
+              />
+              
+              {/* Admin Routes */}
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/articles" 
+                element={
+                  <AdminRoute>
+                    <ArticlesManagement />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/articles/create" 
+                element={
+                  <AdminRoute>
+                    <ArticleEditor />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/articles/edit/:id" 
+                element={
+                  <AdminRoute>
+                    <ArticleEditor />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/contact" 
+                element={
+                  <AdminRoute>
+                    <ContactManagement />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/user-account" 
+                element={
+                  <AdminRoute>
+                    <UserAccountManagement />
+                  </AdminRoute>
+                } 
+              />
+              
+              <Route path="*" element={<NotFound />} />
             </Routes>
-            
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/insight" element={<Insight />} />
-                <Route path="/insight/:id" element={<ArticleDetail />} />
-                <Route path="/event" element={<Event />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/login" element={<Login />} />
-                <Route 
-                  path="/welcome" 
-                  element={
-                    <PrivateRoute>
-                      <Welcome />
-                    </PrivateRoute>
-                  } 
-                />
-                <Route 
-                  path="/pending-approval" 
-                  element={
-                    <PrivateRoute>
-                      <PendingApproval />
-                    </PrivateRoute>
-                  }
-                />
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  } 
-                />
-                <Route 
-                  path="/onboarding" 
-                  element={
-                    <PrivateRoute>
-                      <Onboarding />
-                    </PrivateRoute>
-                  } 
-                />
-                <Route 
-                  path="/questionnaire" 
-                  element={
-                    <PrivateRoute>
-                      <Questionnaire />
-                    </PrivateRoute>
-                  } 
-                />
-                
-                {/* Admin Routes */}
-                <Route 
-                  path="/admin/dashboard" 
-                  element={
-                    <AdminRoute>
-                      <AdminDashboard />
-                    </AdminRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/articles" 
-                  element={
-                    <AdminRoute>
-                      <ArticlesManagement />
-                    </AdminRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/articles/create" 
-                  element={
-                    <AdminRoute>
-                      <ArticleEditor />
-                    </AdminRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/articles/edit/:id" 
-                  element={
-                    <AdminRoute>
-                      <ArticleEditor />
-                    </AdminRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/contact" 
-                  element={
-                    <AdminRoute>
-                      <ContactManagement />
-                    </AdminRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/user-account" 
-                  element={
-                    <AdminRoute>
-                      <UserAccountManagement />
-                    </AdminRoute>
-                  } 
-                />
-                
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            
-            {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire/non-admin pages */}
-            <Routes>
-              <Route path="/dashboard" element={null} />
-              <Route path="/onboarding" element={null} />
-              <Route path="/welcome" element={null} />
-              <Route path="/pending-approval" element={null} />
-              <Route path="/login" element={null} />
-              <Route path="/questionnaire" element={null} />
-              <Route path="/admin/*" element={null} />
-              <Route path="*" element={<Footer />} />
-            </Routes>
-          </div>
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
-      </BrowserRouter>
-    </LanguageProvider>
+          </main>
+          
+          {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire/non-admin pages */}
+          <Routes>
+            <Route path="/dashboard" element={null} />
+            <Route path="/onboarding" element={null} />
+            <Route path="/welcome" element={null} />
+            <Route path="/pending-approval" element={null} />
+            <Route path="/login" element={null} />
+            <Route path="/questionnaire" element={null} />
+            <Route path="/admin/*" element={null} />
+            <Route path="*" element={<Footer />} />
+          </Routes>
+        </div>
+        <Toaster />
+        <Sonner />
+      </TooltipProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 

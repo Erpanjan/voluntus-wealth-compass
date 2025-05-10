@@ -1,7 +1,6 @@
 
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface NavLinksProps {
   navLinks: { name: string; path: string }[];
@@ -11,14 +10,6 @@ interface NavLinksProps {
 }
 
 const NavLinks = ({ navLinks, isActive, handleNavLinkClick, isMobile = false }: NavLinksProps) => {
-  const { t } = useLanguage();
-  
-  // Translate nav link names
-  const getTranslatedLinkName = (name: string) => {
-    const key = name.toLowerCase();
-    return t(key, 'nav');
-  };
-
   if (isMobile) {
     return (
       <nav className="flex flex-col space-y-4 py-3">
@@ -34,7 +25,7 @@ const NavLinks = ({ navLinks, isActive, handleNavLinkClick, isMobile = false }: 
                 : 'font-normal text-[#666666] hover:text-[#333333] pl-4'
             )}
           >
-            {getTranslatedLinkName(link.name)}
+            {link.name}
           </Link>
         ))}
       </nav>
@@ -55,7 +46,7 @@ const NavLinks = ({ navLinks, isActive, handleNavLinkClick, isMobile = false }: 
               : 'font-normal text-[#666666] hover:text-[#333333]'
           )}
         >
-          {getTranslatedLinkName(link.name)}
+          {link.name}
         </Link>
       ))}
     </nav>
