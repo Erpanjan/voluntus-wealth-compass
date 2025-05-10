@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -167,8 +166,8 @@ const Index = () => {
         </div>
       </Hero>
 
-      {/* Enhanced Carousel Section with updated heading style */}
-      <Section id="how-we-can-help" background="light" className="py-16"> {/* Changed from white to light */}
+      {/* Updated Section background to white while keeping content in light gray */}
+      <Section id="how-we-can-help" background="white" className="py-16">
         <div className="min-h-[80vh]">
           <SectionCarousel sections={carouselSections} />
         </div>

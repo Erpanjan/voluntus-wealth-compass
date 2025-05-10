@@ -110,7 +110,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
           <CarouselContent className="h-full">
             {sections.map((section, index) => (
               <CarouselItem key={section.id} className="basis-full h-full flex items-center">
-                <div className="w-full h-full p-6 bg-white rounded-lg shadow-sm">
+                <div className="w-full h-full p-6 bg-[#F1F1F1] rounded-lg shadow-sm">
                   {section.content}
                 </div>
               </CarouselItem>
