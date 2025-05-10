@@ -1,20 +1,14 @@
 
 import React from 'react';
-import { Globe } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 interface LanguageSwitcherProps {
   isMobile?: boolean;
 }
 
 const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ isMobile = false }) => {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage } = useLanguage();
 
   const handleLanguageChange = (newLanguage: 'en' | 'zh') => {
     setLanguage(newLanguage);
@@ -22,60 +16,62 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ isMobile = false })
 
   if (isMobile) {
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            aria-label={t('language')}
-            className="flex items-center space-x-1 py-2 px-3 rounded-full text-[#666666] hover:text-[#333333] hover:bg-black/5 transition-all duration-300 touch-manipulation"
-          >
-            <Globe size={18} className="mr-1" />
-            <span className="text-sm font-medium">{language === 'en' ? 'EN' : '中'}</span>
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-36">
-          <DropdownMenuItem
-            className={language === 'en' ? 'font-medium text-black' : 'text-gray-600'}
-            onClick={() => handleLanguageChange('en')}
-          >
-            {t('english')}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className={language === 'zh' ? 'font-medium text-black' : 'text-gray-600'}
-            onClick={() => handleLanguageChange('zh')}
-          >
-            {t('chinese')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex items-center space-x-1 rounded-md overflow-hidden border border-[#E0E0E0]">
+        <button
+          onClick={() => handleLanguageChange('en')}
+          className={cn(
+            "px-2 py-1 text-xs transition-all",
+            language === 'en' 
+              ? "bg-[#333333] text-white font-medium" 
+              : "bg-transparent text-[#666666] hover:bg-[#F1F1F1]"
+          )}
+          aria-label="Switch to English"
+        >
+          ENG
+        </button>
+        <button
+          onClick={() => handleLanguageChange('zh')}
+          className={cn(
+            "px-2 py-1 text-xs transition-all",
+            language === 'zh' 
+              ? "bg-[#333333] text-white font-medium" 
+              : "bg-transparent text-[#666666] hover:bg-[#F1F1F1]"
+          )}
+          aria-label="切换到中文"
+        >
+          日本語
+        </button>
+      </div>
     );
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          aria-label={t('language')}
-          className="hidden lg:flex items-center space-x-1 text-xs tracking-wide text-[#666666] hover:text-[#333333] px-3 py-1 rounded-full transition-all duration-300 hover:bg-black/5"
-        >
-          <Globe size={14} className="mr-1" />
-          <span>{language === 'en' ? 'EN' : '中'}</span>
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-36">
-        <DropdownMenuItem
-          className={language === 'en' ? 'font-medium text-black' : 'text-gray-600'}
-          onClick={() => handleLanguageChange('en')}
-        >
-          {t('english')}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className={language === 'zh' ? 'font-medium text-black' : 'text-gray-600'}
-          onClick={() => handleLanguageChange('zh')}
-        >
-          {t('chinese')}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="hidden lg:flex items-center rounded-md overflow-hidden border border-[#E0E0E0]">
+      <button
+        onClick={() => handleLanguageChange('en')}
+        className={cn(
+          "px-3 py-1 text-xs transition-all",
+          language === 'en' 
+            ? "bg-[#333333] text-white font-medium" 
+            : "bg-transparent text-[#666666] hover:bg-[#F1F1F1]"
+        )}
+        aria-label="Switch to English"
+      >
+        ENG
+      </button>
+      <button
+        onClick={() => handleLanguageChange('zh')}
+        className={cn(
+          "px-3 py-1 text-xs transition-all",
+          language === 'zh' 
+            ? "bg-[#333333] text-white font-medium" 
+            : "bg-transparent text-[#666666] hover:bg-[#F1F1F1]"
+        )}
+        aria-label="切换到中文"
+      >
+        日本語
+      </button>
+    </div>
   );
 };
 
