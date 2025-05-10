@@ -43,3 +43,20 @@
   overflow: hidden;
 }
 
+/* Mobile content visibility */
+@media (max-width: 640px) {
+  .mobile-content {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  
+  .mobile-text-adjust {
+    font-size: 95%;
+    line-height: 1.4;
+  }
+  
+  /* Fix for text cutoff issues */
+  .text-balance {
+    text-wrap: balance;
+  }
+}

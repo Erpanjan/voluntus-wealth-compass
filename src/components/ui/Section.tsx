@@ -1,88 +1,60 @@
 
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SectionProps {
   id?: string;
-  title?: string;
-  subtitle?: string;
-  children: ReactNode;
+  children: React.ReactNode;
+  background?: 'white' | 'light' | 'dark' | 'transparent';
   className?: string;
-  titleCentered?: boolean;
-  background?: 'white' | 'light' | 'dark';
+  innerClassName?: string;
   carouselItem?: boolean;
-  titleClassName?: string;
-  subtitleClassName?: string;
-  contentClassName?: string;
 }
 
-const Section: React.FC<SectionProps> = ({ 
-  id, 
-  title, 
-  subtitle, 
-  children, 
+const Section: React.FC<SectionProps> = ({
+  id,
+  children,
+  background = 'light',
   className,
-  titleCentered = false,
-  background = 'white',
-  carouselItem = false,
-  titleClassName = '',
-  subtitleClassName = '',
-  contentClassName = ''
+  innerClassName,
+  carouselItem = false
 }) => {
   const isMobile = useIsMobile();
   
-  const bgClasses = {
-    'white': 'bg-white',
-    'light': 'bg-[#F1F1F1]',
-    'dark': 'bg-black text-white',
+  const getBgColor = () => {
+    switch (background) {
+      case 'white':
+        return 'bg-white';
+      case 'light':
+        return 'bg-[#F1F1F1]';
+      case 'dark':
+        return 'bg-gray-900';
+      case 'transparent':
+        return 'bg-transparent';
+      default:
+        return 'bg-[#F1F1F1]';
+    }
   };
-
+  
   return (
-    <section id={id} className={cn(
-      carouselItem ? 'py-4 md:py-6' : 'min-h-[70vh] md:min-h-screen py-10 md:py-16',
-      'flex flex-col justify-center overflow-hidden relative',
-      bgClasses[background],
-      className
-    )}>
-      <div className={cn("container-custom flex flex-col justify-center h-full px-4 md:px-6", carouselItem && "h-full")}>
-        {(title || subtitle) && (
-          <div 
-            className={cn(
-              'mb-8 md:mb-12', 
-              titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
-            )}
-            data-section-header="true"
-          >
-            {title && (
-              <h2 
-                className={cn(
-                  "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-5 md:mb-8 tracking-tight animate-fade-in",
-                  titleClassName,
-                  background === 'dark' ? 'text-white' : 'text-[#333333]'
-                )}
-                data-section-title="true"
-              >
-                {title}
-              </h2>
-            )}
-            {subtitle && (
-              <p 
-                className={cn(
-                  "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in",
-                  subtitleClassName,
-                  background === 'dark' ? 'text-white/70' : 'text-[#666666]'
-                )}
-                data-section-subtitle="true"
-              > 
-                {subtitle}
-              </p>
-            )}
-          </div>
+    <section
+      id={id}
+      className={cn(
+        getBgColor(),
+        carouselItem ? '' : 'py-8 sm:py-10 md:py-16 lg:py-20',
+        className
+      )}
+    >
+      <div
+        className={cn(
+          'container mx-auto px-4 sm:px-6',
+          carouselItem ? '' : 'max-w-7xl',
+          isMobile && carouselItem ? 'mobile-content' : '',
+          innerClassName
         )}
-        <div className={cn("flex-grow flex flex-col items-center justify-start w-full", contentClassName)} data-section-content="true">
-          {children}
-        </div>
+      >
+        {children}
       </div>
     </section>
   );
