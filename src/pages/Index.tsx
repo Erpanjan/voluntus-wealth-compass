@@ -47,10 +47,10 @@ const Index = () => {
     {
       id: "complicated",
       title: "Does Managing Your Wealth Have to Be So Complicated and Expensive?",
-      background: "light" as const, // Changed from white to light
+      background: "light" as const,
       content: (
-        <Section id="complicated" background="light" carouselItem={true}> {/* Changed from white to light */}
-          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto pt-16">
+        <Section id="complicated" background="light" carouselItem={true}>
+          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
             <div className="space-y-8">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
                 Does Managing Your Wealth Have to Be So Complicated and Expensive?
@@ -83,7 +83,7 @@ const Index = () => {
       background: "light" as const,
       content: (
         <Section id="best-interest" background="light" carouselItem={true}>
-          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto pt-16">
+          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
             <div className="space-y-8">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
                 Can Financial Advice Ever Be in Your Best Interest?
@@ -113,10 +113,10 @@ const Index = () => {
     {
       id: "accountability",
       title: "Does Investing End Once the Product is Purchased?",
-      background: "light" as const, // Changed from white to light
+      background: "light" as const,
       content: (
-        <Section id="accountability" background="light" carouselItem={true}> {/* Changed from white to light */}
-          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto pt-16">
+        <Section id="accountability" background="light" carouselItem={true}>
+          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
             <div className="space-y-8">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
                 Does Investing End Once the Product is Purchased?
