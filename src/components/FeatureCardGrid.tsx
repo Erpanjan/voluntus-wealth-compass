@@ -44,7 +44,9 @@ const FeatureCardGrid: React.FC<FeatureCardGridProps> = ({ services }) => {
           {/* Content - right side on desktop */}
           <div className="p-8 md:p-10 w-full md:w-3/5">
             <h3 className="text-2xl font-semibold mb-4">{mainFeature.title}</h3>
-            <p className="text-[#9F9EA1] leading-relaxed">{mainFeature.content}</p>
+            <p className="text-[#666666] leading-relaxed">
+              Contrary to popular belief, you don't need great wealth or expertise to build a diversified portfolio. Our Financial Planning Policy offers personalized, cost-effective strategies with global reach—helping you navigate market shifts confidently and stay aligned with your long-term goals.
+            </p>
           </div>
         </div>
       </Card>
@@ -72,7 +74,7 @@ const FeatureCardGrid: React.FC<FeatureCardGridProps> = ({ services }) => {
               {/* Content - bottom */}
               <CardContent className="p-8">
                 <h3 className="text-2xl font-semibold mb-4">{feature.title}</h3>
-                <p className="text-[#9F9EA1] leading-relaxed">{feature.content}</p>
+                <p className="text-[#666666] leading-relaxed">{feature.content}</p>
               </CardContent>
             </div>
           </Card>
