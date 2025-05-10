@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ContentCard from '@/components/ContentCard';
-import ContactForm from '@/components/ContactForm';
+import WaitlistForm from '@/components/WaitlistForm';
 import { Button } from '@/components/ui/button';
 import SectionCarousel from '@/components/SectionCarousel';
 
@@ -173,9 +174,9 @@ const Index = () => {
         </div>
       </Section>
 
-      {/* Contact Form Section */}
+      {/* Waitlist Form Section */}
       <Section id="contact" background="light">
-        <ContactForm />
+        <WaitlistForm />
       </Section>
     </div>
   );

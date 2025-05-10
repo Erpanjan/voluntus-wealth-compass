@@ -1,9 +1,10 @@
+
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import FeatureCardGrid from '@/components/FeatureCardGrid';
 import TabContent from '@/components/TabContent';
-import ContactForm from '@/components/ContactForm';
+import WaitlistForm from '@/components/WaitlistForm';
 import FAQAccordionSection from '@/components/FAQAccordionSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
@@ -89,8 +90,8 @@ const Services = () => {
               size="lg"
               className="bg-white hover:bg-white/90 text-black transition-all duration-300"
             >
-              <Link to="/contact" className="inline-flex items-center">
-                Request a demo <ArrowRight size={18} className="ml-2" />
+              <Link to="#contact" className="inline-flex items-center">
+                Join the Waitlist <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
@@ -136,17 +137,17 @@ const Services = () => {
               size="lg"
               className="bg-white hover:bg-white/90 text-black transition-all duration-300"
             >
-              <Link to="/contact" className="inline-flex items-center">
-                Request pricing information <ArrowRight size={18} className="ml-2" />
+              <Link to="#contact" className="inline-flex items-center">
+                Join the Waitlist <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
         </div>
       </Section>
 
-      {/* Contact Form */}
+      {/* Waitlist Form */}
       <Section id="contact">
-        <ContactForm />
+        <WaitlistForm />
       </Section>
     </div>
   );

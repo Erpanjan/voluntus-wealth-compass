@@ -2,7 +2,7 @@
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
-import ContactForm from '@/components/ContactForm';
+import WaitlistForm from '@/components/WaitlistForm';
 import { Button } from '@/components/ui/button';
 
 const About = () => {
@@ -19,9 +19,9 @@ const About = () => {
         </div>
       </Section>
 
-      {/* Contact Form */}
+      {/* Waitlist Form */}
       <Section id="contact" background="light">
-        <ContactForm />
+        <WaitlistForm />
       </Section>
     </div>;
 };
