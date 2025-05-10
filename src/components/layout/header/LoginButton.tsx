@@ -11,7 +11,7 @@ const LoginButton = ({ handleLoginClick, isMobile = false }: LoginButtonProps) =
     return (
       <button 
         onClick={handleLoginClick}
-        className="text-[#9F9EA1] hover:text-black text-xs border border-[#9F9EA1] hover:border-black rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
+        className="text-[#666666] hover:text-[#333333] text-xs border border-[#666666] hover:border-[#333333] rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
         aria-label="Login to client portal"
       >
         LOGIN
@@ -22,7 +22,7 @@ const LoginButton = ({ handleLoginClick, isMobile = false }: LoginButtonProps) =
   return (
     <button 
       onClick={handleLoginClick} 
-      className="hidden lg:block text-[#9F9EA1] hover:text-black text-xs tracking-wide border border-[#9F9EA1] hover:border-black rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
+      className="hidden lg:block text-[#666666] hover:text-[#333333] text-xs tracking-wide border border-[#666666] hover:border-[#333333] rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
       aria-label="Login to client portal"
     >
       LOGIN

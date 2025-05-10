@@ -9,11 +9,11 @@
   }
 
   .btn-secondary {
-    @apply bg-[#F1F1F1] text-black hover:bg-[#CCCCCC] hover:shadow-soft;
+    @apply bg-[#F1F1F1] text-[#333333] hover:bg-[#CCCCCC] hover:shadow-soft;
   }
 
   .btn-outline {
-    @apply border border-[#F1F1F1] text-black hover:bg-[#F1F1F1] hover:shadow-soft;
+    @apply border border-[#F1F1F1] text-[#333333] hover:bg-[#F1F1F1] hover:shadow-soft;
   }
 
   .section {
@@ -25,7 +25,7 @@
   }
 
   .link {
-    @apply text-[#9F9EA1] hover:text-black transition-colors duration-200;
+    @apply text-[#666666] hover:text-[#333333] transition-colors duration-200;
   }
 
   input, textarea, select {

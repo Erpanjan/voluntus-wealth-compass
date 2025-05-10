@@ -21,8 +21,8 @@ const NavLinks = ({ navLinks, isActive, handleNavLinkClick, isMobile = false }: 
             className={cn(
               'py-2 text-sm transition-all duration-300',
               isActive(link.path) 
-                ? 'font-semibold text-black border-l-2 border-black pl-3' 
-                : 'font-normal text-[#9F9EA1] hover:text-black pl-3'
+                ? 'font-semibold text-[#333333] border-l-2 border-[#333333] pl-3' 
+                : 'font-normal text-[#666666] hover:text-[#333333] pl-3'
             )}
           >
             {link.name}
@@ -42,8 +42,8 @@ const NavLinks = ({ navLinks, isActive, handleNavLinkClick, isMobile = false }: 
           className={cn(
             "px-5 py-2 text-xs tracking-wide transition-all duration-300",
             isActive(link.path) 
-              ? 'font-semibold text-black' 
-              : 'font-normal text-[#9F9EA1] hover:text-black'
+              ? 'font-semibold text-[#333333]' 
+              : 'font-normal text-[#666666] hover:text-[#333333]'
           )}
         >
           {link.name}

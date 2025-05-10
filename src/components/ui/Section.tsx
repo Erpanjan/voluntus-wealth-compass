@@ -57,8 +57,9 @@ const Section: React.FC<SectionProps> = ({
             {title && (
               <h2 
                 className={cn(
-                  "text-3xl md:text-4xl lg:text-5xl font-semibold mb-8 tracking-tight animate-fade-in",
-                  titleClassName
+                  "text-3xl md:text-4xl lg:text-5xl font-bold mb-8 tracking-tight animate-fade-in",
+                  titleClassName,
+                  background === 'dark' ? 'text-white' : 'text-[#333333]'
                 )}
                 data-section-title="true"
               >
@@ -68,8 +69,9 @@ const Section: React.FC<SectionProps> = ({
             {subtitle && (
               <p 
                 className={cn(
-                  "text-lg md:text-xl text-[#000006] max-w-2xl animate-fade-in",
-                  subtitleClassName
+                  "text-lg md:text-xl max-w-2xl animate-fade-in",
+                  subtitleClassName,
+                  background === 'dark' ? 'text-white/70' : 'text-[#666666]'
                 )}
                 data-section-subtitle="true"
               > 
