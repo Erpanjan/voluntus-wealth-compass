@@ -1,8 +1,7 @@
-
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
-import InteractiveServiceGrid from '@/components/InteractiveServiceGrid';
+import FeatureCardGrid from '@/components/FeatureCardGrid';
 import TabContent from '@/components/TabContent';
 import ContactForm from '@/components/ContactForm';
 import SplitScreenValueSection from '@/components/SplitScreenValueSection';
@@ -98,10 +97,10 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* What's Included Section */}
+      {/* What's Included Section - Updated to use FeatureCardGrid */}
       <Section id="whats-included" title="What's included?" background="white">
         <div className="w-full">
-          <InteractiveServiceGrid services={serviceItems} />
+          <FeatureCardGrid services={serviceItems} />
         </div>
       </Section>
 
