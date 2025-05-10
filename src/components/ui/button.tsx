@@ -21,9 +21,9 @@ const buttonVariants = cva(
         link: "text-[#9F9EA1] underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-12 px-7 py-3",
-        sm: "h-10 rounded-full px-5",
-        lg: "h-14 rounded-full px-10 text-base",
+        default: "h-11 px-6 py-2.5 sm:h-12 sm:px-7 sm:py-3",
+        sm: "h-9 rounded-full px-4 sm:h-10 sm:px-5",
+        lg: "h-12 rounded-full px-8 text-base sm:h-14 sm:px-10",
         icon: "h-10 w-10",
       },
     },
@@ -45,7 +45,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button"
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size, className }), "mobile-touch-target")}
         ref={ref}
         {...props}
       />

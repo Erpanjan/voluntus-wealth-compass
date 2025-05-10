@@ -72,16 +72,16 @@ const Services = () => {
 
       {/* Roadmap Section */}
       <Section id="roadmap" background="dark">
-        <div className="grid md:grid-cols-1 gap-8 items-start max-w-3xl mx-auto">
-          <div className="space-y-8">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight">
+        <div className="grid md:grid-cols-1 gap-6 sm:gap-8 items-start max-w-3xl mx-auto">
+          <div className="space-y-6 sm:space-y-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight">
               A Roadmap for your Investment Journey
             </h2>
-            <div className="space-y-6 text-white/70 text-lg font-light">
-              <p>
+            <div className="space-y-4 sm:space-y-6 text-white/70 text-base sm:text-lg font-light">
+              <p className="mobile-text-base">
                 The Financial Planning Policy is a personalized roadmap for managing your wealth. It outlines how your funds should be allocated to kick-start your investment journey, providing step-by-step guidance along with ongoing monitoring and plan governance.
               </p>
-              <p>
+              <p className="mobile-text-base">
                 It also defines our roles and responsibilities throughout this process, ensuring the policy remains up-to-date and that you're never alone on your journey to reach your financial goals.
               </p>
             </div>
@@ -119,16 +119,16 @@ const Services = () => {
         id="policy-fee" 
         background="dark"
       >
-        <div className="grid md:grid-cols-1 gap-8 items-start max-w-3xl mx-auto">
-          <div className="space-y-8">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
+        <div className="grid md:grid-cols-1 gap-6 sm:gap-8 items-start max-w-3xl mx-auto">
+          <div className="space-y-6 sm:space-y-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
               Our Pricing
             </h2>
-            <div className="space-y-6 text-lg font-light text-white/70">
-              <p>
+            <div className="space-y-4 sm:space-y-6 text-base sm:text-lg font-light text-white/70">
+              <p className="mobile-text-base">
                 This is a subscription service with policy fee is charged periodically, with the amount depending on the complexity of your financial needs and the duration of the policy.
               </p>
-              <p>
+              <p className="mobile-text-base">
                 We <span className="font-normal">DO NOT</span> charge based on investment vehicle selected or size of the investment.
               </p>
             </div>

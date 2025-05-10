@@ -36,15 +36,15 @@ const InteractiveServiceGrid: React.FC<InteractiveServiceGridProps> = ({ service
           transition={{ duration: 0.4 }}
           onClick={() => setActiveService(null)}
         >
-          <div className="space-y-6 p-12 md:p-16 lg:p-20 border border-black/80 rounded-lg bg-white">
-            <h3 className="text-3xl md:text-4xl font-medium text-black tracking-tight font-inter">
+          <div className="space-y-4 sm:space-y-6 p-8 sm:p-12 md:p-16 lg:p-20 border border-black/80 rounded-lg bg-white">
+            <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium text-black tracking-tight font-inter">
               {services.find(s => s.id === activeService)?.title}
             </h3>
             <Separator className="bg-black/80" />
-            <p className="text-lg text-black leading-relaxed font-inter font-light">
+            <p className="text-base sm:text-lg leading-relaxed text-black font-inter font-light mobile-text-base">
               {services.find(s => s.id === activeService)?.content}
             </p>
-            <p className="text-sm text-black/60 italic mt-8 font-inter">Click anywhere to go back</p>
+            <p className="text-sm text-black/60 italic mt-6 sm:mt-8 font-inter mobile-text-sm">Click anywhere to go back</p>
           </div>
         </motion.div>
       )}
@@ -63,7 +63,7 @@ const InteractiveServiceGrid: React.FC<InteractiveServiceGridProps> = ({ service
           <React.Fragment key={service.id}>
             <motion.div
               className={cn(
-                "bg-transparent p-12 md:p-16 lg:p-20 flex items-center justify-center cursor-pointer hover:bg-black/5 transition-all duration-300",
+                "bg-transparent p-8 sm:p-12 md:p-16 lg:p-20 flex items-center justify-center cursor-pointer hover:bg-black/5 transition-all duration-300",
                 "relative", // Position for borders
                 {
                   "border-r border-black": index % 2 === 0 && index !== services.length - 1 && services.length > 1,
@@ -74,7 +74,7 @@ const InteractiveServiceGrid: React.FC<InteractiveServiceGridProps> = ({ service
               whileHover={{ scale: 0.98 }}
               transition={{ duration: 0.2 }}
             >
-              <h3 className="text-2xl md:text-3xl font-medium text-black text-center tracking-tight font-inter">
+              <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-black text-center tracking-tight font-inter">
                 {service.title}
               </h3>
             </motion.div>

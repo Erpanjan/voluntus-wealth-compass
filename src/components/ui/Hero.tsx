@@ -31,26 +31,26 @@ const Hero: React.FC<HeroProps> = ({
       bgClasses[background],
       className
     )}>
-      <div className="container-custom relative z-10 flex flex-col justify-center py-16 md:py-20">
+      <div className="container-custom relative z-10 flex flex-col justify-center py-12 sm:py-16 md:py-20">
         <div className="max-w-3xl mx-auto px-4 md:px-0">
-          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-5 md:mb-6 tracking-tight animate-fade-in text-center">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 md:mb-6 tracking-tight animate-fade-in text-center">
             {title}
           </h1>
           
           {subtitle && (
-            <p className="text-base sm:text-lg md:text-xl text-[#666666] font-light mb-8 md:mb-10 animate-fade-in max-w-2xl mx-auto text-center">
+            <p className="text-base sm:text-lg md:text-xl text-[#666666] font-light mb-6 md:mb-10 animate-fade-in max-w-2xl mx-auto text-center mobile-text-base">
               {subtitle}
             </p>
           )}
           
           {collaboration && (
-            <p className="text-sm text-[#666666] italic mb-6 md:mb-8 animate-fade-in">
+            <p className="text-sm text-[#666666] italic mb-5 md:mb-8 animate-fade-in mobile-text-sm">
               {collaboration}
             </p>
           )}
           
           {children && (
-            <div className="mt-8 md:mt-10 animate-fade-in">
+            <div className="mt-6 md:mt-10 animate-fade-in">
               {children}
             </div>
           )}

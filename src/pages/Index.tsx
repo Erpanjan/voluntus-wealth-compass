@@ -19,10 +19,10 @@ const Index = () => {
       background: "light" as const,
       content: (
         <>
-          <p className="mb-3">
+          <p className="mb-3 mobile-text-base">
             Managing your wealth shouldn't feel like placing bets in a game where the odds are stacked against you. But for many, that's exactly what it is: guesswork, conflicting advice, and a constant fear of making the wrong move.
           </p>
-          <p className="mb-4">
+          <p className="mb-4 mobile-text-base">
             It is time for a strategic and systematic approach to financial success.
           </p>
           <Button 
@@ -43,10 +43,10 @@ const Index = () => {
       background: "light" as const,
       content: (
         <>
-          <p className="mb-3">
+          <p className="mb-3 mobile-text-base">
             Investing can feel overwhelming—endless strategies, intricate products, and expensive fees. But does it really need to be this way?
           </p>
-          <p className="mb-4">
+          <p className="mb-4 mobile-text-base">
             Complexity provides only marginal value and oftentimes drives up the cost, while simplicity delivers clarity and confidence.
           </p>
           <Button 
@@ -67,10 +67,10 @@ const Index = () => {
       background: "light" as const,
       content: (
         <>
-          <p className="mb-3">
+          <p className="mb-3 mobile-text-base">
             Everywhere you turn, you're bombarded with financial advice, all telling you what to do with your money. But most of this 'advice' comes with a catch: it's incentivized to get you to trade, transact, and eventually buy products.
           </p>
-          <p className="mb-4">
+          <p className="mb-4 mobile-text-base">
             Commission-based advice is not in your best interest, so we offer a subscription-based service.
           </p>
           <Button 
@@ -91,10 +91,10 @@ const Index = () => {
       background: "light" as const,
       content: (
         <>
-          <p className="mb-3">
+          <p className="mb-3 mobile-text-base">
             Investment products are so much accessible, but what happens after the purchase? Once decisions are made, people are often left navigating the market volatility on their own.
           </p>
-          <p className="mb-4">
+          <p className="mb-4 mobile-text-base">
             Purchasing a product is only the start of the journey, what matters is what comes after the purchase.
           </p>
           <Button 

@@ -40,7 +40,7 @@ const Section: React.FC<SectionProps> = ({
 
   return (
     <section id={id} className={cn(
-      carouselItem ? 'py-3 md:py-6' : 'min-h-[70vh] md:min-h-screen py-10 md:py-16',
+      carouselItem ? 'py-3 md:py-6' : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16',
       'flex flex-col justify-center overflow-hidden relative',
       bgClasses[background],
       className
@@ -49,7 +49,7 @@ const Section: React.FC<SectionProps> = ({
         {(title || subtitle) && (
           <div 
             className={cn(
-              'mb-6 md:mb-12', 
+              'mb-5 sm:mb-6 md:mb-12', 
               titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
             )}
             data-section-header="true"
@@ -69,7 +69,7 @@ const Section: React.FC<SectionProps> = ({
             {subtitle && (
               <p 
                 className={cn(
-                  "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in",
+                  "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in mobile-text-base",
                   subtitleClassName,
                   background === 'dark' ? 'text-white/70' : 'text-[#666666]'
                 )}
