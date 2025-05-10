@@ -9,7 +9,7 @@ const Contact = () => {
       {/* Hero Section */}
       <Hero 
         title="Join Our Waitlist" 
-        subtitle="Be among the first to experience our financial services when we launch" 
+        subtitle="Be among the first to experience our service when we launch" 
       />
 
       {/* Waitlist Form Section */}
