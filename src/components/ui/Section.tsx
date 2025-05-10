@@ -40,7 +40,7 @@ const Section: React.FC<SectionProps> = ({
 
   return (
     <section id={id} className={cn(
-      carouselItem ? 'py-0' : 'min-h-screen py-12 md:py-16',
+      carouselItem ? 'py-4 md:py-6' : 'min-h-screen py-12 md:py-16',
       'flex flex-col justify-center overflow-hidden relative',
       bgClasses[background],
       className
@@ -49,7 +49,7 @@ const Section: React.FC<SectionProps> = ({
         {(title || subtitle) && (
           <div 
             className={cn(
-              carouselItem ? 'mb-6' : 'mb-12', 
+              'mb-12', 
               titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
             )}
             data-section-header="true" // Add a data attribute to make it easier to target
@@ -78,7 +78,7 @@ const Section: React.FC<SectionProps> = ({
             )}
           </div>
         )}
-        <div className={cn("flex-grow flex flex-col items-center justify-center w-full", contentClassName)} data-section-content="true">
+        <div className={cn("flex-grow flex flex-col items-center justify-start w-full", contentClassName)} data-section-content="true">
           {children}
         </div>
       </div>
