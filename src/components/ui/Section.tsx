@@ -10,6 +10,9 @@ interface SectionProps {
   className?: string;
   innerClassName?: string;
   carouselItem?: boolean;
+  title?: string;
+  subtitle?: string;
+  titleCentered?: boolean;
 }
 
 const Section: React.FC<SectionProps> = ({
@@ -18,7 +21,10 @@ const Section: React.FC<SectionProps> = ({
   background = 'light',
   className,
   innerClassName,
-  carouselItem = false
+  carouselItem = false,
+  title,
+  subtitle,
+  titleCentered = false
 }) => {
   const isMobile = useIsMobile();
   
@@ -54,6 +60,21 @@ const Section: React.FC<SectionProps> = ({
           innerClassName
         )}
       >
+        {/* Render title and subtitle if provided */}
+        {(title || subtitle) && (
+          <div className={cn("mb-8 sm:mb-10 md:mb-12", titleCentered ? "text-center" : "")}>
+            {title && (
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-3">
+                {title}
+              </h2>
+            )}
+            {subtitle && (
+              <p className="text-base sm:text-lg text-gray-600 max-w-3xl">
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
         {children}
       </div>
     </section>
