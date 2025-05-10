@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -8,6 +7,7 @@ import ContentCard from '@/components/ContentCard';
 import WaitlistForm from '@/components/WaitlistForm';
 import { Button } from '@/components/ui/button';
 import SectionCarousel from '@/components/SectionCarousel';
+import { cn } from '@/lib/utils';
 
 const Index = () => {
   // Define the carousel sections
@@ -18,12 +18,12 @@ const Index = () => {
       background: "light" as const,
       content: (
         <Section id="gambling" background="light" carouselItem={true}>
-          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
-            <div className="space-y-8 animate-fade-in-up">
-              <h2 className="text-2xl font-semibold text-black tracking-tight">
+          <div className="grid md:grid-cols-1 gap-6 sm:gap-12 items-start max-w-3xl mx-auto">
+            <div className="space-y-4 sm:space-y-6 mobile-text-container">
+              <h2 className="text-xl sm:text-2xl font-semibold text-black tracking-tight line-height-tight">
                 Tired of Feeling Like You're Gambling With Your Money?
               </h2>
-              <div className="space-y-6 text-[#9F9EA1] text-lg font-light">
+              <div className="space-y-3 sm:space-y-6 text-[#9F9EA1] text-base sm:text-lg">
                 <p>
                   Managing your wealth shouldn't feel like placing bets in a game where the odds are stacked against you. But for many, that's exactly what it is: guesswork, conflicting advice, and a constant fear of making the wrong move.
                 </p>
@@ -34,7 +34,7 @@ const Index = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-8"
+                className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-4 sm:mt-6"
               >
                 <Link to="/services" className="inline-flex items-center">
                   How We Can Help <ArrowRight size={18} className="ml-2" />
@@ -51,12 +51,12 @@ const Index = () => {
       background: "light" as const,
       content: (
         <Section id="complicated" background="light" carouselItem={true}>
-          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
-            <div className="space-y-8">
-              <h2 className="text-2xl font-semibold text-black tracking-tight">
+          <div className="grid md:grid-cols-1 gap-6 sm:gap-12 items-start max-w-3xl mx-auto">
+            <div className="space-y-4 sm:space-y-6 mobile-text-container">
+              <h2 className="text-xl sm:text-2xl font-semibold text-black tracking-tight line-height-tight">
                 Does Managing Your Wealth Have to Be So Complicated and Expensive?
               </h2>
-              <div className="space-y-6 text-[#9F9EA1] text-lg font-light">
+              <div className="space-y-3 sm:space-y-6 text-[#9F9EA1] text-base sm:text-lg">
                 <p>
                   Investing can feel overwhelming—endless strategies, intricate products, and expensive fees. But does it really need to be this way?
                 </p>
@@ -67,7 +67,7 @@ const Index = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-black/80 hover:bg-black text-white transition-all duration-300"
+                className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-4 sm:mt-6"
               >
                 <Link to="/services" className="inline-flex items-center">
                   How We Can Help <ArrowRight size={18} className="ml-2" />
@@ -84,12 +84,12 @@ const Index = () => {
       background: "light" as const,
       content: (
         <Section id="best-interest" background="light" carouselItem={true}>
-          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
-            <div className="space-y-8">
-              <h2 className="text-2xl font-semibold text-black tracking-tight">
+          <div className="grid md:grid-cols-1 gap-6 sm:gap-12 items-start max-w-3xl mx-auto">
+            <div className="space-y-4 sm:space-y-6 mobile-text-container">
+              <h2 className="text-xl sm:text-2xl font-semibold text-black tracking-tight line-height-tight">
                 Can Financial Advice Ever Be in Your Best Interest?
               </h2>
-              <div className="space-y-6 text-[#9F9EA1] text-lg font-light">
+              <div className="space-y-3 sm:space-y-6 text-[#9F9EA1] text-base sm:text-lg">
                 <p>
                   Everywhere you turn, you're bombarded with financial advice, all telling you what to do with your money. But most of this 'advice' comes with a catch: it's incentivized to get you to trade, transact, and eventually buy products.
                 </p>
@@ -100,7 +100,7 @@ const Index = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-black/80 hover:bg-black text-white transition-all duration-300"
+                className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-4 sm:mt-6"
               >
                 <Link to="/services" className="inline-flex items-center">
                   How We Can Help <ArrowRight size={18} className="ml-2" />
@@ -117,12 +117,12 @@ const Index = () => {
       background: "light" as const,
       content: (
         <Section id="accountability" background="light" carouselItem={true}>
-          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
-            <div className="space-y-8">
-              <h2 className="text-2xl font-semibold text-black tracking-tight">
+          <div className="grid md:grid-cols-1 gap-6 sm:gap-12 items-start max-w-3xl mx-auto">
+            <div className="space-y-4 sm:space-y-6 mobile-text-container">
+              <h2 className="text-xl sm:text-2xl font-semibold text-black tracking-tight line-height-tight">
                 Does Investing End Once the Product is Purchased?
               </h2>
-              <div className="space-y-6 text-[#9F9EA1] text-lg font-light">
+              <div className="space-y-3 sm:space-y-6 text-[#9F9EA1] text-base sm:text-lg">
                 <p>
                   Investment products are so much accessible, but what happens after the purchase? Once decisions are made, people are often left navigating the market volatility on their own.
                 </p>
@@ -133,7 +133,7 @@ const Index = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-black/80 hover:bg-black text-white transition-all duration-300"
+                className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-4 sm:mt-6"
               >
                 <Link to="/services" className="inline-flex items-center">
                   How We Can Help <ArrowRight size={18} className="ml-2" />
@@ -168,7 +168,7 @@ const Index = () => {
       </Hero>
 
       {/* Updated Section background to white while keeping content in light gray */}
-      <Section id="how-we-can-help" background="white" className="py-10 md:py-12">
+      <Section id="how-we-can-help" background="white" className="py-6 md:py-12">
         <div className="min-h-[60vh] md:min-h-[65vh] h-auto">
           <SectionCarousel sections={carouselSections} />
         </div>
