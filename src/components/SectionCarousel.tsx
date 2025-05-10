@@ -66,11 +66,11 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
 
   return (
     <div className="relative h-full flex flex-col">
-      {/* Redesigned header section - title with navigation dots next to it */}
+      {/* Redesigned header section - title with navigation numbers next to it */}
       <div className="flex justify-between items-center mb-10 mt-6">
         <h2 className="text-3xl md:text-4xl font-semibold">How We Can Help</h2>
         
-        {/* Navigation dots moved next to title */}
+        {/* Navigation numbers replaced dots */}
         <div className="flex gap-3 items-center">
           {sections.map((section, index) => (
             <Button
@@ -78,14 +78,16 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
               variant="ghost"
               size="sm"
               className={cn(
-                "w-3 h-3 p-0 rounded-full transition-all duration-300",
+                "w-6 h-6 p-0 flex items-center justify-center rounded-full transition-all duration-300",
                 current === index 
-                  ? "bg-black scale-110" 
-                  : "bg-gray-300 hover:bg-gray-400"
+                  ? "font-bold text-black" 
+                  : "text-gray-400 font-normal hover:text-gray-600"
               )}
               onClick={() => scrollToSection(index)}
               aria-label={`Go to section ${index + 1}`}
-            />
+            >
+              {index + 1}
+            </Button>
           ))}
         </div>
       </div>
@@ -122,7 +124,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
         </Carousel>
       </div>
       
-      {/* Section indicator */}
+      {/* Section indicator with numbers */}
       <div className="flex justify-center mt-6 gap-2">
         {sections.map((_, index) => (
           <button
