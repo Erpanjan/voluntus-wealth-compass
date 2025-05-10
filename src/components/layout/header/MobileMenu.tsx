@@ -29,6 +29,7 @@ const MobileMenu = ({
         size="icon"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         aria-label="Toggle Menu"
+        className="h-12 w-12 p-0"
       >
         {isMenuOpen ? <X size={24} className="text-[#333333]" /> : <Menu size={24} className="text-[#333333]" />}
       </Button>

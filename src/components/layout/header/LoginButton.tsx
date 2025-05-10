@@ -11,7 +11,7 @@ const LoginButton = ({ handleLoginClick, isMobile = false }: LoginButtonProps) =
     return (
       <button 
         onClick={handleLoginClick}
-        className="text-[#666666] hover:text-[#333333] text-xs border border-[#666666] hover:border-[#333333] rounded-full px-4 py-1 transition-all duration-300 ease-in-out hover:bg-black/5"
+        className="text-[#666666] hover:text-[#333333] text-sm border border-[#666666] hover:border-[#333333] rounded-full px-5 py-2 transition-all duration-300 ease-in-out hover:bg-black/5 touch-manipulation"
         aria-label="Login to client portal"
       >
         LOGIN

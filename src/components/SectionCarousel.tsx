@@ -59,22 +59,27 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
   // Pause autoplay when interacting
   const handleMouseEnter = useCallback(() => setAutoplayPaused(true), []);
   const handleMouseLeave = useCallback(() => setAutoplayPaused(false), []);
+  const handleTouch = useCallback(() => setAutoplayPaused(true), []);
+  const handleTouchEnd = useCallback(() => {
+    // Resume after short delay to allow for completing the tap
+    setTimeout(() => setAutoplayPaused(false), 3000);
+  }, []);
 
   return (
     <div className="relative h-full flex flex-col">
-      {/* Redesigned header section - title with navigation numbers next to it */}
-      <div className="flex justify-between items-center mb-10 mt-6">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold">What We Can Help</h2>
+      {/* Redesigned header section for better mobile accessibility */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-10 mt-4 sm:mt-6 px-4 sm:px-0">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 sm:mb-0">What We Can Help</h2>
         
-        {/* Navigation numbers replaced dots */}
-        <div className="flex gap-3 items-center">
+        {/* Navigation numbers replaced dots - with larger touch targets */}
+        <div className="flex gap-2 sm:gap-3 items-center">
           {sections.map((section, index) => (
             <Button 
               key={section.id} 
               variant="ghost" 
               size="sm" 
               className={cn(
-                "w-6 h-6 p-0 flex items-center justify-center rounded-full transition-all duration-300", 
+                "w-10 h-10 p-0 flex items-center justify-center rounded-full transition-all duration-300 touch-manipulation", 
                 current === index ? "font-bold text-black" : "text-gray-400 font-normal hover:text-gray-600"
               )} 
               onClick={() => scrollToSection(index)} 
@@ -90,8 +95,8 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
         className="relative h-full flex-1" 
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave}
-        onTouchStart={handleMouseEnter} 
-        onTouchEnd={handleMouseLeave}
+        onTouchStart={handleTouch} 
+        onTouchEnd={handleTouchEnd}
       >
         <Carousel 
           setApi={setApi} 
@@ -106,15 +111,16 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
           <CarouselContent className="h-full">
             {sections.map((section, index) => (
               <CarouselItem key={section.id} className="basis-full h-full flex items-center">
-                <div className="w-full h-full max-h-[500px] p-6 bg-[#F1F1F1] rounded-lg shadow-sm overflow-y-auto">
+                <div className="w-full h-full max-h-[500px] p-4 sm:p-6 bg-[#F1F1F1] rounded-lg shadow-sm overflow-y-auto">
                   {section.content}
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
 
-          <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16" />
-          <CarouselNext className="hidden md:flex -right-12 lg:-right-16" />
+          {/* Larger touch targets for carousel navigation on mobile */}
+          <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-10 w-10" />
+          <CarouselNext className="hidden md:flex -right-12 lg:-right-16 h-10 w-10" />
         </Carousel>
       </div>
     </div>

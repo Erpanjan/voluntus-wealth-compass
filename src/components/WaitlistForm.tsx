@@ -77,8 +77,8 @@ const WaitlistForm: React.FC = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto px-4 md:px-0">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-4">
+      <div className="text-center mb-8 md:mb-12">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-3 md:mb-4">
           Join the Waitlist
         </h2>
         <p className="text-gray-600">
@@ -86,7 +86,7 @@ const WaitlistForm: React.FC = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 w-full">
+      <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div className="space-y-1.5">
             <Input
@@ -97,7 +97,8 @@ const WaitlistForm: React.FC = () => {
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
+              aria-label="First name"
             />
           </div>
 
@@ -110,7 +111,8 @@ const WaitlistForm: React.FC = () => {
               value={formData.lastName}
               onChange={handleChange}
               required
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
+              aria-label="Last name"
             />
           </div>
         </div>
@@ -124,7 +126,8 @@ const WaitlistForm: React.FC = () => {
             value={formData.contactType}
             onChange={handleChange}
             required
-            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
+            aria-label="Contact type"
           />
         </div>
 
@@ -137,7 +140,8 @@ const WaitlistForm: React.FC = () => {
             value={formData.contact}
             onChange={handleChange}
             required
-            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
+            aria-label="Contact information"
           />
         </div>
 
@@ -150,6 +154,7 @@ const WaitlistForm: React.FC = () => {
             onChange={handleChange}
             rows={4}
             className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 bg-transparent focus:ring-0 focus:outline-none resize-none placeholder:text-gray-500 text-base md:text-sm"
+            aria-label="Message (optional)"
           />
         </div>
 
@@ -157,13 +162,13 @@ const WaitlistForm: React.FC = () => {
           <Button 
             type="submit" 
             disabled={isSubmitting}
-            className="w-full bg-black/80 hover:bg-black text-white font-normal py-6 rounded-none"
+            className="w-full bg-black/80 hover:bg-black text-white font-normal py-6 rounded-none min-h-[56px] touch-manipulation"
           >
             {isSubmitting ? 'Submitting...' : 'Join Waitlist'}
           </Button>
         </div>
         
-        <p className="text-xs text-center text-gray-500 mt-4">
+        <p className="text-xs text-center text-gray-500 mt-4 px-2">
           By clicking "Join Waitlist", I authorize Voluntus Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.
         </p>
       </form>

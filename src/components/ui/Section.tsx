@@ -11,10 +11,10 @@ interface SectionProps {
   className?: string;
   titleCentered?: boolean;
   background?: 'white' | 'light' | 'dark';
-  carouselItem?: boolean; // New prop for carousel context
-  titleClassName?: string; // New prop for custom title styling
-  subtitleClassName?: string; // New prop for custom subtitle styling
-  contentClassName?: string; // New prop for custom content styling
+  carouselItem?: boolean;
+  titleClassName?: string;
+  subtitleClassName?: string;
+  contentClassName?: string;
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -40,24 +40,24 @@ const Section: React.FC<SectionProps> = ({
 
   return (
     <section id={id} className={cn(
-      carouselItem ? 'py-4 md:py-6' : 'min-h-screen py-12 md:py-16',
+      carouselItem ? 'py-4 md:py-6' : 'min-h-[70vh] md:min-h-screen py-10 md:py-16',
       'flex flex-col justify-center overflow-hidden relative',
       bgClasses[background],
       className
     )}>
-      <div className={cn("container-custom flex flex-col justify-center h-full", carouselItem && "h-full")}>
+      <div className={cn("container-custom flex flex-col justify-center h-full px-4 md:px-6", carouselItem && "h-full")}>
         {(title || subtitle) && (
           <div 
             className={cn(
-              'mb-12', 
+              'mb-8 md:mb-12', 
               titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
             )}
-            data-section-header="true" // Add a data attribute to make it easier to target
+            data-section-header="true"
           >
             {title && (
               <h2 
                 className={cn(
-                  "text-3xl md:text-4xl lg:text-5xl font-semibold mb-8 tracking-tight animate-fade-in",
+                  "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-5 md:mb-8 tracking-tight animate-fade-in",
                   titleClassName,
                   background === 'dark' ? 'text-white' : 'text-[#333333]'
                 )}
@@ -69,7 +69,7 @@ const Section: React.FC<SectionProps> = ({
             {subtitle && (
               <p 
                 className={cn(
-                  "text-lg md:text-xl max-w-2xl animate-fade-in",
+                  "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in",
                   subtitleClassName,
                   background === 'dark' ? 'text-white/70' : 'text-[#666666]'
                 )}

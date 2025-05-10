@@ -12,17 +12,17 @@ interface NavLinksProps {
 const NavLinks = ({ navLinks, isActive, handleNavLinkClick, isMobile = false }: NavLinksProps) => {
   if (isMobile) {
     return (
-      <nav className="flex flex-col space-y-4">
+      <nav className="flex flex-col space-y-4 py-3">
         {navLinks.map((link) => (
           <Link
             key={link.name}
             to={link.path}
             onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
             className={cn(
-              'py-2 text-sm transition-all duration-300',
+              'py-4 text-base transition-all duration-300 flex items-center',
               isActive(link.path) 
-                ? 'font-semibold text-[#333333] border-l-2 border-[#333333] pl-3' 
-                : 'font-normal text-[#666666] hover:text-[#333333] pl-3'
+                ? 'font-semibold text-[#333333] border-l-2 border-[#333333] pl-4' 
+                : 'font-normal text-[#666666] hover:text-[#333333] pl-4'
             )}
           >
             {link.name}
