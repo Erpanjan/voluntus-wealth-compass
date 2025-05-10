@@ -28,7 +28,8 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
     <Link 
       to={`/insight/${id}`}
       className={cn(
-        "block bg-white rounded-xl overflow-hidden transition-all duration-300 group hover:shadow-md",
+        "block bg-white rounded-xl overflow-hidden transition-all duration-300 group",
+        "border border-gray-200 shadow-sm hover:shadow-md",
         className
       )}
     >
