@@ -64,7 +64,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
     <div className="relative h-full flex flex-col">
       {/* Redesigned header section - title with navigation numbers next to it */}
       <div className="flex justify-between items-center mb-10 mt-6">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold">What We Can Help</h2>
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold">What's Included</h2>
         
         {/* Navigation numbers replaced dots */}
         <div className="flex gap-3 items-center">
