@@ -3,9 +3,37 @@ import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ContactForm from '@/components/ContactForm';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import FAQAccordionSection from '@/components/FAQAccordionSection';
 
 const Contact = () => {
+  // FAQ items data
+  const faqItems = [
+    {
+      id: "get-started",
+      title: "How do I get started with Voluntus?",
+      subtitle: "Initial steps",
+      description: "You can get started by filling out our contact form, calling us directly, or scheduling an initial consultation. We'll discuss your financial goals and how we can help you achieve them."
+    },
+    {
+      id: "minimum-investment",
+      title: "What is the minimum investment required?",
+      subtitle: "Investment requirements",
+      description: "We work with clients across a wide range of wealth levels. Our subscription-based model focuses on the complexity of your needs rather than the size of your assets."
+    },
+    {
+      id: "advisor-meetings",
+      title: "How often will I meet with my advisor?",
+      subtitle: "Meeting frequency",
+      description: "We offer regular check-ins based on your preferences and needs. Typically, clients meet with their advisors quarterly, but we're always available when market conditions change or when you have important financial decisions to make."
+    },
+    {
+      id: "cancel-subscription",
+      title: "Can I cancel my subscription service at any time?",
+      subtitle: "Subscription flexibility",
+      description: "Yes, our subscription model is designed to be flexible. You can adjust or cancel your service as your needs change, though we recommend discussing any changes with your advisor to ensure your financial plan remains on track."
+    }
+  ];
+
   return <div className="min-h-screen">
       {/* Hero Section */}
       <Hero title="Contact Us" subtitle="Have questions or ready to start your financial journey? We're here to help." />
@@ -20,37 +48,13 @@ const Contact = () => {
         </div>
       </Section>
 
-      {/* FAQ Section */}
-      <Section title="Frequently Asked Questions" background="light" titleCentered>
-        <div className="max-w-3xl mx-auto space-y-6">
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-lg font-normal mb-2">How do I get started with Voluntus?</h3>
-            <p className="text-voluntus-text-secondary font-light">
-              You can get started by filling out our contact form, calling us directly, or scheduling an initial consultation. We'll discuss your financial goals and how we can help you achieve them.
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-lg font-normal mb-2">What is the minimum investment required?</h3>
-            <p className="text-voluntus-text-secondary font-light">
-              We work with clients across a wide range of wealth levels. Our subscription-based model focuses on the complexity of your needs rather than the size of your assets.
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-lg font-normal mb-2">How often will I meet with my advisor?</h3>
-            <p className="text-voluntus-text-secondary font-light">
-              We offer regular check-ins based on your preferences and needs. Typically, clients meet with their advisors quarterly, but we're always available when market conditions change or when you have important financial decisions to make.
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-lg font-normal mb-2">Can I cancel my subscription service at any time?</h3>
-            <p className="text-voluntus-text-secondary font-light">
-              Yes, our subscription model is designed to be flexible. You can adjust or cancel your service as your needs change, though we recommend discussing any changes with your advisor to ensure your financial plan remains on track.
-            </p>
-          </div>
-        </div>
+      {/* FAQ Section - Updated to use FAQAccordionSection */}
+      <Section background="light">
+        <FAQAccordionSection 
+          title="Frequently Asked Questions" 
+          subtitle="Find answers to our most commonly asked questions" 
+          propositions={faqItems}
+        />
       </Section>
     </div>;
 };
