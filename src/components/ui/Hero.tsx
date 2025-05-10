@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface HeroProps {
-  title: string;
+  title?: string; // Make title optional
   subtitle?: string;
   className?: string;
   children?: ReactNode;
