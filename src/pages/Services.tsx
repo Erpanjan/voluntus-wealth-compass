@@ -1,10 +1,11 @@
+
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import FeatureCardGrid from '@/components/FeatureCardGrid';
 import TabContent from '@/components/TabContent';
 import ContactForm from '@/components/ContactForm';
-import SplitScreenValueSection from '@/components/SplitScreenValueSection';
+import FAQAccordionSection from '@/components/FAQAccordionSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -104,10 +105,10 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* Value Propositions - Using the new SplitScreenValueSection component */}
+      {/* Value Propositions - Replace with FAQAccordionSection */}
       <div id="principles">
-        <SplitScreenValueSection 
-          title="Our Value Propositions" 
+        <FAQAccordionSection 
+          title="Why Choose Us" 
           subtitle="What sets us apart" 
           propositions={valuePropositionItems}
         />
