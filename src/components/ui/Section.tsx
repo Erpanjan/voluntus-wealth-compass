@@ -57,7 +57,7 @@ const Section: React.FC<SectionProps> = ({
             {title && (
               <h2 
                 className={cn(
-                  "text-3xl md:text-4xl lg:text-5xl font-bold mb-8 tracking-tight animate-fade-in",
+                  "text-3xl md:text-4xl lg:text-5xl font-semibold mb-8 tracking-tight animate-fade-in",
                   titleClassName,
                   background === 'dark' ? 'text-white' : 'text-[#333333]'
                 )}
