@@ -4,6 +4,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { ArrowRight } from 'lucide-react';
 
 type SectionData = {
   id: string;
@@ -64,57 +65,83 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
   const handleMouseLeave = useCallback(() => setAutoplayPaused(false), []);
 
   return (
-    <div 
-      className="relative h-full"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleMouseEnter}
-      onTouchEnd={handleMouseLeave}
-    >
-      <Carousel
-        setApi={setApi}
-        className="w-full h-full"
-        opts={{
-          align: "start",
-          loop: true,
-          skipSnaps: false,
-          dragFree: false,
-        }}
+    <div className="relative h-full flex flex-col">
+      {/* Enhanced title section */}
+      <div className="text-center mb-8 mt-6">
+        <h2 className="text-3xl md:text-4xl font-semibold mb-2">How We Can Help</h2>
+        <div className="w-20 h-1 bg-black mx-auto"></div>
+      </div>
+      
+      <div 
+        className="relative h-full flex-1"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleMouseEnter}
+        onTouchEnd={handleMouseLeave}
       >
-        {/* Navigation numbers moved to top */}
-        <div className="absolute left-0 top-12 w-full z-10 flex justify-center">
-          <div className="flex gap-3 items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2">
+        {/* Navigation dots moved to bottom and enhanced */}
+        <div className="absolute bottom-4 left-0 w-full z-10 flex justify-center">
+          <div className="flex gap-3 items-center">
             {sections.map((section, index) => (
               <Button
                 key={section.id}
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  "min-w-8 h-8 rounded-full p-0 transition-all duration-300 ease-in-out",
+                  "w-3 h-3 p-0 rounded-full transition-all duration-300",
                   current === index 
-                    ? "bg-black text-white" 
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                    ? "bg-black scale-110" 
+                    : "bg-gray-300 hover:bg-gray-400"
                 )}
                 onClick={() => scrollToSection(index)}
                 aria-label={`Go to section ${index + 1}`}
-              >
-                {index + 1}
-              </Button>
+              />
             ))}
           </div>
         </div>
         
-        <CarouselContent className="h-full">
-          {sections.map((section, index) => (
-            <CarouselItem key={section.id} className="basis-full h-full flex items-center">
-              {section.content}
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+        <Carousel
+          setApi={setApi}
+          className="w-full h-full"
+          opts={{
+            align: "start",
+            loop: true,
+            skipSnaps: false,
+            dragFree: false,
+          }}
+        >
+          <CarouselContent className="h-full">
+            {sections.map((section, index) => (
+              <CarouselItem key={section.id} className="basis-full h-full flex items-center">
+                <div className="w-full h-full p-6 bg-white rounded-lg shadow-sm">
+                  {section.content}
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
 
-        <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16" />
-        <CarouselNext className="hidden md:flex -right-12 lg:-right-16" />
-      </Carousel>
+          <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16" />
+          <CarouselNext className="hidden md:flex -right-12 lg:-right-16" />
+        </Carousel>
+      </div>
+      
+      {/* Section indicator */}
+      <div className="flex justify-center mt-6 gap-2">
+        {sections.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => scrollToSection(index)}
+            className={cn(
+              "text-sm px-2 py-1 transition-all duration-300",
+              current === index 
+                ? "font-semibold text-black border-b-2 border-black" 
+                : "text-gray-500 hover:text-gray-800"
+            )}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

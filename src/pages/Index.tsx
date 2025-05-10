@@ -18,7 +18,7 @@ const Index = () => {
       background: "light" as const,
       content: (
         <Section id="gambling" background="light" carouselItem={true}>
-          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto pt-16">
+          <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
             <div className="space-y-8 animate-fade-in-up">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
                 Tired of Feeling Like You're Gambling With Your Money?
@@ -167,10 +167,12 @@ const Index = () => {
         </div>
       </Hero>
 
-      {/* Carousel Sections */}
-      <div className="min-h-screen">
-        <SectionCarousel sections={carouselSections} />
-      </div>
+      {/* Enhanced Carousel Section with a clear title */}
+      <Section id="how-we-can-help" background="white" className="py-16">
+        <div className="min-h-[80vh]">
+          <SectionCarousel sections={carouselSections} />
+        </div>
+      </Section>
 
       {/* Contact Form Section */}
       <Section id="contact" background="light">

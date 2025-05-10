@@ -77,4 +77,14 @@
   .content-fade-transition {
     transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out; /* reduced from 0.15s to 0.1s */
   }
+  
+  /* Card hover effect animation */
+  .card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
 }
