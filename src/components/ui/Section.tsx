@@ -48,7 +48,7 @@ const Section: React.FC<SectionProps> = ({
       id={id}
       className={cn(
         getBgColor(),
-        carouselItem ? '' : 'py-8 sm:py-10 md:py-16 lg:py-20',
+        carouselItem ? '' : 'py-6 sm:py-8 md:py-12 lg:py-16',
         className
       )}
     >
@@ -60,16 +60,22 @@ const Section: React.FC<SectionProps> = ({
           innerClassName
         )}
       >
-        {/* Render title and subtitle if provided */}
+        {/* Render title and subtitle if provided - with improved mobile scaling */}
         {(title || subtitle) && (
-          <div className={cn("mb-8 sm:mb-10 md:mb-12", titleCentered ? "text-center" : "")}>
+          <div className={cn("mb-6 sm:mb-8 md:mb-10", titleCentered ? "text-center" : "")}>
             {title && (
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-3">
+              <h2 className={cn(
+                "font-semibold mb-2.5 sm:mb-3", 
+                isMobile ? "mobile-heading-lg text-balance" : "text-2xl sm:text-3xl md:text-4xl"
+              )}>
                 {title}
               </h2>
             )}
             {subtitle && (
-              <p className="text-base sm:text-lg text-gray-600 max-w-3xl">
+              <p className={cn(
+                "max-w-3xl text-gray-600", 
+                isMobile ? "mobile-body-text text-balance" : "text-base sm:text-lg"
+              )}>
                 {subtitle}
               </p>
             )}

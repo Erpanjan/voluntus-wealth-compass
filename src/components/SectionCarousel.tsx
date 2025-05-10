@@ -67,9 +67,14 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
 
   return (
     <div className="relative h-full flex flex-col">
-      {/* Redesigned header section for better mobile accessibility */}
+      {/* Redesigned header section with improved text scaling */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 mt-2 sm:mt-4 px-4 sm:px-0">
-        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold mb-3 sm:mb-0">What We Can Help</h2>
+        <h2 className={cn(
+          "font-semibold mb-3 sm:mb-0",
+          isMobile ? "mobile-heading-lg text-balance" : "text-xl sm:text-2xl md:text-3xl lg:text-4xl"
+        )}>
+          What We Can Help
+        </h2>
         
         {/* Navigation numbers with larger touch targets */}
         <div className="flex gap-1.5 sm:gap-2 items-center">

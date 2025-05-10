@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 const WaitlistForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -84,11 +85,20 @@ const WaitlistForm: React.FC = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto px-4 md:px-0">
-      <div className="text-center mb-8 md:mb-12">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-3 md:mb-4">
+      <div className={cn(
+        "text-center mb-6 sm:mb-8 md:mb-10",
+        isMobile ? "px-1" : ""
+      )}>
+        <h2 className={cn(
+          "font-semibold mb-2 sm:mb-3 md:mb-4 text-balance",
+          isMobile ? "mobile-heading-lg" : "text-2xl sm:text-3xl md:text-4xl"
+        )}>
           Join the Waitlist
         </h2>
-        <p className="text-gray-600">
+        <p className={cn(
+          "text-gray-600",
+          isMobile ? "mobile-body-text" : "text-base"
+        )}>
           Be the first to know when we launch
         </p>
       </div>
@@ -104,7 +114,10 @@ const WaitlistForm: React.FC = () => {
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
+              className={cn(
+                "border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500",
+                isMobile ? "text-base" : "text-base md:text-sm"
+              )}
               aria-label="First name"
             />
           </div>
@@ -118,7 +131,10 @@ const WaitlistForm: React.FC = () => {
               value={formData.lastName}
               onChange={handleChange}
               required
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
+              className={cn(
+                "border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500",
+                isMobile ? "text-base" : "text-base md:text-sm"
+              )}
               aria-label="Last name"
             />
           </div>
@@ -133,7 +149,10 @@ const WaitlistForm: React.FC = () => {
             value={formData.contactType}
             onChange={handleChange}
             required
-            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm text-ellipsis"
+            className={cn(
+              "border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-ellipsis",
+              isMobile ? "text-base" : "text-base md:text-sm"
+            )}
             aria-label="Contact type"
           />
         </div>
@@ -147,7 +166,10 @@ const WaitlistForm: React.FC = () => {
             value={formData.contact}
             onChange={handleChange}
             required
-            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
+            className={cn(
+              "border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500",
+              isMobile ? "text-base" : "text-base md:text-sm"
+            )}
             aria-label="Contact information"
           />
         </div>
@@ -160,7 +182,10 @@ const WaitlistForm: React.FC = () => {
             value={formData.message}
             onChange={handleChange}
             rows={4}
-            className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 bg-transparent focus:ring-0 focus:outline-none resize-none placeholder:text-gray-500 text-base md:text-sm"
+            className={cn(
+              "w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 bg-transparent focus:ring-0 focus:outline-none resize-none placeholder:text-gray-500",
+              isMobile ? "text-base" : "text-base md:text-sm"
+            )}
             aria-label="Message (optional)"
           />
         </div>
@@ -175,7 +200,10 @@ const WaitlistForm: React.FC = () => {
           </Button>
         </div>
         
-        <p className="text-xs text-center text-gray-500 mt-4 px-2">
+        <p className={cn(
+          "text-center text-gray-500 mt-4 px-2 text-balance",
+          isMobile ? "mobile-text-sm" : "text-xs"
+        )}>
           By clicking "Join Waitlist", I authorize Voluntus Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.
         </p>
       </form>

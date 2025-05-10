@@ -40,10 +40,18 @@ const FeatureCardGrid: React.FC<FeatureCardGridProps> = ({ services }) => {
                 )}
               </div>
               
-              {/* Content - bottom */}
+              {/* Content - bottom - with improved text scaling */}
               <CardContent className="p-5 md:p-8">
-                <h3 className="text-xl md:text-2xl font-semibold mb-3 md:mb-4 break-words">{feature.title}</h3>
-                <p className="text-[#666666] leading-relaxed text-sm md:text-base break-words">
+                <h3 className={cn(
+                  "font-semibold mb-3 md:mb-4 break-words text-balance",
+                  isMobile ? "mobile-heading-md" : "text-xl md:text-2xl"
+                )}>
+                  {feature.title}
+                </h3>
+                <p className={cn(
+                  "text-[#666666] leading-relaxed break-words text-balance",
+                  isMobile ? "mobile-body-text" : "text-sm md:text-base"
+                )}>
                   {feature.id === 'investment' 
                     ? "Contrary to popular belief, you don't need great wealth or expertise to build a diversified portfolio. Our Financial Planning Policy offers personalized, cost-effective strategies with global reach—helping you navigate market shifts confidently and stay aligned with your long-term goals."
                     : feature.content}

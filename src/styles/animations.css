@@ -36,27 +36,74 @@
   touch-action: manipulation;
 }
 
-/* Mobile text handling */
+/* Mobile text handling with improved scaling */
 .text-ellipsis {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
 
-/* Mobile content visibility */
+/* Mobile content visibility with improved text scaling */
 @media (max-width: 640px) {
   .mobile-content {
     max-height: none !important;
     overflow: visible !important;
   }
   
+  /* Enhanced text adjustments with more granular control */
   .mobile-text-adjust {
-    font-size: 95%;
+    font-size: 92%;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+  
+  /* Heading size adjustments for better mobile ratio */
+  .mobile-heading-xl {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    line-height: 1.2;
+  }
+  
+  .mobile-heading-lg {
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    line-height: 1.25;
+  }
+  
+  .mobile-heading-md {
+    font-size: clamp(1.125rem, 3.5vw, 1.5rem);
+    line-height: 1.3;
+  }
+  
+  /* Body text adjustments */
+  .mobile-body-text {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+  
+  /* Small text adjustments */
+  .mobile-text-sm {
+    font-size: 0.875rem;
     line-height: 1.4;
   }
   
   /* Fix for text cutoff issues */
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+/* Added intermediate breakpoints for smoother scaling */
+@media (min-width: 641px) and (max-width: 768px) {
+  .mobile-text-adjust {
+    font-size: 94%;
+    line-height: 1.4;
+  }
+  
+  .mobile-heading-xl {
+    font-size: clamp(1.75rem, 5.5vw, 2.25rem);
+  }
+  
+  .mobile-heading-lg {
+    font-size: clamp(1.375rem, 4.5vw, 1.875rem);
   }
 }
