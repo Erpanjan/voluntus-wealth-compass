@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -17,32 +18,23 @@ const Index = () => {
       title: "Tired of Feeling Like You're Gambling With Your Money?",
       background: "light" as const,
       content: (
-        <Section id="gambling" background="light" carouselItem={true}>
-          <div className="grid md:grid-cols-1 gap-6 sm:gap-12 items-start max-w-3xl mx-auto">
-            <div className="space-y-4 sm:space-y-6 mobile-text-container">
-              <h2 className="text-xl sm:text-2xl font-semibold text-black tracking-tight line-height-tight">
-                Tired of Feeling Like You're Gambling With Your Money?
-              </h2>
-              <div className="space-y-3 sm:space-y-6 text-[#9F9EA1] text-base sm:text-lg">
-                <p>
-                  Managing your wealth shouldn't feel like placing bets in a game where the odds are stacked against you. But for many, that's exactly what it is: guesswork, conflicting advice, and a constant fear of making the wrong move.
-                </p>
-                <p>
-                  It is time for a strategic and systematic approach to financial success.
-                </p>
-              </div>
-              <Button 
-                asChild 
-                size="lg"
-                className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-4 sm:mt-6"
-              >
-                <Link to="/services" className="inline-flex items-center">
-                  How We Can Help <ArrowRight size={18} className="ml-2" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </Section>
+        <>
+          <p className="mb-3">
+            Managing your wealth shouldn't feel like placing bets in a game where the odds are stacked against you. But for many, that's exactly what it is: guesswork, conflicting advice, and a constant fear of making the wrong move.
+          </p>
+          <p className="mb-4">
+            It is time for a strategic and systematic approach to financial success.
+          </p>
+          <Button 
+            asChild 
+            size="lg"
+            className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-2"
+          >
+            <Link to="/services" className="inline-flex items-center">
+              How We Can Help <ArrowRight size={18} className="ml-2" />
+            </Link>
+          </Button>
+        </>
       )
     },
     {
@@ -50,32 +42,23 @@ const Index = () => {
       title: "Does Managing Your Wealth Have to Be So Complicated and Expensive?",
       background: "light" as const,
       content: (
-        <Section id="complicated" background="light" carouselItem={true}>
-          <div className="grid md:grid-cols-1 gap-6 sm:gap-12 items-start max-w-3xl mx-auto">
-            <div className="space-y-4 sm:space-y-6 mobile-text-container">
-              <h2 className="text-xl sm:text-2xl font-semibold text-black tracking-tight line-height-tight">
-                Does Managing Your Wealth Have to Be So Complicated and Expensive?
-              </h2>
-              <div className="space-y-3 sm:space-y-6 text-[#9F9EA1] text-base sm:text-lg">
-                <p>
-                  Investing can feel overwhelming—endless strategies, intricate products, and expensive fees. But does it really need to be this way?
-                </p>
-                <p>
-                  Complexity provides only marginal value and oftentimes drives up the cost, while simplicity delivers clarity and confidence.
-                </p>
-              </div>
-              <Button 
-                asChild 
-                size="lg"
-                className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-4 sm:mt-6"
-              >
-                <Link to="/services" className="inline-flex items-center">
-                  How We Can Help <ArrowRight size={18} className="ml-2" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </Section>
+        <>
+          <p className="mb-3">
+            Investing can feel overwhelming—endless strategies, intricate products, and expensive fees. But does it really need to be this way?
+          </p>
+          <p className="mb-4">
+            Complexity provides only marginal value and oftentimes drives up the cost, while simplicity delivers clarity and confidence.
+          </p>
+          <Button 
+            asChild 
+            size="lg"
+            className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-2"
+          >
+            <Link to="/services" className="inline-flex items-center">
+              How We Can Help <ArrowRight size={18} className="ml-2" />
+            </Link>
+          </Button>
+        </>
       )
     },
     {
@@ -83,32 +66,23 @@ const Index = () => {
       title: "Can Financial Advice Ever Be in Your Best Interest?",
       background: "light" as const,
       content: (
-        <Section id="best-interest" background="light" carouselItem={true}>
-          <div className="grid md:grid-cols-1 gap-6 sm:gap-12 items-start max-w-3xl mx-auto">
-            <div className="space-y-4 sm:space-y-6 mobile-text-container">
-              <h2 className="text-xl sm:text-2xl font-semibold text-black tracking-tight line-height-tight">
-                Can Financial Advice Ever Be in Your Best Interest?
-              </h2>
-              <div className="space-y-3 sm:space-y-6 text-[#9F9EA1] text-base sm:text-lg">
-                <p>
-                  Everywhere you turn, you're bombarded with financial advice, all telling you what to do with your money. But most of this 'advice' comes with a catch: it's incentivized to get you to trade, transact, and eventually buy products.
-                </p>
-                <p>
-                  Commission-based advice is not in your best interest, so we offer a subscription-based service.
-                </p>
-              </div>
-              <Button 
-                asChild 
-                size="lg"
-                className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-4 sm:mt-6"
-              >
-                <Link to="/services" className="inline-flex items-center">
-                  How We Can Help <ArrowRight size={18} className="ml-2" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </Section>
+        <>
+          <p className="mb-3">
+            Everywhere you turn, you're bombarded with financial advice, all telling you what to do with your money. But most of this 'advice' comes with a catch: it's incentivized to get you to trade, transact, and eventually buy products.
+          </p>
+          <p className="mb-4">
+            Commission-based advice is not in your best interest, so we offer a subscription-based service.
+          </p>
+          <Button 
+            asChild 
+            size="lg"
+            className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-2"
+          >
+            <Link to="/services" className="inline-flex items-center">
+              How We Can Help <ArrowRight size={18} className="ml-2" />
+            </Link>
+          </Button>
+        </>
       )
     },
     {
@@ -116,32 +90,23 @@ const Index = () => {
       title: "Does Investing End Once the Product is Purchased?",
       background: "light" as const,
       content: (
-        <Section id="accountability" background="light" carouselItem={true}>
-          <div className="grid md:grid-cols-1 gap-6 sm:gap-12 items-start max-w-3xl mx-auto">
-            <div className="space-y-4 sm:space-y-6 mobile-text-container">
-              <h2 className="text-xl sm:text-2xl font-semibold text-black tracking-tight line-height-tight">
-                Does Investing End Once the Product is Purchased?
-              </h2>
-              <div className="space-y-3 sm:space-y-6 text-[#9F9EA1] text-base sm:text-lg">
-                <p>
-                  Investment products are so much accessible, but what happens after the purchase? Once decisions are made, people are often left navigating the market volatility on their own.
-                </p>
-                <p>
-                  Purchasing a product is only the start of the journey, what matters is what comes after the purchase.
-                </p>
-              </div>
-              <Button 
-                asChild 
-                size="lg"
-                className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-4 sm:mt-6"
-              >
-                <Link to="/services" className="inline-flex items-center">
-                  How We Can Help <ArrowRight size={18} className="ml-2" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </Section>
+        <>
+          <p className="mb-3">
+            Investment products are so much accessible, but what happens after the purchase? Once decisions are made, people are often left navigating the market volatility on their own.
+          </p>
+          <p className="mb-4">
+            Purchasing a product is only the start of the journey, what matters is what comes after the purchase.
+          </p>
+          <Button 
+            asChild 
+            size="lg"
+            className="bg-black/80 hover:bg-black text-white transition-all duration-300 mt-2"
+          >
+            <Link to="/services" className="inline-flex items-center">
+              How We Can Help <ArrowRight size={18} className="ml-2" />
+            </Link>
+          </Button>
+        </>
       )
     }
   ];
@@ -167,9 +132,9 @@ const Index = () => {
         </div>
       </Hero>
 
-      {/* Updated Section background to white while keeping content in light gray */}
+      {/* Updated Section with auto height */}
       <Section id="how-we-can-help" background="white" className="py-6 md:py-12">
-        <div className="min-h-[60vh] md:min-h-[65vh] h-auto">
+        <div className="w-full">
           <SectionCarousel sections={carouselSections} />
         </div>
       </Section>

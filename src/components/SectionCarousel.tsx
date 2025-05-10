@@ -66,9 +66,9 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
   }, []);
 
   return (
-    <div className="relative h-full flex flex-col">
+    <div className="relative flex flex-col w-full">
       {/* Redesigned header section for better mobile accessibility */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-10 mt-4 sm:mt-6 px-4 sm:px-0">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 mt-4 sm:mt-6 px-4 sm:px-0">
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 sm:mb-0">What We Can Help</h2>
         
         {/* Navigation numbers with larger touch targets */}
@@ -92,7 +92,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
       </div>
       
       <div 
-        className="relative flex-1" 
+        className="relative w-full" 
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouch} 
@@ -100,7 +100,7 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
       >
         <Carousel 
           setApi={setApi} 
-          className="w-full h-full" 
+          className="w-full" 
           opts={{
             align: "start",
             loop: true,
@@ -108,18 +108,17 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
             dragFree: false
           }}
         >
-          <CarouselContent className="h-full">
+          <CarouselContent>
             {sections.map((section, index) => (
-              <CarouselItem key={section.id} className="basis-full h-full flex items-center">
-                <div className="w-full h-full min-h-[400px] md:min-h-[450px] p-4 sm:p-6 pb-6 sm:pb-8 bg-[#F1F1F1] rounded-lg shadow-sm overflow-y-auto">
-                  {/* Optimized text container with better spacing for mobile */}
-                  <div className="h-full flex flex-col">
-                    <div className="space-y-4 sm:space-y-8">
+              <CarouselItem key={section.id} className="basis-full">
+                <div className="w-full p-4 sm:p-6 pb-6 sm:pb-8 bg-[#F1F1F1] rounded-lg shadow-sm">
+                  {/* Content container with better mobile layout */}
+                  <div className="flex flex-col">
+                    <div className="space-y-3 sm:space-y-5">
                       <h2 className="text-xl sm:text-2xl font-semibold text-black tracking-tight mb-2 sm:mb-4 line-height-tight">
                         {section.title}
                       </h2>
-                      <div className="space-y-3 sm:space-y-6 text-[#9F9EA1] text-base sm:text-lg">
-                        {/* Content will be rendered here, but with improved styles */}
+                      <div className="space-y-3 sm:space-y-4 text-[#9F9EA1] text-base sm:text-lg mobile-text-container">
                         {section.content}
                       </div>
                     </div>

@@ -51,8 +51,13 @@
 /* Improve mobile readability */
 @media (max-width: 640px) {
   .mobile-text-container p {
-    margin-bottom: 0.75rem;
-    line-height: 1.4;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  
+  .mobile-text-container {
+    overflow-visible;
+    padding-bottom: 80px; /* Ensure space for button */
   }
 }
 
