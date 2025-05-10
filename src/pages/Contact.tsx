@@ -3,7 +3,7 @@ import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ContactForm from '@/components/ContactForm';
-import FAQAccordionSection from '@/components/FAQAccordionSection';
+import SplitScreenValueSection from '@/components/SplitScreenValueSection';
 
 const Contact = () => {
   // FAQ items data
@@ -48,14 +48,12 @@ const Contact = () => {
         </div>
       </Section>
 
-      {/* FAQ Section - Updated to use FAQAccordionSection */}
-      <Section background="light">
-        <FAQAccordionSection 
-          title="Frequently Asked Questions" 
-          subtitle="Find answers to our most commonly asked questions" 
-          propositions={faqItems}
-        />
-      </Section>
+      {/* FAQ Section - Using SplitScreenValueSection instead of FAQAccordionSection */}
+      <SplitScreenValueSection 
+        title="Frequently Asked Questions" 
+        subtitle="Find answers to our most commonly asked questions" 
+        propositions={faqItems}
+      />
     </div>;
 };
 export default Contact;
