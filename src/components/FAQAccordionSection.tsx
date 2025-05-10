@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Plus, Minus } from 'lucide-react';
+import { ChevronDown, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
   Accordion,
@@ -28,7 +28,7 @@ const FAQAccordionSection: React.FC<FAQAccordionSectionProps> = ({
   propositions
 }) => {
   return (
-    <section className="py-16 md:py-24">
+    <section className="py-16 md:py-24 bg-white">
       <div className="container-custom mx-auto px-6 md:px-8 lg:px-0">
         <div className="flex flex-col md:flex-row gap-12 lg:gap-16">
           {/* Left side - Title and subtitle */}
@@ -40,7 +40,7 @@ const FAQAccordionSection: React.FC<FAQAccordionSectionProps> = ({
           {/* Right side - Accordion */}
           <div className="md:w-3/5 lg:w-2/3">
             <Accordion type="single" collapsible className="w-full space-y-4">
-              {propositions.map((prop) => (
+              {propositions.map((prop, index) => (
                 <AccordionItem 
                   key={prop.id} 
                   value={prop.id}
@@ -51,8 +51,6 @@ const FAQAccordionSection: React.FC<FAQAccordionSectionProps> = ({
                       <span className="text-xl font-semibold mb-1">{prop.title}</span>
                       <span className="text-gray-500 font-light text-sm">{prop.subtitle}</span>
                     </div>
-                    <Plus className="h-5 w-5 shrink-0 transition-transform duration-200 data-[state=open]:hidden" />
-                    <Minus className="h-5 w-5 shrink-0 transition-transform duration-200 hidden data-[state=open]:block" />
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-6 pt-0 text-gray-600">
                     {prop.description}
