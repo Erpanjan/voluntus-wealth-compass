@@ -33,7 +33,7 @@ const FAQAccordionSection: React.FC<FAQAccordionSectionProps> = ({
         <div className="flex flex-col md:flex-row gap-12 lg:gap-16">
           {/* Left side - Title and subtitle */}
           <div className="md:w-2/5 lg:w-1/3">
-            <h2 className="text-3xl md:text-4xl font-semibold mb-4">{title}</h2>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4">{title}</h2>
             <p className="text-gray-500">{subtitle}</p>
           </div>
           
