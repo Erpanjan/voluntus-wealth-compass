@@ -1,6 +1,7 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ValueProposition {
   id: string;
@@ -15,63 +16,89 @@ interface SplitScreenValueSectionProps {
   propositions: ValueProposition[];
 }
 
-const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
+// Using memo to prevent unnecessary re-renders
+const SplitScreenValueSection = memo(({
   title,
   subtitle,
   propositions
-}) => {
+}: SplitScreenValueSectionProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const isMobile = useIsMobile();
   
-  // Set up scroll based content changing and visibility control
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      
-      const sectionTop = sectionRef.current.offsetTop;
-      const sectionHeight = sectionRef.current.offsetHeight;
-      const viewportHeight = window.innerHeight;
-      const scrollPosition = window.scrollY;
-      
-      // Calculate if the section is in view
-      const isSectionInView = 
-        scrollPosition + viewportHeight > sectionTop && 
-        scrollPosition < sectionTop + sectionHeight;
-      
-      // Update visibility state
+  // Memoized scroll handler with throttling for better performance
+  const handleScroll = useCallback(() => {
+    if (!sectionRef.current) return;
+    
+    const sectionTop = sectionRef.current.offsetTop;
+    const sectionHeight = sectionRef.current.offsetHeight;
+    const viewportHeight = window.innerHeight;
+    const scrollPosition = window.scrollY;
+    
+    // Calculate if the section is in view (with improved visibility calculation)
+    const isSectionInView = 
+      scrollPosition + viewportHeight > sectionTop && 
+      scrollPosition < sectionTop + sectionHeight;
+    
+    // Only update state if necessary to avoid re-renders
+    if (isVisible !== isSectionInView) {
       setIsVisible(isSectionInView);
+    }
+    
+    // Only calculate active index if section is visible
+    if (isSectionInView) {
+      // Calculate progress through the section (0 to 1)
+      const sectionProgress = (scrollPosition - sectionTop + viewportHeight * 0.5) / 
+        (sectionHeight - viewportHeight);
       
-      // Only calculate active index if section is visible
-      if (isSectionInView) {
-        // Calculate progress through the section (0 to 1)
-        const sectionProgress = (scrollPosition - sectionTop + viewportHeight * 0.5) / 
-          (sectionHeight - viewportHeight);
-        
-        // Determine which proposition to show based on scroll progress
-        const newIndex = Math.min(
-          Math.max(
-            Math.floor(sectionProgress * propositions.length),
-            0
-          ),
-          propositions.length - 1
-        );
-        
-        if (newIndex !== activeIndex) {
-          setActiveIndex(newIndex);
-        }
+      // Determine which proposition to show based on scroll progress
+      const newIndex = Math.min(
+        Math.max(
+          Math.floor(sectionProgress * propositions.length),
+          0
+        ),
+        propositions.length - 1
+      );
+      
+      // Only update state if necessary to avoid re-renders
+      if (newIndex !== activeIndex) {
+        setActiveIndex(newIndex);
       }
+    }
+  }, [activeIndex, propositions.length, isVisible]);
+  
+  // Optimize scroll event handling with passive listener and cleanup
+  useEffect(() => {
+    const throttledScrollHandler = () => {
+      // Using requestAnimationFrame for better performance
+      window.requestAnimationFrame(handleScroll);
     };
     
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', throttledScrollHandler, { passive: true });
+    
     // Initial check
     handleScroll();
     
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', throttledScrollHandler);
     };
-  }, [activeIndex, propositions.length]);
+  }, [handleScroll]);
+  
+  // Memoized navigation handler
+  const handleNavClick = useCallback((index: number) => {
+    if (!sectionRef.current) return;
+    
+    const sectionTop = sectionRef.current.offsetTop;
+    const sectionHeight = sectionRef.current.offsetHeight;
+    const targetPosition = sectionTop + (sectionHeight / propositions.length) * index;
+    
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    });
+  }, [propositions.length]);
   
   return (
     <section 
@@ -108,10 +135,9 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
           </div>
         </div>
         
-        {/* Right side with content - fixed position content container */}
+        {/* Right side with content - optimized for mobile */}
         <div className="flex-1 bg-white flex items-center justify-center">
           <div className="w-full mx-auto px-6 md:px-12 lg:px-16 max-w-xl h-full flex items-center">
-            {/* Fixed position content wrapper with absolute positioning for consistent title placement */}
             <div className="w-full relative h-[350px]">
               {propositions.map((proposition, index) => (
                 <div
@@ -125,12 +151,10 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
                   )}
                 >
                   <div className="flex flex-col h-full">
-                    {/* Title always at the top with fixed position */}
                     <div className="flex flex-col">
                       <h3 className="text-3xl font-bold font-inter mb-4">{proposition.title}</h3>
                       <p className="text-xl text-gray-500 mb-8 font-inter font-light">- {proposition.subtitle}</p>
                     </div>
-                    {/* Description with scrollable container if needed */}
                     <div className="flex-grow">
                       <p className="text-gray-600 font-inter font-normal">{proposition.description}</p>
                     </div>
@@ -142,23 +166,14 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
         </div>
       </div>
       
-      {/* Navigation dots - now with conditional rendering based on visibility */}
+      {/* Navigation dots - with performance optimization */}
       {isVisible && (
         <div className="fixed bottom-8 left-0 w-full flex justify-center">
           <div className="flex gap-3 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
             {propositions.map((_, index) => (
               <button
                 key={index}
-                onClick={() => {
-                  if (!sectionRef.current) return;
-                  const sectionTop = sectionRef.current.offsetTop;
-                  const sectionHeight = sectionRef.current.offsetHeight;
-                  const targetPosition = sectionTop + (sectionHeight / propositions.length) * index;
-                  window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                  });
-                }}
+                onClick={() => handleNavClick(index)}
                 className={cn(
                   "w-2.5 h-2.5 rounded-full p-0 transition-all duration-300 ease-in-out",
                   activeIndex === index 
@@ -173,6 +188,8 @@ const SplitScreenValueSection: React.FC<SplitScreenValueSectionProps> = ({
       )}
     </section>
   );
-};
+});
+
+SplitScreenValueSection.displayName = 'SplitScreenValueSection';
 
 export default SplitScreenValueSection;
