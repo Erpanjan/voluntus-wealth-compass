@@ -1,9 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const WaitlistForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ const WaitlistForm: React.FC = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -75,6 +77,11 @@ const WaitlistForm: React.FC = () => {
     }
   };
 
+  // Contact type placeholder text adjusted for mobile
+  const contactTypePlaceholder = isMobile
+    ? "Contact method (Email, Phone, etc.)"
+    : "Preferred contact avenue (Email, Phone, WeChat, WhatsApp, etc.)";
+
   return (
     <div className="w-full max-w-2xl mx-auto px-4 md:px-0">
       <div className="text-center mb-8 md:mb-12">
@@ -122,11 +129,11 @@ const WaitlistForm: React.FC = () => {
             id="contactType"
             name="contactType"
             type="text"
-            placeholder="Preferred contact avenue (Email, Phone, WeChat, WhatsApp, etc.)"
+            placeholder={contactTypePlaceholder}
             value={formData.contactType}
             onChange={handleChange}
             required
-            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
+            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm text-ellipsis"
             aria-label="Contact type"
           />
         </div>

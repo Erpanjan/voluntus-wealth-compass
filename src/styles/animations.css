@@ -35,3 +35,11 @@
 .touch-manipulation {
   touch-action: manipulation;
 }
+
+/* Mobile text handling */
+.text-ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
