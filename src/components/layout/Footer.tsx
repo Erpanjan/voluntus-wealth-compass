@@ -7,8 +7,8 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-white pt-4 pb-3 border-t border-gray-100">
       <div className="container-custom">
-        {/* Links section with horizontal layout */}
-        <div className="grid grid-cols-3 gap-6 mb-6">
+        {/* Links section */}
+        <div className="flex flex-wrap gap-8 mb-6">
           {/* Company Links */}
           <div className="flex flex-col">
             <div className="grid grid-cols-1 gap-2">
