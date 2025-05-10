@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
@@ -122,24 +121,6 @@ const SectionCarousel: React.FC<SectionCarouselProps> = ({
           <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16" />
           <CarouselNext className="hidden md:flex -right-12 lg:-right-16" />
         </Carousel>
-      </div>
-      
-      {/* Section indicator with numbers */}
-      <div className="flex justify-center mt-6 gap-2">
-        {sections.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => scrollToSection(index)}
-            className={cn(
-              "text-sm px-2 py-1 transition-all duration-300",
-              current === index 
-                ? "font-semibold text-black border-b-2 border-black" 
-                : "text-gray-500 hover:text-gray-800"
-            )}
-          >
-            {index + 1}
-          </button>
-        ))}
       </div>
     </div>
   );
