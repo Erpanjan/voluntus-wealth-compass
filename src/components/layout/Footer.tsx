@@ -7,40 +7,6 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-white pt-4 pb-3 border-t border-gray-100">
       <div className="container-custom">
-        {/* Links section */}
-        <div className="flex flex-wrap gap-8 mb-6">
-          {/* Company Links */}
-          <div className="flex flex-col">
-            <div className="grid grid-cols-1 gap-2">
-              <Link to="/about" className="text-xs text-gray-500 hover:text-black transition-colors font-light">ABOUT</Link>
-              <Link to="/services" className="text-xs text-gray-500 hover:text-black transition-colors font-light">SERVICES</Link>
-              <Link to="/insight" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSIGHT</Link>
-              <Link to="/event" className="text-xs text-gray-500 hover:text-black transition-colors font-light">EVENT</Link>
-              <Link to="/contact" className="text-xs text-gray-500 hover:text-black transition-colors font-light">CONTACT US</Link>
-            </div>
-          </div>
-
-          {/* Social Links */}
-          <div className="flex flex-col">
-            <div className="grid grid-cols-1 gap-2">
-              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">LINKEDIN</a>
-              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">INSTAGRAM</a>
-              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">FACEBOOK</a>
-              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">X</a>
-              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">WECHAT</a>
-            </div>
-          </div>
-
-          {/* Legal Links */}
-          <div className="flex flex-col">
-            <div className="grid grid-cols-1 gap-2">
-              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">TERMS OF USE</a>
-              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRIVACY & COOKIES</a>
-              <a href="#" className="text-xs text-gray-500 hover:text-black transition-colors font-light">PRESS</a>
-            </div>
-          </div>
-        </div>
-
         <Separator className="my-3 bg-gray-100" />
         
         {/* Footer Bottom Section */}
