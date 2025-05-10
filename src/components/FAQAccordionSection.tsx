@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
   Accordion,
@@ -51,7 +51,8 @@ const FAQAccordionSection: React.FC<FAQAccordionSectionProps> = ({
                       <span className="text-xl font-semibold mb-1">{prop.title}</span>
                       <span className="text-gray-500 font-light text-sm">{prop.subtitle}</span>
                     </div>
-                    <Plus className="h-5 w-5 shrink-0 transition-transform duration-200" />
+                    <Plus className="h-5 w-5 shrink-0 transition-transform duration-200 data-[state=open]:hidden" />
+                    <Minus className="h-5 w-5 shrink-0 transition-transform duration-200 hidden data-[state=open]:block" />
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-6 pt-0 text-gray-600">
                     {prop.description}
