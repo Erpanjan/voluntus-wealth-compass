@@ -150,8 +150,8 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <Hero 
-        title="We're There With You Every Step of The Way"
-        subtitle="Access professional investment management service through a simple monthly subscription, with reduced costs and service tailored to you."
+        title="Access professional investment management service through a simple monthly subscription, with reduced costs and service tailored to you."
+        subtitle="We're there with you every step of the way."
         background="transparent"
       >
         <div className="flex flex-wrap justify-center gap-4">
