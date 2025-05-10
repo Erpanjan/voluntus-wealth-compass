@@ -1,4 +1,5 @@
 
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -56,7 +57,7 @@
   }
   
   .mobile-text-container {
-    overflow-visible;
+    overflow: visible;
     padding-bottom: 80px; /* Ensure space for button */
   }
 }
