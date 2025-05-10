@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -53,7 +52,7 @@ const Index = () => {
         <Section id="complicated" background="light" carouselItem={true}>
           <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
             <div className="space-y-8">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
+              <h2 className="text-2xl font-semibold text-black tracking-tight">
                 Does Managing Your Wealth Have to Be So Complicated and Expensive?
               </h2>
               <div className="space-y-6 text-[#9F9EA1] text-lg font-light">
@@ -86,7 +85,7 @@ const Index = () => {
         <Section id="best-interest" background="light" carouselItem={true}>
           <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
             <div className="space-y-8">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
+              <h2 className="text-2xl font-semibold text-black tracking-tight">
                 Can Financial Advice Ever Be in Your Best Interest?
               </h2>
               <div className="space-y-6 text-[#9F9EA1] text-lg font-light">
@@ -119,7 +118,7 @@ const Index = () => {
         <Section id="accountability" background="light" carouselItem={true}>
           <div className="grid md:grid-cols-1 gap-16 items-start max-w-3xl mx-auto">
             <div className="space-y-8">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black tracking-tight">
+              <h2 className="text-2xl font-semibold text-black tracking-tight">
                 Does Investing End Once the Product is Purchased?
               </h2>
               <div className="space-y-6 text-[#9F9EA1] text-lg font-light">
