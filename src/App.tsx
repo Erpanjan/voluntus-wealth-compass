@@ -27,7 +27,24 @@ import ArticleEditor from "./pages/admin/ArticleEditor";
 import ContactManagement from "./pages/admin/ContactManagement";
 import UserAccountManagement from "./pages/admin/UserAccountManagement";
 
-const queryClient = new QueryClient();
+// Create a new QueryClient with optimized error handling for production
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      // Add global error handling for queries
+      onError: (error) => {
+        console.error('Query error:', error);
+      }
+    },
+    mutations: {
+      // Add global error handling for mutations
+      onError: (error) => {
+        console.error('Mutation error:', error);
+      }
+    }
+  }
+});
 
 // Private route component for React Router v6 that checks for real Supabase session
 const PrivateRoute = ({ children }) => {
@@ -130,144 +147,180 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <TooltipProvider>
-        <div className="flex flex-col min-h-screen">
-          {/* Header only on non-dashboard/non-onboarding/non-questionnaire/non-admin pages */}
-          <Routes>
-            <Route path="/dashboard" element={null} />
-            <Route path="/onboarding" element={null} />
-            <Route path="/welcome" element={null} />
-            <Route path="/pending-approval" element={null} />
-            <Route path="/questionnaire" element={null} />
-            <Route path="/admin/*" element={null} />
-            <Route path="*" element={<Header />} />
-          </Routes>
-          
-          <main className="flex-grow">
+const App = () => {
+  // Add basic error handling
+  const [appError, setAppError] = useState(null);
+
+  // Root error handler
+  useEffect(() => {
+    const handleGlobalError = (event) => {
+      console.error('Unhandled error:', event.error);
+      setAppError(event.error?.message || 'An unexpected error occurred');
+      // Prevent the blank white screen by showing at least some content
+      event.preventDefault();
+    };
+
+    window.addEventListener('error', handleGlobalError);
+    
+    return () => {
+      window.removeEventListener('error', handleGlobalError);
+    };
+  }, []);
+
+  if (appError) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center p-4 text-center">
+        <h1 className="text-xl font-semibold mb-2">Something went wrong</h1>
+        <p className="mb-4 text-gray-600">{appError}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-black text-white rounded-md"
+        >
+          Refresh Page
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <TooltipProvider>
+          <div className="flex flex-col min-h-screen">
+            {/* Header only on non-dashboard/non-onboarding/non-questionnaire/non-admin pages */}
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/insight" element={<Insight />} />
-              <Route path="/insight/:id" element={<ArticleDetail />} />
-              <Route path="/event" element={<Event />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/login" element={<Login />} />
-              <Route 
-                path="/welcome" 
-                element={
-                  <PrivateRoute>
-                    <Welcome />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/pending-approval" 
-                element={
-                  <PrivateRoute>
-                    <PendingApproval />
-                  </PrivateRoute>
-                }
-              />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <PrivateRoute>
-                    <Dashboard />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/onboarding" 
-                element={
-                  <PrivateRoute>
-                    <Onboarding />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/questionnaire" 
-                element={
-                  <PrivateRoute>
-                    <Questionnaire />
-                  </PrivateRoute>
-                } 
-              />
-              
-              {/* Admin Routes */}
-              <Route 
-                path="/admin/dashboard" 
-                element={
-                  <AdminRoute>
-                    <AdminDashboard />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/articles" 
-                element={
-                  <AdminRoute>
-                    <ArticlesManagement />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/articles/create" 
-                element={
-                  <AdminRoute>
-                    <ArticleEditor />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/articles/edit/:id" 
-                element={
-                  <AdminRoute>
-                    <ArticleEditor />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/contact" 
-                element={
-                  <AdminRoute>
-                    <ContactManagement />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/user-account" 
-                element={
-                  <AdminRoute>
-                    <UserAccountManagement />
-                  </AdminRoute>
-                } 
-              />
-              
-              <Route path="*" element={<NotFound />} />
+              <Route path="/dashboard" element={null} />
+              <Route path="/onboarding" element={null} />
+              <Route path="/welcome" element={null} />
+              <Route path="/pending-approval" element={null} />
+              <Route path="/questionnaire" element={null} />
+              <Route path="/admin/*" element={null} />
+              <Route path="*" element={<Header />} />
             </Routes>
-          </main>
-          
-          {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire/non-admin pages */}
-          <Routes>
-            <Route path="/dashboard" element={null} />
-            <Route path="/onboarding" element={null} />
-            <Route path="/welcome" element={null} />
-            <Route path="/pending-approval" element={null} />
-            <Route path="/login" element={null} />
-            <Route path="/questionnaire" element={null} />
-            <Route path="/admin/*" element={null} />
-            <Route path="*" element={<Footer />} />
-          </Routes>
-        </div>
-        <Toaster />
-        <Sonner />
-      </TooltipProvider>
-    </BrowserRouter>
-  </QueryClientProvider>
-);
+            
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/insight" element={<Insight />} />
+                <Route path="/insight/:id" element={<ArticleDetail />} />
+                <Route path="/event" element={<Event />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/login" element={<Login />} />
+                <Route 
+                  path="/welcome" 
+                  element={
+                    <PrivateRoute>
+                      <Welcome />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/pending-approval" 
+                  element={
+                    <PrivateRoute>
+                      <PendingApproval />
+                    </PrivateRoute>
+                  }
+                />
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/onboarding" 
+                  element={
+                    <PrivateRoute>
+                      <Onboarding />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/questionnaire" 
+                  element={
+                    <PrivateRoute>
+                      <Questionnaire />
+                    </PrivateRoute>
+                  } 
+                />
+                
+                {/* Admin Routes */}
+                <Route 
+                  path="/admin/dashboard" 
+                  element={
+                    <AdminRoute>
+                      <AdminDashboard />
+                    </AdminRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/articles" 
+                  element={
+                    <AdminRoute>
+                      <ArticlesManagement />
+                    </AdminRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/articles/create" 
+                  element={
+                    <AdminRoute>
+                      <ArticleEditor />
+                    </AdminRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/articles/edit/:id" 
+                  element={
+                    <AdminRoute>
+                      <ArticleEditor />
+                    </AdminRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/contact" 
+                  element={
+                    <AdminRoute>
+                      <ContactManagement />
+                    </AdminRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/user-account" 
+                  element={
+                    <AdminRoute>
+                      <UserAccountManagement />
+                    </AdminRoute>
+                  } 
+                />
+                
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            
+            {/* Footer only on non-dashboard/non-onboarding/non-login/non-questionnaire/non-admin pages */}
+            <Routes>
+              <Route path="/dashboard" element={null} />
+              <Route path="/onboarding" element={null} />
+              <Route path="/welcome" element={null} />
+              <Route path="/pending-approval" element={null} />
+              <Route path="/login" element={null} />
+              <Route path="/questionnaire" element={null} />
+              <Route path="/admin/*" element={null} />
+              <Route path="*" element={<Footer />} />
+            </Routes>
+          </div>
+          <Toaster />
+          <Sonner />
+        </TooltipProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

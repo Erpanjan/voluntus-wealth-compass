@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voluntus - Static Fallback</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+      background-color: #f8f8f8;
+    }
+    .container {
+      max-width: 600px;
+      padding: 40px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    h1 {
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    p {
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .button {
+      display: inline-block;
+      background: #333;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Voluntus</h1>
+    <p>If you're seeing this page, there might be an issue with the main application. Please try accessing the main page:</p>
+    <a href="/" class="button">Go to Homepage</a>
+    
+    <div style="margin-top: 30px;">
+      <p><small>This is a static fallback page to help with debugging.</small></p>
+    </div>
+  </div>
+</body>
+</html>
