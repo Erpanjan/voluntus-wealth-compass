@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -32,15 +33,19 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      // Add global error handling for queries
-      onError: (error) => {
-        console.error('Query error:', error);
+      // Updated error handling for TanStack Query v5
+      meta: {
+        onError: (error) => {
+          console.error('Query error:', error);
+        }
       }
     },
     mutations: {
-      // Add global error handling for mutations
-      onError: (error) => {
-        console.error('Mutation error:', error);
+      // Updated error handling for TanStack Query v5
+      meta: {
+        onError: (error) => {
+          console.error('Mutation error:', error);
+        }
       }
     }
   }
