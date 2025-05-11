@@ -17,6 +17,10 @@ export default defineConfig(({ mode }) => ({
     sourcemap: true,
     // Output more verbose information during build
     reportCompressedSize: true,
+    // Target modern browsers but ensure Safari compatibility
+    target: ['es2015', 'safari11'],
+    // Polyfill for older browsers if needed
+    polyfillDynamicImport: true,
   },
   plugins: [
     react(),
@@ -28,4 +32,8 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Add specific browser compatibility targets
+  esbuild: {
+    target: ['es2015', 'safari11'],
+  }
 }));

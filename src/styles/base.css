@@ -31,14 +31,25 @@
 
   * {
     @apply border-border;
+    /* Safari specific fix for box-sizing */
+    -webkit-box-sizing: border-box;
   }
 
   html {
     scroll-behavior: smooth;
+    /* Safari smooth scrolling */
+    -webkit-overflow-scrolling: touch;
   }
 
   body {
     @apply bg-white text-[#333333] font-inter antialiased;
+    /* Safari text rendering fix */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Prevent horizontal overflows */
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -63,5 +74,33 @@
 
   p {
     @apply leading-relaxed;
+  }
+
+  /* Safari specific flex fixes */
+  .flex {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .flex-col {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+
+  /* Fix min-height for Safari */
+  .min-h-screen {
+    min-height: 100vh;
+    /* iOS Safari height fix */
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* iOS height fix */
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: -webkit-fill-available;
   }
 }
