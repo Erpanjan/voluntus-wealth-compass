@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Check, Phone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -84,8 +83,7 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
 
   return (
     <form onSubmit={handleRegisterSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="register-phone" className="text-gray-600 font-light">Phone Number</Label>
+      <div className="space-y-4">
         <div className="relative">
           <Phone size={18} className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400" />
           <Input
@@ -96,14 +94,11 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
             onChange={handleRegisterChange}
             placeholder="+1 (555) 123-4567"
             required
-            className="border-0 border-b border-gray-200 rounded-none px-0 pl-7 py-2 focus:ring-0 font-light"
+            className="border-0 border-b border-gray-200 rounded-none px-0 pl-7 py-3 focus:ring-0 font-light"
           />
         </div>
-        <p className="text-xs text-gray-500 mt-1">Format: +[country code][number], e.g., +12345678901</p>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="register-password-phone" className="text-gray-600 font-light">Password</Label>
+        <p className="text-xs text-gray-500 -mt-2">Format: +[country code][number], e.g., +12345678901</p>
+        
         <div className="relative">
           <Input
             id="register-password-phone"
@@ -111,14 +106,14 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
             type={showPassword ? "text" : "password"}
             value={registerData.password}
             onChange={handleRegisterChange}
-            placeholder="••••••••"
+            placeholder="Password"
             required
-            className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
+            className="border-0 border-b border-gray-200 rounded-none px-0 py-3 pr-10 focus:ring-0 font-light"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-0 top-1/2 -translate-y-1/2"
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-1"
             tabIndex={-1}
           >
             {showPassword ? (
@@ -128,10 +123,7 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
             )}
           </button>
         </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="register-confirm-password-phone" className="text-gray-600 font-light">Confirm Password</Label>
+        
         <div className="relative">
           <Input
             id="register-confirm-password-phone"
@@ -139,28 +131,29 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
             type={showConfirmPassword ? "text" : "password"}
             value={registerData.confirmPassword}
             onChange={handleRegisterChange}
-            placeholder="••••••••"
+            placeholder="Confirm password"
             required
-            className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
+            className="border-0 border-b border-gray-200 rounded-none px-0 py-3 pr-10 focus:ring-0 font-light"
           />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-0 top-1/2 -translate-y-1/2"
-            tabIndex={-1}
-          >
-            {showConfirmPassword ? (
-              <EyeOff size={18} className="text-gray-400" />
-            ) : (
-              <Eye size={18} className="text-gray-400" />
-            )}
-          </button>
-          
-          {registerData.password && registerData.confirmPassword && 
-            registerData.password === registerData.confirmPassword && (
-              <Check size={18} className="absolute right-8 top-1/2 -translate-y-1/2 text-green-500" />
-            )
-          }
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+            {registerData.password && registerData.confirmPassword && 
+              registerData.password === registerData.confirmPassword && (
+                <Check size={18} className="text-green-500" />
+              )
+            }
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="p-1"
+              tabIndex={-1}
+            >
+              {showConfirmPassword ? (
+                <EyeOff size={18} className="text-gray-400" />
+              ) : (
+                <Eye size={18} className="text-gray-400" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

@@ -53,19 +53,14 @@ const Header = () => {
           />
         )}
 
-        {/* Login button and mobile menu */}
-        <div className={cn(
-          "flex items-center",
-          // Center the login button when on login page
-          isOnLoginPage && "mx-auto"
-        )}>
-          <LoginButton 
-            handleLoginClick={handleLoginClick} 
-            isActive={isActive('/login')}
-          />
-          
-          {/* Hide mobile menu on login page */}
-          {!isOnLoginPage && (
+        {/* Login button and mobile menu - hide login button on login page */}
+        {!isOnLoginPage && (
+          <div className="flex items-center">
+            <LoginButton 
+              handleLoginClick={handleLoginClick} 
+              isActive={isActive('/login')}
+            />
+            
             <MobileMenu
               isMenuOpen={isMenuOpen}
               setIsMenuOpen={setIsMenuOpen}
@@ -75,8 +70,8 @@ const Header = () => {
               handleLoginClick={handleLoginClick}
               isLoginActive={isActive('/login')}
             />
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile menu container - hide on login page */}

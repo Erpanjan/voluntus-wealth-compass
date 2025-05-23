@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
@@ -110,22 +109,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegularLogin, isAdminMode = fal
 
   return (
     <form onSubmit={handleLoginSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-gray-600 font-light">Email</Label>
+      <div className="space-y-4">
         <Input
           id="email"
           name="email"
           type="email"
           value={loginData.email}
           onChange={handleLoginChange}
-          placeholder="Enter your email address"
+          placeholder="Email address"
           required
-          className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
+          className="border-0 border-b border-gray-200 rounded-none px-0 py-3 focus:ring-0 font-light"
         />
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="password" className="text-gray-600 font-light">Password</Label>
         <div className="relative">
           <Input
             id="password"
@@ -133,14 +128,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegularLogin, isAdminMode = fal
             type={showPassword ? "text" : "password"}
             value={loginData.password}
             onChange={handleLoginChange}
-            placeholder="••••••••"
+            placeholder="Password"
             required
-            className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
+            className="border-0 border-b border-gray-200 rounded-none px-0 py-3 pr-10 focus:ring-0 font-light"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-0 top-1/2 -translate-y-1/2"
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-1"
             tabIndex={-1}
           >
             {showPassword ? (

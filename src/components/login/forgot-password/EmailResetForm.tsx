@@ -2,7 +2,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 interface EmailResetFormProps {
   email: string;
@@ -19,19 +18,16 @@ const EmailResetForm: React.FC<EmailResetFormProps> = ({
 }) => {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="forgot-email" className="text-gray-600 font-light">Email Address</Label>
-        <Input
-          id="forgot-email"
-          name="email"
-          type="email"
-          value={email}
-          onChange={onChange}
-          placeholder="Enter your registered email"
-          required
-          className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
-        />
-      </div>
+      <Input
+        id="forgot-email"
+        name="email"
+        type="email"
+        value={email}
+        onChange={onChange}
+        placeholder="Registered email address"
+        required
+        className="border-0 border-b border-gray-200 rounded-none px-0 py-3 focus:ring-0 font-light"
+      />
 
       <Button 
         type="submit" 

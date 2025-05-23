@@ -1,7 +1,7 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -89,22 +89,18 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
 
   return (
     <form onSubmit={handleRegisterSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="register-email" className="text-gray-600 font-light">Email</Label>
+      <div className="space-y-4">
         <Input
           id="register-email"
           name="email"
           type="email"
           value={registerData.email}
           onChange={handleRegisterChange}
-          placeholder="Enter your email address"
+          placeholder="Email address"
           required
-          className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
+          className="border-0 border-b border-gray-200 rounded-none px-0 py-3 focus:ring-0 font-light"
         />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="register-password" className="text-gray-600 font-light">Password</Label>
+        
         <div className="relative">
           <Input
             id="register-password"
@@ -112,14 +108,14 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
             type={showPassword ? "text" : "password"}
             value={registerData.password}
             onChange={handleRegisterChange}
-            placeholder="••••••••"
+            placeholder="Password"
             required
-            className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
+            className="border-0 border-b border-gray-200 rounded-none px-0 py-3 pr-10 focus:ring-0 font-light"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-0 top-1/2 -translate-y-1/2"
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-1"
             tabIndex={-1}
           >
             {showPassword ? (
@@ -129,10 +125,7 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
             )}
           </button>
         </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="register-confirm-password" className="text-gray-600 font-light">Confirm Password</Label>
+        
         <div className="relative">
           <Input
             id="register-confirm-password"
@@ -140,28 +133,29 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
             type={showConfirmPassword ? "text" : "password"}
             value={registerData.confirmPassword}
             onChange={handleRegisterChange}
-            placeholder="••••••••"
+            placeholder="Confirm password"
             required
-            className="border-0 border-b border-gray-200 rounded-none px-0 py-2 focus:ring-0 font-light"
+            className="border-0 border-b border-gray-200 rounded-none px-0 py-3 pr-10 focus:ring-0 font-light"
           />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-0 top-1/2 -translate-y-1/2"
-            tabIndex={-1}
-          >
-            {showConfirmPassword ? (
-              <EyeOff size={18} className="text-gray-400" />
-            ) : (
-              <Eye size={18} className="text-gray-400" />
-            )}
-          </button>
-          
-          {registerData.password && registerData.confirmPassword && 
-            registerData.password === registerData.confirmPassword && (
-              <Check size={18} className="absolute right-8 top-1/2 -translate-y-1/2 text-green-500" />
-            )
-          }
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+            {registerData.password && registerData.confirmPassword && 
+              registerData.password === registerData.confirmPassword && (
+                <Check size={18} className="text-green-500" />
+              )
+            }
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="p-1"
+              tabIndex={-1}
+            >
+              {showConfirmPassword ? (
+                <EyeOff size={18} className="text-gray-400" />
+              ) : (
+                <Eye size={18} className="text-gray-400" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
