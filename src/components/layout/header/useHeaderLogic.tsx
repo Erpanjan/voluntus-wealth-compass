@@ -1,6 +1,7 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { debounce } from '@/lib/utils';
 
 export const useHeaderLogic = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,45 +10,48 @@ export const useHeaderLogic = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isActive = (path: string) => {
+  const isActive = useCallback((path: string) => {
     return location.pathname === path;
-  };
+  }, [location.pathname]);
 
-  // Optimized scroll handler with throttling
+  // Optimized scroll handler with debouncing
   useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const offset = window.scrollY;
-          setScrolled(offset > 50);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
+    const handleScroll = debounce(() => {
+      const offset = window.scrollY;
+      setScrolled(offset > 50);
+    }, 10);
 
+    // Use passive listener for better performance
     window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Initial check
+    handleScroll();
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  // Add effect to scroll to top when route changes - optimized
+  // Scroll to top when route changes
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
 
-  const navLinks = [
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
+  const navLinks = useMemo(() => [
     { name: 'HOME', path: '/' },
     { name: 'SERVICE & PRICING', path: '/services' },
     { name: 'INSIGHT', path: '/insight' },
     { name: 'EVENT', path: '/event' },
     { name: 'ABOUT', path: '/about' },
     { name: 'CONTACT US', path: '/contact' },
-  ];
+  ], []);
 
-  const handleNavLinkClick = (e: React.MouseEvent, isActivePath: boolean) => {
+  const handleNavLinkClick = useCallback((e: React.MouseEvent, isActivePath: boolean) => {
     if (isActivePath) {
       e.preventDefault();
       window.scrollTo({
@@ -60,30 +64,36 @@ export const useHeaderLogic = () => {
     if (isMenuOpen) {
       setIsMenuOpen(false);
     }
-  };
+  }, [isMenuOpen]);
   
-  const handleLoginClick = (e: React.MouseEvent) => {
+  const handleLoginClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     
     // Check if user is already on the login page
     if (location.pathname === '/login') {
-      // Do nothing if already on login page
       return;
     }
     
     setIsAnimating(true);
     
-    // Add a fade-out animation to the entire page with scale effect
+    // Add transition class for smooth navigation
     document.body.classList.add('login-transition');
     
-    // Navigate after animation begins for perceived performance improvement
-    window.requestAnimationFrame(() => {
-      // Use a shorter timeout for faster transition
+    // Navigate with a slight delay for animation
+    requestAnimationFrame(() => {
       setTimeout(() => {
         navigate('/login');
-      }, 300); // Reduced from 600ms
+        setIsAnimating(false);
+      }, 200);
     });
-  };
+  }, [location.pathname, navigate]);
+
+  // Clean up animation class when component unmounts
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('login-transition');
+    };
+  }, []);
 
   return {
     isMenuOpen,
@@ -92,6 +102,7 @@ export const useHeaderLogic = () => {
     isActive,
     navLinks,
     handleNavLinkClick,
-    handleLoginClick
+    handleLoginClick,
+    isAnimating
   };
 };
