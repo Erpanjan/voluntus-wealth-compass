@@ -1,36 +1,35 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect, memo, Suspense } from "react";
+import { useState, useEffect, memo, Suspense, lazy } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { useNetworkStatus } from "./hooks/useNetworkStatus";
 
 // Lazy load components for better performance
-const Header = memo(() => import("./components/layout/Header").then(m => ({ default: m.default })));
-const Footer = memo(() => import("./components/layout/Footer").then(m => ({ default: m.default })));
-const Index = memo(() => import("./pages/Index").then(m => ({ default: m.default })));
-const Services = memo(() => import("./pages/Services").then(m => ({ default: m.default })));
-const Insight = memo(() => import("./pages/Insight").then(m => ({ default: m.default })));
-const ArticleDetail = memo(() => import("./pages/ArticleDetail").then(m => ({ default: m.default })));
-const Event = memo(() => import("./pages/Event").then(m => ({ default: m.default })));
-const About = memo(() => import("./pages/About").then(m => ({ default: m.default })));
-const Contact = memo(() => import("./pages/Contact").then(m => ({ default: m.default })));
-const Login = memo(() => import("./pages/Login").then(m => ({ default: m.default })));
-const NotFound = memo(() => import("./pages/NotFound").then(m => ({ default: m.default })));
-const Dashboard = memo(() => import("./pages/Dashboard").then(m => ({ default: m.default })));
-const Onboarding = memo(() => import("./pages/Onboarding").then(m => ({ default: m.default })));
-const Welcome = memo(() => import("./pages/Welcome").then(m => ({ default: m.default })));
-const PendingApproval = memo(() => import("./pages/PendingApproval").then(m => ({ default: m.default })));
-const Questionnaire = memo(() => import("./pages/Questionnaire").then(m => ({ default: m.default })));
-const AdminDashboard = memo(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.default })));
-const ArticlesManagement = memo(() => import("./pages/admin/ArticlesManagement").then(m => ({ default: m.default })));
-const ArticleEditor = memo(() => import("./pages/admin/ArticleEditor").then(m => ({ default: m.default })));
-const ContactManagement = memo(() => import("./pages/admin/ContactManagement").then(m => ({ default: m.default })));
-const UserAccountManagement = memo(() => import("./pages/admin/UserAccountManagement").then(m => ({ default: m.default })));
+const Header = lazy(() => import("./components/layout/Header"));
+const Footer = lazy(() => import("./components/layout/Footer"));
+const Index = lazy(() => import("./pages/Index"));
+const Services = lazy(() => import("./pages/Services"));
+const Insight = lazy(() => import("./pages/Insight"));
+const ArticleDetail = lazy(() => import("./pages/ArticleDetail"));
+const Event = lazy(() => import("./pages/Event"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Login = lazy(() => import("./pages/Login"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const Welcome = lazy(() => import("./pages/Welcome"));
+const PendingApproval = lazy(() => import("./pages/PendingApproval"));
+const Questionnaire = lazy(() => import("./pages/Questionnaire"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const ArticlesManagement = lazy(() => import("./pages/admin/ArticlesManagement"));
+const ArticleEditor = lazy(() => import("./pages/admin/ArticleEditor"));
+const ContactManagement = lazy(() => import("./pages/admin/ContactManagement"));
+const UserAccountManagement = lazy(() => import("./pages/admin/UserAccountManagement"));
 
 // Optimized QueryClient with better error handling and caching
 const createQueryClient = () => {
