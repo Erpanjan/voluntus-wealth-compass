@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { articleService } from '@/services/article';
+import { articleService } from '@/services/article'; // Fixed import path
 import { Author } from '@/types/article.types';
 import { Attachment } from './useArticleAttachments';
 
