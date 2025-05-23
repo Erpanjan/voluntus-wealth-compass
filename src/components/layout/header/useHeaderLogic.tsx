@@ -7,6 +7,7 @@ export const useHeaderLogic = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -45,6 +46,7 @@ export const useHeaderLogic = () => {
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMenuOpen(false);
+    setIsTransitioning(false);
   }, [location.pathname]);
 
   const navLinks = useMemo(() => [
@@ -79,18 +81,20 @@ export const useHeaderLogic = () => {
       return;
     }
     
+    // Start transition state immediately
+    setIsTransitioning(true);
     setIsAnimating(true);
     
-    // Navigate to login with current location as state
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        navigate('/login', { 
-          state: { from: location },
-          replace: false 
-        });
-        setIsAnimating(false);
-      }, 150);
+    // Navigate immediately to avoid any delay
+    navigate('/login', { 
+      state: { from: location },
+      replace: false 
     });
+    
+    // Clean up animation state after a short delay
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 200);
   }, [location, navigate]);
 
   // Clean up animation class when component unmounts
@@ -109,6 +113,7 @@ export const useHeaderLogic = () => {
     handleNavLinkClick,
     handleLoginClick,
     isAnimating,
-    isOnLoginPage
+    isOnLoginPage,
+    isTransitioning
   };
 };

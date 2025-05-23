@@ -15,7 +15,8 @@ const Header = () => {
     navLinks,
     handleNavLinkClick,
     handleLoginClick,
-    isOnLoginPage
+    isOnLoginPage,
+    isTransitioning
   } = useHeaderLogic();
   
   return (
@@ -29,8 +30,11 @@ const Header = () => {
       )}
     >
       <div className="container-custom py-4 flex justify-between items-center relative">
-        {/* Logo on the left - hide on login page */}
-        {!isOnLoginPage && (
+        {/* Logo on the left - use opacity transition instead of hiding */}
+        <div className={cn(
+          "transition-opacity duration-300 ease-in-out",
+          isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
+        )}>
           <Logo 
             handleNavLinkClick={() => {
               if (isMenuOpen) setIsMenuOpen(false);
@@ -42,25 +46,36 @@ const Header = () => {
               });
             }}
           />
-        )}
+        </div>
 
-        {/* Navigation centered absolutely - hide on login page */}
-        {!isOnLoginPage && (
+        {/* Navigation centered absolutely - use opacity transition */}
+        <div className={cn(
+          "transition-opacity duration-300 ease-in-out",
+          isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
+        )}>
           <NavLinks 
             navLinks={navLinks} 
             isActive={isActive} 
             handleNavLinkClick={(e, isActivePath) => handleNavLinkClick(e, isActivePath)} 
           />
-        )}
+        </div>
 
-        {/* Login button and mobile menu - hide login button on login page */}
-        {!isOnLoginPage && (
-          <div className="flex items-center">
+        {/* Login button and mobile menu - use opacity transition for login button */}
+        <div className="flex items-center">
+          <div className={cn(
+            "transition-opacity duration-300 ease-in-out",
+            isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
+          )}>
             <LoginButton 
               handleLoginClick={handleLoginClick} 
               isActive={isActive('/login')}
             />
-            
+          </div>
+          
+          <div className={cn(
+            "transition-opacity duration-300 ease-in-out",
+            isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
+          )}>
             <MobileMenu
               isMenuOpen={isMenuOpen}
               setIsMenuOpen={setIsMenuOpen}
@@ -71,20 +86,21 @@ const Header = () => {
               isLoginActive={isActive('/login')}
             />
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Mobile menu container - hide on login page */}
-      {!isOnLoginPage && isMenuOpen && (
-        <div className="container-custom lg:hidden pb-6 animate-fade-in">
-          <NavLinks 
-            navLinks={navLinks} 
-            isActive={isActive} 
-            handleNavLinkClick={(e, isActivePath) => handleNavLinkClick(e, isActivePath)} 
-            isMobile={true}
-          />
-        </div>
-      )}
+      {/* Mobile menu container - use opacity transition */}
+      <div className={cn(
+        "container-custom lg:hidden pb-6 transition-opacity duration-300 ease-in-out",
+        isMenuOpen && !isOnLoginPage && !isTransitioning ? "opacity-100 animate-fade-in" : "opacity-0 pointer-events-none",
+      )}>
+        <NavLinks 
+          navLinks={navLinks} 
+          isActive={isActive} 
+          handleNavLinkClick={(e, isActivePath) => handleNavLinkClick(e, isActivePath)} 
+          isMobile={true}
+        />
+      </div>
     </header>
   );
 };
