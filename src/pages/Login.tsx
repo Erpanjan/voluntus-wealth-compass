@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -105,14 +106,14 @@ const Login = () => {
   }
 
   return (
-    <div className={`min-h-screen bg-white py-8 px-4 transition-all duration-300 ease-in-out ${
+    <div className={`min-h-screen flex items-center justify-center bg-white py-8 px-4 transition-all duration-300 ease-in-out ${
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
-      <div className="max-w-md w-full mx-auto bg-white overflow-hidden flex flex-col" style={{ marginTop: '600px' }}>
-        {/* Container with fixed positioning from top */}
-        <div className="relative">
-          {/* Title and admin mode toggle */}
-          <div className="h-16 flex items-center justify-center mb-8">
+      <div className="max-w-md w-full bg-white overflow-hidden flex flex-col">
+        {/* Adjusted container height and positioning for better centering */}
+        <div className="h-[650px] relative">
+          {/* Title and admin mode toggle - positioned with more space from top */}
+          <div className="h-16 flex items-center justify-center absolute top-8 left-0 w-full">
             <AdminToggle 
               isAdminMode={isAdminMode}
               onToggle={handleAdminToggle}
@@ -120,8 +121,8 @@ const Login = () => {
             />
           </div>
 
-          {/* Tabs container */}
-          <div className="w-full">
+          {/* Tabs container with adjusted positioning for better vertical centering */}
+          <div className="absolute top-24 left-0 w-full">
             <LoginTabs 
               isAdminMode={isAdminMode}
               isAnimating={isAnimating}
