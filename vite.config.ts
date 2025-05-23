@@ -22,6 +22,10 @@ export default defineConfig(({ mode }) => ({
     // Polyfill for older browsers if needed
     polyfillDynamicImport: true,
   },
+  // Define global variables for browser compatibility
+  define: {
+    global: 'globalThis',
+  },
   plugins: [
     react(),
     mode === 'development' &&
