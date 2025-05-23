@@ -102,3 +102,46 @@
 .tabs-content-bg {
   background-color: transparent !important;
 }
+
+/* Enhanced Email/Phone tab styling for register and forgot password forms */
+.register-tabs [role="tab"], .forgot-tabs [role="tab"] {
+  @apply relative px-6 py-3 text-center font-medium transition-all duration-300 ease-in-out;
+  @apply text-gray-500 hover:text-gray-700;
+  background: transparent !important;
+  border: none !important;
+  min-height: 48px;
+}
+
+.register-tabs [role="tab"][data-state="active"], .forgot-tabs [role="tab"][data-state="active"] {
+  @apply text-black font-semibold;
+  background: #f8f9fa !important;
+  border-radius: 8px !important;
+}
+
+.register-tabs [role="tab"]:hover, .forgot-tabs [role="tab"]:hover {
+  @apply bg-gray-50;
+  border-radius: 8px;
+}
+
+/* Tab list styling for register and forgot forms */
+.register-tabs [role="tablist"], .forgot-tabs [role="tablist"] {
+  @apply bg-gray-100 p-1 rounded-lg;
+  gap: 4px;
+}
+
+/* Smooth tab content transitions for register and forgot forms */
+.register-tabs [role="tabpanel"], .forgot-tabs [role="tabpanel"] {
+  @apply transition-all duration-300 ease-in-out;
+  opacity: 0;
+  transform: translateY(8px);
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.register-tabs [role="tabpanel"][data-state="active"], .forgot-tabs [role="tabpanel"][data-state="active"] {
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+}

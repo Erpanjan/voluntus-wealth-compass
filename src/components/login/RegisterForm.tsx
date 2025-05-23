@@ -33,41 +33,43 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ isAdminMode = false }) => {
         defaultValue="email" 
         value={registerMethod} 
         onValueChange={(value) => setRegisterMethod(value as 'email' | 'phone')}
-        className="w-full"
+        className="w-full register-tabs"
       >
-        <TabsList className="grid grid-cols-2 w-full bg-transparent mb-4">
-          <TabsTrigger value="email" className="data-[state=active]:bg-gray-100">Email</TabsTrigger>
-          <TabsTrigger value="phone" className="data-[state=active]:bg-gray-100">Phone</TabsTrigger>
+        <TabsList className="grid grid-cols-2 w-full mb-6">
+          <TabsTrigger value="email">Email</TabsTrigger>
+          <TabsTrigger value="phone">Phone</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="email">
-          {verificationSent ? (
-            <EmailSuccessMessage />
-          ) : (
-            <EmailRegisterForm 
-              isSubmitting={isSubmitting}
-              setIsSubmitting={setIsSubmitting}
-              isAdminMode={isAdminMode}
-            />
-          )}
-        </TabsContent>
-        
-        <TabsContent value="phone">
-          {!verificationSent ? (
-            <PhoneRegisterForm 
-              isSubmitting={isSubmitting}
-              setIsSubmitting={setIsSubmitting}
-              onVerificationSent={handleVerificationSent}
-            />
-          ) : (
-            <PhoneVerificationForm 
-              isSubmitting={isSubmitting}
-              setIsSubmitting={setIsSubmitting}
-              phone={phoneNumber}
-              onGoBack={handleGoBack}
-            />
-          )}
-        </TabsContent>
+        <div className="relative min-h-[300px]">
+          <TabsContent value="email">
+            {verificationSent ? (
+              <EmailSuccessMessage />
+            ) : (
+              <EmailRegisterForm 
+                isSubmitting={isSubmitting}
+                setIsSubmitting={setIsSubmitting}
+                isAdminMode={isAdminMode}
+              />
+            )}
+          </TabsContent>
+          
+          <TabsContent value="phone">
+            {!verificationSent ? (
+              <PhoneRegisterForm 
+                isSubmitting={isSubmitting}
+                setIsSubmitting={setIsSubmitting}
+                onVerificationSent={handleVerificationSent}
+              />
+            ) : (
+              <PhoneVerificationForm 
+                isSubmitting={isSubmitting}
+                setIsSubmitting={setIsSubmitting}
+                phone={phoneNumber}
+                onGoBack={handleGoBack}
+              />
+            )}
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

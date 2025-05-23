@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -134,42 +133,44 @@ const ForgotPasswordForm = () => {
         defaultValue="email" 
         value={resetMethod}
         onValueChange={(value) => setResetMethod(value as 'email' | 'phone')}
-        className="w-full"
+        className="w-full forgot-tabs"
       >
-        <TabsList className="grid grid-cols-2 w-full bg-transparent mb-4">
-          <TabsTrigger value="email" className="data-[state=active]:bg-gray-100">Email</TabsTrigger>
-          <TabsTrigger value="phone" className="data-[state=active]:bg-gray-100">Phone</TabsTrigger>
+        <TabsList className="grid grid-cols-2 w-full mb-6">
+          <TabsTrigger value="email">Email</TabsTrigger>
+          <TabsTrigger value="phone">Phone</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="email">
-          <EmailResetForm
-            email={forgotData.email}
-            isSubmitting={isSubmitting}
-            onChange={handleForgotChange}
-            onSubmit={handleForgotSubmit}
-          />
-        </TabsContent>
-        
-        <TabsContent value="phone">
-          {!verificationSent ? (
-            <PhoneRequestForm
-              phone={forgotData.phone}
+        <div className="relative min-h-[250px]">
+          <TabsContent value="email">
+            <EmailResetForm
+              email={forgotData.email}
               isSubmitting={isSubmitting}
               onChange={handleForgotChange}
               onSubmit={handleForgotSubmit}
             />
-          ) : (
-            <PhoneVerificationForm
-              verificationCode={verificationCode}
-              newPassword={newPassword}
-              isSubmitting={isSubmitting}
-              onVerificationCodeChange={(e) => setVerificationCode(e.target.value)}
-              onPasswordChange={(e) => setNewPassword(e.target.value)}
-              onSubmit={handleVerifyAndReset}
-              onGoBack={() => setVerificationSent(false)}
-            />
-          )}
-        </TabsContent>
+          </TabsContent>
+          
+          <TabsContent value="phone">
+            {!verificationSent ? (
+              <PhoneRequestForm
+                phone={forgotData.phone}
+                isSubmitting={isSubmitting}
+                onChange={handleForgotChange}
+                onSubmit={handleForgotSubmit}
+              />
+            ) : (
+              <PhoneVerificationForm
+                verificationCode={verificationCode}
+                newPassword={newPassword}
+                isSubmitting={isSubmitting}
+                onVerificationCodeChange={(e) => setVerificationCode(e.target.value)}
+                onPasswordChange={(e) => setNewPassword(e.target.value)}
+                onSubmit={handleVerifyAndReset}
+                onGoBack={() => setVerificationSent(false)}
+              />
+            )}
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );
