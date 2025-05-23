@@ -4,7 +4,7 @@ import {
   Card,
 } from '@/components/ui/card';
 import { UseFormReturn } from 'react-hook-form';
-import CKEditor4Component from './CKEditor4Component';
+import CKEditor4 from './CKEditor4';
 import {
   FormControl,
   FormField,
@@ -60,7 +60,7 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <CKEditor4Component 
+                    <CKEditor4 
                       value={field.value || ''} 
                       onChange={field.onChange}
                     />
