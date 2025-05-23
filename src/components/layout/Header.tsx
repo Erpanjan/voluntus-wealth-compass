@@ -84,11 +84,11 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile menu container - improved layout and spacing */}
+      {/* Mobile menu container - increased height to accommodate all items */}
       <div className={cn(
         "container-custom lg:hidden transition-all duration-300 ease-in-out overflow-hidden",
         isMenuOpen && !isOnLoginPage && !isTransitioning 
-          ? "max-h-96 opacity-100 pb-4" 
+          ? "max-h-[32rem] opacity-100 pb-4" 
           : "max-h-0 opacity-0 pointer-events-none"
       )}>
         <NavLinks 
