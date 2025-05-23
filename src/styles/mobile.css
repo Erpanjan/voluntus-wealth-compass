@@ -18,6 +18,39 @@
   input, select, textarea {
     font-size: 16px;
   }
+
+  /* Mobile login modal optimizations */
+  .login-modal-content {
+    padding: 1rem !important;
+  }
+
+  .login-modal-title {
+    font-size: 1.25rem !important;
+    line-height: 1.3 !important;
+  }
+
+  /* Better form spacing on mobile */
+  .login-form-spacing {
+    gap: 0.75rem !important;
+  }
+
+  /* Optimize tab buttons for mobile */
+  [role="tab"] {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  /* Better input field sizing */
+  .login-input {
+    padding: 0.75rem !important;
+    font-size: 1rem !important;
+  }
+
+  /* Improve button sizing for mobile */
+  .login-button {
+    padding: 0.875rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
 }
 
 /* iOS specific fixes */
@@ -38,6 +71,11 @@
   input, textarea, select {
     -webkit-appearance: none;
     border-radius: 0;
+  }
+
+  /* iOS modal specific fixes */
+  .login-modal {
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -69,5 +107,50 @@
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: light; /* Force light mode for now */
+  }
+}
+
+/* Mobile-specific login modal improvements */
+@media (max-width: 640px) {
+  .login-modal-container {
+    width: 95vw !important;
+    max-height: 90vh !important;
+    margin: 1rem !important;
+  }
+
+  .login-modal-header {
+    padding: 1rem !important;
+    padding-top: 2rem !important;
+  }
+
+  .login-modal-body {
+    padding: 0 1rem 1rem 1rem !important;
+  }
+
+  /* Better tab spacing on mobile */
+  .mobile-tab-list {
+    gap: 0.25rem !important;
+  }
+
+  .mobile-tab-trigger {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.75rem !important;
+    min-height: 2.5rem !important;
+  }
+
+  /* Form improvements for mobile */
+  .mobile-form-spacing {
+    gap: 1rem !important;
+  }
+
+  .mobile-input-group {
+    margin-bottom: 1rem !important;
+  }
+
+  /* Better button sizing */
+  .mobile-login-button {
+    padding: 0.875rem 2rem !important;
+    font-size: 1rem !important;
+    width: 100% !important;
   }
 }

@@ -11,22 +11,22 @@ interface AdminToggleProps {
 
 const AdminToggle: React.FC<AdminToggleProps> = ({ isAdminMode, onToggle, isAnimating = false }) => {
   return (
-    <div className="flex items-center justify-center relative w-full h-full">
-      <div className="flex items-center space-x-4">
-        <div className="text-center w-[200px]">
-          <h1 className="text-3xl font-bold transition-all duration-300">
-            {isAdminMode ? 'Admin Portal' : 'Client Portal'}
-          </h1>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="admin-mode"
-            checked={isAdminMode}
-            onCheckedChange={onToggle}
-            className="transition-all duration-300"
-          />
-          <Label htmlFor="admin-mode" className="text-sm text-gray-600"></Label>
-        </div>
+    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full">
+      <div className="text-center flex-shrink-0">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold transition-all duration-300 leading-tight">
+          {isAdminMode ? 'Admin Portal' : 'Client Portal'}
+        </h1>
+      </div>
+      <div className="flex items-center gap-2">
+        <Switch
+          id="admin-mode"
+          checked={isAdminMode}
+          onCheckedChange={onToggle}
+          className="transition-all duration-300"
+        />
+        <Label htmlFor="admin-mode" className="text-sm text-gray-600 sr-only">
+          Toggle admin mode
+        </Label>
       </div>
     </div>
   );

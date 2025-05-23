@@ -154,7 +154,7 @@ const LoginModal = () => {
     >
       {/* Login Modal Card */}
       <div 
-        className={`max-w-md w-full mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-200 ease-out ${
+        className={`w-[95vw] max-w-md mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-200 ease-out max-h-[90vh] overflow-y-auto ${
           isModalOpen && isReady
             ? 'opacity-100 transform scale-100 translate-y-0' 
             : 'opacity-0 transform scale-98 translate-y-2'
@@ -164,16 +164,16 @@ const LoginModal = () => {
         {/* Close Button */}
         <button
           onClick={() => handleClose()}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+          className="absolute top-3 right-3 z-10 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 mobile-touch-target"
           aria-label="Close login modal"
         >
-          <X size={20} className="text-gray-500" />
+          <X size={18} className="text-gray-500" />
         </button>
 
         {/* Modal Content */}
-        <div className="p-8 pt-12">
+        <div className="p-4 sm:p-8 pt-8 sm:pt-12">
           {/* Title and admin mode toggle */}
-          <div className="mb-8 text-center">
+          <div className="mb-6 sm:mb-8 text-center">
             <AdminToggle 
               isAdminMode={isAdminMode}
               onToggle={handleAdminToggle}
