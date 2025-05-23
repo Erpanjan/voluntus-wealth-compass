@@ -84,15 +84,20 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile menu container - use opacity transition */}
+      {/* Mobile menu container - improved layout and spacing */}
       <div className={cn(
-        "container-custom lg:hidden pb-6 transition-opacity duration-300 ease-in-out",
-        isMenuOpen && !isOnLoginPage && !isTransitioning ? "opacity-100 animate-fade-in" : "opacity-0 pointer-events-none",
+        "container-custom lg:hidden transition-all duration-300 ease-in-out overflow-hidden",
+        isMenuOpen && !isOnLoginPage && !isTransitioning 
+          ? "max-h-96 opacity-100 pb-4" 
+          : "max-h-0 opacity-0 pointer-events-none"
       )}>
         <NavLinks 
           navLinks={navLinks} 
           isActive={isActive} 
-          handleNavLinkClick={(e, isActivePath) => handleNavLinkClick(e, isActivePath)} 
+          handleNavLinkClick={(e, isActivePath) => {
+            handleNavLinkClick(e, isActivePath);
+            setIsMenuOpen(false); // Close menu when any nav link is clicked
+          }} 
           handleLoginClick={(e) => {
             handleLoginClick(e);
             setIsMenuOpen(false); // Close menu when login is clicked

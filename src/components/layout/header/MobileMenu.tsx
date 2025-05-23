@@ -14,7 +14,7 @@ const MobileMenu = ({
     <>
       {/* Mobile menu toggle */}
       <button
-        className="lg:hidden ml-4 p-2"
+        className="lg:hidden ml-4 p-2 touch-manipulation"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         aria-label="Toggle menu"
       >

@@ -19,6 +19,22 @@
     font-size: 16px;
   }
 
+  /* Mobile navigation improvements */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Enhanced mobile menu transitions */
+  .mobile-nav-item {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .mobile-nav-item:active {
+    transform: scale(0.98);
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
   /* Mobile login modal optimizations */
   .login-modal-content {
     padding: 1rem !important;
@@ -152,5 +168,11 @@
     padding: 0.875rem 2rem !important;
     font-size: 1rem !important;
     width: 100% !important;
+  }
+
+  /* Enhanced mobile navigation styling */
+  .mobile-nav-container {
+    padding: 1rem 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
   }
 }

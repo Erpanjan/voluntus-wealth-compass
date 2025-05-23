@@ -19,32 +19,32 @@ const NavLinks = ({
 }: NavLinksProps) => {
   if (isMobile) {
     return (
-      <nav className="flex flex-col space-y-4 py-3">
+      <nav className="flex flex-col space-y-2 py-4">
         {navLinks.map((link) => (
           <Link
             key={link.name}
             to={link.path}
             onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
             className={cn(
-              'py-4 text-base transition-all duration-300 flex items-center touch-manipulation',
+              'py-3 px-4 text-base transition-all duration-300 flex items-center touch-manipulation rounded-lg',
               isActive(link.path) 
-                ? 'font-semibold text-[#333333] pl-4' 
-                : 'font-normal text-[#666666] hover:text-[#333333] pl-4'
+                ? 'font-semibold text-[#333333] bg-black/5' 
+                : 'font-normal text-[#666666] hover:text-[#333333] hover:bg-black/5'
             )}
           >
             {link.name}
           </Link>
         ))}
         
-        {/* Mobile Login Button - integrated into nav list */}
+        {/* Mobile Login Button - integrated into nav list below CONTACT US */}
         {handleLoginClick && (
           <button
             onClick={handleLoginClick}
             className={cn(
-              'py-4 text-base transition-all duration-300 flex items-center touch-manipulation text-left',
+              'py-3 px-4 text-base transition-all duration-300 flex items-center touch-manipulation text-left rounded-lg border border-[#666666] mt-4',
               isActive('/login') 
-                ? 'font-semibold text-[#333333] pl-4' 
-                : 'font-normal text-[#666666] hover:text-[#333333] pl-4'
+                ? 'font-semibold text-white bg-[#333333] border-[#333333]' 
+                : 'font-normal text-[#666666] hover:text-[#333333] hover:bg-black/5 hover:border-[#333333]'
             )}
             aria-label="Login to client portal"
           >
