@@ -60,9 +60,8 @@ const Header = () => {
           />
         </div>
 
-        {/* Login button and mobile menu */}
+        {/* Login button and mobile menu - use opacity transition for login button */}
         <div className="flex items-center">
-          {/* Desktop Login Button */}
           <div className={cn(
             "transition-opacity duration-300 ease-in-out",
             isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -73,7 +72,6 @@ const Header = () => {
             />
           </div>
           
-          {/* Mobile Menu Toggle */}
           <div className={cn(
             "transition-opacity duration-300 ease-in-out",
             isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -89,6 +87,19 @@ const Header = () => {
             />
           </div>
         </div>
+      </div>
+
+      {/* Mobile menu container - use opacity transition */}
+      <div className={cn(
+        "container-custom lg:hidden pb-6 transition-opacity duration-300 ease-in-out",
+        isMenuOpen && !isOnLoginPage && !isTransitioning ? "opacity-100 animate-fade-in" : "opacity-0 pointer-events-none",
+      )}>
+        <NavLinks 
+          navLinks={navLinks} 
+          isActive={isActive} 
+          handleNavLinkClick={(e, isActivePath) => handleNavLinkClick(e, isActivePath)} 
+          isMobile={true}
+        />
       </div>
     </header>
   );

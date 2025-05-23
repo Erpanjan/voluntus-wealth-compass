@@ -33,37 +33,14 @@ const MobileMenu = ({
         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Mobile navigation menu with login button at bottom */}
+      {/* Mobile login button in menu */}
       {isMenuOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-white shadow-lg border-t">
-          <div className="container-custom py-4">
-            {/* Navigation Links */}
-            <nav className="flex flex-col space-y-4 mb-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
-                  className={`py-3 text-base transition-all duration-300 flex items-center ${
-                    isActive(link.path) 
-                      ? 'font-semibold text-[#333333] pl-4' 
-                      : 'font-normal text-[#666666] hover:text-[#333333] pl-4'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-            
-            {/* Login Button at Bottom */}
-            <div className="pl-4 pt-4 border-t border-gray-100">
-              <LoginButton 
-                handleLoginClick={handleLoginClick} 
-                isMobile={true}
-                isActive={isLoginActive}
-              />
-            </div>
-          </div>
+        <div className="absolute top-16 right-6">
+          <LoginButton 
+            handleLoginClick={handleLoginClick} 
+            isMobile={true}
+            isActive={isLoginActive}
+          />
         </div>
       )}
     </>

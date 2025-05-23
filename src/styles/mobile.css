@@ -51,19 +51,6 @@
     padding: 0.875rem 1.5rem !important;
     font-size: 1rem !important;
   }
-
-  /* Mobile navigation consistent font sizing */
-  .mobile-nav-link {
-    font-size: 1rem !important;
-    line-height: 1.5 !important;
-  }
-
-  /* Mobile navigation menu improvements */
-  .mobile-nav-container {
-    max-height: calc(100vh - 80px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
 }
 
 /* iOS specific fixes */
@@ -165,23 +152,5 @@
     padding: 0.875rem 2rem !important;
     font-size: 1rem !important;
     width: 100% !important;
-  }
-
-  /* Mobile navigation improvements */
-  .mobile-nav-menu {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border-top: 1px solid #e5e7eb;
-  }
-
-  /* Consistent mobile navigation font sizing */
-  .mobile-nav-item {
-    font-size: 1rem !important;
-    font-weight: 400 !important;
-    padding: 0.75rem 1rem !important;
-    line-height: 1.5 !important;
-  }
-
-  .mobile-nav-item.active {
-    font-weight: 600 !important;
   }
 }
