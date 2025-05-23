@@ -31,9 +31,9 @@ const CKEditor4: React.FC<CKEditor4Props> = ({ value, onChange, config = {} }) =
         return;
       }
 
-      // Load the latest version (4.25.1)
+      // Try to load from CDN directly
       const script = document.createElement('script');
-      script.src = 'https://cdn.ckeditor.com/4.25.1/standard-all/ckeditor.js';
+      script.src = 'https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js';
       script.onload = () => resolve();
       script.onerror = () => reject(new Error('Failed to load CKEditor'));
       document.head.appendChild(script);
