@@ -1,23 +1,38 @@
 
 import { useState, useEffect } from 'react';
-import { articleService, Article } from '@/services/article';
 import { useToast } from '@/hooks/use-toast';
+import { articleService, Article } from '@/services/article';
 
-export const usePublishedArticles = () => {
+export const usePublishedArticles = (pageSize: number = 4) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const { toast } = useToast();
 
-  const fetchArticles = async () => {
+  const fetchArticles = async (page: number = 0, append: boolean = false) => {
     try {
-      setLoading(true);
-      setError(null);
-      const data = await articleService.getPublishedArticles();
-      setArticles(data);
-    } catch (err) {
-      console.error('Error fetching published articles:', err);
-      setError(err as Error);
+      if (!append) {
+        setLoading(true);
+      }
+      
+      console.log(`Fetching published articles for page ${page}`);
+      const result = await articleService.getPublishedArticles(page, pageSize);
+      
+      if (append) {
+        setArticles(prev => [...prev, ...result.articles]);
+      } else {
+        setArticles(result.articles);
+      }
+      
+      setTotalCount(result.totalCount);
+      setHasMore((page + 1) * pageSize < result.totalCount);
+      setCurrentPage(page);
+      
+      console.log(`Loaded ${result.articles.length} articles, total: ${result.totalCount}`);
+    } catch (error) {
+      console.error('Error fetching published articles:', error);
       toast({
         title: "Error loading articles",
         description: "There was a problem loading the articles. Please try again.",
@@ -28,9 +43,28 @@ export const usePublishedArticles = () => {
     }
   };
 
+  const loadMore = () => {
+    if (hasMore && !loading) {
+      fetchArticles(currentPage + 1, true);
+    }
+  };
+
+  const refresh = () => {
+    fetchArticles(0, false);
+  };
+
   useEffect(() => {
     fetchArticles();
   }, []);
 
-  return { articles, loading, error, refetch: fetchArticles };
+  return {
+    articles,
+    loading,
+    currentPage,
+    totalCount,
+    hasMore,
+    loadMore,
+    refresh,
+    totalPages: Math.ceil(totalCount / pageSize)
+  };
 };

@@ -10,17 +10,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 
 const Insight = () => {
-  const { articles, loading } = usePublishedArticles();
-  const [currentPage, setCurrentPage] = useState(1);
-  const articlesPerPage = 4;
-  
-  // Calculate pagination
-  const totalPages = Math.max(1, Math.ceil(articles.length / articlesPerPage));
-  const startIndex = (currentPage - 1) * articlesPerPage;
-  const displayedArticles = articles.slice(startIndex, startIndex + articlesPerPage);
+  const { articles, loading, totalPages, currentPage, totalCount } = usePublishedArticles(4);
+  const [displayPage, setDisplayPage] = useState(1); // 1-based for UI
   
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setDisplayPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -41,6 +35,11 @@ const Insight = () => {
       ))}
     </>
   );
+
+  // Calculate articles to display for current page
+  const articlesPerPage = 4;
+  const startIndex = (displayPage - 1) * articlesPerPage;
+  const displayedArticles = articles.slice(startIndex, startIndex + articlesPerPage);
 
   return (
     <div className="min-h-screen">
@@ -77,7 +76,7 @@ const Insight = () => {
           )}
         </div>
         
-        {totalPages > 1 && (
+        {totalPages > 1 && !loading && (
           <div className="mt-12">
             <Pagination>
               <PaginationContent>
@@ -86,9 +85,9 @@ const Insight = () => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (currentPage > 1) handlePageChange(currentPage - 1);
+                      if (displayPage > 1) handlePageChange(displayPage - 1);
                     }}
-                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                    className={displayPage === 1 ? 'pointer-events-none opacity-50' : ''}
                   />
                 </PaginationItem>
                 
@@ -96,7 +95,7 @@ const Insight = () => {
                   <PaginationItem key={i + 1}>
                     <PaginationLink 
                       href="#" 
-                      isActive={currentPage === i + 1}
+                      isActive={displayPage === i + 1}
                       onClick={(e) => {
                         e.preventDefault();
                         handlePageChange(i + 1);
@@ -112,13 +111,19 @@ const Insight = () => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                      if (displayPage < totalPages) handlePageChange(displayPage + 1);
                     }}
-                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                    className={displayPage === totalPages ? 'pointer-events-none opacity-50' : ''}
                   />
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
+          </div>
+        )}
+
+        {!loading && totalCount > 0 && (
+          <div className="mt-8 text-center text-sm text-gray-600">
+            Showing {Math.min(startIndex + 1, totalCount)} - {Math.min(startIndex + articlesPerPage, totalCount)} of {totalCount} articles
           </div>
         )}
       </Section>

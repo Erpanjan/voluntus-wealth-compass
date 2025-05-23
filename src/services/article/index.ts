@@ -10,6 +10,7 @@ export type { Author, Article, Report } from './types';
 export const articleService = {
   // Query operations
   getArticles: articleQueryService.getArticles,
+  getArticleById: articleQueryService.getArticleById, // New optimized function
   getPublishedArticles: articleQueryService.getPublishedArticles,
   getArticleBySlug: articleQueryService.getArticleBySlug,
   

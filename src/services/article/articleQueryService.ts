@@ -34,13 +34,71 @@ const normalizeContent = (content: any) => {
  */
 export const articleQueryService = {
   /**
-   * Get all articles with their authors
-   * @returns List of all articles with author information
+   * Get a single article by ID (optimized for edit mode)
+   * @param id The article ID to fetch
+   * @returns Single article with author information
    */
-  async getArticles(): Promise<Article[]> {
+  async getArticleById(id: string): Promise<Article | null> {
     try {
-      console.log('Fetching all articles...');
-      const { data, error } = await supabase.rpc('get_articles_with_authors');
+      console.log(`Fetching article with ID: ${id}`);
+      const { data, error } = await supabase.rpc('get_article_by_id', {
+        article_id: id
+      });
+      
+      if (error) {
+        console.error('Error fetching article by ID:', error);
+        throw error;
+      }
+      
+      console.log('Raw article data by ID:', data);
+      
+      if (data && data.length > 0) {
+        const article: Article = {
+          ...data[0],
+          content: normalizeContent(data[0].content),
+          authors: Array.isArray(data[0].authors) 
+            ? data[0].authors.map((author: any) => ({
+                id: author.id,
+                name: author.name,
+                image_url: author.image_url
+              })) 
+            : [],
+          reports: Array.isArray(data[0].reports) 
+            ? data[0].reports.map((report: any) => ({
+                id: report.id,
+                title: report.title,
+                description: report.description,
+                file_url: report.file_url,
+                created_at: report.created_at
+              })) 
+            : []
+        };
+        
+        console.log('Processed article by ID:', article);
+        return article;
+      }
+      
+      console.log('No article found with this ID');
+      return null;
+    } catch (error) {
+      console.error('Error in getArticleById:', error, { id });
+      return null;
+    }
+  },
+
+  /**
+   * Get all articles with their authors (with pagination support)
+   * @param page Page number (0-based)
+   * @param pageSize Number of articles per page
+   * @returns List of articles with pagination info
+   */
+  async getArticles(page: number = 0, pageSize: number = 50): Promise<Article[]> {
+    try {
+      console.log(`Fetching articles page ${page} with size ${pageSize}`);
+      const { data, error } = await supabase.rpc('get_articles_with_authors_paginated', {
+        page_num: page,
+        page_size: pageSize
+      });
       
       if (error) {
         console.error('Error fetching articles:', error);
@@ -71,23 +129,32 @@ export const articleQueryService = {
   },
 
   /**
-   * Get published articles for public consumption
-   * @returns List of published articles
+   * Get published articles for public consumption (with pagination)
+   * @param page Page number (0-based)
+   * @param pageSize Number of articles per page
+   * @returns List of published articles with pagination info
    */
-  async getPublishedArticles(): Promise<Article[]> {
+  async getPublishedArticles(page: number = 0, pageSize: number = 4): Promise<{ articles: Article[], totalCount: number }> {
     try {
-      console.log('Fetching published articles...');
-      const { data, error } = await supabase.rpc('get_articles_with_authors');
+      console.log(`Fetching published articles page ${page} with size ${pageSize}`);
+      const { data, error } = await supabase.rpc('get_published_articles_paginated', {
+        page_num: page,
+        page_size: pageSize
+      });
       
       if (error) {
-        console.error('Error fetching articles:', error);
+        console.error('Error fetching published articles:', error);
         throw error;
       }
       
       console.log('Raw published articles data:', data);
       
+      if (!data || data.length === 0) {
+        return { articles: [], totalCount: 0 };
+      }
+      
       // Process the data to ensure correct typing
-      const processedData: Article[] = data?.map((item: any) => ({
+      const processedData: Article[] = data.map((item: any) => ({
         ...item,
         content: normalizeContent(item.content),
         authors: Array.isArray(item.authors) 
@@ -97,19 +164,18 @@ export const articleQueryService = {
               image_url: author.image_url
             })) 
           : []
-      })) || [];
+      }));
       
-      // Filter to only return published articles (where published_at is in the past)
-      const now = new Date();
-      const publishedArticles = processedData.filter((article: Article) => {
-        return new Date(article.published_at) <= now;
-      });
+      // Get total count from first item (all items have same total_count)
+      const totalCount = data[0]?.total_count || 0;
       
-      console.log('Processed published articles data:', publishedArticles);
-      return publishedArticles;
+      console.log('Processed published articles data:', processedData);
+      console.log('Total published articles count:', totalCount);
+      
+      return { articles: processedData, totalCount };
     } catch (error) {
       console.error('Error in getPublishedArticles:', error);
-      return [];
+      return { articles: [], totalCount: 0 };
     }
   },
 

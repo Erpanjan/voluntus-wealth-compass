@@ -396,6 +396,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_article_by_id: {
+        Args: { article_id: string }
+        Returns: {
+          id: string
+          title: string
+          slug: string
+          description: string
+          content: Json
+          category: string
+          image_url: string
+          published_at: string
+          created_at: string
+          updated_at: string
+          authors: Json
+          reports: Json
+        }[]
+      }
       get_article_by_slug: {
         Args: { slug_param: string }
         Returns: {
@@ -427,6 +444,40 @@ export type Database = {
           created_at: string
           updated_at: string
           authors: Json
+        }[]
+      }
+      get_articles_with_authors_paginated: {
+        Args: { page_num?: number; page_size?: number }
+        Returns: {
+          id: string
+          title: string
+          slug: string
+          description: string
+          content: Json
+          category: string
+          image_url: string
+          published_at: string
+          created_at: string
+          updated_at: string
+          authors: Json
+          total_count: number
+        }[]
+      }
+      get_published_articles_paginated: {
+        Args: { page_num?: number; page_size?: number }
+        Returns: {
+          id: string
+          title: string
+          slug: string
+          description: string
+          content: Json
+          category: string
+          image_url: string
+          published_at: string
+          created_at: string
+          updated_at: string
+          authors: Json
+          total_count: number
         }[]
       }
       is_admin_user: {

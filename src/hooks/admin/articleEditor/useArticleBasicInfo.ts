@@ -22,27 +22,46 @@ export const useArticleBasicInfo = () => {
     }
   });
 
-  // Load article data if in edit mode
+  // Load article data if in edit mode - now using optimized function
   const loadArticleData = async () => {
     if (!isEditMode || !id) return null;
     
     try {
-      // Fetch articles and find the one with matching ID
-      const articles = await articleService.getArticles();
-      const article = articles.find(a => a.id === id);
+      console.log('Loading article data for ID:', id);
+      // Use the new optimized getArticleById function
+      const article = await articleService.getArticleById(id);
       
       if (article) {
+        console.log('Article loaded successfully:', article);
+        
+        // Process content to handle different formats
+        let processedContent = '';
+        if (typeof article.content === 'string') {
+          processedContent = article.content;
+        } else if (article.content && typeof article.content === 'object') {
+          // If content is stored as HTML in the object, extract it
+          if (article.content.html) {
+            processedContent = article.content.html;
+          } else {
+            // Convert object to string representation
+            processedContent = JSON.stringify(article.content);
+          }
+        } else {
+          processedContent = article.content || '';
+        }
+        
         form.reset({
-          title: article.title,
-          description: article.description,
-          category: article.category,
-          content: article.content,
+          title: article.title || '',
+          description: article.description || '',
+          category: article.category || '',
+          content: processedContent,
           image_url: article.image_url || '',
           published_at: format(new Date(article.published_at), 'yyyy-MM-dd'),
         });
         
         return article;
       } else {
+        console.error('Article not found with ID:', id);
         toast({
           title: 'Article Not Found',
           description: 'Could not find the article you are trying to edit.',
@@ -55,7 +74,7 @@ export const useArticleBasicInfo = () => {
       console.error('Error fetching article:', error);
       toast({
         title: 'Error',
-        description: 'Failed to fetch article data.',
+        description: 'Failed to fetch article data. Please try again.',
         variant: 'destructive',
       });
       return null;

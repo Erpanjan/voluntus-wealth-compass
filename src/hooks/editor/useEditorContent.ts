@@ -1,89 +1,153 @@
-import { useState, useCallback, RefObject } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 
 interface UseEditorContentProps {
   initialValue: string;
-  editorRef: RefObject<HTMLDivElement>;
+  editorRef: React.RefObject<HTMLDivElement>;
   onChange: (value: string) => void;
 }
 
 export const useEditorContent = ({ initialValue, editorRef, onChange }: UseEditorContentProps) => {
   const [editorState, setEditorState] = useState(initialValue || '');
 
-  // Handle content change - modified to fix cursor position issues
+  // Clean Microsoft Word and other problematic formatting
+  const cleanContent = useCallback((html: string): string => {
+    if (!html) return '';
+    
+    // Create a temporary div to manipulate the HTML
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    
+    // Remove Microsoft Word specific elements and attributes
+    const elementsToRemove = temp.querySelectorAll('meta, link, style, title, xml, o\\:*, w\\:*');
+    elementsToRemove.forEach(el => el.remove());
+    
+    // Remove problematic attributes
+    const allElements = temp.querySelectorAll('*');
+    allElements.forEach(el => {
+      // Remove style attributes that contain Word-specific styles
+      const style = el.getAttribute('style');
+      if (style && (
+        style.includes('mso-') || 
+        style.includes('tab-stops') || 
+        style.includes('margin:0cm') ||
+        style.includes('font-family:"Calibri"')
+      )) {
+        el.removeAttribute('style');
+      }
+      
+      // Remove Word-specific attributes
+      const attributesToRemove = [
+        'class', 'lang', 'xml:lang', 'xmlns', 'xmlns:w', 'xmlns:o', 'xmlns:m', 'xmlns:v',
+        'data-listid', 'data-list', 'data-level', 'data-font', 'data-fontsize'
+      ];
+      
+      attributesToRemove.forEach(attr => {
+        if (el.hasAttribute(attr)) {
+          const value = el.getAttribute(attr);
+          if (value && (value.includes('Mso') || value.includes('Word') || value.includes('List'))) {
+            el.removeAttribute(attr);
+          }
+        }
+      });
+    });
+    
+    // Remove empty paragraphs and spans
+    const emptyElements = temp.querySelectorAll('p:empty, span:empty, div:empty');
+    emptyElements.forEach(el => el.remove());
+    
+    // Convert Word-style lists to proper HTML lists
+    const wordLists = temp.querySelectorAll('p[style*="text-indent"], p[style*="margin-left"]');
+    wordLists.forEach(p => {
+      const text = p.textContent?.trim();
+      if (text && (text.startsWith('·') || text.startsWith('•') || /^\d+\./.test(text))) {
+        const li = document.createElement('li');
+        li.innerHTML = p.innerHTML.replace(/^[·•]\s*|\d+\.\s*/, '');
+        p.replaceWith(li);
+      }
+    });
+    
+    return temp.innerHTML;
+  }, []);
+
+  // Set initial content when component mounts or initialValue changes
+  useEffect(() => {
+    if (editorRef.current && initialValue !== editorState) {
+      const cleanedContent = cleanContent(initialValue);
+      editorRef.current.innerHTML = cleanedContent;
+      setEditorState(cleanedContent);
+    }
+  }, [initialValue, cleanContent, editorRef]);
+
   const handleContentChange = useCallback(() => {
-    if (editorRef.current) {
-      const newContent = editorRef.current.innerHTML;
-      setEditorState(newContent);
-      onChange(newContent);
+    if (!editorRef.current) return;
+    
+    const rawContent = editorRef.current.innerHTML;
+    const cleanedContent = cleanContent(rawContent);
+    
+    // Only update if content actually changed
+    if (cleanedContent !== editorState) {
+      setEditorState(cleanedContent);
+      onChange(cleanedContent);
     }
-  }, [onChange, editorRef]);
+  }, [editorState, onChange, cleanContent, editorRef]);
 
-  // Handle content blur - separated from handleContentChange
   const handleContentBlur = useCallback(() => {
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
-  }, [onChange, editorRef]);
+    if (!editorRef.current) return;
+    
+    const finalContent = cleanContent(editorRef.current.innerHTML);
+    
+    // Clean up the editor content on blur
+    editorRef.current.innerHTML = finalContent;
+    setEditorState(finalContent);
+    onChange(finalContent);
+  }, [onChange, cleanContent, editorRef]);
 
-  // Custom paste handler to preserve formatting when pasting from Word/external sources
-  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLDivElement>) => {
-    // Prevent default paste behavior
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
     e.preventDefault();
     
-    // Get clipboard data
+    // Get plain text and HTML data
     const clipboardData = e.clipboardData;
+    const htmlData = clipboardData.getData('text/html');
+    const textData = clipboardData.getData('text/plain');
     
-    // Try to get HTML content first to preserve formatting
-    let content = clipboardData.getData('text/html');
+    let contentToInsert = '';
     
-    // If no HTML content is available, fall back to plain text
-    if (!content) {
-      content = clipboardData.getData('text/plain');
-      
-      // For plain text, we need to preserve line breaks
-      if (content) {
-        // Replace newlines with <br> tags
-        content = content
-          .replace(/\n/g, '<br>')
-          // Preserve consecutive spaces
-          .replace(/\s{2,}/g, (match) => {
-            return '&nbsp;'.repeat(match.length);
-          });
-      }
-    } else {
-      // For HTML content from Word/other sources, we need to clean it up
-      // Remove Word specific XML tags and meta information
-      content = content
-        // Remove XML declarations and comments
-        .replace(/<\?xml[^>]*>/g, '')
-        .replace(/<!--[\s\S]*?-->/g, '')
-        // Remove Word namespace declarations
-        .replace(/<\/?[a-z]:[^>]*>/g, '')
-        // Remove style definitions but keep style attributes
-        .replace(/<style>[\s\S]*?<\/style>/g, '')
-        // Keep relevant content only (within body tag if exists)
-        .replace(/.*<body[^>]*>([\s\S]*)<\/body>.*/i, '$1');
+    if (htmlData) {
+      // Clean the HTML content before inserting
+      contentToInsert = cleanContent(htmlData);
+    } else if (textData) {
+      // Convert plain text to HTML, preserving line breaks
+      contentToInsert = textData.replace(/\n/g, '<br>');
     }
     
-    // Insert the cleaned content at cursor position
-    if (document.queryCommandSupported('insertHTML')) {
-      document.execCommand('insertHTML', false, content);
-    } else {
-      // Fallback for browsers that don't support insertHTML
+    if (contentToInsert) {
+      // Insert the cleaned content at cursor position
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
-        const fragment = range.createContextualFragment(content);
         range.deleteContents();
+        
+        // Create a temporary element to hold the content
+        const temp = document.createElement('div');
+        temp.innerHTML = contentToInsert;
+        
+        // Insert each child node
+        const fragment = document.createDocumentFragment();
+        while (temp.firstChild) {
+          fragment.appendChild(temp.firstChild);
+        }
+        
         range.insertNode(fragment);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
       }
+      
+      // Trigger content change
+      setTimeout(() => handleContentChange(), 0);
     }
-    
-    // Update the editor state
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
-  }, [onChange, editorRef]);
+  }, [cleanContent, handleContentChange]);
 
   return {
     editorState,
