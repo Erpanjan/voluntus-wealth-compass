@@ -6,10 +6,17 @@ interface NavLinksProps {
   navLinks: { name: string; path: string }[];
   isActive: (path: string) => boolean;
   handleNavLinkClick: (event: React.MouseEvent, isActivePath: boolean) => void;
+  handleLoginClick?: (event: React.MouseEvent) => void;
   isMobile?: boolean;
 }
 
-const NavLinks = ({ navLinks, isActive, handleNavLinkClick, isMobile = false }: NavLinksProps) => {
+const NavLinks = ({ 
+  navLinks, 
+  isActive, 
+  handleNavLinkClick, 
+  handleLoginClick,
+  isMobile = false 
+}: NavLinksProps) => {
   if (isMobile) {
     return (
       <nav className="flex flex-col space-y-4 py-3">
@@ -19,7 +26,7 @@ const NavLinks = ({ navLinks, isActive, handleNavLinkClick, isMobile = false }: 
             to={link.path}
             onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
             className={cn(
-              'py-4 text-base transition-all duration-300 flex items-center',
+              'py-4 text-base transition-all duration-300 flex items-center touch-manipulation',
               isActive(link.path) 
                 ? 'font-semibold text-[#333333] pl-4' 
                 : 'font-normal text-[#666666] hover:text-[#333333] pl-4'
@@ -28,6 +35,22 @@ const NavLinks = ({ navLinks, isActive, handleNavLinkClick, isMobile = false }: 
             {link.name}
           </Link>
         ))}
+        
+        {/* Mobile Login Button - integrated into nav list */}
+        {handleLoginClick && (
+          <button
+            onClick={handleLoginClick}
+            className={cn(
+              'py-4 text-base transition-all duration-300 flex items-center touch-manipulation text-left',
+              isActive('/login') 
+                ? 'font-semibold text-[#333333] pl-4' 
+                : 'font-normal text-[#666666] hover:text-[#333333] pl-4'
+            )}
+            aria-label="Login to client portal"
+          >
+            LOGIN
+          </button>
+        )}
       </nav>
     );
   }

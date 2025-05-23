@@ -79,11 +79,6 @@ const Header = () => {
             <MobileMenu
               isMenuOpen={isMenuOpen}
               setIsMenuOpen={setIsMenuOpen}
-              navLinks={navLinks}
-              isActive={isActive}
-              handleNavLinkClick={(e, isActivePath) => handleNavLinkClick(e, isActivePath)}
-              handleLoginClick={handleLoginClick}
-              isLoginActive={isActive('/login')}
             />
           </div>
         </div>
@@ -98,6 +93,10 @@ const Header = () => {
           navLinks={navLinks} 
           isActive={isActive} 
           handleNavLinkClick={(e, isActivePath) => handleNavLinkClick(e, isActivePath)} 
+          handleLoginClick={(e) => {
+            handleLoginClick(e);
+            setIsMenuOpen(false); // Close menu when login is clicked
+          }}
           isMobile={true}
         />
       </div>
