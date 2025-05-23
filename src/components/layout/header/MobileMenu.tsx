@@ -1,16 +1,16 @@
 
 import { Menu, X } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import NavLinks from './NavLinks';
+import { Link } from 'react-router-dom';
 import LoginButton from './LoginButton';
 
 interface MobileMenuProps {
   isMenuOpen: boolean;
-  setIsMenuOpen: (isOpen: boolean) => void;
-  navLinks: { name: string; path: string }[];
+  setIsMenuOpen: (open: boolean) => void;
+  navLinks: Array<{ name: string; path: string }>;
   isActive: (path: string) => boolean;
-  handleNavLinkClick: (event: React.MouseEvent, isActivePath: boolean) => void;
+  handleNavLinkClick: (e: React.MouseEvent, isActivePath: boolean) => void;
   handleLoginClick: (e: React.MouseEvent) => void;
+  isLoginActive?: boolean;
 }
 
 const MobileMenu = ({ 
@@ -18,33 +18,32 @@ const MobileMenu = ({
   setIsMenuOpen, 
   navLinks, 
   isActive, 
-  handleNavLinkClick,
-  handleLoginClick
+  handleNavLinkClick, 
+  handleLoginClick,
+  isLoginActive = false
 }: MobileMenuProps) => {
   return (
-    <div className="flex lg:hidden space-x-4 items-center">
-      <LoginButton handleLoginClick={handleLoginClick} isMobile={true} />
-      <Button 
-        variant="ghost" 
-        size="icon"
+    <>
+      {/* Mobile menu toggle */}
+      <button
+        className="lg:hidden ml-4 p-2"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        aria-label="Toggle Menu"
-        className="h-12 w-12 p-0"
+        aria-label="Toggle menu"
       >
-        {isMenuOpen ? <X size={24} className="text-[#333333]" /> : <Menu size={24} className="text-[#333333]" />}
-      </Button>
+        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
 
+      {/* Mobile login button in menu */}
       {isMenuOpen && (
-        <div className="container-custom lg:hidden pb-6 animate-fade-in absolute top-full left-0 right-0 bg-white z-50 shadow-sm">
-          <NavLinks 
-            navLinks={navLinks} 
-            isActive={isActive} 
-            handleNavLinkClick={handleNavLinkClick}
+        <div className="absolute top-16 right-6">
+          <LoginButton 
+            handleLoginClick={handleLoginClick} 
             isMobile={true}
+            isActive={isLoginActive}
           />
         </div>
       )}
-    </div>
+    </>
   );
 };
 

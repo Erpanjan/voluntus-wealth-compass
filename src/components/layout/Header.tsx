@@ -48,7 +48,10 @@ const Header = () => {
 
         {/* Login button and mobile menu */}
         <div className="flex items-center">
-          <LoginButton handleLoginClick={handleLoginClick} />
+          <LoginButton 
+            handleLoginClick={handleLoginClick} 
+            isActive={isActive('/login')}
+          />
           <MobileMenu
             isMenuOpen={isMenuOpen}
             setIsMenuOpen={setIsMenuOpen}
@@ -56,6 +59,7 @@ const Header = () => {
             isActive={isActive}
             handleNavLinkClick={(e, isActivePath) => handleNavLinkClick(e, isActivePath)}
             handleLoginClick={handleLoginClick}
+            isLoginActive={isActive('/login')}
           />
         </div>
       </div>
