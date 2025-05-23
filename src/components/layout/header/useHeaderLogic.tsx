@@ -10,6 +10,9 @@ export const useHeaderLogic = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Check if we're on the login page
+  const isOnLoginPage = location.pathname === '/login';
+
   const isActive = useCallback((path: string) => {
     return location.pathname === path;
   }, [location.pathname]);
@@ -32,10 +35,12 @@ export const useHeaderLogic = () => {
     };
   }, []);
 
-  // Scroll to top when route changes
+  // Scroll to top when route changes (except for login)
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [location.pathname]);
+    if (!isOnLoginPage) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.pathname, isOnLoginPage]);
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -76,17 +81,17 @@ export const useHeaderLogic = () => {
     
     setIsAnimating(true);
     
-    // Add transition class for smooth navigation
-    document.body.classList.add('login-transition');
-    
-    // Navigate with a slight delay for animation
+    // Navigate to login with current location as state
     requestAnimationFrame(() => {
       setTimeout(() => {
-        navigate('/login');
+        navigate('/login', { 
+          state: { from: location },
+          replace: false 
+        });
         setIsAnimating(false);
-      }, 200);
+      }, 150);
     });
-  }, [location.pathname, navigate]);
+  }, [location, navigate]);
 
   // Clean up animation class when component unmounts
   useEffect(() => {
@@ -103,6 +108,7 @@ export const useHeaderLogic = () => {
     navLinks,
     handleNavLinkClick,
     handleLoginClick,
-    isAnimating
+    isAnimating,
+    isOnLoginPage
   };
 };
