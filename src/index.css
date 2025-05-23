@@ -1,6 +1,62 @@
 
-@import './styles/base.css';
-@import './styles/components.css';
-@import './styles/animations.css';
-@import './styles/tabs.css';
-@import './styles/mobile.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* CKEditor 4 Styling */
+.ckeditor-wrapper {
+  @apply w-full;
+}
+
+.cke_chrome {
+  @apply border border-gray-300 rounded-md shadow-sm;
+}
+
+.cke_top {
+  @apply bg-gray-50 border-b border-gray-200;
+}
+
+.cke_toolbox {
+  @apply bg-gray-50;
+}
+
+.cke_button {
+  @apply text-gray-700 hover:bg-gray-200;
+}
+
+.cke_button_on {
+  @apply bg-gray-200 text-gray-900;
+}
+
+.cke_contents {
+  @apply bg-white;
+}
+
+.cke_wysiwyg_frame {
+  @apply min-h-[400px];
+}
+
+/* Ensure CKEditor content has proper styling */
+.cke_contents iframe {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  color: #333333 !important;
+}
