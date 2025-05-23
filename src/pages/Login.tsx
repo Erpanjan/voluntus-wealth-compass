@@ -108,7 +108,7 @@ const Login = () => {
     <div className={`min-h-screen flex items-center justify-center bg-white py-8 px-4 transition-all duration-300 ease-in-out ${
       pageLoaded ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-[0.98]'
     }`}>
-      <div className="max-w-md w-full bg-white overflow-hidden flex flex-col" style={{ marginTop: '80px' }}>
+      <div className="max-w-md w-full bg-white overflow-hidden flex flex-col" style={{ marginTop: '40px' }}>
         {/* Adjusted container height and positioning for better centering */}
         <div className="h-[520px] relative">
           {/* Title and admin mode toggle - positioned with more space from top */}
