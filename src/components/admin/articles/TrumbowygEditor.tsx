@@ -1,52 +1,6 @@
 
 import React, { useEffect, useRef } from 'react';
 
-// Try multiple jQuery import strategies
-let $: any;
-try {
-  // Primary import method
-  $ = require('jquery');
-} catch (e) {
-  try {
-    // Fallback import method
-    const jqueryModule = await import('jquery');
-    $ = jqueryModule.default || jqueryModule;
-  } catch (e2) {
-    console.error('Failed to load jQuery:', e2);
-    // Will be handled in the component
-  }
-}
-
-// Import Trumbowyg and its plugins only after jQuery is loaded
-let trumbowygLoaded = false;
-
-const loadTrumbowyg = async () => {
-  if (trumbowygLoaded || !$) return false;
-  
-  try {
-    // Import Trumbowyg CSS
-    await import('trumbowyg/dist/ui/trumbowyg.min.css');
-    
-    // Import Trumbowyg JS
-    await import('trumbowyg/dist/trumbowyg.min.js');
-
-    // Import essential plugins
-    await import('trumbowyg/dist/plugins/colors/trumbowyg.colors.min.js');
-    await import('trumbowyg/dist/plugins/colors/ui/trumbowyg.colors.min.css');
-    await import('trumbowyg/dist/plugins/table/trumbowyg.table.min.js');
-    await import('trumbowyg/dist/plugins/table/ui/trumbowyg.table.min.css');
-    await import('trumbowyg/dist/plugins/history/trumbowyg.history.min.js');
-    await import('trumbowyg/dist/plugins/fontfamily/trumbowyg.fontfamily.min.js');
-    await import('trumbowyg/dist/plugins/fontsize/trumbowyg.fontsize.min.js');
-    
-    trumbowygLoaded = true;
-    return true;
-  } catch (error) {
-    console.error('Failed to load Trumbowyg:', error);
-    return false;
-  }
-};
-
 // Extend jQuery type to include trumbowyg method
 declare global {
   interface JQuery {
@@ -70,20 +24,42 @@ const TrumbowygEditor: React.FC<TrumbowygEditorProps> = ({ value, onChange }) =>
     const initializeEditor = async () => {
       if (!editorRef.current || isInitialized.current) return;
 
-      // Check if jQuery is available
-      if (!$) {
-        setError('jQuery is not available. Please refresh the page.');
-        return;
-      }
-
-      // Load Trumbowyg
-      const loaded = await loadTrumbowyg();
-      if (!loaded) {
-        setError('Failed to load the rich text editor. Please refresh the page.');
-        return;
-      }
-
       try {
+        // Load jQuery first
+        let $: any;
+        try {
+          // Try direct import first
+          const jqueryModule = await import('jquery');
+          $ = jqueryModule.default || jqueryModule;
+        } catch (e) {
+          // Fallback to require if import fails
+          try {
+            $ = require('jquery');
+          } catch (e2) {
+            throw new Error('Failed to load jQuery');
+          }
+        }
+
+        // Check if jQuery is available
+        if (!$) {
+          throw new Error('jQuery is not available');
+        }
+
+        // Load Trumbowyg CSS
+        await import('trumbowyg/dist/ui/trumbowyg.min.css');
+        
+        // Load Trumbowyg JS
+        await import('trumbowyg/dist/trumbowyg.min.js');
+
+        // Load essential plugins
+        await import('trumbowyg/dist/plugins/colors/trumbowyg.colors.min.js');
+        await import('trumbowyg/dist/plugins/colors/ui/trumbowyg.colors.min.css');
+        await import('trumbowyg/dist/plugins/table/trumbowyg.table.min.js');
+        await import('trumbowyg/dist/plugins/table/ui/trumbowyg.table.min.css');
+        await import('trumbowyg/dist/plugins/history/trumbowyg.history.min.js');
+        await import('trumbowyg/dist/plugins/fontfamily/trumbowyg.fontfamily.min.js');
+        await import('trumbowyg/dist/plugins/fontsize/trumbowyg.fontsize.min.js');
+
         const $editor = $(editorRef.current);
         
         // Initialize Trumbowyg with essential plugins
@@ -178,10 +154,18 @@ const TrumbowygEditor: React.FC<TrumbowygEditorProps> = ({ value, onChange }) =>
   // Update content when value prop changes
   useEffect(() => {
     if (editorRef.current && isInitialized.current && value !== undefined) {
-      const $editor = $(editorRef.current);
-      const currentContent = String($editor.trumbowyg('html'));
-      if (currentContent !== value) {
-        $editor.trumbowyg('html', value);
+      try {
+        // We need to access jQuery from the window object since it's loaded dynamically
+        const $ = (window as any).$;
+        if ($) {
+          const $editor = $(editorRef.current);
+          const currentContent = String($editor.trumbowyg('html'));
+          if (currentContent !== value) {
+            $editor.trumbowyg('html', value);
+          }
+        }
+      } catch (error) {
+        console.warn('Error updating content:', error);
       }
     }
   }, [value]);
