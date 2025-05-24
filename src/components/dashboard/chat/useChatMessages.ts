@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const initialMessage: Message = {
   id: 1,
-  text: 'Hello! Welcome to Voluntus Long-Term Capital. How can I assist you with your financial planning today?',
+  text: 'Hello! Welcome to Voluntas. How can I assist you today?',
   sender: 'advisor',
   timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000) // 1 day ago
 };

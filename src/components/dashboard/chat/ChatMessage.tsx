@@ -17,7 +17,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     <div className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
       {message.sender === 'advisor' && (
         <Avatar className="h-8 w-8 mr-2 self-end mb-1">
-          <AvatarImage src="/placeholder.svg" />
+          <AvatarImage src="/lovable-uploads/8ec091e2-c307-4976-bfd9-4f1a3e654c9b.png" />
           <AvatarFallback>FA</AvatarFallback>
         </Avatar>
       )}
