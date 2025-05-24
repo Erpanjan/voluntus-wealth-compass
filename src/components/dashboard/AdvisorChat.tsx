@@ -50,11 +50,14 @@ const AdvisorChat = () => {
       }
 
       const data = await response.json();
+      console.log('N8N webhook response:', data);
       
       // Handle different possible response formats from N8N
       let aiResponse = '';
       if (typeof data === 'string') {
         aiResponse = data;
+      } else if (data.output) {
+        aiResponse = data.output;
       } else if (data.response) {
         aiResponse = data.response;
       } else if (data.message) {
