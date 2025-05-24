@@ -7,15 +7,22 @@ import ContactForm from '@/components/ContactForm';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { usePublishedArticles } from '@/hooks/usePublishedArticles';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 
 const Insight = () => {
-  const { articles, loading, totalPages, currentPage, totalCount } = usePublishedArticles(4);
+  const { articles, loading, totalPages, currentPage, totalCount, refresh } = usePublishedArticles(4);
   const [displayPage, setDisplayPage] = useState(1); // 1-based for UI
   
   const handlePageChange = (page: number) => {
     setDisplayPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleRefresh = () => {
+    console.log('Refreshing articles...');
+    refresh();
   };
 
   // Render loading skeletons
@@ -41,6 +48,15 @@ const Insight = () => {
   const startIndex = (displayPage - 1) * articlesPerPage;
   const displayedArticles = articles.slice(startIndex, startIndex + articlesPerPage);
 
+  console.log('Insight page render:', { 
+    articles: articles.length, 
+    loading, 
+    totalCount, 
+    totalPages,
+    displayPage,
+    displayedArticles: displayedArticles.length 
+  });
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -52,6 +68,22 @@ const Insight = () => {
 
       {/* Latest Research Section */}
       <Section title="Latest Research" titleCentered={true}>
+        <div className="flex justify-between items-center mb-6">
+          <div className="text-sm text-gray-600">
+            {loading ? 'Loading...' : `${totalCount} total articles`}
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefresh}
+            disabled={loading}
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
           {loading ? renderSkeletons() : (
             displayedArticles.map((article) => (
@@ -70,8 +102,15 @@ const Insight = () => {
           
           {!loading && articles.length === 0 && (
             <div className="col-span-full text-center py-16">
-              <h3 className="text-xl font-medium text-gray-600">No articles found</h3>
-              <p className="mt-2 text-gray-500">Check back soon for new insights</p>
+              <h3 className="text-xl font-medium text-gray-600">No published articles found</h3>
+              <p className="mt-2 text-gray-500">Articles need to have a published date in the past to appear here</p>
+              <Button 
+                variant="outline" 
+                onClick={handleRefresh}
+                className="mt-4"
+              >
+                Refresh Articles
+              </Button>
             </div>
           )}
         </div>

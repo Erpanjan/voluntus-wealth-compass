@@ -17,8 +17,9 @@ export const usePublishedArticles = (pageSize: number = 4) => {
         setLoading(true);
       }
       
-      console.log(`Fetching published articles for page ${page}`);
+      console.log(`Fetching published articles for page ${page} with pageSize ${pageSize}`);
       const result = await articleService.getPublishedArticles(page, pageSize);
+      console.log('Published articles result:', result);
       
       if (append) {
         setArticles(prev => [...prev, ...result.articles]);
@@ -30,7 +31,7 @@ export const usePublishedArticles = (pageSize: number = 4) => {
       setHasMore((page + 1) * pageSize < result.totalCount);
       setCurrentPage(page);
       
-      console.log(`Loaded ${result.articles.length} articles, total: ${result.totalCount}`);
+      console.log(`Loaded ${result.articles.length} articles, total: ${result.totalCount}, hasMore: ${(page + 1) * pageSize < result.totalCount}`);
     } catch (error) {
       console.error('Error fetching published articles:', error);
       toast({
@@ -55,7 +56,7 @@ export const usePublishedArticles = (pageSize: number = 4) => {
 
   useEffect(() => {
     fetchArticles();
-  }, []);
+  }, [pageSize]);
 
   return {
     articles,
