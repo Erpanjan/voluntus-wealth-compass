@@ -100,7 +100,7 @@ export const articleQueryService = {
       console.log('Raw article data by ID:', data);
       
       if (data && data.length > 0) {
-        const rawArticle = data[0];
+        const rawArticle = data[0] as any; // Cast to any to access all properties
         const article: Article = {
           id: rawArticle.id,
           title: rawArticle.title,
@@ -250,7 +250,7 @@ export const articleQueryService = {
       console.log('Raw article data:', data);
       
       if (data && data.length > 0) {
-        const rawArticle = data[0];
+        const rawArticle = data[0] as any; // Cast to any to access all properties
         // Process the data to ensure correct typing
         const article: Article = {
           id: rawArticle.id,
