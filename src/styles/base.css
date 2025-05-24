@@ -1,56 +1,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Draft.js editor styles */
-.DraftEditor-root {
-  position: relative;
-}
-
-.DraftEditor-editorContainer {
-  position: relative;
-}
-
-.public-DraftEditor-content {
-  outline: none;
-}
-
-.public-DraftEditor-content[contenteditable=true] {
-  -webkit-user-modify: read-write-plaintext-only;
-}
-
-.public-DraftEditor-content h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-.public-DraftEditor-content h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  line-height: 1.2;
-}
-
-.public-DraftEditor-content p {
-  margin-bottom: 1rem;
-  line-height: 1.6;
-}
-
-.public-DraftEditor-content ul,
-.public-DraftEditor-content ol {
-  margin-left: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.public-DraftEditor-content li {
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
-}
 
 @layer base {
   :root {

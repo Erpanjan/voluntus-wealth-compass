@@ -1,6 +1,6 @@
 
 import React from 'react';
-import DraftEditor from './DraftEditor';
+import TrumbowygEditor from './TrumbowygEditor';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 interface RichTextEditorProps {
@@ -9,7 +9,7 @@ interface RichTextEditorProps {
 }
 
 const RichTextEditorContent: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
-  return <DraftEditor value={value} onChange={onChange} />;
+  return <TrumbowygEditor value={value} onChange={onChange} />;
 };
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
