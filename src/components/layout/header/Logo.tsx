@@ -15,7 +15,7 @@ const Logo = ({ handleNavLinkClick }: LogoProps) => {
         // Stacked logo for mobile
         <div className="flex flex-col items-center">
           <img 
-            src="/lovable-uploads/c80b8a97-ccf7-402a-9a20-a24c58c2c5f4.png" 
+            src="/lovable-uploads/54da0e3b-7320-468f-96c6-2a19248598e4.png" 
             alt="VOLUNTAS LONG-TERM CAPITAL Logo" 
             className="h-16 w-auto" 
             width="200"
@@ -28,7 +28,7 @@ const Logo = ({ handleNavLinkClick }: LogoProps) => {
         // Horizontal logo for desktop
         <div className="flex items-center">
           <img 
-            src="/lovable-uploads/c80b8a97-ccf7-402a-9a20-a24c58c2c5f4.png" 
+            src="/lovable-uploads/54da0e3b-7320-468f-96c6-2a19248598e4.png" 
             alt="VOLUNTAS LONG-TERM CAPITAL Logo" 
             className="h-16 w-auto" 
             width="200"
