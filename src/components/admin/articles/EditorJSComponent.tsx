@@ -61,14 +61,7 @@ const EditorJSComponent: React.FC<EditorJSComponentProps> = ({ value, onChange }
           }
         },
         code: Code,
-        table: {
-          class: Table,
-          inlineToolbar: true,
-          config: {
-            rows: 2,
-            cols: 3,
-          },
-        },
+        table: Table,
         quote: {
           class: Quote,
           inlineToolbar: true,
