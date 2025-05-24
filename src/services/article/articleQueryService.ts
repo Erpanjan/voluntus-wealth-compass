@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Article } from './types';
+import { Article, Author, Report } from './types';
 
 /**
  * Normalizes article content based on its type
@@ -30,6 +30,53 @@ const normalizeContent = (content: any) => {
 };
 
 /**
+ * Safely converts Json data to Author array
+ */
+const normalizeAuthors = (authorsData: any): Author[] => {
+  try {
+    if (!authorsData) return [];
+    
+    if (Array.isArray(authorsData)) {
+      return authorsData.map((author: any) => ({
+        id: author.id || '1',
+        name: author.name || '',
+        image_url: author.image_url || undefined,
+        bio: author.bio || undefined
+      }));
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('Error normalizing authors:', error);
+    return [];
+  }
+};
+
+/**
+ * Safely converts Json data to Report array
+ */
+const normalizeReports = (reportsData: any): Report[] => {
+  try {
+    if (!reportsData) return [];
+    
+    if (Array.isArray(reportsData)) {
+      return reportsData.map((report: any) => ({
+        id: report.id || '',
+        title: report.title || '',
+        description: report.description || undefined,
+        file_url: report.file_url || '',
+        created_at: report.created_at || ''
+      }));
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('Error normalizing reports:', error);
+    return [];
+  }
+};
+
+/**
  * Handles all query operations for articles
  */
 export const articleQueryService = {
@@ -53,11 +100,21 @@ export const articleQueryService = {
       console.log('Raw article data by ID:', data);
       
       if (data && data.length > 0) {
+        const rawArticle = data[0];
         const article: Article = {
-          ...data[0],
-          content: normalizeContent(data[0].content),
-          authors: Array.isArray(data[0].authors) ? data[0].authors : [],
-          reports: Array.isArray(data[0].reports) ? data[0].reports : []
+          id: rawArticle.id,
+          title: rawArticle.title,
+          slug: rawArticle.slug,
+          description: rawArticle.description || '',
+          content: normalizeContent(rawArticle.content),
+          category: rawArticle.category || '',
+          author_name: rawArticle.author_name || '',
+          image_url: rawArticle.image_url || '',
+          published_at: rawArticle.published_at,
+          created_at: rawArticle.created_at,
+          updated_at: rawArticle.updated_at,
+          authors: normalizeAuthors(rawArticle.authors),
+          reports: normalizeReports(rawArticle.reports)
         };
         
         console.log('Processed article by ID:', article);
@@ -95,9 +152,19 @@ export const articleQueryService = {
       
       // Process the data to ensure correct typing
       const processedData: Article[] = data?.map((item: any) => ({
-        ...item,
+        id: item.id,
+        title: item.title,
+        slug: item.slug,
+        description: item.description || '',
         content: normalizeContent(item.content),
-        authors: Array.isArray(item.authors) ? item.authors : []
+        category: item.category || '',
+        author_name: item.author_name || '',
+        image_url: item.image_url || '',
+        published_at: item.published_at,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        authors: normalizeAuthors(item.authors),
+        reports: [] // Reports not included in this query
       })) || [];
       
       console.log('Processed articles data:', processedData);
@@ -135,9 +202,19 @@ export const articleQueryService = {
       
       // Process the data to ensure correct typing
       const processedData: Article[] = data.map((item: any) => ({
-        ...item,
+        id: item.id,
+        title: item.title,
+        slug: item.slug,
+        description: item.description || '',
         content: normalizeContent(item.content),
-        authors: Array.isArray(item.authors) ? item.authors : []
+        category: item.category || '',
+        author_name: item.author_name || '',
+        image_url: item.image_url || '',
+        published_at: item.published_at,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        authors: normalizeAuthors(item.authors),
+        reports: [] // Reports not included in this query
       }));
       
       // Get total count from first item (all items have same total_count)
@@ -173,12 +250,22 @@ export const articleQueryService = {
       console.log('Raw article data:', data);
       
       if (data && data.length > 0) {
+        const rawArticle = data[0];
         // Process the data to ensure correct typing
         const article: Article = {
-          ...data[0],
-          content: normalizeContent(data[0].content),
-          authors: Array.isArray(data[0].authors) ? data[0].authors : [],
-          reports: Array.isArray(data[0].reports) ? data[0].reports : []
+          id: rawArticle.id,
+          title: rawArticle.title,
+          slug: rawArticle.slug,
+          description: rawArticle.description || '',
+          content: normalizeContent(rawArticle.content),
+          category: rawArticle.category || '',
+          author_name: rawArticle.author_name || '',
+          image_url: rawArticle.image_url || '',
+          published_at: rawArticle.published_at,
+          created_at: rawArticle.created_at,
+          updated_at: rawArticle.updated_at,
+          authors: normalizeAuthors(rawArticle.authors),
+          reports: normalizeReports(rawArticle.reports)
         };
         console.log('Processed article data:', article);
         return article;

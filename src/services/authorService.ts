@@ -1,5 +1,4 @@
 
-import { supabase } from '@/integrations/supabase/client';
 import { Author } from '@/types/article.types';
 
 export interface CreateAuthorInput {
@@ -10,22 +9,13 @@ export interface CreateAuthorInput {
 
 export const authorService = {
   /**
-   * Get all available authors
-   * @returns List of all authors
+   * Get all available authors - now returns empty array since authors table was deleted
+   * @returns Empty list of authors
    */
   async getAuthors(): Promise<Author[]> {
     try {
-      const { data, error } = await supabase
-        .from('authors')
-        .select('*')
-        .order('name');
-      
-      if (error) {
-        console.error('Error fetching authors:', error);
-        throw error;
-      }
-      
-      return data || [];
+      console.log('Authors table no longer exists, returning empty array');
+      return [];
     } catch (error) {
       console.error('Error in getAuthors:', error);
       return [];
@@ -33,28 +23,14 @@ export const authorService = {
   },
 
   /**
-   * Create a new author
+   * Create a new author - now returns null since authors table was deleted
    * @param authorData Author information to create
-   * @returns The created author or null if failed
+   * @returns null since authors table doesn't exist
    */
   async createAuthor(authorData: CreateAuthorInput): Promise<Author | null> {
     try {
-      const { data, error } = await supabase
-        .from('authors')
-        .insert([{
-          name: authorData.name,
-          bio: authorData.bio || null,
-          image_url: authorData.image_url || null
-        }])
-        .select()
-        .single();
-      
-      if (error) {
-        console.error('Error creating author:', error);
-        throw error;
-      }
-      
-      return data;
+      console.log('Authors table no longer exists, cannot create author:', authorData);
+      return null;
     } catch (error) {
       console.error('Error in createAuthor:', error);
       return null;
