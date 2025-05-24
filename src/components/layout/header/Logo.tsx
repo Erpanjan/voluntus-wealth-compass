@@ -15,18 +15,26 @@ const Logo = ({ handleNavLinkClick }: LogoProps) => {
         // Stacked logo for mobile
         <div className="flex flex-col items-center">
           <img 
-            src="/lovable-uploads/e4b4f8b7-8d82-468f-b861-b6a593038f7c.png" 
-            alt="Voluntus Logo" 
-            className="h-16" 
+            src="/lovable-uploads/c80b8a97-ccf7-402a-9a20-a24c58c2c5f4.png" 
+            alt="VOLUNTAS LONG-TERM CAPITAL Logo" 
+            className="h-16 w-auto" 
+            width="200"
+            height="64"
+            loading="eager"
+            fetchPriority="high"
           />
         </div>
       ) : (
         // Horizontal logo for desktop
         <div className="flex items-center">
           <img 
-            src="/lovable-uploads/e4b4f8b7-8d82-468f-b861-b6a593038f7c.png" 
-            alt="Voluntus Logo" 
-            className="h-16" 
+            src="/lovable-uploads/c80b8a97-ccf7-402a-9a20-a24c58c2c5f4.png" 
+            alt="VOLUNTAS LONG-TERM CAPITAL Logo" 
+            className="h-16 w-auto" 
+            width="200"
+            height="64"
+            loading="eager"
+            fetchPriority="high"
           />
         </div>
       )}
