@@ -21,22 +21,6 @@ export default defineConfig(({ mode }) => ({
     target: ['es2015', 'safari11'],
     // Polyfill for older browsers if needed
     polyfillDynamicImport: true,
-    rollupOptions: {
-      // Ensure jQuery is properly bundled
-      external: [],
-    }
-  },
-  // Define global variables for browser compatibility
-  define: {
-    global: 'globalThis',
-    // Explicitly define jQuery globals
-    '$': 'globalThis.$',
-    'jQuery': 'globalThis.jQuery'
-  },
-  // Optimize dependency pre-bundling - ensure jQuery and Trumbowyg are included
-  optimizeDeps: {
-    include: ['jquery', 'trumbowyg'],
-    force: true
   },
   plugins: [
     react(),
@@ -46,8 +30,6 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // Add explicit jQuery alias
-      "jquery": path.resolve(__dirname, "./node_modules/jquery/dist/jquery.min.js")
     },
   },
   // Add specific browser compatibility targets
