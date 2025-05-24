@@ -21,10 +21,18 @@ export default defineConfig(({ mode }) => ({
     target: ['es2015', 'safari11'],
     // Polyfill for older browsers if needed
     polyfillDynamicImport: true,
+    rollupOptions: {
+      // Ensure jQuery is properly bundled
+      external: [],
+    }
   },
   // Define global variables for browser compatibility
   define: {
     global: 'globalThis',
+  },
+  // Optimize dependency pre-bundling
+  optimizeDeps: {
+    include: ['jquery', 'trumbowyg']
   },
   plugins: [
     react(),

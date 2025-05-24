@@ -6,21 +6,14 @@ import $ from 'jquery';
 import 'trumbowyg/dist/ui/trumbowyg.min.css';
 import 'trumbowyg/dist/trumbowyg.min.js';
 
-// Import all plugins
+// Import essential plugins only to reduce bundle size
 import 'trumbowyg/dist/plugins/colors/trumbowyg.colors.min.js';
 import 'trumbowyg/dist/plugins/colors/ui/trumbowyg.colors.min.css';
-import 'trumbowyg/dist/plugins/upload/trumbowyg.upload.min.js';
 import 'trumbowyg/dist/plugins/table/trumbowyg.table.min.js';
 import 'trumbowyg/dist/plugins/table/ui/trumbowyg.table.min.css';
-import 'trumbowyg/dist/plugins/emoji/trumbowyg.emoji.min.js';
 import 'trumbowyg/dist/plugins/history/trumbowyg.history.min.js';
 import 'trumbowyg/dist/plugins/fontfamily/trumbowyg.fontfamily.min.js';
 import 'trumbowyg/dist/plugins/fontsize/trumbowyg.fontsize.min.js';
-import 'trumbowyg/dist/plugins/lineheight/trumbowyg.lineheight.min.js';
-import 'trumbowyg/dist/plugins/noembed/trumbowyg.noembed.min.js';
-import 'trumbowyg/dist/plugins/pasteimage/trumbowyg.pasteimage.min.js';
-import 'trumbowyg/dist/plugins/resizimg/trumbowyg.resizimg.min.js';
-import 'trumbowyg/dist/plugins/specialchars/trumbowyg.specialchars.min.js';
 
 // Extend jQuery type to include trumbowyg method
 declare global {
@@ -44,7 +37,7 @@ const TrumbowygEditor: React.FC<TrumbowygEditorProps> = ({ value, onChange }) =>
 
     const $editor = $(editorRef.current);
     
-    // Initialize Trumbowyg with all plugins
+    // Initialize Trumbowyg with essential plugins
     $editor.trumbowyg({
       btns: [
         ['viewHTML'],
@@ -52,20 +45,14 @@ const TrumbowygEditor: React.FC<TrumbowygEditorProps> = ({ value, onChange }) =>
         ['formatting'],
         ['fontfamily'],
         ['fontsize'],
-        ['lineheight'],
         ['foreColor', 'backColor'],
         ['strong', 'em', 'del'],
-        ['superscript', 'subscript'],
         ['link'],
-        ['insertImage', 'upload'],
+        ['insertImage'],
         ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
         ['unorderedList', 'orderedList'],
-        ['horizontalRule'],
-        ['removeformat'],
         ['table'],
-        ['emoji'],
-        ['specialChars'],
-        ['noembed'],
+        ['removeformat'],
         ['fullscreen']
       ],
       plugins: {
@@ -92,18 +79,7 @@ const TrumbowygEditor: React.FC<TrumbowygEditorProps> = ({ value, onChange }) =>
           ]
         },
         fontsize: {
-          sizeList: ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px']
-        },
-        lineheight: {
-          heightList: ['1.0', '1.2', '1.4', '1.5', '1.6', '1.8', '2.0']
-        },
-        upload: {
-          serverPath: '/api/upload',
-          fileFieldName: 'file',
-          imageWidthModalEdit: true
-        },
-        table: {
-          styler: 'table'
+          sizeList: ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px']
         }
       },
       autogrow: true,
