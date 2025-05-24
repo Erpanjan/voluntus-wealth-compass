@@ -22,6 +22,14 @@ import 'trumbowyg/dist/plugins/pasteimage/trumbowyg.pasteimage.min.js';
 import 'trumbowyg/dist/plugins/resizimg/trumbowyg.resizimg.min.js';
 import 'trumbowyg/dist/plugins/specialchars/trumbowyg.specialchars.min.js';
 
+// Extend jQuery type to include trumbowyg method
+declare global {
+  interface JQuery {
+    trumbowyg(options?: any): JQuery;
+    trumbowyg(command: string, value?: any): JQuery | string;
+  }
+}
+
 interface TrumbowygEditorProps {
   value: string;
   onChange: (value: string) => void;
@@ -114,7 +122,7 @@ const TrumbowygEditor: React.FC<TrumbowygEditorProps> = ({ value, onChange }) =>
 
     // Listen for content changes
     $editor.on('tbwchange', () => {
-      const newContent = $editor.trumbowyg('html');
+      const newContent = $editor.trumbowyg('html') as string;
       onChange(newContent);
     });
 
@@ -137,7 +145,7 @@ const TrumbowygEditor: React.FC<TrumbowygEditorProps> = ({ value, onChange }) =>
   useEffect(() => {
     if (editorRef.current && isInitialized.current && value !== undefined) {
       const $editor = $(editorRef.current);
-      const currentContent = $editor.trumbowyg('html');
+      const currentContent = $editor.trumbowyg('html') as string;
       if (currentContent !== value) {
         $editor.trumbowyg('html', value);
       }
@@ -146,75 +154,77 @@ const TrumbowygEditor: React.FC<TrumbowygEditorProps> = ({ value, onChange }) =>
 
   return (
     <div className="trumbowyg-editor border rounded-md overflow-hidden bg-white shadow-sm">
-      <style jsx>{`
-        .trumbowyg-box {
-          border: none !important;
-          background: white !important;
-        }
-        
-        .trumbowyg-button-pane {
-          background: #F6F6F7 !important;
-          border-bottom: 1px solid #e5e7eb !important;
-          padding: 12px !important;
-          border-radius: 0 !important;
-        }
-        
-        .trumbowyg-button-group {
-          margin-right: 8px !important;
-        }
-        
-        .trumbowyg-button-group:last-child {
-          margin-right: 0 !important;
-        }
-        
-        .trumbowyg-editor {
-          padding: 24px !important;
-          min-height: 400px !important;
-          font-family: 'Poppins', sans-serif !important;
-          font-size: 16px !important;
-          line-height: 1.8 !important;
-          color: #333333 !important;
-          border: none !important;
-          outline: none !important;
-        }
-        
-        .trumbowyg-editor:empty:before {
-          content: 'Start writing your article content...' !important;
-          color: #9ca3af !important;
-          font-style: italic !important;
-        }
-        
-        .trumbowyg-button {
-          background: white !important;
-          border: 1px solid #d1d5db !important;
-          border-radius: 4px !important;
-          margin: 2px !important;
-          padding: 6px 8px !important;
-          font-size: 12px !important;
-          color: #374151 !important;
-          transition: all 0.2s !important;
-        }
-        
-        .trumbowyg-button:hover {
-          background: #f9fafb !important;
-          border-color: #9ca3af !important;
-        }
-        
-        .trumbowyg-button.trumbowyg-active {
-          background: #e5e7eb !important;
-          border-color: #6b7280 !important;
-        }
-        
-        .trumbowyg-modal-box {
-          border-radius: 8px !important;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-        }
-        
-        .trumbowyg-dropdown {
-          border-radius: 4px !important;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
-        }
-      `}</style>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .trumbowyg-box {
+            border: none !important;
+            background: white !important;
+          }
+          
+          .trumbowyg-button-pane {
+            background: #F6F6F7 !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            padding: 12px !important;
+            border-radius: 0 !important;
+          }
+          
+          .trumbowyg-button-group {
+            margin-right: 8px !important;
+          }
+          
+          .trumbowyg-button-group:last-child {
+            margin-right: 0 !important;
+          }
+          
+          .trumbowyg-editor {
+            padding: 24px !important;
+            min-height: 400px !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-size: 16px !important;
+            line-height: 1.8 !important;
+            color: #333333 !important;
+            border: none !important;
+            outline: none !important;
+          }
+          
+          .trumbowyg-editor:empty:before {
+            content: 'Start writing your article content...' !important;
+            color: #9ca3af !important;
+            font-style: italic !important;
+          }
+          
+          .trumbowyg-button {
+            background: white !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 4px !important;
+            margin: 2px !important;
+            padding: 6px 8px !important;
+            font-size: 12px !important;
+            color: #374151 !important;
+            transition: all 0.2s !important;
+          }
+          
+          .trumbowyg-button:hover {
+            background: #f9fafb !important;
+            border-color: #9ca3af !important;
+          }
+          
+          .trumbowyg-button.trumbowyg-active {
+            background: #e5e7eb !important;
+            border-color: #6b7280 !important;
+          }
+          
+          .trumbowyg-modal-box {
+            border-radius: 8px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+          }
+          
+          .trumbowyg-dropdown {
+            border-radius: 4px !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+          }
+        `
+      }} />
       
       <textarea
         ref={editorRef}
