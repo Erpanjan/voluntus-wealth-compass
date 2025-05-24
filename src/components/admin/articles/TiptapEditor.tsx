@@ -2,7 +2,7 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { ResizableImage } from './editor/extensions/ResizableImage';
+import Image from '@tiptap/extension-image';
 import Youtube from '@tiptap/extension-youtube';
 import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
@@ -59,7 +59,7 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({
       StarterKit.configure({
         codeBlock: false, // We'll use CodeBlockLowlight instead
       }),
-      ResizableImage.configure({
+      Image.configure({
         inline: false,
         allowBase64: true,
         HTMLAttributes: {
@@ -142,7 +142,7 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({
               const url = reader.result as string;
               view.dispatch(
                 view.state.tr.replaceSelectionWith(
-                  view.state.schema.nodes.resizableImage.create({ src: url })
+                  view.state.schema.nodes.image.create({ src: url })
                 )
               );
             };
@@ -545,6 +545,20 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({
           margin: 1.5em 0;
           border-radius: 0.5rem;
           overflow: hidden;
+        }
+        .ProseMirror img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 0.5rem;
+          margin: 1em 0;
+        }
+        .ProseMirror img:hover {
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .ProseMirror img.ProseMirror-selectednode {
+          outline: 2px solid #8B5CF6;
+          outline-offset: 2px;
         }
       `}</style>
     </div>

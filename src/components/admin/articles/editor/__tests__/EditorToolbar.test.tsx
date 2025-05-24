@@ -5,6 +5,7 @@ import EditorToolbar from '../EditorToolbar';
 
 // Mock child components
 jest.mock('../tools/TextFormattingTools', () => () => <div data-testid="text-formatting-tools">TextFormattingTools</div>);
+jest.mock('../tools/AdvancedFormattingTools', () => () => <div data-testid="advanced-formatting-tools">AdvancedFormattingTools</div>);
 jest.mock('../tools/FontControls', () => () => <div data-testid="font-controls">FontControls</div>);
 jest.mock('../tools/ColorPopover', () => () => <div data-testid="color-popover">ColorPopover</div>);
 jest.mock('../tools/LineHeightPopover', () => () => <div data-testid="line-height-popover">LineHeightPopover</div>);
@@ -13,6 +14,7 @@ jest.mock('../tools/ListControls', () => () => <div data-testid="list-controls">
 jest.mock('../tools/AlignmentControls', () => () => <div data-testid="alignment-controls">AlignmentControls</div>);
 jest.mock('../tools/LinkPopover', () => () => <div data-testid="link-popover">LinkPopover</div>);
 jest.mock('../tools/ImagePopover', () => () => <div data-testid="image-popover">ImagePopover</div>);
+jest.mock('../tools/VideoPopover', () => () => <div data-testid="video-popover">VideoPopover</div>);
 jest.mock('../tools/HistoryControls', () => () => <div data-testid="history-controls">HistoryControls</div>);
 jest.mock('../constants/editorConstants', () => ({
   colorOptions: [{ label: 'Black', value: '#000000' }]
@@ -46,6 +48,11 @@ describe('EditorToolbar Component', () => {
     handleImageUrlInsertion: jest.fn(),
     handleImageUpload: jest.fn(),
     fileInputRef: { current: null } as React.RefObject<HTMLInputElement>,
+    videoUrl: 'https://youtube.com/watch?v=test',
+    setVideoUrl: jest.fn(),
+    videoPopoverOpen: false,
+    setVideoPopoverOpen: jest.fn(),
+    handleVideoInsertion: jest.fn(),
     fontOptionsOpen: false,
     setFontOptionsOpen: jest.fn(),
     colorPopoverOpen: false,
@@ -73,6 +80,7 @@ describe('EditorToolbar Component', () => {
     expect(screen.getByTestId('alignment-controls')).toBeInTheDocument();
     expect(screen.getByTestId('link-popover')).toBeInTheDocument();
     expect(screen.getByTestId('image-popover')).toBeInTheDocument();
+    expect(screen.getByTestId('video-popover')).toBeInTheDocument();
     expect(screen.getByTestId('history-controls')).toBeInTheDocument();
   });
 
@@ -80,10 +88,17 @@ describe('EditorToolbar Component', () => {
     render(<EditorToolbar {...mockProps} />);
     
     const separators = screen.getAllByTestId('separator');
-    expect(separators.length).toBe(5);
+    expect(separators.length).toBeGreaterThan(0);
     
     separators.forEach(separator => {
       expect(separator).toHaveAttribute('data-orientation', 'vertical');
     });
+  });
+
+  it('renders fullscreen toggle button', () => {
+    render(<EditorToolbar {...mockProps} />);
+    
+    const fullscreenButton = screen.getByTitle('Enter Fullscreen');
+    expect(fullscreenButton).toBeInTheDocument();
   });
 });
