@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
@@ -68,22 +67,6 @@ const Insight = () => {
 
       {/* Latest Research Section */}
       <Section title="Latest Research" titleCentered={true}>
-        <div className="flex justify-between items-center mb-6">
-          <div className="text-sm text-gray-600">
-            {loading ? 'Loading...' : `${totalCount} total articles`}
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleRefresh}
-            disabled={loading}
-            className="gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
           {loading ? renderSkeletons() : (
             displayedArticles.map((article) => (
