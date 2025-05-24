@@ -184,7 +184,7 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const handleFontFamilyChange = useCallback((value: string) => {
     if (!editor) return;
     if (value === 'default') {
-      editor.chain().focus().unsetFontFamily().run();
+      editor.chain().focus().unsetMark('textStyle').run();
     } else {
       editor.chain().focus().setFontFamily(value).run();
     }
