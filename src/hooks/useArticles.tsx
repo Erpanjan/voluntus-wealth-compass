@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { articleService, Article } from '@/services/article';
@@ -14,7 +15,9 @@ export const useArticles = () => {
   const fetchArticles = async () => {
     try {
       setLoading(true);
+      console.log('Fetching articles...');
       const data = await articleService.getArticles();
+      console.log('Articles fetched successfully:', data);
       setArticles(data);
     } catch (error) {
       console.error('Error fetching articles:', error);

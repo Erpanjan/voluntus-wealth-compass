@@ -348,6 +348,7 @@ export type Database = {
           description: string
           content: Json
           category: string
+          author_name: string
           image_url: string
           published_at: string
           created_at: string
@@ -365,6 +366,7 @@ export type Database = {
           description: string
           content: Json
           category: string
+          author_name: string
           image_url: string
           published_at: string
           created_at: string
@@ -382,6 +384,7 @@ export type Database = {
           description: string
           content: Json
           category: string
+          author_name: string
           image_url: string
           published_at: string
           created_at: string
@@ -398,6 +401,7 @@ export type Database = {
           description: string
           content: Json
           category: string
+          author_name: string
           image_url: string
           published_at: string
           created_at: string
@@ -415,6 +419,7 @@ export type Database = {
           description: string
           content: Json
           category: string
+          author_name: string
           image_url: string
           published_at: string
           created_at: string
