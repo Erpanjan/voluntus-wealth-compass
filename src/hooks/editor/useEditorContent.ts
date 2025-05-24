@@ -19,8 +19,16 @@ export const useEditorContent = ({ initialValue, editorRef, onChange }: UseEdito
     temp.innerHTML = html;
     
     // Remove Microsoft Word specific elements and attributes
-    const elementsToRemove = temp.querySelectorAll('meta, link, style, title, xml, o\\:*, w\\:*');
+    const elementsToRemove = temp.querySelectorAll('meta, link, style, title, xml');
     elementsToRemove.forEach(el => el.remove());
+    
+    // Remove Word-specific namespace elements (o:* and w:* elements)
+    const wordElements = temp.querySelectorAll('*');
+    wordElements.forEach(el => {
+      if (el.tagName && (el.tagName.startsWith('O:') || el.tagName.startsWith('W:'))) {
+        el.remove();
+      }
+    });
     
     // Remove problematic attributes
     const allElements = temp.querySelectorAll('*');

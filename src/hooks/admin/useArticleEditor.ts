@@ -2,30 +2,18 @@
 import { useEffect } from 'react';
 import { 
   useArticleBasicInfo,
-  useArticleAuthors,
   useArticleImage,
-  useArticleAttachments,
   useArticlePreview,
   useArticleActions
 } from './articleEditor';
-import { Attachment } from './articleEditor/useArticleAttachments';
-import { Author } from '@/types/article.types';
 
 export const useArticleEditor = () => {
   const { form, isEditMode, loadArticleData } = useArticleBasicInfo();
-  const { 
-    selectedAuthors, 
-    setSelectedAuthors, 
-    availableAuthors, 
-    loadAuthorsData, 
-    processAuthorsForSave 
-  } = useArticleAuthors(isEditMode);
   const { 
     imageFile, setImageFile, 
     imagePreview, setImagePreview, 
     fileInputRef, handleImageChange, handleRemoveImage, loadImageData 
   } = useArticleImage();
-  const { attachments, setAttachments, loadAttachmentsData } = useArticleAttachments(isEditMode);
   const { previewOpen, setPreviewOpen, openPreview } = useArticlePreview();
   const { submitting, navigateBack, saveDraft, publishArticle } = useArticleActions();
 
@@ -37,36 +25,20 @@ export const useArticleEditor = () => {
     const articleData = await loadArticleData();
     
     if (articleData) {
-      // Once we have the article data, load related data
-      loadAuthorsData();
+      // Load image data if available
       loadImageData(articleData.image_url);
-      loadAttachmentsData();
     }
   };
 
-  // Helper function to convert author IDs to Author objects
-  const getAuthorObjects = (authorIds: string[]): Author[] => {
-    return authorIds.map(id => {
-      const author = availableAuthors.find(a => a.id === id);
-      return author || { id, name: 'Unknown Author', image_url: null };
-    });
-  };
-
-  // Wrap saveDraft and publishArticle to get data from their respective hooks
+  // Wrap saveDraft and publishArticle with correct arguments
   const handleSaveDraft = async () => {
     const formData = form.getValues();
-    // Process authors (create new ones if needed) before saving
-    const finalAuthorIds = await processAuthorsForSave();
-    const authorObjects = getAuthorObjects(finalAuthorIds);
-    await saveDraft(formData, authorObjects, imageFile, attachments as Attachment[]);
+    await saveDraft(formData, imageFile);
   };
 
   const handlePublishArticle = async () => {
     const formData = form.getValues();
-    // Process authors (create new ones if needed) before publishing
-    const finalAuthorIds = await processAuthorsForSave();
-    const authorObjects = getAuthorObjects(finalAuthorIds);
-    await publishArticle(formData, authorObjects, imageFile, attachments as Attachment[]);
+    await publishArticle(formData, imageFile);
   };
 
   return {
@@ -74,10 +46,6 @@ export const useArticleEditor = () => {
     form,
     isEditMode,
     submitting,
-    
-    // Authors
-    selectedAuthors,
-    setSelectedAuthors,
     
     // Image
     imagePreview,
@@ -89,10 +57,6 @@ export const useArticleEditor = () => {
     // Preview
     previewOpen,
     setPreviewOpen,
-    
-    // Attachments
-    attachments,
-    setAttachments,
     
     // Methods
     loadArticleData: loadAllArticleData,
