@@ -209,10 +209,6 @@ const Dashboard = () => {
       
       {/* Right Sidebar with Navigation Tabs */}
       <div className="w-64 bg-[#F9F9F9] border-l min-h-screen flex flex-col">
-        <div className="p-6 border-b">
-          
-        </div>
-        
         {/* Navigation Menu */}
         <div className="flex-1 py-8">
           <nav className="space-y-6 px-6">
