@@ -138,7 +138,7 @@ const EditorJSComponent: React.FC<EditorJSComponentProps> = ({ value, onChange }
           color: '#333333'
         }}
       />
-      <style jsx global>{`
+      <style>{`
         .codex-editor__redactor {
           padding-bottom: 0 !important;
         }
