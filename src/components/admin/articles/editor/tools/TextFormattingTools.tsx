@@ -4,6 +4,8 @@ import {
   Bold, 
   Italic, 
   Underline,
+  Strikethrough,
+  Code,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -40,6 +42,24 @@ const TextFormattingTools: React.FC<TextFormattingToolsProps> = ({ applyFormat }
         title="Underline"
       >
         <Underline size={16} />
+      </Button>
+      <Button 
+        onClick={() => applyFormat('strike')} 
+        variant="ghost" 
+        size="sm"
+        className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
+        title="Strikethrough"
+      >
+        <Strikethrough size={16} />
+      </Button>
+      <Button 
+        onClick={() => applyFormat('code')} 
+        variant="ghost" 
+        size="sm"
+        className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
+        title="Code"
+      >
+        <Code size={16} />
       </Button>
     </>
   );

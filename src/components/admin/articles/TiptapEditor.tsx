@@ -14,6 +14,7 @@ import Underline from '@tiptap/extension-underline';
 import Color from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
 import FontFamily from '@tiptap/extension-font-family';
+import FontSize from '@tiptap/extension-font-size';
 import Highlight from '@tiptap/extension-highlight';
 import EditorToolbar from './editor/EditorToolbar';
 
@@ -31,14 +32,17 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const [fontOptionsOpen, setFontOptionsOpen] = useState(false);
   const [colorPopoverOpen, setColorPopoverOpen] = useState(false);
   const [lineHeightPopoverOpen, setLineHeightPopoverOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     extensions: [
       StarterKit,
       Image.configure({
+        inline: false,
+        allowBase64: true,
         HTMLAttributes: {
-          class: 'max-w-full h-auto rounded-lg',
+          class: 'max-w-full h-auto rounded-lg cursor-pointer',
         },
       }),
       Youtube.configure({
@@ -50,6 +54,9 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
       }),
       Table.configure({
         resizable: true,
+        HTMLAttributes: {
+          class: 'border-collapse border border-gray-300',
+        },
       }),
       TableRow,
       TableHeader,
@@ -57,16 +64,21 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 hover:text-blue-800 underline',
+          class: 'text-blue-600 hover:text-blue-800 underline cursor-pointer',
         },
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
       Underline,
-      Color,
+      Color.configure({
+        types: ['textStyle'],
+      }),
       TextStyle,
       FontFamily.configure({
+        types: ['textStyle'],
+      }),
+      FontSize.configure({
         types: ['textStyle'],
       }),
       Highlight.configure({
@@ -80,7 +92,29 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[400px] p-6',
+        class: `prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl mx-auto focus:outline-none ${
+          isFullscreen ? 'min-h-[80vh]' : 'min-h-[400px]'
+        } p-6`,
+      },
+      handleDrop: (view, event, slice, moved) => {
+        if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+          const file = event.dataTransfer.files[0];
+          if (file.type.includes('image/')) {
+            event.preventDefault();
+            const reader = new FileReader();
+            reader.onload = () => {
+              const url = reader.result as string;
+              view.dispatch(
+                view.state.tr.replaceSelectionWith(
+                  view.state.schema.nodes.image.create({ src: url })
+                )
+              );
+            };
+            reader.readAsDataURL(file);
+            return true;
+          }
+        }
+        return false;
       },
     },
   });
@@ -144,6 +178,9 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
       case 'horizontalRule':
         editor.chain().focus().setHorizontalRule().run();
         break;
+      case 'insertTable':
+        editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+        break;
     }
   }, [editor]);
 
@@ -184,7 +221,7 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const handleFontFamilyChange = useCallback((value: string) => {
     if (!editor) return;
     if (value === 'default') {
-      editor.chain().focus().unsetMark('textStyle').run();
+      editor.chain().focus().unsetFontFamily().run();
     } else {
       editor.chain().focus().setFontFamily(value).run();
     }
@@ -193,9 +230,9 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const handleFontSizeChange = useCallback((value: string) => {
     if (!editor) return;
     if (value === 'default') {
-      editor.chain().focus().unsetMark('textStyle').run();
+      editor.chain().focus().unsetFontSize().run();
     } else {
-      editor.chain().focus().setMark('textStyle', { fontSize: value }).run();
+      editor.chain().focus().setFontSize(value).run();
     }
   }, [editor]);
 
@@ -207,16 +244,24 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
 
   const handleLineHeightChange = useCallback((height: string) => {
     if (!editor) return;
-    editor.chain().focus().setMark('textStyle', { lineHeight: height }).run();
+    const style = document.createElement('style');
+    style.innerHTML = `.ProseMirror p { line-height: ${height} !important; }`;
+    document.head.appendChild(style);
     setLineHeightPopoverOpen(false);
   }, [editor]);
+
+  const toggleFullscreen = useCallback(() => {
+    setIsFullscreen(!isFullscreen);
+  }, [isFullscreen]);
 
   if (!editor) {
     return null;
   }
 
   return (
-    <div className="border rounded-md bg-white shadow-sm">
+    <div className={`border rounded-md bg-white shadow-sm transition-all duration-300 ${
+      isFullscreen ? 'fixed inset-4 z-50 max-w-none' : ''
+    }`}>
       <EditorToolbar 
         applyFormat={applyFormat}
         linkUrl={linkUrl}
@@ -241,10 +286,14 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
         handleFontSizeChange={handleFontSizeChange}
         handleColorChange={handleColorChange}
         handleLineHeightChange={handleLineHeightChange}
+        isFullscreen={isFullscreen}
+        toggleFullscreen={toggleFullscreen}
       />
       <EditorContent 
         editor={editor} 
-        className="min-h-[400px]"
+        className={`transition-all duration-300 ${
+          isFullscreen ? 'min-h-[calc(80vh-60px)]' : 'min-h-[400px]'
+        }`}
       />
       <style>{`
         .ProseMirror {
@@ -285,6 +334,10 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
         .ProseMirror table td, .ProseMirror table th {
           border: 1px solid #e2e8f0;
           padding: 0.5em 1em;
+          min-width: 1em;
+          vertical-align: top;
+          box-sizing: border-box;
+          position: relative;
         }
         .ProseMirror table th {
           background-color: #f8fafc;
@@ -293,6 +346,8 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
         .ProseMirror img {
           margin: 1.5em 0;
           border-radius: 0.5rem;
+          max-width: 100%;
+          height: auto;
         }
         .ProseMirror hr {
           margin: 2em 0;
@@ -301,6 +356,30 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
         }
         .ProseMirror .youtube-embed {
           margin: 1.5em 0;
+        }
+        .ProseMirror .selectedCell:after {
+          z-index: 2;
+          position: absolute;
+          content: "";
+          left: 0; right: 0; top: 0; bottom: 0;
+          background: rgba(200, 200, 255, 0.4);
+          pointer-events: none;
+        }
+        .ProseMirror .column-resize-handle {
+          position: absolute;
+          right: -2px;
+          top: 0;
+          bottom: -2px;
+          width: 4px;
+          background-color: #adf;
+          pointer-events: none;
+        }
+        .ProseMirror p.is-editor-empty:first-child::before {
+          color: #adb5bd;
+          content: attr(data-placeholder);
+          float: left;
+          height: 0;
+          pointer-events: none;
         }
       `}</style>
     </div>

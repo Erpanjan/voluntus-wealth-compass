@@ -2,6 +2,8 @@
 import React, { RefObject } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { Maximize2, Minimize2, Table } from 'lucide-react';
 
 // Import toolbar components from tools directory
 import TextFormattingTools from './tools/TextFormattingTools';
@@ -40,6 +42,8 @@ interface EditorToolbarProps {
   handleFontSizeChange: (value: string) => void;
   handleColorChange: (color: string) => void;
   handleLineHeightChange: (height: string) => void;
+  isFullscreen: boolean;
+  toggleFullscreen: () => void;
 }
 
 const EditorToolbar: React.FC<EditorToolbarProps> = ({
@@ -63,11 +67,25 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
   handleFontFamilyChange,
   handleFontSizeChange,
   handleColorChange,
-  handleLineHeightChange
+  handleLineHeightChange,
+  isFullscreen,
+  toggleFullscreen
 }) => {
   return (
     <ScrollArea className="toolbar bg-[#F6F6F7] p-3 border-b flex flex-wrap items-center gap-1.5">
       <div className="flex items-center gap-1 flex-wrap">
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
+          title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+          onClick={toggleFullscreen}
+        >
+          {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+        </Button>
+        
+        <Separator orientation="vertical" className="mx-1 h-6" />
+        
         <TextFormattingTools applyFormat={applyFormat} />
         
         <Separator orientation="vertical" className="mx-1 h-6" />
@@ -119,6 +137,16 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
           handleImageUpload={handleImageUpload}
           fileInputRef={fileInputRef}
         />
+
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
+          title="Insert Table"
+          onClick={() => applyFormat('insertTable')}
+        >
+          <Table size={16} />
+        </Button>
 
         <Separator orientation="vertical" className="mx-1 h-6" />
 
