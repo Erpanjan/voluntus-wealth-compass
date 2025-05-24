@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -211,8 +210,7 @@ const Dashboard = () => {
       {/* Right Sidebar with Navigation Tabs */}
       <div className="w-64 bg-[#F9F9F9] border-l min-h-screen flex flex-col">
         <div className="p-6 border-b">
-          <h2 className="text-lg font-medium text-[#333333]">Financial Dashboard</h2>
-          <p className="text-xs text-[#9F9EA1] mt-1">Client Portal</p>
+          
         </div>
         
         {/* Navigation Menu */}
