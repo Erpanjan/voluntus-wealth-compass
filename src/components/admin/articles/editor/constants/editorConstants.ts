@@ -1,13 +1,15 @@
 
 export const fontFamilies = [
+  { label: 'Default', value: 'default' },
   { label: 'Arial', value: 'Arial, sans-serif' },
-  { label: 'Calibri', value: 'Calibri, sans-serif' },
-  { label: 'Comic Sans MS', value: '"Comic Sans MS", cursive' },
-  { label: 'Courier New', value: '"Courier New", monospace' },
-  { label: 'Georgia', value: 'Georgia, serif' },
+  { label: 'Times New Roman', value: 'Times New Roman, serif' },
   { label: 'Helvetica', value: 'Helvetica, sans-serif' },
-  { label: 'Times New Roman', value: '"Times New Roman", serif' },
-  { label: 'Verdana', value: 'Verdana, sans-serif' }
+  { label: 'Georgia', value: 'Georgia, serif' },
+  { label: 'Verdana', value: 'Verdana, sans-serif' },
+  { label: 'Courier New', value: 'Courier New, monospace' },
+  { label: 'Inter', value: 'Inter, sans-serif' },
+  { label: 'Poppins', value: 'Poppins, sans-serif' },
+  { label: 'Roboto', value: 'Roboto, sans-serif' },
 ];
 
 export const fontSizes = [
@@ -15,28 +17,30 @@ export const fontSizes = [
   { label: 'Normal', value: '16px' },
   { label: 'Medium', value: '18px' },
   { label: 'Large', value: '24px' },
-  { label: 'X-Large', value: '32px' },
-  { label: 'XX-Large', value: '48px' }
+  { label: 'Extra Large', value: '32px' },
+  { label: 'Huge', value: '48px' },
 ];
 
 export const colorOptions = [
   { label: 'Black', value: '#000000' },
-  { label: 'Gray', value: '#808080' },
-  { label: 'Silver', value: '#C0C0C0' },
   { label: 'White', value: '#FFFFFF' },
-  { label: 'Red', value: '#FF0000' },
-  { label: 'Green', value: '#008000' },
-  { label: 'Blue', value: '#0000FF' },
-  { label: 'Yellow', value: '#FFFF00' },
-  { label: 'Purple', value: '#800080' },
-  { label: 'Orange', value: '#FFA500' },
-  { label: 'Pink', value: '#FFC0CB' },
-  { label: 'Teal', value: '#008080' }
+  { label: 'Red', value: '#EF4444' },
+  { label: 'Blue', value: '#3B82F6' },
+  { label: 'Green', value: '#10B981' },
+  { label: 'Yellow', value: '#F59E0B' },
+  { label: 'Purple', value: '#8B5CF6' },
+  { label: 'Pink', value: '#EC4899' },
+  { label: 'Orange', value: '#F97316' },
+  { label: 'Gray', value: '#6B7280' },
+  { label: 'Indigo', value: '#6366F1' },
+  { label: 'Teal', value: '#14B8A6' },
 ];
 
 export const lineHeightOptions = [
   { label: 'Single', value: '1' },
-  { label: 'Normal', value: '1.5' },
+  { label: '1.15', value: '1.15' },
+  { label: '1.5', value: '1.5' },
   { label: 'Double', value: '2' },
-  { label: 'Triple', value: '3' }
+  { label: '2.5', value: '2.5' },
+  { label: '3', value: '3' },
 ];

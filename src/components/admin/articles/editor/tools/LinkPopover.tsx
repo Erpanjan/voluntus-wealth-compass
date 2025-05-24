@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input";
+import { Label } from '@/components/ui/label';
 import {
   Popover,
   PopoverContent,
@@ -37,21 +38,38 @@ const LinkPopover: React.FC<LinkPopoverProps> = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
-        <div className="space-y-2">
+        <div className="space-y-3">
           <h4 className="font-medium">Insert Link</h4>
-          <Input
-            type="text"
-            placeholder="https://example.com"
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-          />
-          <div className="flex justify-end">
-            <Button 
-              size="sm" 
-              onClick={handleLinkInsertion}
-            >
-              Insert
-            </Button>
+          <div className="space-y-2">
+            <Label htmlFor="link-url">URL</Label>
+            <Input
+              id="link-url"
+              type="url"
+              placeholder="https://example.com"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleLinkInsertion();
+                }
+              }}
+            />
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setLinkPopoverOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={handleLinkInsertion}
+                disabled={!linkUrl}
+              >
+                Insert
+              </Button>
+            </div>
           </div>
         </div>
       </PopoverContent>

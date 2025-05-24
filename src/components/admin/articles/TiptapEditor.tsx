@@ -1,5 +1,5 @@
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -13,7 +13,9 @@ import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import Color from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
-import TiptapToolbar from './TiptapToolbar';
+import FontFamily from '@tiptap/extension-font-family';
+import Highlight from '@tiptap/extension-highlight';
+import EditorToolbar from './editor/EditorToolbar';
 
 interface TiptapEditorProps {
   value: string;
@@ -21,6 +23,16 @@ interface TiptapEditorProps {
 }
 
 const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
+  // State for toolbar controls
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [imagePopoverOpen, setImagePopoverOpen] = useState(false);
+  const [fontOptionsOpen, setFontOptionsOpen] = useState(false);
+  const [colorPopoverOpen, setColorPopoverOpen] = useState(false);
+  const [lineHeightPopoverOpen, setLineHeightPopoverOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -54,6 +66,12 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
       Underline,
       Color,
       TextStyle,
+      FontFamily.configure({
+        types: ['textStyle'],
+      }),
+      Highlight.configure({
+        multicolor: true,
+      }),
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -67,20 +85,130 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
     },
   });
 
-  const addImage = useCallback(() => {
-    const url = window.prompt('Enter image URL:');
-    if (url && editor) {
-      editor.chain().focus().setImage({ src: url }).run();
+  // Toolbar action handlers
+  const applyFormat = useCallback((command: string, value?: string) => {
+    if (!editor) return;
+
+    switch (command) {
+      case 'bold':
+        editor.chain().focus().toggleBold().run();
+        break;
+      case 'italic':
+        editor.chain().focus().toggleItalic().run();
+        break;
+      case 'underline':
+        editor.chain().focus().toggleUnderline().run();
+        break;
+      case 'strike':
+        editor.chain().focus().toggleStrike().run();
+        break;
+      case 'code':
+        editor.chain().focus().toggleCode().run();
+        break;
+      case 'bulletList':
+        editor.chain().focus().toggleBulletList().run();
+        break;
+      case 'orderedList':
+        editor.chain().focus().toggleOrderedList().run();
+        break;
+      case 'blockquote':
+        editor.chain().focus().toggleBlockquote().run();
+        break;
+      case 'alignLeft':
+        editor.chain().focus().setTextAlign('left').run();
+        break;
+      case 'alignCenter':
+        editor.chain().focus().setTextAlign('center').run();
+        break;
+      case 'alignRight':
+        editor.chain().focus().setTextAlign('right').run();
+        break;
+      case 'undo':
+        editor.chain().focus().undo().run();
+        break;
+      case 'redo':
+        editor.chain().focus().redo().run();
+        break;
+      case 'heading1':
+        editor.chain().focus().toggleHeading({ level: 1 }).run();
+        break;
+      case 'heading2':
+        editor.chain().focus().toggleHeading({ level: 2 }).run();
+        break;
+      case 'heading3':
+        editor.chain().focus().toggleHeading({ level: 3 }).run();
+        break;
+      case 'paragraph':
+        editor.chain().focus().setParagraph().run();
+        break;
+      case 'horizontalRule':
+        editor.chain().focus().setHorizontalRule().run();
+        break;
     }
   }, [editor]);
 
-  const addYoutube = useCallback(() => {
-    const url = window.prompt('Enter YouTube URL:');
-    if (url && editor) {
-      editor.commands.setYoutubeVideo({
-        src: url,
-      });
+  const handleLinkInsertion = useCallback(() => {
+    if (!editor || !linkUrl) return;
+
+    if (linkUrl === '') {
+      editor.chain().focus().extendMarkRange('link').unsetMark('link').run();
+    } else {
+      editor.chain().focus().extendMarkRange('link').setMark('link', { href: linkUrl }).run();
     }
+    
+    setLinkUrl('');
+    setLinkPopoverOpen(false);
+  }, [editor, linkUrl]);
+
+  const handleImageUrlInsertion = useCallback(() => {
+    if (!editor || !imageUrl) return;
+
+    editor.chain().focus().setImage({ src: imageUrl }).run();
+    setImageUrl('');
+    setImagePopoverOpen(false);
+  }, [editor, imageUrl]);
+
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editor) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const url = reader.result as string;
+      editor.chain().focus().setImage({ src: url }).run();
+    };
+    reader.readAsDataURL(file);
+    setImagePopoverOpen(false);
+  }, [editor]);
+
+  const handleFontFamilyChange = useCallback((value: string) => {
+    if (!editor) return;
+    if (value === 'default') {
+      editor.chain().focus().unsetFontFamily().run();
+    } else {
+      editor.chain().focus().setFontFamily(value).run();
+    }
+  }, [editor]);
+
+  const handleFontSizeChange = useCallback((value: string) => {
+    if (!editor) return;
+    if (value === 'default') {
+      editor.chain().focus().unsetMark('textStyle').run();
+    } else {
+      editor.chain().focus().setMark('textStyle', { fontSize: value }).run();
+    }
+  }, [editor]);
+
+  const handleColorChange = useCallback((color: string) => {
+    if (!editor) return;
+    editor.chain().focus().setColor(color).run();
+    setColorPopoverOpen(false);
+  }, [editor]);
+
+  const handleLineHeightChange = useCallback((height: string) => {
+    if (!editor) return;
+    editor.chain().focus().setMark('textStyle', { lineHeight: height }).run();
+    setLineHeightPopoverOpen(false);
   }, [editor]);
 
   if (!editor) {
@@ -89,10 +217,30 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
 
   return (
     <div className="border rounded-md bg-white shadow-sm">
-      <TiptapToolbar 
-        editor={editor} 
-        addImage={addImage}
-        addYoutube={addYoutube}
+      <EditorToolbar 
+        applyFormat={applyFormat}
+        linkUrl={linkUrl}
+        setLinkUrl={setLinkUrl}
+        linkPopoverOpen={linkPopoverOpen}
+        setLinkPopoverOpen={setLinkPopoverOpen}
+        handleLinkInsertion={handleLinkInsertion}
+        imageUrl={imageUrl}
+        setImageUrl={setImageUrl}
+        imagePopoverOpen={imagePopoverOpen}
+        setImagePopoverOpen={setImagePopoverOpen}
+        handleImageUrlInsertion={handleImageUrlInsertion}
+        handleImageUpload={handleImageUpload}
+        fileInputRef={fileInputRef}
+        fontOptionsOpen={fontOptionsOpen}
+        setFontOptionsOpen={setFontOptionsOpen}
+        colorPopoverOpen={colorPopoverOpen}
+        setColorPopoverOpen={setColorPopoverOpen}
+        lineHeightPopoverOpen={lineHeightPopoverOpen}
+        setLineHeightPopoverOpen={setLineHeightPopoverOpen}
+        handleFontFamilyChange={handleFontFamilyChange}
+        handleFontSizeChange={handleFontSizeChange}
+        handleColorChange={handleColorChange}
+        handleLineHeightChange={handleLineHeightChange}
       />
       <EditorContent 
         editor={editor} 
