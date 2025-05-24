@@ -9,3 +9,5 @@ export { default as LineHeightPopover } from './LineHeightPopover';
 export { default as LinkPopover } from './LinkPopover';
 export { default as ListControls } from './ListControls';
 export { default as TextFormattingTools } from './TextFormattingTools';
+export { default as AdvancedFormattingTools } from './AdvancedFormattingTools';
+export { default as VideoPopover } from './VideoPopover';
