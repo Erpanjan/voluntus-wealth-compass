@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => ({
   define: {
     global: 'globalThis',
   },
-  // Optimize dependency pre-bundling
+  // Optimize dependency pre-bundling - ensure jQuery and Trumbowyg are included
   optimizeDeps: {
     include: ['jquery', 'trumbowyg']
   },
