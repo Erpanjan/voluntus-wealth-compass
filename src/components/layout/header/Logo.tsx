@@ -17,9 +17,9 @@ const Logo = ({ handleNavLinkClick }: LogoProps) => {
           <img 
             src="/lovable-uploads/f649620c-7104-40f6-b1f7-5035f2f614b8.png" 
             alt="VOLUNTAS LONG-TERM CAPITAL Logo" 
-            className="h-16 w-auto" 
+            className="h-14 w-auto" 
             width="200"
-            height="64"
+            height="56"
             loading="eager"
             fetchPriority="high"
           />
@@ -30,9 +30,9 @@ const Logo = ({ handleNavLinkClick }: LogoProps) => {
           <img 
             src="/lovable-uploads/f649620c-7104-40f6-b1f7-5035f2f614b8.png" 
             alt="VOLUNTAS LONG-TERM CAPITAL Logo" 
-            className="h-16 w-auto" 
+            className="h-14 w-auto" 
             width="200"
-            height="64"
+            height="56"
             loading="eager"
             fetchPriority="high"
           />
