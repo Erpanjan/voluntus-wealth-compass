@@ -1,8 +1,8 @@
 
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
+import { ResizableImage } from './editor/extensions/ResizableImage';
 import Youtube from '@tiptap/extension-youtube';
 import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
@@ -16,19 +16,38 @@ import TextStyle from '@tiptap/extension-text-style';
 import FontFamily from '@tiptap/extension-font-family';
 import FontSize from '@tiptap/extension-font-size';
 import Highlight from '@tiptap/extension-highlight';
+import Superscript from '@tiptap/extension-superscript';
+import Subscript from '@tiptap/extension-subscript';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import Placeholder from '@tiptap/extension-placeholder';
+import TaskList from '@tiptap/extension-task-list';
+import TaskItem from '@tiptap/extension-task-item';
+import { common, createLowlight } from 'lowlight';
 import EditorToolbar from './editor/EditorToolbar';
+import { useAutosave } from '@/hooks/useAutosave';
+
+const lowlight = createLowlight(common);
 
 interface TiptapEditorProps {
   value: string;
   onChange: (value: string) => void;
+  autosave?: boolean;
+  onAutosave?: (content: string) => Promise<void>;
 }
 
-const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
+const TiptapEditor: React.FC<TiptapEditorProps> = ({ 
+  value, 
+  onChange, 
+  autosave = false, 
+  onAutosave 
+}) => {
   // State for toolbar controls
   const [linkUrl, setLinkUrl] = useState('');
   const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [imagePopoverOpen, setImagePopoverOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
+  const [videoPopoverOpen, setVideoPopoverOpen] = useState(false);
   const [fontOptionsOpen, setFontOptionsOpen] = useState(false);
   const [colorPopoverOpen, setColorPopoverOpen] = useState(false);
   const [lineHeightPopoverOpen, setLineHeightPopoverOpen] = useState(false);
@@ -37,25 +56,27 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Image.configure({
+      StarterKit.configure({
+        codeBlock: false, // We'll use CodeBlockLowlight instead
+      }),
+      ResizableImage.configure({
         inline: false,
         allowBase64: true,
         HTMLAttributes: {
-          class: 'max-w-full h-auto rounded-lg cursor-pointer',
+          class: 'max-w-full h-auto rounded-lg',
         },
       }),
       Youtube.configure({
         width: 640,
         height: 480,
         HTMLAttributes: {
-          class: 'rounded-lg',
+          class: 'rounded-lg my-4',
         },
       }),
       Table.configure({
         resizable: true,
         HTMLAttributes: {
-          class: 'border-collapse border border-gray-300',
+          class: 'border-collapse border border-gray-300 w-full my-4',
         },
       }),
       TableRow,
@@ -84,6 +105,21 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
       Highlight.configure({
         multicolor: true,
       }),
+      Superscript,
+      Subscript,
+      CodeBlockLowlight.configure({
+        lowlight,
+        HTMLAttributes: {
+          class: 'bg-gray-100 rounded-lg p-4 my-4 overflow-x-auto',
+        },
+      }),
+      Placeholder.configure({
+        placeholder: 'Start writing your article...',
+      }),
+      TaskList,
+      TaskItem.configure({
+        nested: true,
+      }),
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -106,7 +142,7 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
               const url = reader.result as string;
               view.dispatch(
                 view.state.tr.replaceSelectionWith(
-                  view.state.schema.nodes.image.create({ src: url })
+                  view.state.schema.nodes.resizableImage.create({ src: url })
                 )
               );
             };
@@ -117,6 +153,14 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
         return false;
       },
     },
+  });
+
+  // Autosave functionality
+  useAutosave({
+    data: value,
+    onSave: onAutosave || (() => {}),
+    enabled: autosave && !!onAutosave,
+    delay: 3000,
   });
 
   // Toolbar action handlers
@@ -139,14 +183,29 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
       case 'code':
         editor.chain().focus().toggleCode().run();
         break;
+      case 'superscript':
+        editor.chain().focus().toggleSuperscript().run();
+        break;
+      case 'subscript':
+        editor.chain().focus().toggleSubscript().run();
+        break;
+      case 'highlight':
+        editor.chain().focus().toggleHighlight().run();
+        break;
       case 'bulletList':
         editor.chain().focus().toggleBulletList().run();
         break;
       case 'orderedList':
         editor.chain().focus().toggleOrderedList().run();
         break;
+      case 'taskList':
+        editor.chain().focus().toggleTaskList().run();
+        break;
       case 'blockquote':
         editor.chain().focus().toggleBlockquote().run();
+        break;
+      case 'codeBlock':
+        editor.chain().focus().toggleCodeBlock().run();
         break;
       case 'alignLeft':
         editor.chain().focus().setTextAlign('left').run();
@@ -156,6 +215,9 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
         break;
       case 'alignRight':
         editor.chain().focus().setTextAlign('right').run();
+        break;
+      case 'alignJustify':
+        editor.chain().focus().setTextAlign('justify').run();
         break;
       case 'undo':
         editor.chain().focus().undo().run();
@@ -171,6 +233,15 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
         break;
       case 'heading3':
         editor.chain().focus().toggleHeading({ level: 3 }).run();
+        break;
+      case 'heading4':
+        editor.chain().focus().toggleHeading({ level: 4 }).run();
+        break;
+      case 'heading5':
+        editor.chain().focus().toggleHeading({ level: 5 }).run();
+        break;
+      case 'heading6':
+        editor.chain().focus().toggleHeading({ level: 6 }).run();
         break;
       case 'paragraph':
         editor.chain().focus().setParagraph().run();
@@ -218,6 +289,16 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
     setImagePopoverOpen(false);
   }, [editor]);
 
+  const handleVideoInsertion = useCallback(() => {
+    if (!editor || !videoUrl) return;
+
+    editor.commands.setYoutubeVideo({
+      src: videoUrl,
+    });
+    setVideoUrl('');
+    setVideoPopoverOpen(false);
+  }, [editor, videoUrl]);
+
   const handleFontFamilyChange = useCallback((value: string) => {
     if (!editor) return;
     if (value === 'default') {
@@ -244,15 +325,49 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
 
   const handleLineHeightChange = useCallback((height: string) => {
     if (!editor) return;
-    const style = document.createElement('style');
-    style.innerHTML = `.ProseMirror p { line-height: ${height} !important; }`;
-    document.head.appendChild(style);
+    // Apply line height to selected content
+    const { from, to } = editor.state.selection;
+    editor.chain().focus().setTextSelection({ from, to }).run();
+    
+    // Update CSS custom property for line height
+    document.documentElement.style.setProperty('--editor-line-height', height);
     setLineHeightPopoverOpen(false);
   }, [editor]);
 
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen(!isFullscreen);
   }, [isFullscreen]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    if (!editor) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case 'b':
+            event.preventDefault();
+            editor.chain().focus().toggleBold().run();
+            break;
+          case 'i':
+            event.preventDefault();
+            editor.chain().focus().toggleItalic().run();
+            break;
+          case 'u':
+            event.preventDefault();
+            editor.chain().focus().toggleUnderline().run();
+            break;
+          case 'k':
+            event.preventDefault();
+            setLinkPopoverOpen(true);
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [editor]);
 
   if (!editor) {
     return null;
@@ -276,6 +391,11 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
         handleImageUrlInsertion={handleImageUrlInsertion}
         handleImageUpload={handleImageUpload}
         fileInputRef={fileInputRef}
+        videoUrl={videoUrl}
+        setVideoUrl={setVideoUrl}
+        videoPopoverOpen={videoPopoverOpen}
+        setVideoPopoverOpen={setVideoPopoverOpen}
+        handleVideoInsertion={handleVideoInsertion}
         fontOptionsOpen={fontOptionsOpen}
         setFontOptionsOpen={setFontOptionsOpen}
         colorPopoverOpen={colorPopoverOpen}
@@ -295,29 +415,57 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
           isFullscreen ? 'min-h-[calc(80vh-60px)]' : 'min-h-[400px]'
         }`}
       />
+      
+      {/* Enhanced Editor Styles */}
       <style>{`
         .ProseMirror {
           outline: none;
           font-size: 16px;
-          line-height: 1.8;
+          line-height: var(--editor-line-height, 1.8);
           color: #333333;
         }
-        .ProseMirror h1, .ProseMirror h2, .ProseMirror h3 {
+        .ProseMirror h1, .ProseMirror h2, .ProseMirror h3, 
+        .ProseMirror h4, .ProseMirror h5, .ProseMirror h6 {
           line-height: 1.4;
           margin: 1em 0 0.5em 0;
+          font-weight: 600;
         }
+        .ProseMirror h1 { font-size: 2.25em; }
+        .ProseMirror h2 { font-size: 1.875em; }
+        .ProseMirror h3 { font-size: 1.5em; }
+        .ProseMirror h4 { font-size: 1.25em; }
+        .ProseMirror h5 { font-size: 1.125em; }
+        .ProseMirror h6 { font-size: 1em; }
         .ProseMirror ul, .ProseMirror ol {
           margin: 1em 0;
+          padding-left: 1.5em;
         }
         .ProseMirror li {
           margin-bottom: 0.5em;
           line-height: 1.6;
+        }
+        .ProseMirror ul[data-type="taskList"] {
+          list-style: none;
+          padding: 0;
+        }
+        .ProseMirror ul[data-type="taskList"] li {
+          display: flex;
+          align-items: flex-start;
+        }
+        .ProseMirror ul[data-type="taskList"] li > label {
+          flex: 0 0 auto;
+          margin-right: 0.5rem;
+          user-select: none;
+        }
+        .ProseMirror ul[data-type="taskList"] li > div {
+          flex: 1 1 auto;
         }
         .ProseMirror blockquote {
           margin: 2em 0;
           padding: 1em 2em;
           border-left: 4px solid #e2e8f0;
           background-color: #f8fafc;
+          font-style: italic;
         }
         .ProseMirror pre {
           margin: 1em 0;
@@ -325,6 +473,14 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
           background-color: #f1f5f9;
           border-radius: 0.5rem;
           overflow-x: auto;
+          font-family: 'Courier New', monospace;
+        }
+        .ProseMirror code {
+          background-color: #f1f5f9;
+          padding: 0.2em 0.4em;
+          border-radius: 0.25rem;
+          font-family: 'Courier New', monospace;
+          font-size: 0.875em;
         }
         .ProseMirror table {
           margin: 1em 0;
@@ -343,19 +499,23 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
           background-color: #f8fafc;
           font-weight: 600;
         }
-        .ProseMirror img {
-          margin: 1.5em 0;
-          border-radius: 0.5rem;
-          max-width: 100%;
-          height: auto;
-        }
         .ProseMirror hr {
           margin: 2em 0;
           border: none;
           border-top: 2px solid #e2e8f0;
         }
-        .ProseMirror .youtube-embed {
-          margin: 1.5em 0;
+        .ProseMirror mark {
+          background-color: #fef08a;
+          padding: 0.1em 0.2em;
+          border-radius: 0.25rem;
+        }
+        .ProseMirror sup {
+          font-size: 0.75em;
+          vertical-align: super;
+        }
+        .ProseMirror sub {
+          font-size: 0.75em;
+          vertical-align: sub;
         }
         .ProseMirror .selectedCell:after {
           z-index: 2;
@@ -380,6 +540,11 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
           float: left;
           height: 0;
           pointer-events: none;
+        }
+        .ProseMirror .youtube-embed {
+          margin: 1.5em 0;
+          border-radius: 0.5rem;
+          overflow: hidden;
         }
       `}</style>
     </div>

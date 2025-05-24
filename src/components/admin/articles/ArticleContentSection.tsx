@@ -20,6 +20,12 @@ interface ArticleContentSectionProps {
 const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) => {
   const [isOpen, setIsOpen] = React.useState(true);
   
+  const handleAutosave = async (content: string) => {
+    // Auto-save draft functionality
+    console.log('Auto-saving content:', content.substring(0, 50) + '...');
+    // You can implement actual autosave logic here
+  };
+  
   return (
     <Card className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       <Collapsible
@@ -63,6 +69,8 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
                     <TiptapEditor 
                       value={field.value} 
                       onChange={field.onChange}
+                      autosave={true}
+                      onAutosave={handleAutosave}
                     />
                   </FormControl>
                   <FormMessage />

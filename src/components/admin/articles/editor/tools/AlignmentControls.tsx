@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { AlignLeft, AlignCenter, AlignRight, AlignJustify } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface AlignmentControlsProps {
@@ -11,7 +11,7 @@ const AlignmentControls: React.FC<AlignmentControlsProps> = ({ applyFormat }) =>
   return (
     <>
       <Button 
-        onClick={() => applyFormat('justifyLeft')} 
+        onClick={() => applyFormat('alignLeft')} 
         variant="ghost" 
         size="sm"
         className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
@@ -21,7 +21,7 @@ const AlignmentControls: React.FC<AlignmentControlsProps> = ({ applyFormat }) =>
       </Button>
       
       <Button 
-        onClick={() => applyFormat('justifyCenter')} 
+        onClick={() => applyFormat('alignCenter')} 
         variant="ghost" 
         size="sm"
         className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
@@ -31,13 +31,23 @@ const AlignmentControls: React.FC<AlignmentControlsProps> = ({ applyFormat }) =>
       </Button>
       
       <Button 
-        onClick={() => applyFormat('justifyRight')} 
+        onClick={() => applyFormat('alignRight')} 
         variant="ghost" 
         size="sm"
         className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
         title="Align Right"
       >
         <AlignRight size={16} />
+      </Button>
+      
+      <Button 
+        onClick={() => applyFormat('alignJustify')} 
+        variant="ghost" 
+        size="sm"
+        className="h-8 w-8 p-0 hover:bg-[#E5DEFF] hover:text-[#8B5CF6]"
+        title="Justify"
+      >
+        <AlignJustify size={16} />
       </Button>
     </>
   );

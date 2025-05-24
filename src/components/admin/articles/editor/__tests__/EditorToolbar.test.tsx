@@ -55,7 +55,9 @@ describe('EditorToolbar Component', () => {
     handleFontFamilyChange: jest.fn(),
     handleFontSizeChange: jest.fn(),
     handleColorChange: jest.fn(),
-    handleLineHeightChange: jest.fn()
+    handleLineHeightChange: jest.fn(),
+    isFullscreen: false,
+    toggleFullscreen: jest.fn()
   };
 
   it('renders all toolbar components correctly', () => {
@@ -78,7 +80,7 @@ describe('EditorToolbar Component', () => {
     render(<EditorToolbar {...mockProps} />);
     
     const separators = screen.getAllByTestId('separator');
-    expect(separators.length).toBe(5); // Expecting 5 separators in the toolbar
+    expect(separators.length).toBe(5);
     
     separators.forEach(separator => {
       expect(separator).toHaveAttribute('data-orientation', 'vertical');

@@ -27,16 +27,25 @@ const HeadingDropdown: React.FC<HeadingDropdownProps> = ({ applyFormat }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onClick={() => applyFormat('formatBlock', 'h1')}>
-          <span className="text-xl font-semibold">Heading 1</span>
+        <DropdownMenuItem onClick={() => applyFormat('heading1')}>
+          <span className="text-2xl font-bold">Heading 1</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => applyFormat('formatBlock', 'h2')}>
-          <span className="text-lg font-semibold">Heading 2</span>
+        <DropdownMenuItem onClick={() => applyFormat('heading2')}>
+          <span className="text-xl font-semibold">Heading 2</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => applyFormat('formatBlock', 'h3')}>
-          <span className="text-base font-semibold">Heading 3</span>
+        <DropdownMenuItem onClick={() => applyFormat('heading3')}>
+          <span className="text-lg font-semibold">Heading 3</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => applyFormat('formatBlock', 'p')}>
+        <DropdownMenuItem onClick={() => applyFormat('heading4')}>
+          <span className="text-base font-semibold">Heading 4</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => applyFormat('heading5')}>
+          <span className="text-sm font-semibold">Heading 5</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => applyFormat('heading6')}>
+          <span className="text-xs font-semibold">Heading 6</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => applyFormat('paragraph')}>
           <span className="text-sm">Paragraph</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
