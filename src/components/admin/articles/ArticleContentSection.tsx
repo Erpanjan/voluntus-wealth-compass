@@ -4,7 +4,7 @@ import {
   Card,
 } from '@/components/ui/card';
 import { UseFormReturn } from 'react-hook-form';
-import EditorJSComponent from './EditorJSComponent';
+import TiptapEditor from './TiptapEditor';
 import {
   FormControl,
   FormField,
@@ -60,7 +60,7 @@ const ArticleContentSection: React.FC<ArticleContentSectionProps> = ({ form }) =
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <EditorJSComponent 
+                    <TiptapEditor 
                       value={field.value} 
                       onChange={field.onChange}
                     />
