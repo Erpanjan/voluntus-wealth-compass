@@ -29,6 +29,9 @@ export const useArticleActions = () => {
 
       console.log('Saving draft with data:', {
         title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        author_name: formData.author_name,
         hasImage: !!imageFile
       });
 
@@ -92,6 +95,9 @@ export const useArticleActions = () => {
 
       console.log('Publishing article with data:', {
         title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        author_name: formData.author_name,
         hasImage: !!imageFile
       });
 

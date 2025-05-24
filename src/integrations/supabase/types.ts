@@ -74,10 +74,11 @@ export type Database = {
       }
       articles: {
         Row: {
-          category: string
+          author_name: string | null
+          category: string | null
           content: Json
           created_at: string
-          description: string
+          description: string | null
           id: string
           image_url: string | null
           published_at: string
@@ -86,10 +87,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          category: string
+          author_name?: string | null
+          category?: string | null
           content?: Json
           created_at?: string
-          description: string
+          description?: string | null
           id?: string
           image_url?: string | null
           published_at?: string
@@ -98,10 +100,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          category?: string
+          author_name?: string | null
+          category?: string | null
           content?: Json
           created_at?: string
-          description?: string
+          description?: string | null
           id?: string
           image_url?: string | null
           published_at?: string
