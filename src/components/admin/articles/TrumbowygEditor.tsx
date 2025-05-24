@@ -122,7 +122,7 @@ const TrumbowygEditor: React.FC<TrumbowygEditorProps> = ({ value, onChange }) =>
 
     // Listen for content changes
     $editor.on('tbwchange', () => {
-      const newContent = $editor.trumbowyg('html') as string;
+      const newContent = String($editor.trumbowyg('html'));
       onChange(newContent);
     });
 
@@ -145,7 +145,7 @@ const TrumbowygEditor: React.FC<TrumbowygEditorProps> = ({ value, onChange }) =>
   useEffect(() => {
     if (editorRef.current && isInitialized.current && value !== undefined) {
       const $editor = $(editorRef.current);
-      const currentContent = $editor.trumbowyg('html') as string;
+      const currentContent = String($editor.trumbowyg('html'));
       if (currentContent !== value) {
         $editor.trumbowyg('html', value);
       }
