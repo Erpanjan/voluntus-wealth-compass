@@ -101,7 +101,7 @@ const Welcome = () => {
       <Section className="pt-2">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl md:text-4xl font-inter font-semibold mb-4 tracking-tight">
-            Welcome to Voluntus
+            Welcome to Voluntas
           </h1>
           
           <p className="text-sm md:text-base font-inter text-gray-600 mb-6 max-w-3xl mx-auto">

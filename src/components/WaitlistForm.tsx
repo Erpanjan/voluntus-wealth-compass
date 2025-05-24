@@ -176,7 +176,7 @@ const WaitlistForm: React.FC = () => {
         </div>
         
         <p className="text-xs text-center text-gray-500 mt-4 px-2">
-          By clicking "Join Waitlist", I authorize Voluntus Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.
+          By clicking "Join Waitlist", I authorize Voluntas Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.
         </p>
       </form>
     </div>
