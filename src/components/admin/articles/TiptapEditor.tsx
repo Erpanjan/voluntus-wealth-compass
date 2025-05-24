@@ -1,3 +1,4 @@
+
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -23,23 +24,15 @@ import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import { common, createLowlight } from 'lowlight';
 import EditorToolbar from './editor/EditorToolbar';
-import { useAutosave } from '@/hooks/useAutosave';
 
 const lowlight = createLowlight(common);
 
 interface TiptapEditorProps {
   value: string;
   onChange: (value: string) => void;
-  autosave?: boolean;
-  onAutosave?: (content: string) => Promise<void>;
 }
 
-const TiptapEditor: React.FC<TiptapEditorProps> = ({ 
-  value, 
-  onChange, 
-  autosave = false, 
-  onAutosave 
-}) => {
+const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   // State for toolbar controls
   const [linkUrl, setLinkUrl] = useState('');
   const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
@@ -62,7 +55,8 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({
         inline: false,
         allowBase64: true,
         HTMLAttributes: {
-          class: 'max-w-full h-auto rounded-lg',
+          class: 'max-w-full h-auto rounded-lg cursor-pointer select-none',
+          style: 'resize: both; overflow: auto;',
         },
       }),
       Youtube.configure({
@@ -152,14 +146,6 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({
         return false;
       },
     },
-  });
-
-  // Autosave functionality
-  useAutosave({
-    data: value,
-    onSave: onAutosave || (() => {}),
-    enabled: autosave && !!onAutosave,
-    delay: 3000,
   });
 
   // Toolbar action handlers
@@ -550,10 +536,13 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({
           height: auto;
           border-radius: 0.5rem;
           margin: 1em 0;
+          cursor: pointer;
+          border: 2px solid transparent;
+          transition: border-color 0.2s ease;
         }
         .ProseMirror img:hover {
-          cursor: pointer;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          border-color: #8B5CF6;
+          box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
         }
         .ProseMirror img.ProseMirror-selectednode {
           outline: 2px solid #8B5CF6;

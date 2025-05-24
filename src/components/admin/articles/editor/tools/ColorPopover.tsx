@@ -2,18 +2,22 @@
 import React from 'react';
 import { Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+interface ColorOption {
+  label: string;
+  value: string;
+}
+
 interface ColorPopoverProps {
   colorPopoverOpen: boolean;
   setColorPopoverOpen: (open: boolean) => void;
   handleColorChange: (color: string) => void;
-  colorOptions: Array<{ label: string; value: string }>;
+  colorOptions: ColorOption[];
 }
 
 const ColorPopover: React.FC<ColorPopoverProps> = ({
@@ -34,21 +38,28 @@ const ColorPopover: React.FC<ColorPopoverProps> = ({
           <Palette size={16} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-60">
-        <div className="space-y-2 p-2">
-          <Label className="mb-2">Text Color</Label>
-          <div className="grid grid-cols-6 gap-1">
-            {colorOptions.map((color) => (
-              <Button 
-                key={color.value} 
-                variant="outline" 
-                className="w-8 h-8 p-0 rounded-md border"
-                style={{ backgroundColor: color.value }}
-                onClick={() => handleColorChange(color.value)}
-                title={color.label}
+      <PopoverContent className="w-64 bg-white border shadow-lg z-50">
+        <div className="space-y-3">
+          <h4 className="font-medium text-gray-900">Text Color</h4>
+          <div className="grid grid-cols-8 gap-2">
+            {colorOptions.map((option) => (
+              <button
+                key={option.value}
+                className="w-6 h-6 rounded border border-gray-200 hover:scale-110 transition-transform"
+                style={{ backgroundColor: option.value }}
+                onClick={() => handleColorChange(option.value)}
+                title={option.label}
               />
             ))}
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleColorChange('#000000')}
+            className="w-full"
+          >
+            Reset to Default
+          </Button>
         </div>
       </PopoverContent>
     </Popover>
