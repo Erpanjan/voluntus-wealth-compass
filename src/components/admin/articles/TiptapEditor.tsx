@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -236,6 +235,30 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
         break;
       case 'insertTable':
         editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+        break;
+      case 'indent':
+        // Try to sink list item first, if that fails, use general indentation
+        if (editor.isActive('listItem')) {
+          editor.chain().focus().sinkListItem('listItem').run();
+        } else {
+          // For non-list content, apply margin-left styling
+          const { from, to } = editor.state.selection;
+          editor.chain().focus().setTextSelection({ from, to }).updateAttributes('paragraph', {
+            style: 'margin-left: 2rem'
+          }).run();
+        }
+        break;
+      case 'outdent':
+        // Try to lift list item first, if that fails, use general outdenting
+        if (editor.isActive('listItem')) {
+          editor.chain().focus().liftListItem('listItem').run();
+        } else {
+          // For non-list content, remove margin-left styling
+          const { from, to } = editor.state.selection;
+          editor.chain().focus().setTextSelection({ from, to }).updateAttributes('paragraph', {
+            style: null
+          }).run();
+        }
         break;
     }
   }, [editor]);
