@@ -18,9 +18,10 @@ export interface Article {
   id: string;
   title: string;
   slug: string;
-  description: string;
+  description?: string;
   content: any;
-  category: string;
+  category?: string;
+  author_name?: string;
   image_url?: string;
   published_at: string;
   created_at: string;
@@ -32,9 +33,10 @@ export interface Article {
 export interface ArticleInput {
   id?: string;
   title: string;
-  description: string;
+  description?: string;
   content: any;
-  category: string;
+  category?: string;
+  author_name?: string;
   image_url?: string;
   published_at: string;
 }

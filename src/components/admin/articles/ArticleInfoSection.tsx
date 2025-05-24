@@ -10,16 +10,11 @@ import {
 import { Card } from '@/components/ui/card';
 import { UseFormReturn } from 'react-hook-form';
 import ArticleBasicInfoSection from './ArticleBasicInfoSection';
-import ArticleAuthorsSection from './ArticleAuthorsSection';
 import ArticleImageUpload from './ArticleImageUpload';
 
 interface ArticleInfoSectionProps {
   form: UseFormReturn<any>;
-  selectedAuthors: string[];
-  setSelectedAuthors: React.Dispatch<React.SetStateAction<string[]>>;
   imagePreview: string | null;
-  setImagePreview: React.Dispatch<React.SetStateAction<string | null>>;
-  setImageFile: React.Dispatch<React.SetStateAction<File | null>>;
   fileInputRef: React.RefObject<HTMLInputElement>;
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleRemoveImage: () => void;
@@ -27,8 +22,6 @@ interface ArticleInfoSectionProps {
 
 const ArticleInfoSection: React.FC<ArticleInfoSectionProps> = ({
   form,
-  selectedAuthors,
-  setSelectedAuthors,
   imagePreview,
   fileInputRef,
   handleImageChange,
@@ -52,13 +45,6 @@ const ArticleInfoSection: React.FC<ArticleInfoSectionProps> = ({
             <Form {...form}>
               <form className="space-y-8">
                 <ArticleBasicInfoSection form={form} />
-                
-                <div className="border-t border-gray-100 pt-8"></div>
-                
-                <ArticleAuthorsSection
-                  selectedAuthors={selectedAuthors}
-                  setSelectedAuthors={setSelectedAuthors}
-                />
                 
                 <div className="border-t border-gray-100 pt-8"></div>
                 

@@ -27,7 +27,7 @@ const ArticleBasicInfoSection: React.FC<ArticleBasicInfoSectionProps> = ({
         name="title"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 text-base">Title</FormLabel>
+            <FormLabel className="text-gray-700 text-base">Title *</FormLabel>
             <FormControl>
               <Input 
                 placeholder="Enter article title" 
@@ -36,7 +36,7 @@ const ArticleBasicInfoSection: React.FC<ArticleBasicInfoSectionProps> = ({
               />
             </FormControl>
             <FormDescription className="text-gray-500">
-              The main title of your article
+              The main title of your article (required)
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -51,14 +51,14 @@ const ArticleBasicInfoSection: React.FC<ArticleBasicInfoSectionProps> = ({
             <FormLabel className="text-gray-700 text-base">Description</FormLabel>
             <FormControl>
               <Textarea 
-                placeholder="Enter article description" 
+                placeholder="Enter article description (optional)" 
                 rows={3}
                 {...field} 
                 className="focus-visible:ring-gray-400 resize-none"
               />
             </FormControl>
             <FormDescription className="text-gray-500">
-              A brief summary of your article
+              A brief summary of your article (optional)
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -74,13 +74,13 @@ const ArticleBasicInfoSection: React.FC<ArticleBasicInfoSectionProps> = ({
               <FormLabel className="text-gray-700 text-base">Category</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="Enter article category" 
+                  placeholder="Enter category (optional)" 
                   {...field} 
                   className="focus-visible:ring-gray-400"
                 />
               </FormControl>
               <FormDescription className="text-gray-500">
-                Category of your article (e.g. Finance, Investing)
+                Category of your article (optional)
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -89,28 +89,49 @@ const ArticleBasicInfoSection: React.FC<ArticleBasicInfoSectionProps> = ({
         
         <FormField
           control={form.control}
-          name="published_at"
+          name="author_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 text-base">Publish Date</FormLabel>
+              <FormLabel className="text-gray-700 text-base">Author</FormLabel>
               <FormControl>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                  <Input
-                    type="date"
-                    className="pl-10 focus-visible:ring-gray-400"
-                    {...field}
-                  />
-                </div>
+                <Input 
+                  placeholder="Enter author name (optional)" 
+                  {...field} 
+                  className="focus-visible:ring-gray-400"
+                />
               </FormControl>
               <FormDescription className="text-gray-500">
-                When the article should be published
+                Name of the article author (optional)
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
       </div>
+
+      <FormField
+        control={form.control}
+        name="published_at"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-700 text-base">Publish Date</FormLabel>
+            <FormControl>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                <Input
+                  type="date"
+                  className="pl-10 focus-visible:ring-gray-400"
+                  {...field}
+                />
+              </div>
+            </FormControl>
+            <FormDescription className="text-gray-500">
+              When the article should be published
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 };

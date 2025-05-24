@@ -6,9 +6,7 @@ import {
   Edit, 
   Trash2, 
   Eye, 
-  FileText,
-  CheckCircle,
-  XCircle
+  FileText
 } from 'lucide-react';
 import { 
   Table, 
@@ -82,9 +80,9 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
           <TableRow>
             <TableHead className="w-[300px]">Title</TableHead>
             <TableHead>Category</TableHead>
+            <TableHead>Author</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Published Date</TableHead>
-            <TableHead>Authors</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -96,7 +94,12 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
               <TableRow key={article.id} className="hover:bg-gray-50">
                 <TableCell className="font-medium">{article.title}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="bg-gray-50">{article.category}</Badge>
+                  <Badge variant="outline" className="bg-gray-50">
+                    {article.category || 'Uncategorized'}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {article.author_name || '-'}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-2">
@@ -111,32 +114,6 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
                 </TableCell>
                 <TableCell>
                   {format(new Date(article.published_at), 'MMM dd, yyyy')}
-                </TableCell>
-                <TableCell>
-                  {article.authors && article.authors.length > 0 ? (
-                    <div className="flex -space-x-2">
-                      {article.authors.slice(0, 3).map((author: any, index: number) => (
-                        <div 
-                          key={index} 
-                          className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-xs bg-gray-200 overflow-hidden"
-                          title={author.name}
-                        >
-                          {author.image_url ? (
-                            <img src={author.image_url} alt={author.name} className="w-full h-full object-cover" />
-                          ) : (
-                            author.name.charAt(0)
-                          )}
-                        </div>
-                      ))}
-                      {article.authors.length > 3 && (
-                        <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs">
-                          +{article.authors.length - 3}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-gray-500">-</span>
-                  )}
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>

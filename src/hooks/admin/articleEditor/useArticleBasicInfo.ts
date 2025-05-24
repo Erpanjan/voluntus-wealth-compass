@@ -17,18 +17,18 @@ export const useArticleBasicInfo = () => {
       description: '',
       category: '',
       content: '',
+      author_name: '',
       image_url: '',
       published_at: format(new Date(), 'yyyy-MM-dd'),
     }
   });
 
-  // Load article data if in edit mode - now using optimized function
+  // Load article data if in edit mode
   const loadArticleData = async () => {
     if (!isEditMode || !id) return null;
     
     try {
       console.log('Loading article data for ID:', id);
-      // Use the new optimized getArticleById function
       const article = await articleService.getArticleById(id);
       
       if (article) {
@@ -39,11 +39,9 @@ export const useArticleBasicInfo = () => {
         if (typeof article.content === 'string') {
           processedContent = article.content;
         } else if (article.content && typeof article.content === 'object') {
-          // If content is stored as HTML in the object, extract it
           if (article.content.html) {
             processedContent = article.content.html;
           } else {
-            // Convert object to string representation
             processedContent = JSON.stringify(article.content);
           }
         } else {
@@ -55,6 +53,7 @@ export const useArticleBasicInfo = () => {
           description: article.description || '',
           category: article.category || '',
           content: processedContent,
+          author_name: article.author_name || '',
           image_url: article.image_url || '',
           published_at: format(new Date(article.published_at), 'yyyy-MM-dd'),
         });

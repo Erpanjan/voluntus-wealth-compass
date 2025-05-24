@@ -3,7 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { ArticleInput } from '@/types/article.types';
 import { createUniqueSlug } from '@/utils/articleUtils';
-import { reportService } from '../reportService';
 
 /**
  * Handles all mutation operations for articles
@@ -12,14 +11,14 @@ export const articleMutationService = {
   /**
    * Create or update an article
    * @param article The article data to save
-   * @param authorIds IDs of authors to associate with this article
+   * @param authorIds Not used anymore - kept for compatibility
    * @param imageFile Optional image file to upload
-   * @param attachments Optional attachments/reports to include
+   * @param attachments Not used anymore - kept for compatibility
    * @returns The slug of the saved article or null on failure
    */
   async saveArticle(
     article: ArticleInput, 
-    authorIds: string[], 
+    authorIds: string[] = [], 
     imageFile?: File | null, 
     attachments?: any[]
   ): Promise<string | null> {
@@ -28,8 +27,6 @@ export const articleMutationService = {
       let articleId = article.id || uuidv4();
       
       console.log(`${isUpdate ? 'Updating' : 'Creating'} article with ID: ${articleId}`);
-      console.log("Authors:", authorIds);
-      console.log("Attachments:", attachments?.length || 0);
       
       // 1. Upload image if provided
       let imageUrl = article.image_url;
@@ -61,7 +58,8 @@ export const articleMutationService = {
         title: article.title,
         description: article.description || '',
         content: article.content || {},
-        category: article.category || 'Uncategorized',
+        category: article.category || '',
+        author_name: article.author_name || '',
         image_url: imageUrl,
         published_at: article.published_at,
         updated_at: new Date().toISOString(),
@@ -75,7 +73,7 @@ export const articleMutationService = {
           .from('articles')
           .update(articleData)
           .eq('id', articleId)
-          .select('slug')
+          .select('id')
           .single();
         
         if (updateError) {
@@ -83,7 +81,7 @@ export const articleMutationService = {
           throw updateError;
         }
         
-        slug = updatedArticle?.slug || null;
+        slug = articleId;
       } else {
         // Create new article with unique slug
         const uniqueSlug = createUniqueSlug(article.title || 'untitled');
@@ -95,7 +93,7 @@ export const articleMutationService = {
             ...articleData,
             slug: uniqueSlug
           })
-          .select('slug')
+          .select('id')
           .single();
         
         if (insertError) {
@@ -103,54 +101,13 @@ export const articleMutationService = {
           throw insertError;
         }
         
-        slug = newArticle?.slug || null;
+        slug = articleId;
       }
       
-      // 3. Handle article-author relationships
-      if (isUpdate) {
-        // Remove existing associations
-        const { error: deleteError } = await supabase
-          .from('article_authors')
-          .delete()
-          .eq('article_id', articleId);
-        
-        if (deleteError) {
-          console.error('Error removing author associations:', deleteError);
-          throw deleteError;
-        }
-      }
-      
-      // Add new author associations
-      if (authorIds && authorIds.length > 0) {
-        const authorAssociations = authorIds.map(authorId => ({
-          article_id: articleId,
-          author_id: authorId
-        }));
-        
-        const { error: authorError } = await supabase
-          .from('article_authors')
-          .insert(authorAssociations);
-        
-        if (authorError) {
-          console.error('Error adding author associations:', authorError);
-          throw authorError;
-        }
-      }
-      
-      // 4. Handle attachments/reports
-      if (attachments && attachments.length > 0) {
-        console.log("Processing attachments:", attachments.length);
-        
-        for (const attachment of attachments) {
-          console.log("Processing attachment:", attachment.id, attachment.title);
-          await reportService.saveReport(articleId, attachment, attachment.file);
-        }
-      }
-      
-      return articleId;
+      return slug;
     } catch (error) {
       console.error('Error in saveArticle:', error);
-      throw error; // Rethrow to allow proper error handling
+      throw error;
     }
   },
 
@@ -161,7 +118,6 @@ export const articleMutationService = {
    */
   async deleteArticle(id: string): Promise<boolean> {
     try {
-      // Delete article (cascade will delete article_authors and reports)
       const { error } = await supabase
         .from('articles')
         .delete()
@@ -189,7 +145,7 @@ export const articleMutationService = {
     try {
       const publishedAt = isPublished 
         ? new Date().toISOString() 
-        : new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(); // 30 days in the future
+        : new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString();
       
       const { error } = await supabase
         .from('articles')
