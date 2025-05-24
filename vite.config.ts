@@ -29,10 +29,14 @@ export default defineConfig(({ mode }) => ({
   // Define global variables for browser compatibility
   define: {
     global: 'globalThis',
+    // Explicitly define jQuery globals
+    '$': 'globalThis.$',
+    'jQuery': 'globalThis.jQuery'
   },
   // Optimize dependency pre-bundling - ensure jQuery and Trumbowyg are included
   optimizeDeps: {
-    include: ['jquery', 'trumbowyg']
+    include: ['jquery', 'trumbowyg'],
+    force: true
   },
   plugins: [
     react(),
@@ -42,6 +46,8 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Add explicit jQuery alias
+      "jquery": path.resolve(__dirname, "./node_modules/jquery/dist/jquery.min.js")
     },
   },
   // Add specific browser compatibility targets
