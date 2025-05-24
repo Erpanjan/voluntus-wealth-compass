@@ -46,7 +46,7 @@ const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ currentStep }) => {
       <div className="container mx-auto px-6 flex justify-between items-center">
         <Link to="/" className="flex items-center">
           <img 
-            src="/lovable-uploads/54da0e3b-7320-468f-96c6-2a19248598e4.png" 
+            src="/lovable-uploads/f649620c-7104-40f6-b1f7-5035f2f614b8.png" 
             alt="VOLUNTAS LONG-TERM CAPITAL Logo" 
             className="h-16 w-auto" 
             width="200"
