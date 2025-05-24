@@ -19,7 +19,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   return (
     <div className="w-64 bg-[#F9F9F9] border-l min-h-screen flex flex-col">
       {/* Navigation Menu */}
-      <div className="flex-1 py-8">
+      <div className="flex-1 py-8 flex items-center justify-center">
         <nav className="space-y-6 px-6">
           <button 
             onClick={() => setActiveTab('advisor')}
