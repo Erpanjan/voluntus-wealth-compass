@@ -49,15 +49,15 @@ const EditorJSComponent: React.FC<EditorJSComponentProps> = ({ value, onChange }
           class: Image,
           config: {
             endpoints: {
-              byFile: '/api/uploadFile', // You might need to implement this
-              byUrl: '/api/fetchUrl', // You might need to implement this
+              byFile: '/api/uploadFile',
+              byUrl: '/api/fetchUrl',
             }
           }
         },
         linkTool: {
           class: LinkTool,
           config: {
-            endpoint: '/api/fetchUrl', // You might need to implement this
+            endpoint: '/api/fetchUrl',
           }
         },
         code: Code,
