@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   id: number;
@@ -30,19 +31,59 @@ const AdvisorChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  const getUserData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      // Get user profile data
+      const { data: profileData } = await supabase
+        .from('onboarding_data')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      // Get personalization data if available
+      const { data: personalizationData } = await supabase
+        .from('personalization_data')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      return {
+        userId: user.id,
+        email: user.email,
+        profile: profileData,
+        personalization: personalizationData
+      };
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      return null;
+    }
+  };
+
   const sendToN8NAgent = async (userMessage: string) => {
     try {
-      const response = await fetch('https://voluntus-long-term-capita.app.n8n.cloud/webhook-test/4840a04a-c61f-4b8a-8806-4413e2249f88', {
-        method: 'POST',
+      const userData = await getUserData();
+      
+      // Prepare the data to send via GET request query parameters
+      const params = new URLSearchParams({
+        message: userMessage,
+        timestamp: new Date().toISOString(),
+        context: 'financial-planning-chat',
+        ...(userData && {
+          userId: userData.userId,
+          userEmail: userData.email || '',
+          userProfile: JSON.stringify(userData.profile || {}),
+          userPersonalization: JSON.stringify(userData.personalization || {})
+        })
+      });
+
+      const response = await fetch(`https://voluntus-long-term-capita.app.n8n.cloud/webhook-test/4840a04a-c61f-4b8a-8806-4413e2249f88?${params.toString()}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: userMessage,
-          timestamp: new Date().toISOString(),
-          userId: 'user', // You can add actual user ID if available
-          context: 'financial-planning-chat'
-        }),
       });
 
       if (!response.ok) {
