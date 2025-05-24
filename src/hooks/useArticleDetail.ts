@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { articleService, Article } from '@/services/article';
 import { useToast } from '@/hooks/use-toast';
@@ -30,15 +31,17 @@ export const useArticleDetail = (slug: string) => {
       setLoading(true);
       setError(null);
       
-      console.log(`Fetching article with slug: ${slug}, retry count: ${retryCount}`);
+      // Properly decode the slug in case it was URL encoded
+      const decodedSlug = decodeURIComponent(slug);
+      console.log(`Fetching article with slug: ${slug}, decoded: ${decodedSlug}, retry count: ${retryCount}`);
       
       // Use the articleService to get the article by slug
-      const data = await articleService.getArticleBySlug(slug);
+      const data = await articleService.getArticleBySlug(decodedSlug);
       
       console.log("Raw article data received:", data);
       
       if (!data) {
-        console.error("Article not found", { slug });
+        console.error("Article not found", { slug, decodedSlug });
         throw new Error("Article not found");
       }
       

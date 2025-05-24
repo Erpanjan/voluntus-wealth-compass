@@ -24,9 +24,13 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
   image,
   className 
 }) => {
+  // Properly encode the slug for URL navigation
+  const encodedSlug = encodeURIComponent(id);
+  console.log('ArticleCard: Original slug:', id, 'Encoded slug:', encodedSlug);
+
   return (
     <Link 
-      to={`/insight/${id}`}
+      to={`/insight/${encodedSlug}`}
       className={cn(
         "block bg-white rounded-xl overflow-hidden transition-all duration-300 group",
         "border border-gray-200 shadow-sm hover:shadow-md",
