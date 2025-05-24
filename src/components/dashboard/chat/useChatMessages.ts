@@ -4,18 +4,22 @@ import { Message } from './types';
 import { sendToN8NAgent } from './chatService';
 import { useToast } from '@/hooks/use-toast';
 
+const initialMessage: Message = {
+  id: 1,
+  text: 'Hello! Welcome to Voluntus Long-Term Capital. How can I assist you with your financial planning today?',
+  sender: 'advisor',
+  timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000) // 1 day ago
+};
+
 export const useChatMessages = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: 'Hello! Welcome to Voluntus Long-Term Capital. How can I assist you with your financial planning today?',
-      sender: 'advisor',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000) // 1 day ago
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([initialMessage]);
   
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const clearMessages = () => {
+    setMessages([initialMessage]);
+  };
 
   const sendMessage = async (messageText: string) => {
     if (!messageText.trim() || isLoading) return;
@@ -85,6 +89,7 @@ export const useChatMessages = () => {
   return {
     messages,
     isLoading,
-    sendMessage
+    sendMessage,
+    clearMessages
   };
 };
