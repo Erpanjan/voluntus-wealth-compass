@@ -25,7 +25,7 @@ const NavLinks = ({
             to={link.path}
             onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
             className={cn(
-              'py-3 px-4 text-base transition-all duration-300 flex items-center touch-manipulation rounded-lg',
+              'py-3 px-4 text-sm transition-all duration-300 flex items-center touch-manipulation rounded-lg',
               isActive(link.path) 
                 ? 'font-semibold text-[#333333] bg-black/5' 
                 : 'font-normal text-[#666666] hover:text-[#333333] hover:bg-black/5'
@@ -40,7 +40,7 @@ const NavLinks = ({
           <button
             onClick={handleLoginClick}
             className={cn(
-              'py-3 px-4 text-base transition-all duration-300 flex items-center touch-manipulation text-left rounded-lg border border-[#666666] mt-4',
+              'py-3 px-4 text-sm transition-all duration-300 flex items-center touch-manipulation text-left rounded-lg border border-[#666666] mt-4',
               isActive('/login') 
                 ? 'font-semibold text-white bg-[#333333] border-[#333333]' 
                 : 'font-normal text-[#666666] hover:text-[#333333] hover:bg-black/5 hover:border-[#333333]'
