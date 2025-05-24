@@ -21,7 +21,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ onClearChat }) => {
 
   return (
     <div className="flex justify-between items-center p-4 border-b bg-white">
-      <h2 className="text-lg font-medium text-[#333333]">AI Financial Advisor</h2>
+      <h2 className="text-lg font-medium text-[#333333]">Your Dedicated Advisor</h2>
       <Button
         variant="ghost"
         size="sm"
