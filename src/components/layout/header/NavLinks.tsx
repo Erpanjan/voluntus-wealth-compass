@@ -55,7 +55,7 @@ const NavLinks = ({
   }
 
   return (
-    <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 -translate-y-3 items-center">
+    <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 -translate-y-4 items-center">
       {navLinks.map((link) => (
         <Link
           key={link.name}
