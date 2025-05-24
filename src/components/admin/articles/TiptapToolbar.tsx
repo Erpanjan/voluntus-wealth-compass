@@ -39,11 +39,11 @@ const TiptapToolbar: React.FC<TiptapToolbarProps> = ({ editor, addImage, addYout
     }
 
     if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      editor.chain().focus().extendMarkRange('link').unsetMark('link').run();
       return;
     }
 
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    editor.chain().focus().extendMarkRange('link').setMark('link', { href: url }).run();
   };
 
   const addTable = () => {
@@ -90,7 +90,7 @@ const TiptapToolbar: React.FC<TiptapToolbarProps> = ({ editor, addImage, addYout
       <Button
         variant={editor.isActive('underline') ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().toggleUnderline().run()}
+        onClick={() => editor.chain().focus().toggleMark('underline').run()}
       >
         <Underline className="h-4 w-4" />
       </Button>
@@ -125,7 +125,7 @@ const TiptapToolbar: React.FC<TiptapToolbarProps> = ({ editor, addImage, addYout
           if (value === 'p') {
             editor.chain().focus().setParagraph().run();
           } else {
-            const level = parseInt(value.replace('h', ''));
+            const level = parseInt(value.replace('h', '')) as 1 | 2 | 3;
             editor.chain().focus().toggleHeading({ level }).run();
           }
         }}
