@@ -9,7 +9,7 @@ export const sendToN8NAgent = async (userMessage: string) => {
       context: 'financial-planning-chat'
     });
 
-    const response = await fetch(`https://voluntus-long-term-capita.app.n8n.cloud/webhook-test/4840a04a-c61f-4b8a-8806-4413e2249f88?${params.toString()}`, {
+    const response = await fetch(`https://voluntus-long-term-capita.app.n8n.cloud/webhook/4840a04a-c61f-4b8a-8806-4413e2249f88?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
