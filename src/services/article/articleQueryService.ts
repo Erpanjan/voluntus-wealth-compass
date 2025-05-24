@@ -56,22 +56,8 @@ export const articleQueryService = {
         const article: Article = {
           ...data[0],
           content: normalizeContent(data[0].content),
-          authors: Array.isArray(data[0].authors) 
-            ? data[0].authors.map((author: any) => ({
-                id: author.id,
-                name: author.name,
-                image_url: author.image_url
-              })) 
-            : [],
-          reports: Array.isArray(data[0].reports) 
-            ? data[0].reports.map((report: any) => ({
-                id: report.id,
-                title: report.title,
-                description: report.description,
-                file_url: report.file_url,
-                created_at: report.created_at
-              })) 
-            : []
+          authors: Array.isArray(data[0].authors) ? data[0].authors : [],
+          reports: Array.isArray(data[0].reports) ? data[0].reports : []
         };
         
         console.log('Processed article by ID:', article);
@@ -111,13 +97,7 @@ export const articleQueryService = {
       const processedData: Article[] = data?.map((item: any) => ({
         ...item,
         content: normalizeContent(item.content),
-        authors: Array.isArray(item.authors) 
-          ? item.authors.map((author: any) => ({
-              id: author.id,
-              name: author.name,
-              image_url: author.image_url
-            })) 
-          : []
+        authors: Array.isArray(item.authors) ? item.authors : []
       })) || [];
       
       console.log('Processed articles data:', processedData);
@@ -157,13 +137,7 @@ export const articleQueryService = {
       const processedData: Article[] = data.map((item: any) => ({
         ...item,
         content: normalizeContent(item.content),
-        authors: Array.isArray(item.authors) 
-          ? item.authors.map((author: any) => ({
-              id: author.id,
-              name: author.name,
-              image_url: author.image_url
-            })) 
-          : []
+        authors: Array.isArray(item.authors) ? item.authors : []
       }));
       
       // Get total count from first item (all items have same total_count)
@@ -203,22 +177,8 @@ export const articleQueryService = {
         const article: Article = {
           ...data[0],
           content: normalizeContent(data[0].content),
-          authors: Array.isArray(data[0].authors) 
-            ? data[0].authors.map((author: any) => ({
-                id: author.id,
-                name: author.name,
-                image_url: author.image_url
-              })) 
-            : [],
-          reports: Array.isArray(data[0].reports) 
-            ? data[0].reports.map((report: any) => ({
-                id: report.id,
-                title: report.title,
-                description: report.description,
-                file_url: report.file_url,
-                created_at: report.created_at
-              })) 
-            : []
+          authors: Array.isArray(data[0].authors) ? data[0].authors : [],
+          reports: Array.isArray(data[0].reports) ? data[0].reports : []
         };
         console.log('Processed article data:', article);
         return article;

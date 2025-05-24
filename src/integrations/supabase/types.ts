@@ -39,39 +39,6 @@ export type Database = {
         }
         Relationships: []
       }
-      article_authors: {
-        Row: {
-          article_id: string
-          author_id: string
-          id: string
-        }
-        Insert: {
-          article_id: string
-          author_id: string
-          id?: string
-        }
-        Update: {
-          article_id?: string
-          author_id?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "article_authors_article_id_fkey"
-            columns: ["article_id"]
-            isOneToOne: false
-            referencedRelation: "articles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "article_authors_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "authors"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       articles: {
         Row: {
           author_name: string | null
@@ -110,33 +77,6 @@ export type Database = {
           published_at?: string
           slug?: string
           title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      authors: {
-        Row: {
-          bio: string | null
-          created_at: string
-          id: string
-          image_url: string | null
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          bio?: string | null
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          bio?: string | null
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          name?: string
           updated_at?: string
         }
         Relationships: []
