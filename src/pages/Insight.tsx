@@ -1,18 +1,19 @@
+
 import React, { useState } from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ArticleCard from '@/components/ArticleCard';
 import ContactForm from '@/components/ContactForm';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { usePublishedArticles } from '@/hooks/usePublishedArticles';
+import { useOptimizedArticles } from '@/hooks/useOptimizedArticles';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 
 const Insight = () => {
-  const { articles, loading, totalPages, currentPage, totalCount, refresh } = usePublishedArticles(4);
-  const [displayPage, setDisplayPage] = useState(1); // 1-based for UI
+  const { articles, loading, totalPages, currentPage, totalCount, refresh } = useOptimizedArticles(4);
+  const [displayPage, setDisplayPage] = useState(1);
   
   const handlePageChange = (page: number) => {
     setDisplayPage(page);
@@ -47,15 +48,6 @@ const Insight = () => {
   const startIndex = (displayPage - 1) * articlesPerPage;
   const displayedArticles = articles.slice(startIndex, startIndex + articlesPerPage);
 
-  console.log('Insight page render:', { 
-    articles: articles.length, 
-    loading, 
-    totalCount, 
-    totalPages,
-    displayPage,
-    displayedArticles: displayedArticles.length 
-  });
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -69,7 +61,7 @@ const Insight = () => {
       <Section title="Latest Research" titleCentered={true}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
           {loading ? renderSkeletons() : (
-            displayedArticles.map((article) => (
+            displayedArticles.map((article, index) => (
               <ArticleCard
                 key={article.id}
                 id={article.slug}
@@ -79,6 +71,7 @@ const Insight = () => {
                 category={article.category}
                 authors={article.authors?.map(author => author.name) || []}
                 image={article.image_url}
+                priority={index < 2} // Prioritize first 2 images
               />
             ))
           )}
@@ -92,6 +85,7 @@ const Insight = () => {
                 onClick={handleRefresh}
                 className="mt-4"
               >
+                <RefreshCw className="mr-2 h-4 w-4" />
                 Refresh Articles
               </Button>
             </div>
@@ -158,4 +152,4 @@ const Insight = () => {
   );
 };
 
-export default Insight;
+export default React.memo(Insight);

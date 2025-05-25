@@ -1,70 +1,70 @@
 
 import React from 'react';
-import { cn } from '@/lib/utils';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
+import OptimizedImage from '@/components/optimized/OptimizedImage';
 
 interface ArticleCardProps {
   id: string;
   title: string;
   date: string;
   description: string;
-  category?: string;
-  authors?: string[];
+  category: string;
+  authors: string[];
   image?: string;
-  className?: string;
+  priority?: boolean;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ 
+const ArticleCard: React.FC<ArticleCardProps> = ({
   id,
-  title, 
-  date, 
-  description, 
+  title,
+  date,
+  description,
   category,
   authors,
   image,
-  className 
+  priority = false
 }) => {
-  // Properly encode the slug for URL navigation
-  const encodedSlug = encodeURIComponent(id);
-  console.log('ArticleCard: Original slug:', id, 'Encoded slug:', encodedSlug);
-
   return (
-    <Link 
-      to={`/insight/${encodedSlug}`}
-      className={cn(
-        "block bg-white rounded-xl overflow-hidden transition-all duration-300 group",
-        "border border-gray-200 shadow-sm hover:shadow-md",
-        className
-      )}
-    >
-      <article className="flex flex-col h-full">
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group">
+      <Link to={`/insight/${id}`} className="block">
         {image && (
-          <div className="relative w-full h-48 overflow-hidden">
-            <img 
-              src={image} 
-              alt={title} 
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          <div className="aspect-video overflow-hidden">
+            <OptimizedImage
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              priority={priority}
             />
           </div>
         )}
-        <div className="p-6 flex-1 flex flex-col">
-          {category && (
-            <span className="text-xs font-semibold uppercase tracking-wider text-voluntus-text-tertiary mb-2">
+        
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Badge variant="secondary" className="text-xs">
               {category}
-            </span>
-          )}
-          <h3 className="text-lg font-semibold mb-2 group-hover:text-voluntus-blue transition-colors">{title}</h3>
-          <p className="text-sm text-voluntus-text-secondary mb-4">{date}</p>
-          <p className="text-voluntus-text-secondary text-sm line-clamp-3 mb-4">{description}</p>
-          {authors && authors.length > 0 && (
-            <p className="mt-auto text-xs text-voluntus-text-tertiary">
+            </Badge>
+            <span className="text-xs text-gray-500">{date}</span>
+          </div>
+          
+          <h3 className="text-xl font-semibold mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+            {title}
+          </h3>
+          
+          <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+            {description}
+          </p>
+          
+          {authors.length > 0 && (
+            <div className="text-xs text-gray-500">
               By {authors.join(', ')}
-            </p>
+            </div>
           )}
-        </div>
-      </article>
-    </Link>
+        </CardContent>
+      </Link>
+    </Card>
   );
 };
 
-export default ArticleCard;
+export default React.memo(ArticleCard);
