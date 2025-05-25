@@ -2,7 +2,7 @@
 import { useQuery, UseQueryOptions, QueryKey } from '@tanstack/react-query';
 import { useNetworkStatus } from './useNetworkStatus';
 
-interface OptimizedQueryOptions<TData = unknown, TError = Error> extends UseQueryOptions<TData, TError> {
+interface OptimizedQueryOptions<TData = unknown, TError = Error> extends Omit<UseQueryOptions<TData, TError>, 'enabled' | 'staleTime' | 'gcTime' | 'refetchOnWindowFocus' | 'refetchOnReconnect' | 'retry' | 'retryDelay'> {
   priority?: 'high' | 'normal' | 'low';
   background?: boolean;
 }
