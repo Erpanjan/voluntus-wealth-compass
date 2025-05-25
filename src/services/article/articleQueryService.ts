@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Article, Author, Report } from './types';
 
@@ -231,27 +230,33 @@ export const articleQueryService = {
   },
 
   /**
-   * Get a single article by slug
+   * Get a single article by slug with fuzzy matching
    * @param slug The article slug to fetch
    * @returns The article with that slug or null if not found
    */
   async getArticleBySlug(slug: string): Promise<Article | null> {
     try {
       console.log(`Fetching article with slug: ${slug}`);
-      const { data, error } = await supabase.rpc('get_article_by_slug', {
-        slug_param: slug
+      
+      // Clean the slug for better matching
+      const cleanSlug = decodeURIComponent(slug);
+      console.log(`Cleaned slug: ${cleanSlug}`);
+      
+      // Try fuzzy matching first
+      const { data, error } = await supabase.rpc('get_article_by_slug_fuzzy', {
+        slug_param: cleanSlug
       });
       
       if (error) {
-        console.error('Error fetching article:', error);
-        throw error;
+        console.error('Error fetching article with fuzzy matching:', error);
+        // Fallback to original method
+        return this.getArticleBySlugOriginal(slug);
       }
       
-      console.log('Raw article data:', data);
+      console.log('Raw article data from fuzzy search:', data);
       
       if (data && data.length > 0) {
-        const rawArticle = data[0] as any; // Cast to any to access all properties
-        // Process the data to ensure correct typing
+        const rawArticle = data[0] as any;
         const article: Article = {
           id: rawArticle.id,
           title: rawArticle.title,
@@ -267,14 +272,62 @@ export const articleQueryService = {
           authors: normalizeAuthors(rawArticle.authors),
           reports: normalizeReports(rawArticle.reports)
         };
-        console.log('Processed article data:', article);
+        console.log('Processed article data from fuzzy search:', article);
         return article;
       }
       
-      console.log('No article found with this slug');
-      return null;
+      console.log('No article found with fuzzy matching, trying original method');
+      return this.getArticleBySlugOriginal(slug);
     } catch (error) {
       console.error('Error in getArticleBySlug:', error, { slug });
+      return this.getArticleBySlugOriginal(slug);
+    }
+  },
+
+  /**
+   * Original slug matching method as fallback
+   * @param slug The article slug to fetch
+   * @returns The article with that slug or null if not found
+   */
+  async getArticleBySlugOriginal(slug: string): Promise<Article | null> {
+    try {
+      console.log(`Trying original slug matching for: ${slug}`);
+      const { data, error } = await supabase.rpc('get_article_by_slug', {
+        slug_param: slug
+      });
+      
+      if (error) {
+        console.error('Error fetching article with original method:', error);
+        throw error;
+      }
+      
+      console.log('Raw article data from original method:', data);
+      
+      if (data && data.length > 0) {
+        const rawArticle = data[0] as any;
+        const article: Article = {
+          id: rawArticle.id,
+          title: rawArticle.title,
+          slug: rawArticle.slug,
+          description: rawArticle.description || '',
+          content: normalizeContent(rawArticle.content),
+          category: rawArticle.category || '',
+          author_name: rawArticle.author_name || '',
+          image_url: rawArticle.image_url || '',
+          published_at: rawArticle.published_at,
+          created_at: rawArticle.created_at,
+          updated_at: rawArticle.updated_at,
+          authors: normalizeAuthors(rawArticle.authors),
+          reports: normalizeReports(rawArticle.reports)
+        };
+        console.log('Processed article data from original method:', article);
+        return article;
+      }
+      
+      console.log('No article found with original method');
+      return null;
+    } catch (error) {
+      console.error('Error in getArticleBySlugOriginal:', error, { slug });
       return null;
     }
   }

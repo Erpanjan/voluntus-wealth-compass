@@ -31,17 +31,28 @@ export const useArticleDetail = (slug: string) => {
       setLoading(true);
       setError(null);
       
-      // Properly decode the slug in case it was URL encoded
-      const decodedSlug = decodeURIComponent(slug);
-      console.log(`Fetching article with slug: ${slug}, decoded: ${decodedSlug}, retry count: ${retryCount}`);
+      // Enhanced slug processing for better URL handling
+      let processedSlug = slug;
       
-      // Use the articleService to get the article by slug
-      const data = await articleService.getArticleBySlug(decodedSlug);
+      // Handle different URL encoding scenarios
+      try {
+        // Try to decode URL encoding
+        processedSlug = decodeURIComponent(slug);
+        console.log(`Original slug: ${slug}, Decoded slug: ${processedSlug}`);
+      } catch (e) {
+        console.log('Failed to decode slug, using original:', slug);
+        processedSlug = slug;
+      }
+      
+      console.log(`Fetching article with processed slug: ${processedSlug}, retry count: ${retryCount}`);
+      
+      // Use the enhanced articleService with fuzzy matching
+      const data = await articleService.getArticleBySlug(processedSlug);
       
       console.log("Raw article data received:", data);
       
       if (!data) {
-        console.error("Article not found", { slug, decodedSlug });
+        console.error("Article not found", { slug, processedSlug });
         throw new Error("Article not found");
       }
       
