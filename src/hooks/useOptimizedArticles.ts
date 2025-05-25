@@ -71,7 +71,11 @@ export const useOptimizedArticles = (pageSize: number = 4) => {
     },
     priority: 'high',
     staleTime: CACHE_TTL,
-    onError: (error) => {
+  });
+
+  // Handle errors with useEffect instead of onError callback
+  useEffect(() => {
+    if (error) {
       console.error('Error fetching articles:', error);
       toast({
         title: "Error loading articles",
@@ -79,7 +83,7 @@ export const useOptimizedArticles = (pageSize: number = 4) => {
         variant: "destructive",
       });
     }
-  });
+  }, [error, toast]);
 
   // Memoized computed values
   const memoizedValues = useMemo(() => {
