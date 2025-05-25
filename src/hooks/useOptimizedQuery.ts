@@ -2,7 +2,7 @@
 import { useQuery, UseQueryOptions, QueryKey } from '@tanstack/react-query';
 import { useNetworkStatus } from './useNetworkStatus';
 
-interface OptimizedQueryOptions<TData = unknown, TError = Error> extends Omit<UseQueryOptions<TData, TError>, 'enabled' | 'staleTime' | 'gcTime' | 'refetchOnWindowFocus' | 'refetchOnReconnect' | 'retry' | 'retryDelay'> {
+interface OptimizedQueryOptions<TData = unknown, TError = Error> extends UseQueryOptions<TData, TError> {
   priority?: 'high' | 'normal' | 'low';
   background?: boolean;
 }
@@ -11,7 +11,7 @@ export function useOptimizedQuery<TData = unknown, TError = Error>(
   options: OptimizedQueryOptions<TData, TError>
 ) {
   const { isOnline, isSlowConnection } = useNetworkStatus();
-  const { priority = 'normal', background = false, ...queryOptions } = options;
+  const { priority = 'normal', background = false, ...userOptions } = options;
 
   // Dynamic stale time based on priority and connection
   const getStaleTime = () => {
@@ -27,23 +27,26 @@ export function useOptimizedQuery<TData = unknown, TError = Error>(
     return 600000; // 10 minutes
   };
 
-  return useQuery({
-    ...queryOptions,
-    enabled: queryOptions.enabled !== false && isOnline,
-    staleTime: getStaleTime(),
-    gcTime: getGcTime(),
-    refetchOnWindowFocus: !background && priority !== 'low',
-    refetchOnReconnect: isOnline,
-    retry: (failureCount, error) => {
+  // Merge user options with optimized defaults
+  const optimizedOptions: UseQueryOptions<TData, TError> = {
+    ...userOptions,
+    enabled: userOptions.enabled !== false && isOnline,
+    staleTime: userOptions.staleTime ?? getStaleTime(),
+    gcTime: userOptions.gcTime ?? getGcTime(),
+    refetchOnWindowFocus: userOptions.refetchOnWindowFocus ?? (!background && priority !== 'low'),
+    refetchOnReconnect: userOptions.refetchOnReconnect ?? isOnline,
+    retry: userOptions.retry ?? ((failureCount, error) => {
       if (!isOnline) return false;
       if (failureCount >= (priority === 'high' ? 2 : 3)) return false;
       return true;
-    },
-    retryDelay: (attemptIndex) => {
+    }),
+    retryDelay: userOptions.retryDelay ?? ((attemptIndex) => {
       const baseDelay = priority === 'high' ? 500 : 1000;
       return Math.min(baseDelay * 2 ** attemptIndex, 30000);
-    },
-  });
+    }),
+  };
+
+  return useQuery(optimizedOptions);
 }
 
 // Hook for prefetching data
