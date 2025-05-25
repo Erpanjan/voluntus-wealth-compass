@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Article, Author, Report } from './types';
 
@@ -230,7 +231,7 @@ export const articleQueryService = {
   },
 
   /**
-   * Get a single article by slug with fuzzy matching
+   * Get a single article by slug with enhanced matching
    * @param slug The article slug to fetch
    * @returns The article with that slug or null if not found
    */
@@ -242,93 +243,99 @@ export const articleQueryService = {
       const cleanSlug = decodeURIComponent(slug);
       console.log(`Cleaned slug: ${cleanSlug}`);
       
-      // Try fuzzy matching first
-      const { data, error } = await supabase.rpc('get_article_by_slug_fuzzy', {
+      // Try exact match first
+      const { data: exactData, error: exactError } = await supabase.rpc('get_article_by_slug', {
         slug_param: cleanSlug
       });
       
-      if (error) {
-        console.error('Error fetching article with fuzzy matching:', error);
-        // Fallback to original method
-        return this.getArticleBySlugOriginal(slug);
+      if (exactError) {
+        console.error('Error with exact slug matching:', exactError);
       }
       
-      console.log('Raw article data from fuzzy search:', data);
+      if (exactData && Array.isArray(exactData) && exactData.length > 0) {
+        console.log('Found exact match:', exactData[0]);
+        return this.processArticleData(exactData[0]);
+      }
       
-      if (data && data.length > 0) {
-        const rawArticle = data[0] as any;
-        const article: Article = {
-          id: rawArticle.id,
-          title: rawArticle.title,
-          slug: rawArticle.slug,
-          description: rawArticle.description || '',
-          content: normalizeContent(rawArticle.content),
-          category: rawArticle.category || '',
-          author_name: rawArticle.author_name || '',
-          image_url: rawArticle.image_url || '',
-          published_at: rawArticle.published_at,
-          created_at: rawArticle.created_at,
-          updated_at: rawArticle.updated_at,
-          authors: normalizeAuthors(rawArticle.authors),
-          reports: normalizeReports(rawArticle.reports)
+      // Try with different URL encoding variations
+      const variations = [
+        slug, // Original
+        cleanSlug, // Decoded
+        slug.replace(/%3F/g, '?').replace(/%21/g, '!'), // URL decode some characters
+        cleanSlug.replace(/[?!]/g, ''), // Remove special characters
+      ];
+      
+      for (const variation of variations) {
+        if (variation !== cleanSlug) { // Skip if already tried
+          console.log(`Trying variation: ${variation}`);
+          const { data: varData, error: varError } = await supabase.rpc('get_article_by_slug', {
+            slug_param: variation
+          });
+          
+          if (!varError && varData && Array.isArray(varData) && varData.length > 0) {
+            console.log(`Found match with variation: ${variation}`, varData[0]);
+            return this.processArticleData(varData[0]);
+          }
+        }
+      }
+      
+      // Try LIKE pattern matching as fallback
+      console.log('Trying LIKE pattern matching as fallback');
+      const { data: likeData, error: likeError } = await supabase
+        .from('articles')
+        .select(`
+          id, title, slug, description, content, category, author_name, image_url,
+          published_at, created_at, updated_at
+        `)
+        .or(`slug.like.%${cleanSlug}%,slug.like.%${slug}%`)
+        .limit(1);
+      
+      if (!likeError && likeData && likeData.length > 0) {
+        console.log('Found match with LIKE pattern:', likeData[0]);
+        
+        // Get reports for this article
+        const { data: reportsData } = await supabase
+          .from('reports')
+          .select('id, title, description, file_url, created_at')
+          .eq('article_id', likeData[0].id);
+        
+        const articleWithReports = {
+          ...likeData[0],
+          authors: [],
+          reports: reportsData || []
         };
-        console.log('Processed article data from fuzzy search:', article);
-        return article;
+        
+        return this.processArticleData(articleWithReports);
       }
       
-      console.log('No article found with fuzzy matching, trying original method');
-      return this.getArticleBySlugOriginal(slug);
+      console.log('No article found with any matching strategy');
+      return null;
     } catch (error) {
       console.error('Error in getArticleBySlug:', error, { slug });
-      return this.getArticleBySlugOriginal(slug);
+      return null;
     }
   },
 
   /**
-   * Original slug matching method as fallback
-   * @param slug The article slug to fetch
-   * @returns The article with that slug or null if not found
+   * Process raw article data into Article type
+   * @param rawArticle Raw article data from database
+   * @returns Processed Article object
    */
-  async getArticleBySlugOriginal(slug: string): Promise<Article | null> {
-    try {
-      console.log(`Trying original slug matching for: ${slug}`);
-      const { data, error } = await supabase.rpc('get_article_by_slug', {
-        slug_param: slug
-      });
-      
-      if (error) {
-        console.error('Error fetching article with original method:', error);
-        throw error;
-      }
-      
-      console.log('Raw article data from original method:', data);
-      
-      if (data && data.length > 0) {
-        const rawArticle = data[0] as any;
-        const article: Article = {
-          id: rawArticle.id,
-          title: rawArticle.title,
-          slug: rawArticle.slug,
-          description: rawArticle.description || '',
-          content: normalizeContent(rawArticle.content),
-          category: rawArticle.category || '',
-          author_name: rawArticle.author_name || '',
-          image_url: rawArticle.image_url || '',
-          published_at: rawArticle.published_at,
-          created_at: rawArticle.created_at,
-          updated_at: rawArticle.updated_at,
-          authors: normalizeAuthors(rawArticle.authors),
-          reports: normalizeReports(rawArticle.reports)
-        };
-        console.log('Processed article data from original method:', article);
-        return article;
-      }
-      
-      console.log('No article found with original method');
-      return null;
-    } catch (error) {
-      console.error('Error in getArticleBySlugOriginal:', error, { slug });
-      return null;
-    }
+  processArticleData(rawArticle: any): Article {
+    return {
+      id: rawArticle.id,
+      title: rawArticle.title,
+      slug: rawArticle.slug,
+      description: rawArticle.description || '',
+      content: normalizeContent(rawArticle.content),
+      category: rawArticle.category || '',
+      author_name: rawArticle.author_name || '',
+      image_url: rawArticle.image_url || '',
+      published_at: rawArticle.published_at,
+      created_at: rawArticle.created_at,
+      updated_at: rawArticle.updated_at,
+      authors: normalizeAuthors(rawArticle.authors),
+      reports: normalizeReports(rawArticle.reports)
+    };
   }
 };
