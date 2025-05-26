@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { articleService, Article } from '@/services/article';
 import { useOptimizedQuery } from './useOptimizedQuery';
@@ -11,6 +11,7 @@ export const useArticles = () => {
   const {
     data: articles = [],
     isLoading: loading,
+    error,
     refetch
   } = useOptimizedQuery({
     queryKey: ['articles'],
@@ -23,7 +24,11 @@ export const useArticles = () => {
     },
     priority: 'normal',
     cacheStrategy: 'normal',
-    onError: (error: Error) => {
+  });
+
+  // Handle errors with useEffect
+  useEffect(() => {
+    if (error) {
       console.error('Error fetching articles:', error);
       toast({
         title: "Error fetching articles",
@@ -31,7 +36,7 @@ export const useArticles = () => {
         variant: "destructive",
       });
     }
-  });
+  }, [error, toast]);
 
   const deleteArticle = useCallback(async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this article?')) {

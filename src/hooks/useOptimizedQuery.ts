@@ -2,7 +2,9 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { useNetworkStatus } from './useNetworkStatus';
 
-interface OptimizedQueryOptions<TData = unknown, TError = Error> extends UseQueryOptions<TData, TError> {
+interface OptimizedQueryOptions<TData = unknown, TError = Error> extends Omit<UseQueryOptions<TData, TError>, 'queryKey' | 'queryFn'> {
+  queryKey: UseQueryOptions<TData, TError>['queryKey'];
+  queryFn: UseQueryOptions<TData, TError>['queryFn'];
   priority?: 'high' | 'normal' | 'low';
   cacheStrategy?: 'aggressive' | 'normal' | 'minimal';
 }

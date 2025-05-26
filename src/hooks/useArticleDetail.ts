@@ -2,6 +2,7 @@
 import { useToast } from '@/hooks/use-toast';
 import { articleService, Article } from '@/services/article';
 import { useOptimizedQuery } from './useOptimizedQuery';
+import { useEffect } from 'react';
 
 export const useArticleDetail = (slug: string) => {
   const { toast } = useToast();
@@ -61,15 +62,19 @@ export const useArticleDetail = (slug: string) => {
     priority: 'high',
     cacheStrategy: 'aggressive',
     retry: 2,
-    onError: (err: Error) => {
-      console.error('Error fetching article details:', err);
+  });
+
+  // Handle errors with useEffect
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching article details:', error);
       toast({
         title: "Error loading article",
         description: "There was a problem loading the article details. Please try again later.",
         variant: "destructive",
       });
     }
-  });
+  }, [error, toast]);
 
   const handleRefetch = () => {
     console.log("Manually retrying article fetch");
