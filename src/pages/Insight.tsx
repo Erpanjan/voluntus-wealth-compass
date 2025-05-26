@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useCallback, useMemo } from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ArticleCard from '@/components/ArticleCard';
@@ -11,21 +12,28 @@ import { RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 
 const Insight = () => {
-  const { articles, loading, totalPages, currentPage, totalCount, refresh } = usePublishedArticles(4);
-  const [displayPage, setDisplayPage] = useState(1); // 1-based for UI
+  const { 
+    articles, 
+    loading, 
+    totalPages, 
+    totalCount, 
+    currentPage,
+    setCurrentPage,
+    refresh 
+  } = usePublishedArticles(4);
   
-  const handlePageChange = (page: number) => {
-    setDisplayPage(page);
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page - 1); // Convert to 0-based for backend
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [setCurrentPage]);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     console.log('Refreshing articles...');
     refresh();
-  };
+  }, [refresh]);
 
-  // Render loading skeletons
-  const renderSkeletons = () => (
+  // Memoized skeleton renderer
+  const renderSkeletons = useMemo(() => (
     <>
       {[...Array(4)].map((_, i) => (
         <div key={i} className="bg-white rounded-xl overflow-hidden">
@@ -40,20 +48,95 @@ const Insight = () => {
         </div>
       ))}
     </>
-  );
+  ), []);
 
-  // Calculate articles to display for current page
-  const articlesPerPage = 4;
-  const startIndex = (displayPage - 1) * articlesPerPage;
-  const displayedArticles = articles.slice(startIndex, startIndex + articlesPerPage);
+  // Memoized article cards
+  const articleCards = useMemo(() => {
+    return articles.map((article, index) => (
+      <ArticleCard
+        key={article.id}
+        id={article.slug}
+        title={article.title}
+        date={format(new Date(article.published_at), 'MMMM dd, yyyy')}
+        description={article.description}
+        category={article.category}
+        authors={article.authors?.map(author => author.name) || []}
+        image={article.image_url}
+        priority={index < 2} // First 2 images load eagerly
+      />
+    ));
+  }, [articles]);
+
+  // Memoized pagination
+  const paginationComponent = useMemo(() => {
+    if (totalPages <= 1 || loading) return null;
+
+    const displayPage = currentPage + 1; // Convert to 1-based for UI
+
+    return (
+      <div className="mt-12">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (displayPage > 1) handlePageChange(displayPage - 1);
+                }}
+                className={displayPage === 1 ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+            
+            {[...Array(totalPages)].map((_, i) => (
+              <PaginationItem key={i + 1}>
+                <PaginationLink 
+                  href="#" 
+                  isActive={displayPage === i + 1}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(i + 1);
+                  }}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            
+            <PaginationItem>
+              <PaginationNext 
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (displayPage < totalPages) handlePageChange(displayPage + 1);
+                }}
+                className={displayPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+    );
+  }, [totalPages, loading, currentPage, handlePageChange]);
+
+  // Memoized article stats
+  const articleStats = useMemo(() => {
+    if (loading || totalCount === 0) return null;
+
+    const startIndex = currentPage * 4;
+    return (
+      <div className="mt-8 text-center text-sm text-gray-600">
+        Showing {Math.min(startIndex + 1, totalCount)} - {Math.min(startIndex + 4, totalCount)} of {totalCount} articles
+      </div>
+    );
+  }, [loading, totalCount, currentPage]);
 
   console.log('Insight page render:', { 
     articles: articles.length, 
     loading, 
     totalCount, 
     totalPages,
-    displayPage,
-    displayedArticles: displayedArticles.length 
+    currentPage: currentPage + 1,
   });
 
   return (
@@ -68,20 +151,7 @@ const Insight = () => {
       {/* Latest Research Section */}
       <Section title="Latest Research" titleCentered={true}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
-          {loading ? renderSkeletons() : (
-            displayedArticles.map((article) => (
-              <ArticleCard
-                key={article.id}
-                id={article.slug}
-                title={article.title}
-                date={format(new Date(article.published_at), 'MMMM dd, yyyy')}
-                description={article.description}
-                category={article.category}
-                authors={article.authors?.map(author => author.name) || []}
-                image={article.image_url}
-              />
-            ))
-          )}
+          {loading ? renderSkeletons : articleCards}
           
           {!loading && articles.length === 0 && (
             <div className="col-span-full text-center py-16">
@@ -92,62 +162,15 @@ const Insight = () => {
                 onClick={handleRefresh}
                 className="mt-4"
               >
+                <RefreshCw size={16} className="mr-2" />
                 Refresh Articles
               </Button>
             </div>
           )}
         </div>
         
-        {totalPages > 1 && !loading && (
-          <div className="mt-12">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (displayPage > 1) handlePageChange(displayPage - 1);
-                    }}
-                    className={displayPage === 1 ? 'pointer-events-none opacity-50' : ''}
-                  />
-                </PaginationItem>
-                
-                {[...Array(totalPages)].map((_, i) => (
-                  <PaginationItem key={i + 1}>
-                    <PaginationLink 
-                      href="#" 
-                      isActive={displayPage === i + 1}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handlePageChange(i + 1);
-                      }}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                
-                <PaginationItem>
-                  <PaginationNext 
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (displayPage < totalPages) handlePageChange(displayPage + 1);
-                    }}
-                    className={displayPage === totalPages ? 'pointer-events-none opacity-50' : ''}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        )}
-
-        {!loading && totalCount > 0 && (
-          <div className="mt-8 text-center text-sm text-gray-600">
-            Showing {Math.min(startIndex + 1, totalCount)} - {Math.min(startIndex + articlesPerPage, totalCount)} of {totalCount} articles
-          </div>
-        )}
+        {paginationComponent}
+        {articleStats}
       </Section>
 
       {/* Contact Form */}

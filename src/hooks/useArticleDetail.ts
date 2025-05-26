@@ -1,44 +1,30 @@
 
-import { useState, useEffect } from 'react';
-import { articleService, Article } from '@/services/article';
 import { useToast } from '@/hooks/use-toast';
+import { articleService, Article } from '@/services/article';
+import { useOptimizedQuery } from './useOptimizedQuery';
 
 export const useArticleDetail = (slug: string) => {
-  const [article, setArticle] = useState<Article | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
   const { toast } = useToast();
 
-  // Add timeout to prevent infinite loading state
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    if (loading && retryCount === 0) {
-      timeoutId = setTimeout(() => {
-        if (loading) {
-          console.log('Article loading timeout reached, forcing retry');
-          setRetryCount(prev => prev + 1);
-        }
-      }, 5000); // 5 second timeout
-    }
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [loading, retryCount]);
+  const {
+    data: article,
+    isLoading: loading,
+    error,
+    refetch
+  } = useOptimizedQuery({
+    queryKey: ['article-detail', slug],
+    queryFn: async () => {
+      if (!slug) {
+        throw new Error('No slug provided');
+      }
 
-  const fetchArticle = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+      console.log(`Fetching article with slug: ${slug}`);
       
       // Properly decode the slug in case it was URL encoded
       const decodedSlug = decodeURIComponent(slug);
-      console.log(`Fetching article with slug: ${slug}, decoded: ${decodedSlug}, retry count: ${retryCount}`);
+      console.log(`Decoded slug: ${decodedSlug}`);
       
-      // Use the articleService to get the article by slug
       const data = await articleService.getArticleBySlug(decodedSlug);
-      
-      console.log("Raw article data received:", data);
       
       if (!data) {
         console.error("Article not found", { slug, decodedSlug });
@@ -50,12 +36,10 @@ export const useArticleDetail = (slug: string) => {
         console.log("Content type:", typeof data.content);
         if (typeof data.content === 'string') {
           try {
-            // If it's stored as a JSON string, parse it
             console.log("Attempting to parse content as JSON string");
             data.content = JSON.parse(data.content);
           } catch (e) {
             console.log("Content is not a valid JSON string, keeping as is");
-            // Keep as string if not valid JSON
           }
         }
       } else {
@@ -71,34 +55,31 @@ export const useArticleDetail = (slug: string) => {
         console.log("No reports found for this article");
       }
       
-      // Set the article data
-      setArticle(data);
-    } catch (err) {
+      return data;
+    },
+    enabled: !!slug,
+    priority: 'high',
+    cacheStrategy: 'aggressive',
+    retry: 2,
+    onError: (err: Error) => {
       console.error('Error fetching article details:', err);
-      setError(err as Error);
       toast({
         title: "Error loading article",
         description: "There was a problem loading the article details. Please try again later.",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
+  });
+
+  const handleRefetch = () => {
+    console.log("Manually retrying article fetch");
+    refetch();
   };
 
-  useEffect(() => {
-    if (slug) {
-      fetchArticle();
-    }
-  }, [slug, retryCount]);
-
   return { 
-    article, 
+    article: article || null, 
     loading, 
     error, 
-    refetch: () => {
-      console.log("Manually retrying article fetch");
-      setRetryCount(prev => prev + 1);
-    }
+    refetch: handleRefetch
   };
 };

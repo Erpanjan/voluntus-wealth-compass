@@ -1,71 +1,87 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { articleService, Article } from '@/services/article';
+import { useOptimizedQuery } from './useOptimizedQuery';
 
 export const usePublishedArticles = (pageSize: number = 4) => {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
   const { toast } = useToast();
 
-  const fetchArticles = async (page: number = 0, append: boolean = false) => {
-    try {
-      if (!append) {
-        setLoading(true);
-      }
-      
-      console.log(`Fetching published articles for page ${page} with pageSize ${pageSize}`);
-      const result = await articleService.getPublishedArticles(page, pageSize);
-      console.log('Published articles result:', result);
-      
-      if (append) {
-        setArticles(prev => [...prev, ...result.articles]);
-      } else {
-        setArticles(result.articles);
-      }
-      
-      setTotalCount(result.totalCount);
-      setHasMore((page + 1) * pageSize < result.totalCount);
-      setCurrentPage(page);
-      
-      console.log(`Loaded ${result.articles.length} articles, total: ${result.totalCount}, hasMore: ${(page + 1) * pageSize < result.totalCount}`);
-    } catch (error) {
+  // Main query for current page
+  const {
+    data: currentPageData,
+    isLoading,
+    error,
+    refetch
+  } = useOptimizedQuery({
+    queryKey: ['published-articles', currentPage, pageSize],
+    queryFn: () => articleService.getPublishedArticles(currentPage, pageSize),
+    priority: 'high',
+    cacheStrategy: 'aggressive',
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Prefetch next page for better UX
+  const nextPage = currentPage + 1;
+  const hasNextPage = currentPageData && (nextPage * pageSize < currentPageData.totalCount);
+  
+  useOptimizedQuery({
+    queryKey: ['published-articles', nextPage, pageSize],
+    queryFn: () => articleService.getPublishedArticles(nextPage, pageSize),
+    enabled: hasNextPage,
+    priority: 'low',
+    cacheStrategy: 'aggressive',
+  });
+
+  // Error handling
+  useEffect(() => {
+    if (error) {
       console.error('Error fetching published articles:', error);
       toast({
         title: "Error loading articles",
         description: "There was a problem loading the articles. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [error, toast]);
+
+  // Memoized computed values
+  const computedValues = useMemo(() => {
+    if (!currentPageData) {
+      return {
+        articles: [],
+        totalCount: 0,
+        totalPages: 0,
+        hasMore: false
+      };
+    }
+
+    return {
+      articles: currentPageData.articles,
+      totalCount: currentPageData.totalCount,
+      totalPages: Math.ceil(currentPageData.totalCount / pageSize),
+      hasMore: (currentPage + 1) * pageSize < currentPageData.totalCount
+    };
+  }, [currentPageData, currentPage, pageSize]);
 
   const loadMore = () => {
-    if (hasMore && !loading) {
-      fetchArticles(currentPage + 1, true);
+    if (computedValues.hasMore && !isLoading) {
+      setCurrentPage(prev => prev + 1);
     }
   };
 
   const refresh = () => {
-    fetchArticles(0, false);
+    setCurrentPage(0);
+    refetch();
   };
 
-  useEffect(() => {
-    fetchArticles();
-  }, [pageSize]);
-
   return {
-    articles,
-    loading,
+    ...computedValues,
+    loading: isLoading,
     currentPage,
-    totalCount,
-    hasMore,
+    setCurrentPage,
     loadMore,
     refresh,
-    totalPages: Math.ceil(totalCount / pageSize)
   };
 };
