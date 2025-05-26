@@ -231,111 +231,51 @@ export const articleQueryService = {
   },
 
   /**
-   * Get a single article by slug with enhanced matching
+   * Get a single article by slug
    * @param slug The article slug to fetch
    * @returns The article with that slug or null if not found
    */
   async getArticleBySlug(slug: string): Promise<Article | null> {
     try {
       console.log(`Fetching article with slug: ${slug}`);
-      
-      // Clean the slug for better matching
-      const cleanSlug = decodeURIComponent(slug);
-      console.log(`Cleaned slug: ${cleanSlug}`);
-      
-      // Try exact match first
-      const { data: exactData, error: exactError } = await supabase.rpc('get_article_by_slug', {
-        slug_param: cleanSlug
+      const { data, error } = await supabase.rpc('get_article_by_slug', {
+        slug_param: slug
       });
       
-      if (exactError) {
-        console.error('Error with exact slug matching:', exactError);
+      if (error) {
+        console.error('Error fetching article:', error);
+        throw error;
       }
       
-      if (exactData && Array.isArray(exactData) && exactData.length > 0) {
-        console.log('Found exact match:', exactData[0]);
-        return this.processArticleData(exactData[0]);
-      }
+      console.log('Raw article data:', data);
       
-      // Try with different URL encoding variations
-      const variations = [
-        slug, // Original
-        cleanSlug, // Decoded
-        slug.replace(/%3F/g, '?').replace(/%21/g, '!'), // URL decode some characters
-        cleanSlug.replace(/[?!]/g, ''), // Remove special characters
-      ];
-      
-      for (const variation of variations) {
-        if (variation !== cleanSlug) { // Skip if already tried
-          console.log(`Trying variation: ${variation}`);
-          const { data: varData, error: varError } = await supabase.rpc('get_article_by_slug', {
-            slug_param: variation
-          });
-          
-          if (!varError && varData && Array.isArray(varData) && varData.length > 0) {
-            console.log(`Found match with variation: ${variation}`, varData[0]);
-            return this.processArticleData(varData[0]);
-          }
-        }
-      }
-      
-      // Try LIKE pattern matching as fallback
-      console.log('Trying LIKE pattern matching as fallback');
-      const { data: likeData, error: likeError } = await supabase
-        .from('articles')
-        .select(`
-          id, title, slug, description, content, category, author_name, image_url,
-          published_at, created_at, updated_at
-        `)
-        .or(`slug.like.%${cleanSlug}%,slug.like.%${slug}%`)
-        .limit(1);
-      
-      if (!likeError && likeData && likeData.length > 0) {
-        console.log('Found match with LIKE pattern:', likeData[0]);
-        
-        // Get reports for this article
-        const { data: reportsData } = await supabase
-          .from('reports')
-          .select('id, title, description, file_url, created_at')
-          .eq('article_id', likeData[0].id);
-        
-        const articleWithReports = {
-          ...likeData[0],
-          authors: [],
-          reports: reportsData || []
+      if (data && data.length > 0) {
+        const rawArticle = data[0] as any; // Cast to any to access all properties
+        // Process the data to ensure correct typing
+        const article: Article = {
+          id: rawArticle.id,
+          title: rawArticle.title,
+          slug: rawArticle.slug,
+          description: rawArticle.description || '',
+          content: normalizeContent(rawArticle.content),
+          category: rawArticle.category || '',
+          author_name: rawArticle.author_name || '',
+          image_url: rawArticle.image_url || '',
+          published_at: rawArticle.published_at,
+          created_at: rawArticle.created_at,
+          updated_at: rawArticle.updated_at,
+          authors: normalizeAuthors(rawArticle.authors),
+          reports: normalizeReports(rawArticle.reports)
         };
-        
-        return this.processArticleData(articleWithReports);
+        console.log('Processed article data:', article);
+        return article;
       }
       
-      console.log('No article found with any matching strategy');
+      console.log('No article found with this slug');
       return null;
     } catch (error) {
       console.error('Error in getArticleBySlug:', error, { slug });
       return null;
     }
-  },
-
-  /**
-   * Process raw article data into Article type
-   * @param rawArticle Raw article data from database
-   * @returns Processed Article object
-   */
-  processArticleData(rawArticle: any): Article {
-    return {
-      id: rawArticle.id,
-      title: rawArticle.title,
-      slug: rawArticle.slug,
-      description: rawArticle.description || '',
-      content: normalizeContent(rawArticle.content),
-      category: rawArticle.category || '',
-      author_name: rawArticle.author_name || '',
-      image_url: rawArticle.image_url || '',
-      published_at: rawArticle.published_at,
-      created_at: rawArticle.created_at,
-      updated_at: rawArticle.updated_at,
-      authors: normalizeAuthors(rawArticle.authors),
-      reports: normalizeReports(rawArticle.reports)
-    };
   }
 };

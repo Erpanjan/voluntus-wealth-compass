@@ -1,9 +1,9 @@
 
 import React from 'react';
-import OptimizedDashboardLayout from '@/components/dashboard/OptimizedDashboardLayout';
+import DashboardLayout from '@/components/dashboard/DashboardLayout';
 
 const Dashboard = () => {
-  return <OptimizedDashboardLayout />;
+  return <DashboardLayout />;
 };
 
 export default Dashboard;
