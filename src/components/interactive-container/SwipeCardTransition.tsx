@@ -1,7 +1,5 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type SectionData = {
@@ -22,7 +20,7 @@ interface SwipeCardTransitionProps {
 }
 
 const CardContent: React.FC<{ section: SectionData }> = ({ section }) => (
-  <div className="h-full flex flex-col p-6 sm:p-7 bg-white rounded-2xl shadow-2xl">
+  <div className="h-full flex flex-col p-6 sm:p-7">
     <div className="flex-1 flex flex-col justify-center space-y-3 min-h-0">
       <h3 className="text-2xl sm:text-3xl font-semibold text-black tracking-tight leading-tight">
         {section.title}
@@ -34,9 +32,7 @@ const CardContent: React.FC<{ section: SectionData }> = ({ section }) => (
     
     <div className="mt-3 pt-3 border-t border-gray-100 flex-shrink-0">
       <button className="bg-black/80 hover:bg-black text-white transition-all duration-300 px-4 py-2 rounded inline-flex items-center">
-        <Link to="/services" className="inline-flex items-center text-white no-underline">
-          How We Can Help <ArrowRight size={16} className="ml-1" />
-        </Link>
+        How We Can Help →
       </button>
     </div>
   </div>
@@ -50,21 +46,23 @@ const SwipeCardTransition: React.FC<SwipeCardTransitionProps> = ({
   swipeDirection,
   animationSpeed = 'normal'
 }) => {
-  const baseCardClasses = "absolute inset-0 w-full h-full transition-all duration-400 ease-out";
+  const baseCardClasses = "absolute w-[90vw] max-w-md h-[480px] sm:h-[540px] bg-white rounded-2xl shadow-2xl transition-all duration-600";
 
   const getAnimationClasses = (cardType: 'current' | 'next' | 'prev') => {
+    const speedClass = `swipe-${animationSpeed}`;
+    
     if (animationState === 'preparing') {
-      return cardType === 'current' ? 'transform scale-[1.02]' : '';
+      return cardType === 'current' ? 'swipe-card-preparing swipe-card-ready' : '';
     }
     
     if (animationState === 'swiping-left') {
-      if (cardType === 'current') return 'animate-swipe-out-left';
-      if (cardType === 'next') return 'animate-swipe-in-left';
+      if (cardType === 'current') return `animate-swipe-out-left ${speedClass}`;
+      if (cardType === 'next') return `animate-swipe-in-left ${speedClass}`;
     }
     
     if (animationState === 'swiping-right') {
-      if (cardType === 'current') return 'animate-swipe-out-right';
-      if (cardType === 'prev') return 'animate-swipe-in-right';
+      if (cardType === 'current') return `animate-swipe-out-right ${speedClass}`;
+      if (cardType === 'prev') return `animate-swipe-in-right ${speedClass}`;
     }
     
     return '';
@@ -72,27 +70,27 @@ const SwipeCardTransition: React.FC<SwipeCardTransitionProps> = ({
 
   const getCurrentCardPosition = () => {
     if (animationState === 'idle' || animationState === 'preparing') {
-      return 'relative z-20';
+      return 'relative z-10';
     }
-    return 'absolute inset-0 z-20';
+    return 'absolute inset-0 z-10';
   };
 
   const getNextCardPosition = () => {
     if (animationState === 'swiping-left') {
-      return 'absolute inset-0 z-10';
+      return 'absolute inset-0 z-5';
     }
-    return 'absolute inset-0 z-10 translate-x-full opacity-0';
+    return 'swipe-next-card';
   };
 
   const getPrevCardPosition = () => {
     if (animationState === 'swiping-right') {
-      return 'absolute inset-0 z-10';
+      return 'absolute inset-0 z-5';
     }
-    return 'absolute inset-0 z-10 -translate-x-full opacity-0';
+    return 'swipe-prev-card';
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden" style={{ perspective: '1000px' }}>
+    <div className="swipe-card-stack">
       {/* Current card */}
       <div className={cn(
         baseCardClasses,
