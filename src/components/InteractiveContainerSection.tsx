@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -91,11 +92,11 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
         </div>
       </div>
       
-      {/* Interactive container area - improved centering */}
+      {/* Interactive container area - updated height for larger mobile containers */}
       <div 
         className={cn(
           "relative w-full flex items-center justify-center overflow-hidden",
-          isMobile ? "min-h-[480px] sm:min-h-[560px]" : "min-h-[580px]"
+          isMobile ? "min-h-[520px] sm:min-h-[600px]" : "min-h-[580px]"
         )}
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave}
@@ -165,7 +166,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
           </div>
         )}
 
-        {/* Mobile: Background containers - very low opacity */}
+        {/* Mobile: Background containers - very low opacity, larger size */}
         {isMobile && (
           <div className="absolute inset-0 flex items-center justify-center">
             {sections.map((section, index) => {
@@ -178,7 +179,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
                 <div
                   key={section.id}
                   className={cn(
-                    "absolute w-80 sm:w-96 h-80 sm:h-96 bg-white rounded-2xl shadow-lg transition-all duration-1000 cursor-pointer",
+                    "absolute w-[85vw] max-w-sm h-[400px] sm:w-[90vw] sm:max-w-md sm:h-[460px] bg-white rounded-2xl shadow-lg transition-all duration-1000 cursor-pointer",
                     "opacity-10 scale-75",
                     isNext && "translate-x-32 sm:translate-x-40",
                     isPrev && "-translate-x-32 sm:-translate-x-40"
@@ -193,11 +194,11 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
           </div>
         )}
 
-        {/* Main active container - properly centered */}
+        {/* Main active container - larger on mobile */}
         <div
           className={cn(
             "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 cursor-pointer z-10 mx-auto",
-            isMobile ? "w-80 sm:w-96 h-80 sm:h-96" : "w-[500px] h-[480px]",
+            isMobile ? "w-[90vw] max-w-md h-[420px] sm:h-[480px]" : "w-[500px] h-[480px]",
             isFlipping && "animate-pulse"
           )}
           style={{
@@ -206,33 +207,33 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
           }}
           onClick={() => scrollToSection((current + 1) % sections.length)}
         >
-          {/* Polaroid-style container with optimized layout */}
-          <div className={cn("h-full flex flex-col", isMobile ? "p-4 sm:p-5" : "p-6")}>
-            {/* Content area - better spacing for button placement */}
-            <div className="flex-1 flex flex-col justify-center space-y-2 min-h-0">
+          {/* Polaroid-style container with enhanced mobile layout */}
+          <div className={cn("h-full flex flex-col", isMobile ? "p-6 sm:p-7" : "p-6")}>
+            {/* Content area - enhanced spacing for mobile */}
+            <div className="flex-1 flex flex-col justify-center space-y-3 min-h-0">
               <h3 className={cn(
                 "font-semibold text-black tracking-tight leading-tight",
-                isMobile ? "text-lg sm:text-xl" : "text-2xl"
+                isMobile ? "text-xl sm:text-2xl" : "text-2xl"
               )}>
                 {currentSection.title}
               </h3>
               <div className={cn(
-                "space-y-2 text-gray-600 leading-relaxed flex-1 overflow-hidden",
-                isMobile ? "text-xs" : "text-sm"
+                "space-y-3 text-gray-600 leading-relaxed flex-1 overflow-hidden",
+                isMobile ? "text-sm sm:text-base" : "text-sm"
               )}>
                 {currentSection.content}
               </div>
             </div>
             
-            {/* Bottom action area - fixed positioning with proper spacing */}
-            <div className="mt-2 pt-2 border-t border-gray-100 flex-shrink-0">
+            {/* Bottom action area - enhanced for mobile */}
+            <div className="mt-3 pt-3 border-t border-gray-100 flex-shrink-0">
               <Button 
                 asChild 
-                size={isMobile ? "sm" : "default"}
+                size={isMobile ? "default" : "default"}
                 className="bg-black/80 hover:bg-black text-white transition-all duration-300"
               >
                 <Link to="/services" className="inline-flex items-center">
-                  How We Can Help <ArrowRight size={isMobile ? 14 : 16} className="ml-1" />
+                  How We Can Help <ArrowRight size={isMobile ? 16 : 16} className="ml-1" />
                 </Link>
               </Button>
             </div>
