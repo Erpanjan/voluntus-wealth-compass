@@ -34,15 +34,14 @@ const WaitlistForm = () => {
 
     try {
       const { error } = await supabase
-        .from('waitlist')
+        .from('contact_submissions')
         .insert([
           {
             first_name: formData.firstName,
             last_name: formData.lastName,
-            contact_method: formData.contactMethod,
-            preferred_contact: formData.preferredContact,
+            contact_type: formData.preferredContact,
             contact_info: formData.contactInfo,
-            interests: formData.interests || null
+            message: formData.interests || 'Waitlist signup'
           }
         ]);
 
