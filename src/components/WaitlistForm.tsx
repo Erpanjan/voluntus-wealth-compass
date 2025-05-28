@@ -152,7 +152,7 @@ const WaitlistForm = () => {
         </div>
 
         <p className="text-xs text-[#999999] text-center mt-8 leading-relaxed font-poppins">
-          By clicking 'Submit', I authorize Voluntus Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.
+          {t('waitlist.consent')}
         </p>
       </form>
     </div>
