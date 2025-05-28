@@ -1,0 +1,54 @@
+
+/* Breathing text animation */
+@keyframes breathe {
+  0% {
+    font-variation-settings: var(--from-font-variation);
+    transform: scale(1);
+  }
+  50% {
+    font-variation-settings: var(--to-font-variation);
+    transform: scale(1.02);
+  }
+  100% {
+    font-variation-settings: var(--from-font-variation);
+    transform: scale(1);
+  }
+}
+
+.breathing-text-word {
+  --from-font-variation: 'wght' 400;
+  --to-font-variation: 'wght' 700;
+  animation: breathe 3s ease-in-out infinite;
+  transition: font-variation-settings 0.3s ease;
+  will-change: font-variation-settings, transform;
+  display: inline-block;
+}
+
+/* Support for variable fonts */
+@supports (font-variation-settings: normal) {
+  .breathing-text-word {
+    font-feature-settings: normal;
+  }
+}
+
+/* Fallback for non-variable fonts */
+@supports not (font-variation-settings: normal) {
+  .breathing-text-word {
+    animation: breathe-fallback 3s ease-in-out infinite;
+  }
+  
+  @keyframes breathe-fallback {
+    0% {
+      font-weight: 400;
+      transform: scale(1);
+    }
+    50% {
+      font-weight: 700;
+      transform: scale(1.02);
+    }
+    100% {
+      font-weight: 400;
+      transform: scale(1);
+    }
+  }
+}
