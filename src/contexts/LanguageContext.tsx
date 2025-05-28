@@ -149,7 +149,7 @@ const translations = {
     'waitlist.message': 'Your message',
     'waitlist.submit': 'Submit',
     'waitlist.submitting': 'Submitting...',
-    'waitlist.consent': 'By clicking \'Join Waitlist\'/\'Submit\', I authorize [Company] to reach out to me about their service, exclusive events, service updates, and company news.',
+    'waitlist.consent': 'By clicking \'Join Waitlist\'/\'Submit\', I authorize Voluntas Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.',
 
     // Common buttons and actions
     'common.joinWaitlist': 'Join the Waitlist',
@@ -174,7 +174,8 @@ const translations = {
     'auth.resetMessage': 'If an account exists with this email, you\'ll receive a password reset link.',
 
     // Footer
-    'footer.disclaimer': 'This website is owned and operated by [Company], a Hong Kong-based wealth advisory firm. Our services are only available to Hong Kong-based investors, excluding U.S. Persons.',
+    'footer.copyright': '© {year} Voluntas Long-term Capital',
+    'footer.disclaimer': 'This website is owned and operated by Voluntas Long-term Capital, a Hong Kong-based wealth advisory firm. Our services are only available to Hong Kong-based investors, excluding U.S. Persons.',
     'footer.returns': 'Unless otherwise stated, all return figures shown are for illustrative purposes only, do not represent actual client or model returns, and are not indicative of future performance.',
 
     // Toast messages
@@ -288,7 +289,7 @@ const translations = {
     'waitlist.message': '您的留言',
     'waitlist.submit': '提交',
     'waitlist.submitting': '正在提交...',
-    'waitlist.consent': '点击"提交"即表示我授权 Voluntus Long-term Capital 就其服务、专属活动、服务更新及公司资讯与我联系。',
+    'waitlist.consent': '点击"提交"即表示我授权 Voluntas Long-term Capital 就其服务、专属活动、服务更新及公司资讯与我联系。',
 
     // Common buttons and actions
     'common.joinWaitlist': '抢先预约',
@@ -313,7 +314,8 @@ const translations = {
     'auth.resetMessage': '如果该邮箱已有账户，您将收到密码重置链接。',
 
     // Footer
-    'footer.disclaimer': '本网站由 [公司名称] 拥有并负责运营，[公司] 为一家总部设于香港的财富管理顾问公司。我们的服务仅限提供予在香港的投资者，美国人士（U.S. Persons）不在本服务范围内。',
+    'footer.copyright': '© {year} Voluntas Long-term Capital',
+    'footer.disclaimer': '本网站由 Voluntas Long-term Capital 拥有并负责运营，Voluntas Long-term Capital 为一家总部设于香港的财富管理顾问公司。我们的服务仅限提供予在香港的投资者，美国人士（U.S. Persons）不在本服务范围内。',
     'footer.returns': '除非另有说明，所有回报数据仅为演示用途，不代表实际客户回报，也不构成未来表现的保证。',
 
     // Toast messages
