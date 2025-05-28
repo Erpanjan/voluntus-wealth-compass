@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useSwipeGesture } from '@/hooks/useSwipeGesture';
+import { useEnhancedSwipeGesture } from '@/hooks/useEnhancedSwipeGesture';
+import SwipeCardTransition from './SwipeCardTransition';
 import { cn } from '@/lib/utils';
 
 type SectionData = {
@@ -25,6 +26,10 @@ interface MainContainerProps {
   isSwipeAnimating?: boolean;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
+  sections: SectionData[];
+  animationState?: 'idle' | 'preparing' | 'swiping-left' | 'swiping-right' | 'completing';
+  onSwipeStart?: () => void;
+  onSwipeEnd?: () => void;
 }
 
 const MainContainer: React.FC<MainContainerProps> = ({
@@ -36,20 +41,39 @@ const MainContainer: React.FC<MainContainerProps> = ({
   swipeDirection,
   isSwipeAnimating,
   onSwipeLeft,
-  onSwipeRight
+  onSwipeRight,
+  sections,
+  animationState = 'idle',
+  onSwipeStart,
+  onSwipeEnd
 }) => {
   const isMobile = useIsMobile();
 
-  // Generate random rotation for polaroid effect
+  // Generate random rotation for polaroid effect (desktop only)
   const getRotation = (index: number) => {
     const rotations = [-2, 1.5, -1, 2.5, -1.5, 1];
     return rotations[index % rotations.length];
   };
 
-  // Handle swipe gestures on mobile
-  const swipeProps = useSwipeGesture({
-    onSwipeLeft,
-    onSwipeRight
+  // Get animation speed based on velocity
+  const getAnimationSpeed = (velocity: number): 'fast' | 'normal' | 'slow' => {
+    if (velocity > 0.8) return 'fast';
+    if (velocity < 0.4) return 'slow';
+    return 'normal';
+  };
+
+  // Handle enhanced swipe gestures on mobile
+  const { swipeProps, isRubberBanding } = useEnhancedSwipeGesture({
+    onSwipeLeft: (velocity) => {
+      const speed = getAnimationSpeed(velocity);
+      onSwipeLeft?.();
+    },
+    onSwipeRight: (velocity) => {
+      const speed = getAnimationSpeed(velocity);
+      onSwipeRight?.();
+    },
+    onSwipeStart,
+    onSwipeEnd
   });
 
   // Handle click navigation (fallback for mobile, primary for desktop)
@@ -59,70 +83,71 @@ const MainContainer: React.FC<MainContainerProps> = ({
     }
   };
 
-  // Get animation classes based on swipe state
-  const getAnimationClasses = () => {
-    if (!isMobile || !isSwipeAnimating) return '';
-    
-    if (swipeDirection === 'left') {
-      return 'animate-swipe-out-left';
-    } else if (swipeDirection === 'right') {
-      return 'animate-swipe-out-right';
-    }
-    return '';
-  };
+  // Get next and previous sections for card transitions
+  const nextSection = sections[(current + 1) % sectionsLength];
+  const prevSection = sections[(current - 1 + sectionsLength) % sectionsLength];
 
+  if (isMobile) {
+    return (
+      <div
+        className={cn(
+          "relative mx-auto swipe-container",
+          isSwipeAnimating && "animating"
+        )}
+        {...swipeProps}
+      >
+        <SwipeCardTransition
+          currentSection={currentSection}
+          nextSection={nextSection}
+          prevSection={prevSection}
+          animationState={animationState}
+          swipeDirection={swipeDirection}
+          animationSpeed={getAnimationSpeed(1)} // Default normal speed
+        />
+      </div>
+    );
+  }
+
+  // Desktop version with original functionality
   return (
     <div
       className={cn(
-        "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 z-10 mx-auto",
-        isMobile ? "w-[90vw] max-w-md h-[480px] sm:h-[540px]" : "w-[500px] h-[480px] cursor-pointer",
-        isFlipping && !isMobile && "animate-pulse",
-        getAnimationClasses()
+        "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 z-10 mx-auto w-[500px] h-[480px] cursor-pointer",
+        isFlipping && "animate-pulse"
       )}
       style={{
-        // Only apply rotation on desktop, keep mobile containers straight
-        transform: isMobile ? 'rotate(0deg)' : `rotate(${getRotation(current)}deg)`,
-        ...(!isMobile ? {} : swipeProps.style)
+        transform: `rotate(${getRotation(current)}deg)`
       }}
       onClick={handleClick}
-      {...(isMobile ? swipeProps : {})}
     >
-      {/* Polaroid-style container with enhanced mobile layout */}
-      <div className={cn("h-full flex flex-col", isMobile ? "p-6 sm:p-7" : "p-6")}>
-        {/* Content area - enhanced spacing for mobile */}
+      {/* Polaroid-style container */}
+      <div className="h-full flex flex-col p-6">
+        {/* Content area */}
         <div className="flex-1 flex flex-col justify-center space-y-3 min-h-0">
-          <h3 className={cn(
-            "font-semibold text-black tracking-tight leading-tight",
-            isMobile ? "text-2xl sm:text-3xl" : "text-2xl"
-          )}>
+          <h3 className="text-2xl font-semibold text-black tracking-tight leading-tight">
             {currentSection.title}
           </h3>
-          <div className={cn(
-            "space-y-3 text-gray-600 leading-relaxed flex-1 overflow-hidden",
-            isMobile ? "text-base sm:text-lg" : "text-base"
-          )}>
+          <div className="space-y-3 text-gray-600 leading-relaxed flex-1 overflow-hidden text-base">
             {currentSection.content}
           </div>
         </div>
         
-        {/* Bottom action area - enhanced for mobile */}
+        {/* Bottom action area */}
         <div className="mt-3 pt-3 border-t border-gray-100 flex-shrink-0">
           <Button 
             asChild 
-            size={isMobile ? "default" : "default"}
+            size="default"
             className="bg-black/80 hover:bg-black text-white transition-all duration-300"
           >
             <Link to="/services" className="inline-flex items-center">
-              How We Can Help <ArrowRight size={isMobile ? 16 : 16} className="ml-1" />
+              How We Can Help <ArrowRight size={16} className="ml-1" />
             </Link>
           </Button>
         </div>
       </div>
 
-      {/* Hover overlay - only on desktop */}
-      {!isMobile && (
-        <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none" />
-      )}
+      {/* Hover overlay */}
+      <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none" />
     </div>
   );
 };

@@ -1,77 +1,162 @@
 
-/* Swipe and touch animations for mobile interactions */
+/* Enhanced swipe and touch animations for mobile interactions */
 @keyframes swipeSlideOutLeft {
   from {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1) rotateY(0deg);
+    z-index: 10;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
   to {
-    opacity: 0.3;
-    transform: translateX(-100%) scale(0.9);
+    opacity: 0.7;
+    transform: translateX(-120%) scale(0.85) rotateY(-15deg);
+    z-index: 5;
+    box-shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.05);
   }
 }
 
 @keyframes swipeSlideOutRight {
   from {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1) rotateY(0deg);
+    z-index: 10;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
   to {
-    opacity: 0.3;
-    transform: translateX(100%) scale(0.9);
+    opacity: 0.7;
+    transform: translateX(120%) scale(0.85) rotateY(15deg);
+    z-index: 5;
+    box-shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.05);
   }
 }
 
 @keyframes swipeSlideInLeft {
   from {
     opacity: 0.3;
-    transform: translateX(100%) scale(0.9);
+    transform: translateX(120%) scale(0.7) rotateY(20deg);
+    z-index: 5;
+    box-shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.05);
   }
   to {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1) rotateY(0deg);
+    z-index: 10;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
 }
 
 @keyframes swipeSlideInRight {
   from {
     opacity: 0.3;
-    transform: translateX(-100%) scale(0.9);
+    transform: translateX(-120%) scale(0.7) rotateY(-20deg);
+    z-index: 5;
+    box-shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.05);
   }
   to {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1) rotateY(0deg);
+    z-index: 10;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
 }
 
-/* Swipe animation classes */
+/* Enhanced swipe animation classes with better easing */
 .animate-swipe-out-left {
-  animation: swipeSlideOutLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: swipeSlideOutLeft 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .animate-swipe-out-right {
-  animation: swipeSlideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: swipeSlideOutRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .animate-swipe-in-left {
-  animation: swipeSlideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: swipeSlideInLeft 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .animate-swipe-in-right {
-  animation: swipeSlideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: swipeSlideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-/* Swipe animation coordination */
+/* Card preparation states for smoother transitions */
+.swipe-card-preparing {
+  transition: transform 0.1s ease-out;
+}
+
+.swipe-card-ready {
+  transform: scale(1.02);
+}
+
+/* Enhanced swipe container with better coordination */
 .swipe-container {
   position: relative;
   overflow: hidden;
+  perspective: 1000px;
 }
 
 .swipe-container.animating {
   pointer-events: none;
 }
 
-/* Touch-specific optimizations */
+/* Improved card stacking for depth perception */
+.swipe-card-stack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+/* Next card preview during animation */
+.swipe-next-card {
+  position: absolute;
+  opacity: 0;
+  transform: translateX(100%) scale(0.8) rotateY(20deg);
+  transition: all 0.2s ease-out;
+}
+
+.swipe-prev-card {
+  position: absolute;
+  opacity: 0;
+  transform: translateX(-100%) scale(0.8) rotateY(-20deg);
+  transition: all 0.2s ease-out;
+}
+
+/* Touch-specific optimizations with hardware acceleration */
 .touch-manipulation {
   touch-action: manipulation;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Momentum-based animation speeds */
+.swipe-fast {
+  animation-duration: 0.25s !important;
+}
+
+.swipe-normal {
+  animation-duration: 0.4s !important;
+}
+
+.swipe-slow {
+  animation-duration: 0.6s !important;
+}
+
+/* Rubber band feedback for better touch response */
+@keyframes rubberBandPull {
+  from {
+    transform: translateX(0) scale(1);
+  }
+  to {
+    transform: translateX(20px) scale(1.02);
+  }
+}
+
+.animate-rubber-band-left {
+  animation: rubberBandPull 0.15s ease-out forwards;
+}
+
+.animate-rubber-band-right {
+  animation: rubberBandPull 0.15s ease-out forwards;
+  transform-origin: right center;
+  animation-direction: reverse;
 }
