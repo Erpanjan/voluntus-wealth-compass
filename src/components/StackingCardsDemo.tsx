@@ -28,19 +28,21 @@ const StackingCardsDemo: React.FC<StackingCardsDemoProps> = ({ services }) => {
 
   return (
     <div
-      className="h-[620px] bg-white overflow-auto text-white stacking-container"
+      className="h-[620px] bg-white overflow-auto text-white"
       ref={(node) => setContainer(node)}
     >
       <StackingCards
         totalCards={services.length}
         scrollOptions={{ container: { current: container } }}
       >
+        {/* Removed the introductory "Scroll down to explore our services" card */}
+        
         {services.map((service, index) => (
           <StackingCardItem key={service.id} index={index} className="h-[620px]">
             <div
               className={cn(
                 cardColors[index % cardColors.length],
-                "h-[80%] sm:h-[70%] flex-col sm:flex-row px-8 py-10 flex w-11/12 rounded-3xl mx-auto relative stacking-card shadow-2xl"
+                "h-[80%] sm:h-[70%] flex-col sm:flex-row px-8 py-10 flex w-11/12 rounded-3xl mx-auto relative"
               )}
             >
               <div className="flex-1 flex flex-col justify-center pr-0 sm:pr-8">
@@ -70,7 +72,11 @@ const StackingCardsDemo: React.FC<StackingCardsDemoProps> = ({ services }) => {
           </StackingCardItem>
         ))}
 
-        {/* Removed background "Services" text entirely */}
+        <div className="w-full h-80 relative overflow-hidden">
+          <h2 className="absolute bottom-0 left-0 translate-y-1/3 text-[60px] sm:text-[120px] text-[#333333] font-bold opacity-20">
+            Services
+          </h2>
+        </div>
       </StackingCards>
     </div>
   );

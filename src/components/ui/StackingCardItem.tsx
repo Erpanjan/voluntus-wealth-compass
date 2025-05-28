@@ -16,25 +16,16 @@ const StackingCardItem: React.FC<StackingCardItemProps> = ({
   return (
     <div
       className={cn(
-        "sticky top-0 stacking-card-item will-change-transform",
+        "sticky top-0 will-change-transform transition-transform duration-300 ease-out",
         className
       )}
       style={{
         '--card-index': index,
-        zIndex: 100 + index,
-        transform: `
-          translateY(calc(var(--scroll-progress, 0) * ${index * -80}px + ${index * 15}px))
-          scale(calc(1 - var(--scroll-progress, 0) * ${index * 0.02} - ${index * 0.01}))
-          rotateX(calc(var(--scroll-progress, 0) * ${index * 2}deg))
-        `,
-        transformOrigin: 'center bottom',
-        opacity: `calc(1 - var(--scroll-progress, 0) * ${index * 0.15})`,
-        filter: `blur(calc(var(--scroll-progress, 0) * ${index * 1}px))`,
+        zIndex: 100 + index, // Fixed: new cards appear on top
+        transform: `translateY(${index * 20}px) scale(${1 - index * 0.02})`, // Reduced scale difference
       } as React.CSSProperties}
     >
-      <div className="stacking-card-content">
-        {children}
-      </div>
+      {children}
     </div>
   );
 };
