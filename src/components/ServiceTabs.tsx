@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { TAB_CONTENT_HEIGHTS } from '@/constants/uiConstants';
+import { getMobileTabTitle, calculateTabTransform, getTabWidth } from '@/utils/tabUtils';
 
 interface ServiceItem {
   id: string;
@@ -15,10 +17,8 @@ interface ServiceTabsProps {
 const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
   const [activeTab, setActiveTab] = useState(0);
 
-  // Create mobile-friendly numbered titles
-  const getMobileTitle = (index: number) => {
-    return (index + 1).toString(); // Returns "1", "2", "3", "4"
-  };
+  const tabWidth = getTabWidth(services.length);
+  const tabTransform = calculateTabTransform(activeTab, services.length);
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -45,8 +45,8 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
             <div 
               className="bg-white rounded-xl shadow-sm"
               style={{
-                width: `${100 / services.length}%`,
-                transform: `translateX(${activeTab * (100 + (2 / services.length))}%)`,
+                width: tabWidth,
+                transform: tabTransform,
               }}
             />
           </motion.div>
@@ -69,7 +69,7 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
               >
                 <span className="relative z-10 leading-tight">
                   {/* Show numbers on mobile, full title on larger screens */}
-                  <span className="block sm:hidden">{getMobileTitle(index)}</span>
+                  <span className="block sm:hidden">{getMobileTabTitle(index)}</span>
                   <span className="hidden sm:block">{service.title}</span>
                 </span>
               </button>
@@ -78,7 +78,12 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
         </div>
 
         {/* Content Panel - Matched height with FAQ section */}
-        <div className="w-full h-[520px] sm:h-[380px] md:h-[400px] bg-[#efefef] relative">
+        <div 
+          className="w-full bg-[#efefef] relative"
+          style={{
+            height: `${TAB_CONTENT_HEIGHTS.MOBILE} sm:${TAB_CONTENT_HEIGHTS.SMALL} md:${TAB_CONTENT_HEIGHTS.MEDIUM}`
+          }}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}

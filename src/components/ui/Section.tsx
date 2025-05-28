@@ -1,7 +1,7 @@
 
 import React, { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { SECTION_HEIGHT_CLASSES } from '@/constants/uiConstants';
 
 interface SectionProps {
   id?: string;
@@ -15,8 +15,23 @@ interface SectionProps {
   titleClassName?: string;
   subtitleClassName?: string;
   contentClassName?: string;
-  matchFAQHeight?: boolean; // New prop to match FAQ section height
+  matchFAQHeight?: boolean;
 }
+
+const getSectionHeightClasses = (matchFAQHeight: boolean, carouselItem: boolean): string => {
+  if (matchFAQHeight) return SECTION_HEIGHT_CLASSES.FAQ_MATCH;
+  if (carouselItem) return SECTION_HEIGHT_CLASSES.CAROUSEL;
+  return SECTION_HEIGHT_CLASSES.DEFAULT;
+};
+
+const getBgClasses = (background: 'white' | 'light' | 'dark') => {
+  const bgClasses = {
+    'white': 'bg-white',
+    'light': 'bg-[#F1F1F1]',
+    'dark': 'bg-black text-white',
+  };
+  return bgClasses[background];
+};
 
 const Section: React.FC<SectionProps> = ({ 
   id, 
@@ -32,26 +47,13 @@ const Section: React.FC<SectionProps> = ({
   contentClassName = '',
   matchFAQHeight = false
 }) => {
-  const isMobile = useIsMobile();
-  
-  const bgClasses = {
-    'white': 'bg-white',
-    'light': 'bg-[#F1F1F1]',
-    'dark': 'bg-black text-white',
-  };
-
-  // Apply specific height classes when matching FAQ height
-  const sectionHeightClasses = matchFAQHeight 
-    ? 'py-16 md:py-24' 
-    : carouselItem 
-      ? 'py-3 md:py-6' 
-      : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
+  const sectionHeightClasses = getSectionHeightClasses(matchFAQHeight, carouselItem);
 
   return (
     <section id={id} className={cn(
       sectionHeightClasses,
       'flex flex-col justify-center overflow-hidden relative',
-      bgClasses[background],
+      getBgClasses(background),
       className
     )}>
       <div className={cn("container-custom flex flex-col justify-center h-full px-3 md:px-6", carouselItem && "h-full")}>
