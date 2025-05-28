@@ -71,7 +71,7 @@ const WaitlistForm = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-8 md:p-12">
+    <div className="max-w-2xl mx-auto p-8 md:p-12">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-semibold mb-6 text-[#333333] font-poppins">
           {t('contact.title')}
