@@ -28,7 +28,7 @@ const StackingCardsDemo: React.FC<StackingCardsDemoProps> = ({ services }) => {
 
   return (
     <div
-      className="h-[750px] sm:h-[800px] bg-white overflow-auto text-white"
+      className="h-[650px] sm:h-[800px] bg-white overflow-auto text-white"
       ref={(node) => setContainer(node)}
     >
       <StackingCards
@@ -36,11 +36,11 @@ const StackingCardsDemo: React.FC<StackingCardsDemoProps> = ({ services }) => {
         scrollOptions={{ container: { current: container } }}
       >
         {services.map((service, index) => (
-          <StackingCardItem key={service.id} index={index} className="h-[750px] sm:h-[750px]">
+          <StackingCardItem key={service.id} index={index} className="h-[650px] sm:h-[750px]">
             <div
               className={cn(
                 cardColors[index % cardColors.length],
-                "h-[80%] sm:h-[70%] flex-col sm:flex-row px-8 py-10 flex w-11/12 rounded-3xl mx-auto relative"
+                "h-[90%] sm:h-[70%] flex-col sm:flex-row px-8 py-10 flex w-11/12 rounded-3xl mx-auto relative"
               )}
             >
               <div className="flex-1 flex flex-col justify-center pr-0 sm:pr-8">
