@@ -10,8 +10,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Insight = () => {
+  const { t } = useLanguage();
   const { 
     articles, 
     loading, 
@@ -126,10 +128,10 @@ const Insight = () => {
     const startIndex = currentPage * 4;
     return (
       <div className="mt-8 text-center text-sm text-gray-600">
-        Showing {Math.min(startIndex + 1, totalCount)} - {Math.min(startIndex + 4, totalCount)} of {totalCount} articles
+        {t('insight.showing')} {Math.min(startIndex + 1, totalCount)} - {Math.min(startIndex + 4, totalCount)} {t('insight.of')} {totalCount} {t('insight.articles')}
       </div>
     );
-  }, [loading, totalCount, currentPage]);
+  }, [loading, totalCount, currentPage, t]);
 
   console.log('Insight page render:', { 
     articles: articles.length, 
@@ -143,27 +145,27 @@ const Insight = () => {
     <div className="min-h-screen">
       {/* Hero Section */}
       <Hero 
-        title="Market Insight"
-        subtitle="Our insights guide us in formulating and updating Financial Planning Policies for clients, ensuring they remain consistently informed about the market and their progress."
+        title={t('insight.title')}
+        subtitle={t('insight.subtitle')}
         background="light"
       />
 
       {/* Latest Research Section */}
-      <Section title="Latest Research" titleCentered={true}>
+      <Section title={t('insight.latestResearch')} titleCentered={true}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
           {loading ? renderSkeletons : articleCards}
           
           {!loading && articles.length === 0 && (
             <div className="col-span-full text-center py-16">
-              <h3 className="text-xl font-medium text-gray-600">No published articles found</h3>
-              <p className="mt-2 text-gray-500">Articles need to have a published date in the past to appear here</p>
+              <h3 className="text-xl font-medium text-gray-600">{t('insight.noArticles')}</h3>
+              <p className="mt-2 text-gray-500">{t('insight.noArticles.subtitle')}</p>
               <Button 
                 variant="outline" 
                 onClick={handleRefresh}
                 className="mt-4"
               >
                 <RefreshCw size={16} className="mr-2" />
-                Refresh Articles
+                {t('insight.refresh')}
               </Button>
             </div>
           )}

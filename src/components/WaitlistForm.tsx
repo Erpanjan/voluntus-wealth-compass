@@ -1,29 +1,30 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useLanguage } from '@/contexts/LanguageContext';
 
-const WaitlistForm: React.FC = () => {
+const WaitlistForm = () => {
+  const { t } = useLanguage();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    contactType: '',
-    contact: '',
-    message: '',
+    contactMethod: '',
+    preferredContact: '',
+    contactInfo: '',
+    interests: ''
   });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-  const isMobile = useIsMobile();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
   };
 
@@ -32,151 +33,163 @@ const WaitlistForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Insert the form data into Supabase
       const { error } = await supabase
-        .from('contact_submissions')
-        .insert({
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          contact_type: formData.contactType,
-          contact_info: formData.contact,
-          message: formData.message,
-          status: 'Waitlist',
-        });
-        
-      if (error) {
-        throw error;
-      }
-      
-      // Show success toast
+        .from('waitlist')
+        .insert([
+          {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            contact_method: formData.contactMethod,
+            preferred_contact: formData.preferredContact,
+            contact_info: formData.contactInfo,
+            interests: formData.interests || null
+          }
+        ]);
+
+      if (error) throw error;
+
       toast({
-        title: "Added to waitlist",
-        description: "Thank you for joining our waitlist. We'll notify you when we launch.",
-        duration: 5000,
+        title: t('toast.waitlistAdded'),
+        description: t('toast.waitlistMessage'),
       });
 
-      // Reset form
       setFormData({
         firstName: '',
         lastName: '',
-        contactType: '',
-        contact: '',
-        message: '',
+        contactMethod: '',
+        preferredContact: '',
+        contactInfo: '',
+        interests: ''
       });
     } catch (error) {
-      console.error('Error submitting form:', error);
-      // Show error toast
+      console.error('Error submitting waitlist form:', error);
       toast({
-        title: "Error",
-        description: "There was an error adding you to the waitlist. Please try again.",
-        variant: "destructive",
-        duration: 5000,
+        title: t('common.error'),
+        description: 'Failed to join waitlist. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Contact type placeholder text adjusted for mobile
-  const contactTypePlaceholder = isMobile
-    ? "Contact method (Email, Phone, etc.)"
-    : "Preferred contact avenue (Email, Phone, WeChat, WhatsApp, etc.)";
-
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 md:px-0">
-      <div className="text-center mb-8 md:mb-12">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-3 md:mb-4">
-          Join the Waitlist
+    <div className="max-w-2xl mx-auto">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl md:text-3xl font-semibold mb-4">
+          {t('waitlist.joinWaitlist')}
         </h2>
-        <p className="text-gray-600">
-          Be the first to know when we launch
+        <p className="text-gray-600 text-sm md:text-base">
+          {t('contact.subtitle')}
         </p>
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <div className="space-y-1.5">
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+              {t('waitlist.firstName')}
+            </label>
             <Input
               id="firstName"
               name="firstName"
               type="text"
-              placeholder="First name"
-              value={formData.firstName}
-              onChange={handleChange}
               required
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
-              aria-label="First name"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              placeholder={t('waitlist.firstName')}
+              className="w-full"
             />
           </div>
-
-          <div className="space-y-1.5">
+          <div>
+            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+              {t('waitlist.lastName')}
+            </label>
             <Input
               id="lastName"
               name="lastName"
               type="text"
-              placeholder="Last name"
-              value={formData.lastName}
-              onChange={handleChange}
               required
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
-              aria-label="Last name"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              placeholder={t('waitlist.lastName')}
+              className="w-full"
             />
           </div>
         </div>
 
-        <div className="space-y-1.5">
+        <div>
+          <label htmlFor="contactMethod" className="block text-sm font-medium text-gray-700 mb-1">
+            {t('waitlist.contactMethod')}
+          </label>
           <Input
-            id="contactType"
-            name="contactType"
+            id="contactMethod"
+            name="contactMethod"
             type="text"
-            placeholder={contactTypePlaceholder}
-            value={formData.contactType}
-            onChange={handleChange}
             required
-            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm text-ellipsis"
-            aria-label="Contact type"
+            value={formData.contactMethod}
+            onChange={handleInputChange}
+            placeholder={t('waitlist.contactMethod')}
+            className="w-full"
           />
         </div>
 
-        <div className="space-y-1.5">
+        <div>
+          <label htmlFor="preferredContact" className="block text-sm font-medium text-gray-700 mb-1">
+            {t('waitlist.preferredContact')}
+          </label>
           <Input
-            id="contact"
-            name="contact"
+            id="preferredContact"
+            name="preferredContact"
             type="text"
-            placeholder="Your contact information"
-            value={formData.contact}
-            onChange={handleChange}
             required
-            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 text-base md:text-sm"
-            aria-label="Contact information"
+            value={formData.preferredContact}
+            onChange={handleInputChange}
+            placeholder={t('waitlist.preferredContact')}
+            className="w-full"
           />
         </div>
 
-        <div className="space-y-1.5">
-          <textarea
-            id="message"
-            name="message"
-            placeholder="Any specific interests or questions? (optional)"
-            value={formData.message}
-            onChange={handleChange}
-            rows={4}
-            className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 bg-transparent focus:ring-0 focus:outline-none resize-none placeholder:text-gray-500 text-base md:text-sm"
-            aria-label="Message (optional)"
+        <div>
+          <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700 mb-1">
+            {t('waitlist.contactInfo')}
+          </label>
+          <Input
+            id="contactInfo"
+            name="contactInfo"
+            type="text"
+            required
+            value={formData.contactInfo}
+            onChange={handleInputChange}
+            placeholder={t('waitlist.contactInfo')}
+            className="w-full"
           />
         </div>
 
-        <div className="pt-4">
-          <Button 
-            type="submit" 
-            disabled={isSubmitting}
-            className="w-full bg-black/80 hover:bg-black text-white font-normal py-6 rounded-none min-h-[56px] touch-manipulation"
-          >
-            {isSubmitting ? 'Submitting...' : 'Join Waitlist'}
-          </Button>
+        <div>
+          <label htmlFor="interests" className="block text-sm font-medium text-gray-700 mb-1">
+            {t('waitlist.interests')}
+          </label>
+          <Textarea
+            id="interests"
+            name="interests"
+            value={formData.interests}
+            onChange={handleInputChange}
+            placeholder={t('waitlist.message')}
+            className="w-full min-h-[100px]"
+          />
         </div>
-        
-        <p className="text-xs text-center text-gray-500 mt-4 px-2">
-          By clicking "Join Waitlist", I authorize Voluntas Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.
+
+        <Button 
+          type="submit" 
+          disabled={isSubmitting}
+          className="w-full bg-black hover:bg-gray-800 text-white py-3"
+        >
+          {isSubmitting ? t('waitlist.submitting') : t('waitlist.submit')}
+        </Button>
+
+        <p className="text-xs text-gray-500 text-center mt-4">
+          {t('waitlist.consent')}
         </p>
       </form>
     </div>

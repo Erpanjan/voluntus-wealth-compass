@@ -4,19 +4,22 @@ import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import EventCard from '@/components/EventCard';
 import ContactForm from '@/components/ContactForm';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Event = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <Hero 
-        title="Our Community"
-        subtitle="A community where you can connect with others, exchange ideas, and enjoy meaningful conversations."
-        collaboration="A collaberation with Besties"
+        title={t('event.title')}
+        subtitle={t('event.subtitle')}
+        collaboration={t('event.collaboration')}
       />
 
       {/* Upcoming Events */}
-      <Section title="Upcoming Events">
+      <Section title={t('event.upcoming')}>
         <div className="grid md:grid-cols-2 gap-8">
           <EventCard 
             upcoming={true}
@@ -34,7 +37,7 @@ const Event = () => {
       </Section>
 
       {/* Previous Events */}
-      <Section title="Previous Events" background="light">
+      <Section title={t('event.previous')} background="light">
         <div className="grid md:grid-cols-2 gap-8">
           <EventCard 
             upcoming={false}

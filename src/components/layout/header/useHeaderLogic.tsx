@@ -1,108 +1,62 @@
-
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { debounce } from '@/lib/utils';
 
 export const useHeaderLogic = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Check if we're on the login page
+  // Navigation links with translation keys
+  const navLinks = [
+    { path: '/', label: 'HOME', translationKey: 'nav.home' },
+    { path: '/services', label: 'SERVICES', translationKey: 'nav.services' },
+    { path: '/insight', label: 'INSIGHT', translationKey: 'nav.insight' },
+    { path: '/about', label: 'ABOUT US', translationKey: 'nav.about' },
+    { path: '/contact', label: 'CONTACT US', translationKey: 'nav.contact' },
+  ];
+
   const isOnLoginPage = location.pathname === '/login';
 
-  const isActive = useCallback((path: string) => {
-    return location.pathname === path;
-  }, [location.pathname]);
-
-  // Optimized scroll handler with debouncing
   useEffect(() => {
-    const handleScroll = debounce(() => {
-      const offset = window.scrollY;
-      setScrolled(offset > 50);
-    }, 10);
-
-    // Use passive listener for better performance
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
-    // Initial check
-    handleScroll();
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
     };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Scroll to top when route changes (except for login)
-  useEffect(() => {
-    if (!isOnLoginPage) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
     }
-  }, [location.pathname, isOnLoginPage]);
+    return location.pathname.startsWith(path);
+  };
 
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMenuOpen(false);
-    setIsTransitioning(false);
-  }, [location.pathname]);
-
-  const navLinks = useMemo(() => [
-    { name: 'HOME', path: '/' },
-    { name: 'SERVICE & PRICING', path: '/services' },
-    { name: 'INSIGHT', path: '/insight' },
-    { name: 'EVENT', path: '/event' },
-    { name: 'ABOUT', path: '/about' },
-    { name: 'CONTACT US', path: '/contact' },
-  ], []);
-
-  const handleNavLinkClick = useCallback((e: React.MouseEvent, isActivePath: boolean) => {
-    if (isActivePath) {
+  const handleNavLinkClick = (e: React.MouseEvent, isActivePath: boolean) => {
+    if (isActivePath && location.pathname === '/') {
       e.preventDefault();
       window.scrollTo({
         top: 0,
         behavior: 'smooth'
       });
     }
-    
-    // Close mobile menu if it's open
-    if (isMenuOpen) {
-      setIsMenuOpen(false);
-    }
-  }, [isMenuOpen]);
-  
-  const handleLoginClick = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    // Check if user is already on the login page
+  };
+
+  const handleLoginClick = (e: React.MouseEvent) => {
     if (location.pathname === '/login') {
+      e.preventDefault();
       return;
     }
     
-    // Start transition state immediately
     setIsTransitioning(true);
-    setIsAnimating(true);
     
-    // Navigate immediately to avoid any delay
-    navigate('/login', { 
-      state: { from: location },
-      replace: false 
-    });
-    
-    // Clean up animation state after a short delay
     setTimeout(() => {
-      setIsAnimating(false);
-    }, 200);
-  }, [location, navigate]);
-
-  // Clean up animation class when component unmounts
-  useEffect(() => {
-    return () => {
-      document.body.classList.remove('login-transition');
-    };
-  }, []);
+      setIsTransitioning(false);
+    }, 300);
+  };
 
   return {
     isMenuOpen,
@@ -112,7 +66,6 @@ export const useHeaderLogic = () => {
     navLinks,
     handleNavLinkClick,
     handleLoginClick,
-    isAnimating,
     isOnLoginPage,
     isTransitioning
   };

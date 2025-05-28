@@ -1,74 +1,82 @@
+
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface NavLinksProps {
-  navLinks: { name: string; path: string }[];
+  navLinks: Array<{
+    path: string;
+    label: string;
+    translationKey: string;
+  }>;
   isActive: (path: string) => boolean;
-  handleNavLinkClick: (event: React.MouseEvent, isActivePath: boolean) => void;
-  handleLoginClick?: (event: React.MouseEvent) => void;
+  handleNavLinkClick: (e: React.MouseEvent, isActivePath: boolean) => void;
+  handleLoginClick?: (e: React.MouseEvent) => void;
   isMobile?: boolean;
 }
 
-const NavLinks = ({ 
+const NavLinks: React.FC<NavLinksProps> = ({ 
   navLinks, 
   isActive, 
   handleNavLinkClick, 
   handleLoginClick,
   isMobile = false 
-}: NavLinksProps) => {
+}) => {
+  const { t } = useLanguage();
+
   if (isMobile) {
     return (
-      <nav className="flex flex-col space-y-2 py-4">
+      <div className="flex flex-col space-y-4 pt-4">
         {navLinks.map((link) => (
           <Link
-            key={link.name}
+            key={link.path}
             to={link.path}
-            onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
             className={cn(
-              'py-3 px-4 text-sm transition-all duration-300 flex items-center touch-manipulation rounded-lg',
+              'text-lg font-medium py-2 transition-colors duration-200',
               isActive(link.path) 
-                ? 'font-semibold text-[#333333] bg-black/5' 
-                : 'font-normal text-[#666666] hover:text-[#333333] hover:bg-black/5'
+                ? 'text-black border-b-2 border-black' 
+                : 'text-gray-600 hover:text-black'
             )}
+            onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
           >
-            {link.name}
+            {t(link.translationKey)}
           </Link>
         ))}
         
-        {/* Mobile Login Button - integrated into nav list below CONTACT US */}
         {handleLoginClick && (
-          <button
-            onClick={handleLoginClick}
+          <Link
+            to="/login"
             className={cn(
-              'py-3 px-4 text-sm transition-all duration-300 flex items-center touch-manipulation text-left rounded-lg border border-[#666666] mt-4',
+              'text-lg font-medium py-2 transition-colors duration-200',
               isActive('/login') 
-                ? 'font-semibold text-white bg-[#333333] border-[#333333]' 
-                : 'font-normal text-[#666666] hover:text-[#333333] hover:bg-black/5 hover:border-[#333333]'
+                ? 'text-black border-b-2 border-black' 
+                : 'text-gray-600 hover:text-black'
             )}
-            aria-label="Login to client portal"
+            onClick={handleLoginClick}
           >
-            LOGIN
-          </button>
+            {t('nav.login')}
+          </Link>
         )}
-      </nav>
+      </div>
     );
   }
 
   return (
-    <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 -translate-y-4 items-center">
+    <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 space-x-8">
       {navLinks.map((link) => (
         <Link
-          key={link.name}
+          key={link.path}
           to={link.path}
-          onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
           className={cn(
-            "px-5 py-2 text-xs tracking-wide transition-all duration-300",
+            'text-sm font-medium py-2 transition-colors duration-200 relative',
             isActive(link.path) 
-              ? 'font-semibold text-[#333333]' 
-              : 'font-normal text-[#666666] hover:text-[#333333]'
+              ? 'text-black after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-black' 
+              : 'text-gray-600 hover:text-black'
           )}
+          onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
         >
-          {link.name}
+          {t(link.translationKey)}
         </Link>
       ))}
     </nav>
