@@ -71,38 +71,40 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-12 mt-6 sm:mt-8 px-4 sm:px-0">
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 sm:mb-0">What We Can Help</h2>
         
-        {/* Navigation dots */}
-        <div className="flex gap-3 sm:gap-4 items-center">
-          {sections.map((_, index) => (
-            <Button 
-              key={index} 
-              variant="ghost" 
-              size="sm" 
-              className={cn(
-                "w-10 h-10 sm:w-12 sm:h-12 p-0 flex items-center justify-center rounded-full transition-all duration-300 touch-manipulation text-base sm:text-lg", 
-                current === index ? "font-bold text-black" : "text-gray-400 font-normal hover:text-gray-600"
-              )} 
-              onClick={() => scrollToSection(index)} 
-              aria-label={`Go to section ${index + 1}`}
-            >
-              {index + 1}
-            </Button>
-          ))}
-        </div>
+        {/* Navigation dots - Desktop only */}
+        {!isMobile && (
+          <div className="flex gap-3 sm:gap-4 items-center">
+            {sections.map((_, index) => (
+              <Button 
+                key={index} 
+                variant="ghost" 
+                size="sm" 
+                className={cn(
+                  "w-10 h-10 sm:w-12 sm:h-12 p-0 flex items-center justify-center rounded-full transition-all duration-300 touch-manipulation text-base sm:text-lg", 
+                  current === index ? "font-bold text-black" : "text-gray-400 font-normal hover:text-gray-600"
+                )} 
+                onClick={() => scrollToSection(index)} 
+                aria-label={`Go to section ${index + 1}`}
+              >
+                {index + 1}
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
       
       {/* Interactive container area - improved centering */}
       <div 
         className={cn(
           "relative w-full flex items-center justify-center overflow-hidden",
-          isMobile ? "min-h-[500px] sm:min-h-[600px]" : "min-h-[650px]"
+          isMobile ? "min-h-[480px] sm:min-h-[560px]" : "min-h-[580px]"
         )}
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouch} 
         onTouchEnd={handleTouchEnd}
       >
-        {/* Desktop: Multiple containers visible - reduced opacity */}
+        {/* Desktop: Multiple containers visible - very low opacity */}
         {!isMobile && (
           <div className="absolute inset-0 flex items-center justify-center">
             {sections.map((section, index) => {
@@ -114,27 +116,27 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
               const isFarPrev = index === (current - 2 + sections.length) % sections.length;
               
               let transform = '';
-              let opacity = 0.03;
+              let opacity = 0.02;
               let scale = 0.6;
               let zIndex = 1;
               
               if (isNext) {
                 transform = 'translateX(400px) rotate(8deg)';
-                opacity = 0.08;
+                opacity = 0.05;
                 scale = 0.8;
                 zIndex = 2;
               } else if (isPrev) {
                 transform = 'translateX(-400px) rotate(-8deg)';
-                opacity = 0.08;
+                opacity = 0.05;
                 scale = 0.8;
                 zIndex = 2;
               } else if (isFarNext) {
                 transform = 'translateX(650px) rotate(12deg)';
-                opacity = 0.05;
+                opacity = 0.03;
                 scale = 0.6;
               } else if (isFarPrev) {
                 transform = 'translateX(-650px) rotate(-12deg)';
-                opacity = 0.05;
+                opacity = 0.03;
                 scale = 0.6;
               }
               
@@ -165,7 +167,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
           </div>
         )}
 
-        {/* Mobile: Background containers (reduced visibility) */}
+        {/* Mobile: Background containers - very low opacity */}
         {isMobile && (
           <div className="absolute inset-0 flex items-center justify-center">
             {sections.map((section, index) => {
@@ -178,8 +180,8 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
                 <div
                   key={section.id}
                   className={cn(
-                    "absolute w-80 sm:w-96 h-96 sm:h-[500px] bg-white rounded-2xl shadow-lg transition-all duration-1000 cursor-pointer",
-                    "opacity-5 scale-75",
+                    "absolute w-80 sm:w-96 h-80 sm:h-96 bg-white rounded-2xl shadow-lg transition-all duration-1000 cursor-pointer",
+                    "opacity-10 scale-75",
                     isNext && "translate-x-32 sm:translate-x-40 rotate-8",
                     isPrev && "-translate-x-32 sm:-translate-x-40 -rotate-8"
                   )}
@@ -197,7 +199,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
         <div
           className={cn(
             "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 cursor-pointer z-10 mx-auto",
-            isMobile ? "w-80 sm:w-96 h-96 sm:h-[500px]" : "w-[500px] h-[500px]",
+            isMobile ? "w-80 sm:w-96 h-80 sm:h-96" : "w-[500px] h-[480px]",
             isFlipping && "animate-pulse"
           )}
           style={{
@@ -206,25 +208,25 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
           onClick={() => scrollToSection((current + 1) % sections.length)}
         >
           {/* Polaroid-style container with optimized layout */}
-          <div className={cn("h-full flex flex-col", isMobile ? "p-5 sm:p-6" : "p-6")}>
-            {/* Content area - adjusted spacing */}
-            <div className="flex-1 flex flex-col justify-center space-y-3 min-h-0">
+          <div className={cn("h-full flex flex-col", isMobile ? "p-4 sm:p-5" : "p-6")}>
+            {/* Content area - better spacing for button placement */}
+            <div className="flex-1 flex flex-col justify-center space-y-2 min-h-0">
               <h3 className={cn(
                 "font-semibold text-black tracking-tight leading-tight",
-                isMobile ? "text-xl sm:text-2xl" : "text-3xl"
+                isMobile ? "text-lg sm:text-xl" : "text-2xl"
               )}>
                 {currentSection.title}
               </h3>
               <div className={cn(
                 "space-y-2 text-gray-600 leading-relaxed flex-1 overflow-hidden",
-                isMobile ? "text-sm" : "text-base"
+                isMobile ? "text-xs" : "text-sm"
               )}>
                 {currentSection.content}
               </div>
             </div>
             
-            {/* Bottom action area - fixed positioning */}
-            <div className="mt-3 pt-3 border-t border-gray-100 flex-shrink-0">
+            {/* Bottom action area - fixed positioning with proper spacing */}
+            <div className="mt-2 pt-2 border-t border-gray-100 flex-shrink-0">
               <Button 
                 asChild 
                 size={isMobile ? "sm" : "default"}
@@ -240,13 +242,6 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
           {/* Hover overlay */}
           <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none" />
         </div>
-      </div>
-      
-      {/* Auto-play indicator */}
-      <div className="mt-6 text-center">
-        <p className="text-sm text-gray-500">
-          {autoplayPaused ? 'Auto-play paused' : 'Auto-rotating every 8 seconds'}
-        </p>
       </div>
     </div>
   );
