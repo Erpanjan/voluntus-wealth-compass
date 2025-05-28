@@ -17,41 +17,30 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="relative">
+      <div className="bg-white rounded-2xl shadow-soft overflow-hidden">
         {/* Tab Headers */}
-        <div className="flex w-full border-b border-gray-200">
+        <div className="flex bg-gray-50 p-2 gap-1">
           {services.map((service, index) => (
             <button
               key={service.id}
               onClick={() => setActiveTab(index)}
               className={`
-                flex-1 h-12 sm:h-14 relative transition-colors duration-200
+                flex-1 h-10 sm:h-12 relative transition-all duration-300 rounded-xl font-medium text-sm sm:text-base
                 ${activeTab === index 
-                  ? 'text-black font-semibold' 
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-black shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                 }
               `}
             >
-              <span className="text-sm sm:text-base">
+              <span className="relative z-10">
                 {service.title}
               </span>
-              {activeTab === index && (
-                <motion.div
-                  layoutId="active-tab-indicator"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-black"
-                  transition={{
-                    type: "spring",
-                    bounce: 0.0,
-                    duration: 0.4,
-                  }}
-                />
-              )}
             </button>
           ))}
         </div>
 
         {/* Content Panel */}
-        <div className="w-full h-[300px] sm:h-[350px] md:h-[400px] bg-gray-50 overflow-hidden relative">
+        <div className="w-full h-[280px] sm:h-[320px] md:h-[360px] bg-white relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
