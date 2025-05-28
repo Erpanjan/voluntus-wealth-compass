@@ -19,61 +19,69 @@ interface InteractiveContainerSectionProps {
   autoplayInterval?: number;
 }
 
+// Consolidated animation state for better performance
+type AnimationState = {
+  isAnimating: boolean;
+  direction: 'left' | 'right' | null;
+  type: 'swipe' | 'flip' | null;
+};
+
 const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = ({
   sections,
   autoplayInterval = 8000
 }) => {
   const [current, setCurrent] = useState(0);
   const [autoplayPaused, setAutoplayPaused] = useState(false);
-  const [isFlipping, setIsFlipping] = useState(false);
   const [isUserInteracting, setIsUserInteracting] = useState(false);
-  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
-  const [isSwipeAnimating, setIsSwipeAnimating] = useState(false);
+  const [animationState, setAnimationState] = useState<AnimationState>({
+    isAnimating: false,
+    direction: null,
+    type: null
+  });
   const isMobile = useIsMobile();
   
   // Auto-scroll effect - pause when user is actively interacting
   useEffect(() => {
-    if (autoplayPaused || isUserInteracting || isSwipeAnimating) return;
+    if (autoplayPaused || isUserInteracting || animationState.isAnimating) return;
     
     const interval = setInterval(() => {
       setCurrent(prev => (prev + 1) % sections.length);
     }, autoplayInterval);
     
     return () => clearInterval(interval);
-  }, [autoplayPaused, isUserInteracting, isSwipeAnimating, autoplayInterval, sections.length]);
+  }, [autoplayPaused, isUserInteracting, animationState.isAnimating, autoplayInterval, sections.length]);
 
-  // Handle manual navigation with swipe animation
+  // Optimized navigation with memoized callback
   const scrollToSection = useCallback((index: number, direction?: 'left' | 'right') => {
-    if (isFlipping || isSwipeAnimating) return;
+    if (animationState.isAnimating) return;
     
-    // Determine swipe direction if not provided
-    if (isMobile && direction) {
-      setSwipeDirection(direction);
-      setIsSwipeAnimating(true);
-    } else {
-      setIsFlipping(true);
-    }
+    const animationType = isMobile && direction ? 'swipe' : 'flip';
+    
+    setAnimationState({
+      isAnimating: true,
+      direction: direction || null,
+      type: animationType
+    });
     
     setCurrent(index);
     
     // Mark user as interacting to pause autoplay temporarily
     setIsUserInteracting(true);
     
-    const animationDuration = isMobile && direction ? 300 : 600;
+    const animationDuration = animationType === 'swipe' ? 350 : 600;
     
     setTimeout(() => {
-      if (isMobile && direction) {
-        setIsSwipeAnimating(false);
-        setSwipeDirection(null);
-      } else {
-        setIsFlipping(false);
-      }
+      setAnimationState({
+        isAnimating: false,
+        direction: null,
+        type: null
+      });
       // Resume autoplay after interaction
       setTimeout(() => setIsUserInteracting(false), 3000);
     }, animationDuration);
-  }, [isFlipping, isSwipeAnimating, isMobile]);
+  }, [animationState.isAnimating, isMobile]);
 
-  // Handle swipe navigation with direction
+  // Memoized swipe handlers
   const handleSwipeLeft = useCallback(() => {
     const nextIndex = (current + 1) % sections.length;
     scrollToSection(nextIndex, 'left');
@@ -84,7 +92,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
     scrollToSection(prevIndex, 'right');
   }, [current, sections.length, scrollToSection]);
 
-  // Pause autoplay when interacting (mouse events for desktop)
+  // Optimized interaction handlers
   const handleMouseEnter = useCallback(() => {
     if (!isMobile) setAutoplayPaused(true);
   }, [isMobile]);
@@ -93,14 +101,12 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
     if (!isMobile) setAutoplayPaused(false);
   }, [isMobile]);
 
-  // Touch events for mobile
   const handleTouchStart = useCallback(() => {
     if (isMobile) setIsUserInteracting(true);
   }, [isMobile]);
 
   const handleTouchEnd = useCallback(() => {
     if (isMobile) {
-      // Resume autoplay after a delay on mobile
       setTimeout(() => setIsUserInteracting(false), 3000);
     }
   }, [isMobile]);
@@ -116,12 +122,12 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
         onNavigate={(index) => scrollToSection(index)}
       />
       
-      {/* Interactive container area - updated height for larger mobile containers */}
+      {/* Interactive container area with optimized styling */}
       <div 
         className={cn(
           "relative w-full flex items-center justify-center overflow-hidden swipe-container",
           isMobile ? "min-h-[580px] sm:min-h-[660px]" : "min-h-[580px]",
-          isSwipeAnimating && "animating"
+          animationState.isAnimating && "animating"
         )}
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave}
@@ -139,11 +145,9 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
         <MainContainer 
           currentSection={currentSection}
           current={current}
-          isFlipping={isFlipping}
+          animationState={animationState}
           onNavigate={(index) => scrollToSection(index)}
           sectionsLength={sections.length}
-          swipeDirection={swipeDirection}
-          isSwipeAnimating={isSwipeAnimating}
           onSwipeLeft={handleSwipeLeft}
           onSwipeRight={handleSwipeRight}
         />

@@ -1,77 +1,115 @@
 
-/* Swipe and touch animations for mobile interactions */
+/* Enhanced swipe and touch animations for mobile interactions */
 @keyframes swipeSlideOutLeft {
   from {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    opacity: 0.3;
-    transform: translateX(-100%) scale(0.9);
+    opacity: 0.2;
+    transform: translate3d(-120%, 0, 0) scale(0.9);
   }
 }
 
 @keyframes swipeSlideOutRight {
   from {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    opacity: 0.3;
-    transform: translateX(100%) scale(0.9);
+    opacity: 0.2;
+    transform: translate3d(120%, 0, 0) scale(0.9);
   }
 }
 
 @keyframes swipeSlideInLeft {
   from {
-    opacity: 0.3;
-    transform: translateX(100%) scale(0.9);
+    opacity: 0.2;
+    transform: translate3d(120%, 0, 0) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @keyframes swipeSlideInRight {
   from {
-    opacity: 0.3;
-    transform: translateX(-100%) scale(0.9);
+    opacity: 0.2;
+    transform: translate3d(-120%, 0, 0) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
-/* Swipe animation classes */
+/* Enhanced swipe animation classes with better easing */
 .animate-swipe-out-left {
-  animation: swipeSlideOutLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: swipeSlideOutLeft 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
 }
 
 .animate-swipe-out-right {
-  animation: swipeSlideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: swipeSlideOutRight 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
 }
 
 .animate-swipe-in-left {
-  animation: swipeSlideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: swipeSlideInLeft 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
 }
 
 .animate-swipe-in-right {
-  animation: swipeSlideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: swipeSlideInRight 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
 }
 
-/* Swipe animation coordination */
+/* Swipe animation coordination with GPU acceleration */
 .swipe-container {
   position: relative;
   overflow: hidden;
+  transform: translateZ(0); /* Force hardware acceleration */
 }
 
 .swipe-container.animating {
   pointer-events: none;
 }
 
-/* Touch-specific optimizations */
+/* Enhanced touch-specific optimizations */
 .touch-manipulation {
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transform: translateZ(0); /* GPU acceleration */
+}
+
+/* Smooth transitions for better UX */
+.mobile-card-transition {
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+/* Touch feedback animation */
+@keyframes touchFeedback {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.98);
+  }
+}
+
+.animate-touch-feedback {
+  animation: touchFeedback 0.1s ease-out forwards;
+}
+
+/* Performance optimizations */
+@media (max-width: 768px) {
+  .swipe-container,
+  .swipe-container * {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+  }
 }

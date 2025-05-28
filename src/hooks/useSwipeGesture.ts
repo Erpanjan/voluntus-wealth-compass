@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from 'react';
+import { useRef, useState } from 'react';
 
 interface SwipeHandlers {
   onSwipeLeft?: () => void;
@@ -22,6 +22,7 @@ export const useSwipeGesture = (
 
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const touchEndRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const [touchFeedback, setTouchFeedback] = useState(false);
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     const touch = e.touches[0];
@@ -31,6 +32,9 @@ export const useSwipeGesture = (
       time: Date.now()
     };
     touchEndRef.current = null;
+    
+    // Add touch feedback with slight scale
+    setTouchFeedback(true);
   };
 
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -42,6 +46,9 @@ export const useSwipeGesture = (
       y: touch.clientY,
       time: Date.now()
     };
+
+    // Remove touch feedback
+    setTouchFeedback(false);
 
     const deltaX = touchEndRef.current.x - touchStartRef.current.x;
     const deltaY = touchEndRef.current.y - touchStartRef.current.y;
@@ -70,7 +77,10 @@ export const useSwipeGesture = (
     onTouchStart: handleTouchStart,
     onTouchEnd: handleTouchEnd,
     style: {
-      touchAction: 'pan-y pinch-zoom' // Allow vertical scroll but handle horizontal
+      touchAction: 'pan-y pinch-zoom', // Allow vertical scroll but handle horizontal
+      transform: touchFeedback ? 'scale(0.98)' : 'scale(1)',
+      transition: touchFeedback ? 'transform 0.1s ease-out' : 'transform 0.2s ease-out',
+      willChange: 'transform' // GPU acceleration
     }
   };
 

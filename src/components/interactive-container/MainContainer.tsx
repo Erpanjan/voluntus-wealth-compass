@@ -15,14 +15,18 @@ type SectionData = {
   background: 'white' | 'light' | 'dark';
 };
 
+type AnimationState = {
+  isAnimating: boolean;
+  direction: 'left' | 'right' | null;
+  type: 'swipe' | 'flip' | null;
+};
+
 interface MainContainerProps {
   currentSection: SectionData;
   current: number;
-  isFlipping: boolean;
+  animationState: AnimationState;
   onNavigate: (index: number) => void;
   sectionsLength: number;
-  swipeDirection?: 'left' | 'right' | null;
-  isSwipeAnimating?: boolean;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
 }
@@ -30,11 +34,9 @@ interface MainContainerProps {
 const MainContainer: React.FC<MainContainerProps> = ({
   currentSection,
   current,
-  isFlipping,
+  animationState,
   onNavigate,
   sectionsLength,
-  swipeDirection,
-  isSwipeAnimating,
   onSwipeLeft,
   onSwipeRight
 }) => {
@@ -54,29 +56,35 @@ const MainContainer: React.FC<MainContainerProps> = ({
 
   // Handle click navigation (fallback for mobile, primary for desktop)
   const handleClick = () => {
-    if (!isMobile && !isSwipeAnimating) {
+    if (!isMobile && !animationState.isAnimating) {
       onNavigate((current + 1) % sectionsLength);
     }
   };
 
-  // Get animation classes based on swipe state
+  // Get animation classes based on animation state
   const getAnimationClasses = () => {
-    if (!isMobile || !isSwipeAnimating) return '';
+    if (!animationState.isAnimating) return '';
     
-    if (swipeDirection === 'left') {
-      return 'animate-swipe-out-left';
-    } else if (swipeDirection === 'right') {
-      return 'animate-swipe-out-right';
+    if (isMobile && animationState.type === 'swipe') {
+      if (animationState.direction === 'left') {
+        return 'animate-swipe-out-left';
+      } else if (animationState.direction === 'right') {
+        return 'animate-swipe-out-right';
+      }
+    } else if (!isMobile && animationState.type === 'flip') {
+      return 'animate-pulse';
     }
+    
     return '';
   };
 
   return (
     <div
       className={cn(
-        "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 z-10 mx-auto",
+        "relative bg-white rounded-2xl shadow-2xl transition-all duration-300 z-10 mx-auto",
+        "will-change-transform", // GPU acceleration
         isMobile ? "w-[90vw] max-w-md h-[480px] sm:h-[540px]" : "w-[500px] h-[480px] cursor-pointer",
-        isFlipping && !isMobile && "animate-pulse",
+        !isMobile && !animationState.isAnimating && "hover:shadow-3xl hover:-translate-y-1",
         getAnimationClasses()
       )}
       style={{
