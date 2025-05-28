@@ -1,27 +1,25 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
-const ContactForm: React.FC = () => {
+const ContactForm = () => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    contactType: '',
-    contact: '',
-    message: '',
+    email: '',
+    message: ''
   });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
   };
 
@@ -30,44 +28,37 @@ const ContactForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Insert the form data into Supabase
       const { error } = await supabase
         .from('contact_submissions')
-        .insert({
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          contact_type: formData.contactType,
-          contact_info: formData.contact,
-          message: formData.message,
-        });
-        
-      if (error) {
-        throw error;
-      }
-      
-      // Show success toast
+        .insert([
+          {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            contact_type: 'email',
+            contact_info: formData.email,
+            message: formData.message
+          }
+        ]);
+
+      if (error) throw error;
+
       toast({
         title: "Message sent",
         description: "Thank you for contacting us. Our advisor will reach out to you shortly.",
-        duration: 5000,
       });
 
-      // Reset form
       setFormData({
         firstName: '',
         lastName: '',
-        contactType: '',
-        contact: '',
-        message: '',
+        email: '',
+        message: ''
       });
     } catch (error) {
-      console.error('Error submitting form:', error);
-      // Show error toast
+      console.error('Error submitting contact form:', error);
       toast({
         title: "Error",
-        description: "There was an error sending your message. Please try again.",
-        variant: "destructive",
-        duration: 5000,
+        description: 'Failed to send message. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -75,81 +66,61 @@ const ContactForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 md:px-0">
+    <div className="max-w-2xl mx-auto p-8 md:p-12">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-          Contact Us
+        <h2 className="text-3xl md:text-4xl font-semibold mb-6 text-[#333333] font-poppins">
+          Join Our Waitlist
         </h2>
-        <p className="text-gray-600">
-          Our advisor will contact you shortly
+        <p className="text-[#666666] text-lg font-poppins">
+          Be among the first to experience our service when we launch
         </p>
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <div className="space-y-1.5">
+      
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
             <Input
-              id="firstName"
               name="firstName"
               type="text"
-              placeholder="First name"
-              value={formData.firstName}
-              onChange={handleChange}
               required
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              placeholder="First name"
+              className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
             />
           </div>
-
-          <div className="space-y-1.5">
+          <div>
             <Input
-              id="lastName"
               name="lastName"
               type="text"
-              placeholder="Last name"
-              value={formData.lastName}
-              onChange={handleChange}
               required
-              className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              placeholder="Last name"
+              className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
             />
           </div>
         </div>
 
-        <div className="space-y-1.5">
+        <div>
           <Input
-            id="contactType"
-            name="contactType"
-            type="text"
-            placeholder="Preferred contact avenue (Email, Phone, WeChat, WhatsApp, etc.)"
-            value={formData.contactType}
-            onChange={handleChange}
+            name="email"
+            type="email"
             required
-            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="Email address"
+            className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
           />
         </div>
 
-        <div className="space-y-1.5">
-          <Input
-            id="contact"
-            name="contact"
-            type="text"
-            placeholder="Your contact information"
-            value={formData.contact}
-            onChange={handleChange}
-            required
-            className="border-0 border-b border-gray-300 rounded-none px-0 h-12 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <textarea
-            id="message"
+        <div>
+          <Textarea
             name="message"
-            placeholder="Your message"
             value={formData.message}
-            onChange={handleChange}
-            rows={4}
-            required
-            className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 bg-transparent focus:ring-0 focus:outline-none resize-none placeholder:text-gray-500 text-base md:text-sm"
+            onChange={handleInputChange}
+            placeholder="Your message"
+            className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] min-h-[80px] px-0 pb-3 pt-0 font-poppins resize-none focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
           />
         </div>
 
@@ -157,14 +128,14 @@ const ContactForm: React.FC = () => {
           <Button 
             type="submit" 
             disabled={isSubmitting}
-            className="w-full bg-black/80 hover:bg-black text-white font-normal py-6 rounded-none"
+            className="w-full bg-[#333333] hover:bg-[#555555] text-white py-4 h-auto text-base font-medium rounded-none font-poppins"
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
         </div>
-        
-        <p className="text-xs text-center text-gray-500 mt-4">
-          By clicking "Submit", I authorize Voluntas Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.
+
+        <p className="text-xs text-[#999999] text-center mt-8 leading-relaxed font-poppins">
+          By clicking 'Submit', I authorize [Company] to reach out to me about their service, exclusive events, service updates, and company news.
         </p>
       </form>
     </div>
