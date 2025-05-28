@@ -104,10 +104,10 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
               className="absolute inset-0 p-4 sm:p-6 md:p-8"
             >
               <div className="h-full flex flex-col justify-center">
-                <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-black mb-3 sm:mb-4 md:mb-6 leading-tight">
+                <h3 className="text-xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-black mb-4 sm:mb-4 md:mb-6 leading-tight">
                   {services[activeTab].title}
                 </h3>
-                <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed">
+                <p className="text-gray-700 text-base sm:text-base md:text-lg leading-relaxed">
                   {services[activeTab].content}
                 </p>
               </div>
