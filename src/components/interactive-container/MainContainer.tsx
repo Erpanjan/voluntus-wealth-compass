@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -55,13 +56,13 @@ const MainContainer: React.FC<MainContainerProps> = ({
         <div className="flex-1 flex flex-col justify-center space-y-3 min-h-0">
           <h3 className={cn(
             "font-semibold text-black tracking-tight leading-tight",
-            isMobile ? "text-xl sm:text-2xl" : "text-2xl"
+            isMobile ? "text-2xl sm:text-3xl" : "text-2xl"
           )}>
             {currentSection.title}
           </h3>
           <div className={cn(
             "space-y-3 text-gray-600 leading-relaxed flex-1 overflow-hidden",
-            isMobile ? "text-sm sm:text-base" : "text-sm"
+            isMobile ? "text-base sm:text-lg" : "text-base"
           )}>
             {currentSection.content}
           </div>
