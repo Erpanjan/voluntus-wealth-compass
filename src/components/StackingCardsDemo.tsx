@@ -35,8 +35,6 @@ const StackingCardsDemo: React.FC<StackingCardsDemoProps> = ({ services }) => {
         totalCards={services.length}
         scrollOptions={{ container: { current: container } }}
       >
-        {/* Removed the introductory "Scroll down to explore our services" card */}
-        
         {services.map((service, index) => (
           <StackingCardItem key={service.id} index={index} className="h-[620px]">
             <div
@@ -71,12 +69,6 @@ const StackingCardsDemo: React.FC<StackingCardsDemoProps> = ({ services }) => {
             </div>
           </StackingCardItem>
         ))}
-
-        <div className="w-full h-80 relative overflow-hidden">
-          <h2 className="absolute bottom-0 left-0 translate-y-1/3 text-[60px] sm:text-[120px] text-[#333333] font-bold opacity-20">
-            Services
-          </h2>
-        </div>
       </StackingCards>
     </div>
   );
