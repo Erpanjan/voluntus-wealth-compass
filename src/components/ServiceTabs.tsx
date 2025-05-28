@@ -15,53 +15,68 @@ interface ServiceTabsProps {
 const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
   const [activeTab, setActiveTab] = useState(0);
 
+  // Create mobile-friendly abbreviated titles
+  const getMobileTitle = (title: string) => {
+    const titleMap: { [key: string]: string } = {
+      'Investment Solution': 'Investment',
+      'Dedicated Advisor': 'Advisor',
+      'Risk Management': 'Risk',
+      'Policy Keeping': 'Policy'
+    };
+    return titleMap[title] || title;
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="bg-white rounded-2xl shadow-soft overflow-hidden">
         {/* Tab Headers with Two-Layer Structure */}
-        <div className="relative bg-[#efefef] p-2 rounded-t-2xl">
+        <div className="relative bg-[#efefef] p-1.5 sm:p-2 rounded-t-2xl">
           {/* Background Layer - Static positioned divs */}
-          <div className="absolute inset-2 flex gap-1">
+          <div className="absolute inset-1.5 sm:inset-2 flex gap-0.5 sm:gap-1">
             {services.map((_, index) => (
-              <div key={index} className="flex-1 h-10 sm:h-12 rounded-xl" />
+              <div key={index} className="flex-1 h-11 sm:h-12 rounded-xl" />
             ))}
           </div>
           
           {/* Moving Active Tab Indicator */}
           <motion.div
             layoutId="active-tab"
-            className="absolute inset-2 flex gap-1 pointer-events-none"
+            className="absolute inset-1.5 sm:inset-2 flex gap-0.5 sm:gap-1 pointer-events-none"
             transition={{
               type: "spring",
-              stiffness: 500,
-              damping: 30
+              stiffness: 400,
+              damping: 25
             }}
           >
             <div 
               className="bg-white rounded-xl shadow-sm"
               style={{
                 width: `${100 / services.length}%`,
-                transform: `translateX(${activeTab * (100 + (4 / services.length))}%)`,
+                transform: `translateX(${activeTab * (100 + (2 / services.length))}%)`,
               }}
             />
           </motion.div>
           
           {/* Foreground Layer - Clean Text Buttons */}
-          <div className="relative flex gap-1">
+          <div className="relative flex gap-0.5 sm:gap-1">
             {services.map((service, index) => (
               <button
                 key={service.id}
                 onClick={() => setActiveTab(index)}
                 className={`
-                  flex-1 h-10 sm:h-12 relative transition-all duration-300 rounded-xl font-medium text-sm sm:text-base z-10
+                  flex-1 h-11 sm:h-12 relative transition-all duration-300 rounded-xl font-medium text-xs sm:text-sm md:text-base z-10 px-1 sm:px-2
                   ${activeTab === index 
                     ? 'text-black' 
                     : 'text-gray-600 hover:text-gray-900'
                   }
+                  touch-manipulation
                 `}
+                style={{ minHeight: '44px' }}
               >
-                <span className="relative z-10">
-                  {service.title}
+                <span className="relative z-10 leading-tight">
+                  {/* Show abbreviated title on mobile, full title on larger screens */}
+                  <span className="block sm:hidden">{getMobileTitle(service.title)}</span>
+                  <span className="hidden sm:block">{service.title}</span>
                 </span>
               </button>
             ))}
@@ -69,7 +84,7 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
         </div>
 
         {/* Content Panel */}
-        <div className="w-full h-[280px] sm:h-[320px] md:h-[360px] bg-[#efefef] relative">
+        <div className="w-full h-[320px] sm:h-[340px] md:h-[360px] bg-[#efefef] relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -92,13 +107,13 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
                 duration: 0.3,
                 ease: "easeOut",
               }}
-              className="absolute inset-0 p-6 sm:p-8 md:p-10"
+              className="absolute inset-0 p-4 sm:p-6 md:p-8"
             >
               <div className="h-full flex flex-col justify-center">
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold text-black mb-4 sm:mb-6">
+                <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-black mb-3 sm:mb-4 md:mb-6 leading-tight">
                   {services[activeTab].title}
                 </h3>
-                <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
+                <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed">
                   {services[activeTab].content}
                 </p>
               </div>
