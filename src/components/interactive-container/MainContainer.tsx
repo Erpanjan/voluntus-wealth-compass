@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 
 type SectionData = {
@@ -41,6 +41,7 @@ const MainContainer: React.FC<MainContainerProps> = ({
   onSwipeRight
 }) => {
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   // Generate random rotation for polaroid effect
   const getRotation = (index: number) => {
@@ -121,7 +122,7 @@ const MainContainer: React.FC<MainContainerProps> = ({
             className="bg-black/80 hover:bg-black text-white transition-all duration-300"
           >
             <Link to="/services" className="inline-flex items-center">
-              How We Can Help <ArrowRight size={isMobile ? 16 : 16} className="ml-1" />
+              {t('home.howWeCanHelp')} <ArrowRight size={isMobile ? 16 : 16} className="ml-1" />
             </Link>
           </Button>
         </div>
