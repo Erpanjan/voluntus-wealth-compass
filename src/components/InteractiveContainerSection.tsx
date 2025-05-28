@@ -114,34 +114,34 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
               const isFarPrev = index === (current - 2 + sections.length) % sections.length;
               
               let transform = '';
-              let opacity = 0.05;
+              let opacity = 0.03;
               let scale = 0.6;
               let zIndex = 1;
               
               if (isNext) {
                 transform = 'translateX(400px) rotate(8deg)';
-                opacity = 0.15;
+                opacity = 0.08;
                 scale = 0.8;
                 zIndex = 2;
               } else if (isPrev) {
                 transform = 'translateX(-400px) rotate(-8deg)';
-                opacity = 0.15;
+                opacity = 0.08;
                 scale = 0.8;
                 zIndex = 2;
               } else if (isFarNext) {
                 transform = 'translateX(650px) rotate(12deg)';
-                opacity = 0.08;
+                opacity = 0.05;
                 scale = 0.6;
               } else if (isFarPrev) {
                 transform = 'translateX(-650px) rotate(-12deg)';
-                opacity = 0.08;
+                opacity = 0.05;
                 scale = 0.6;
               }
               
               return (
                 <div
                   key={section.id}
-                  className="absolute w-[500px] h-[480px] bg-white rounded-2xl shadow-xl transition-all duration-1000 cursor-pointer"
+                  className="absolute w-[500px] h-[500px] bg-white rounded-2xl shadow-xl transition-all duration-1000 cursor-pointer"
                   style={{
                     transform: `${transform} scale(${scale})`,
                     opacity,
@@ -150,11 +150,11 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
                   onClick={() => scrollToSection(index)}
                 >
                   <div className="p-8 h-full flex flex-col">
-                    <div className="flex-1 flex flex-col justify-center space-y-6">
+                    <div className="flex-1 flex flex-col justify-center space-y-4">
                       <h3 className="text-2xl font-semibold text-black tracking-tight leading-tight">
                         {section.title}
                       </h3>
-                      <div className="space-y-4 text-gray-600 text-base leading-relaxed">
+                      <div className="space-y-3 text-gray-600 text-base leading-relaxed">
                         {section.content}
                       </div>
                     </div>
@@ -178,8 +178,8 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
                 <div
                   key={section.id}
                   className={cn(
-                    "absolute w-80 sm:w-96 h-96 sm:h-[480px] bg-white rounded-2xl shadow-lg transition-all duration-1000 cursor-pointer",
-                    "opacity-10 scale-75",
+                    "absolute w-80 sm:w-96 h-96 sm:h-[500px] bg-white rounded-2xl shadow-lg transition-all duration-1000 cursor-pointer",
+                    "opacity-5 scale-75",
                     isNext && "translate-x-32 sm:translate-x-40 rotate-8",
                     isPrev && "-translate-x-32 sm:-translate-x-40 -rotate-8"
                   )}
@@ -193,11 +193,11 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
           </div>
         )}
 
-        {/* Main active container - improved height and centering */}
+        {/* Main active container - properly centered */}
         <div
           className={cn(
-            "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 cursor-pointer z-10",
-            isMobile ? "w-80 sm:w-96 h-96 sm:h-[480px]" : "w-[500px] h-[480px]",
+            "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 cursor-pointer z-10 mx-auto",
+            isMobile ? "w-80 sm:w-96 h-96 sm:h-[500px]" : "w-[500px] h-[500px]",
             isFlipping && "animate-pulse"
           )}
           style={{
@@ -206,9 +206,9 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
           onClick={() => scrollToSection((current + 1) % sections.length)}
         >
           {/* Polaroid-style container with optimized layout */}
-          <div className={cn("h-full flex flex-col", isMobile ? "p-6 sm:p-8" : "p-8")}>
+          <div className={cn("h-full flex flex-col", isMobile ? "p-5 sm:p-6" : "p-6")}>
             {/* Content area - adjusted spacing */}
-            <div className="flex-1 flex flex-col justify-center space-y-4 min-h-0">
+            <div className="flex-1 flex flex-col justify-center space-y-3 min-h-0">
               <h3 className={cn(
                 "font-semibold text-black tracking-tight leading-tight",
                 isMobile ? "text-xl sm:text-2xl" : "text-3xl"
@@ -216,7 +216,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
                 {currentSection.title}
               </h3>
               <div className={cn(
-                "space-y-3 text-gray-600 leading-relaxed flex-1 overflow-hidden",
+                "space-y-2 text-gray-600 leading-relaxed flex-1 overflow-hidden",
                 isMobile ? "text-sm" : "text-base"
               )}>
                 {currentSection.content}
@@ -224,7 +224,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
             </div>
             
             {/* Bottom action area - fixed positioning */}
-            <div className="mt-4 pt-4 border-t border-gray-100 flex-shrink-0">
+            <div className="mt-3 pt-3 border-t border-gray-100 flex-shrink-0">
               <Button 
                 asChild 
                 size={isMobile ? "sm" : "default"}
@@ -242,21 +242,6 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
         </div>
       </div>
       
-      {/* Mobile progress indicator */}
-      <div className="mt-8 flex justify-center md:hidden">
-        <div className="flex gap-3">
-          {sections.map((_, index) => (
-            <span 
-              key={index}
-              className={cn(
-                "block w-2.5 h-2.5 rounded-full transition-all duration-300", 
-                current === index ? "bg-black w-8" : "bg-gray-300"
-              )}
-            />
-          ))}
-        </div>
-      </div>
-
       {/* Auto-play indicator */}
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-500">
