@@ -20,8 +20,8 @@ const LoginButton: React.FC<LoginButtonProps> = ({ handleLoginClick, isActive })
         variant="ghost" 
         size="sm"
         className={cn(
-          'transition-colors duration-200 text-xs',
-          isActive ? 'text-black' : 'text-gray-600 hover:text-black'
+          'transition-colors duration-200 text-xs border border-gray-300 rounded-full',
+          isActive ? 'text-black border-black' : 'text-gray-600 hover:text-black hover:border-black'
         )}
       >
         <Link to="/login" onClick={handleLoginClick}>
