@@ -288,7 +288,7 @@ const translations = {
     'waitlist.message': '您的留言',
     'waitlist.submit': '提交',
     'waitlist.submitting': '正在提交...',
-    'waitlist.consent': '点击"抢先预约"或"提交"即表示您同意我们与您联系，分享服务详情、专属活动及公司动态。',
+    'waitlist.consent': '点击"提交"即表示我授权 Voluntus Long-term Capital 就其服务、专属活动、服务更新及公司资讯与我联系。',
 
     // Common buttons and actions
     'common.joinWaitlist': '抢先预约',
