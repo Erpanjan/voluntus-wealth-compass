@@ -69,9 +69,9 @@ const NavLinks: React.FC<NavLinksProps> = ({
           key={link.path}
           to={link.path}
           className={cn(
-            'text-sm font-medium py-2 transition-colors duration-200 relative',
+            'text-sm font-medium py-2 transition-colors duration-200',
             isActive(link.path) 
-              ? 'text-black after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-black' 
+              ? 'text-black border-b-2 border-black' 
               : 'text-gray-600 hover:text-black'
           )}
           onClick={(e) => handleNavLinkClick(e, isActive(link.path))}

@@ -5,6 +5,7 @@ import Logo from './header/Logo';
 import NavLinks from './header/NavLinks';
 import LoginButton from './header/LoginButton';
 import MobileMenu from './header/MobileMenu';
+import LanguageSelector from '@/components/LanguageSelector';
 
 const Header = () => {
   const {
@@ -30,7 +31,7 @@ const Header = () => {
       )}
     >
       <div className="container-custom py-4 flex justify-between items-center relative">
-        {/* Logo on the left - use opacity transition instead of hiding */}
+        {/* Logo on the left */}
         <div className={cn(
           "transition-opacity duration-300 ease-in-out",
           isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -48,7 +49,7 @@ const Header = () => {
           />
         </div>
 
-        {/* Navigation centered absolutely - use opacity transition */}
+        {/* Navigation centered absolutely */}
         <div className={cn(
           "transition-opacity duration-300 ease-in-out",
           isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -60,8 +61,12 @@ const Header = () => {
           />
         </div>
 
-        {/* Login button and mobile menu - use opacity transition for login button */}
-        <div className="flex items-center">
+        {/* Right side elements: Language selector, Login button, Mobile menu */}
+        <div className="flex items-center space-x-2">
+          {/* Language selector - always visible */}
+          <LanguageSelector />
+          
+          {/* Login button - hidden on login page */}
           <div className={cn(
             "transition-opacity duration-300 ease-in-out",
             isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -72,6 +77,7 @@ const Header = () => {
             />
           </div>
           
+          {/* Mobile menu - hidden on login page */}
           <div className={cn(
             "transition-opacity duration-300 ease-in-out",
             isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -84,7 +90,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile menu container - increased height to accommodate all items */}
+      {/* Mobile menu container */}
       <div className={cn(
         "container-custom lg:hidden transition-all duration-300 ease-in-out overflow-hidden",
         isMenuOpen && !isOnLoginPage && !isTransitioning 
@@ -96,11 +102,11 @@ const Header = () => {
           isActive={isActive} 
           handleNavLinkClick={(e, isActivePath) => {
             handleNavLinkClick(e, isActivePath);
-            setIsMenuOpen(false); // Close menu when any nav link is clicked
+            setIsMenuOpen(false);
           }} 
           handleLoginClick={(e) => {
             handleLoginClick(e);
-            setIsMenuOpen(false); // Close menu when login is clicked
+            setIsMenuOpen(false);
           }}
           isMobile={true}
         />

@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
-import LanguageSelector from '@/components/LanguageSelector';
 
 interface LoginButtonProps {
   handleLoginClick: (e: React.MouseEvent) => void;
@@ -15,8 +14,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ handleLoginClick, isActive })
   const { t } = useLanguage();
 
   return (
-    <div className="hidden lg:flex items-center space-x-2">
-      <LanguageSelector />
+    <div className="hidden lg:flex items-center">
       <Button 
         asChild 
         variant="ghost" 

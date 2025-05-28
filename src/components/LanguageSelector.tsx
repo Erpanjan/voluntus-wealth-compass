@@ -16,9 +16,9 @@ const LanguageSelector = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
+        <Button variant="ghost" size="sm" className="gap-2 text-gray-600 hover:text-black">
           <Globe size={16} />
-          <span className="hidden sm:inline">
+          <span className="hidden sm:inline text-sm">
             {language === 'en' ? 'EN' : '中文'}
           </span>
         </Button>
