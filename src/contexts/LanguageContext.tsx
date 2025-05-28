@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 type Language = 'en' | 'zh';
@@ -59,6 +58,7 @@ const translations = {
     'home.hero.subtitle': 'Access professional investment management service through a simple monthly subscription, with reduced costs and service tailored to you.',
     'home.ourServices': 'Our Services',
     'home.howWeCanHelp': 'How We Can Help',
+    'home.whatWeCanHelp': 'What We Can Help',
 
     // Interactive container sections
     'container.gambling.title': "Tired of Feeling Like You're Gambling With Your Money?",
@@ -197,6 +197,7 @@ const translations = {
     'home.hero.subtitle': '只需简单订阅，享受量身定制的投资管理服务，专业、省钱、更安心',
     'home.ourServices': '我们的服务',
     'home.howWeCanHelp': '我们的解决方案',
+    'home.whatWeCanHelp': '我们致力解决的问题',
 
     // Interactive container sections
     'container.gambling.title': '是否厌倦了投资变成一场没有把握的赌局？',
