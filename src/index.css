@@ -2,6 +2,5 @@
 @import './styles/base.css';
 @import './styles/components.css';
 @import './styles/animations/index.css';
-@import './styles/animations/stacking.css';
 @import './styles/tabs.css';
 @import './styles/mobile.css';
