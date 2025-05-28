@@ -77,8 +77,8 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
           </div>
         </div>
 
-        {/* Content Panel - Increased height on mobile */}
-        <div className="w-full h-[480px] sm:h-[340px] md:h-[360px] bg-[#efefef] relative">
+        {/* Content Panel - Matched height with FAQ section */}
+        <div className="w-full h-[520px] sm:h-[380px] md:h-[400px] bg-[#efefef] relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
