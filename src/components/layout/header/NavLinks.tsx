@@ -63,13 +63,13 @@ const NavLinks: React.FC<NavLinksProps> = ({
   }
 
   return (
-    <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 space-x-8">
+    <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 items-center space-x-8">
       {navLinks.map((link) => (
         <Link
           key={link.path}
           to={link.path}
           className={cn(
-            'text-sm py-2 transition-colors duration-200',
+            'text-sm transition-colors duration-200',
             isActive(link.path) 
               ? 'text-black font-bold' 
               : 'text-gray-600 hover:text-black font-light'
