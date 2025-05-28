@@ -13,7 +13,6 @@ const WaitlistForm = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    contactMethod: '',
     preferredContact: '',
     contactInfo: '',
     interests: ''
@@ -55,7 +54,6 @@ const WaitlistForm = () => {
       setFormData({
         firstName: '',
         lastName: '',
-        contactMethod: '',
         preferredContact: '',
         contactInfo: '',
         interests: ''
@@ -73,121 +71,85 @@ const WaitlistForm = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto bg-[#F2F2F2] p-8 md:p-12">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-semibold mb-4">
-          {t('waitlist.joinWaitlist')}
+        <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-[#333333]">
+          {t('contact.title')}
         </h2>
-        <p className="text-gray-600 text-sm md:text-base">
+        <p className="text-[#666666] text-base md:text-lg">
           {t('contact.subtitle')}
         </p>
       </div>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('waitlist.firstName')}
-            </label>
             <Input
-              id="firstName"
               name="firstName"
               type="text"
               required
               value={formData.firstName}
               onChange={handleInputChange}
               placeholder={t('waitlist.firstName')}
-              className="w-full"
+              className="w-full bg-white border-0 shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-4 rounded-none"
             />
           </div>
           <div>
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('waitlist.lastName')}
-            </label>
             <Input
-              id="lastName"
               name="lastName"
               type="text"
               required
               value={formData.lastName}
               onChange={handleInputChange}
               placeholder={t('waitlist.lastName')}
-              className="w-full"
+              className="w-full bg-white border-0 shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-4 rounded-none"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="contactMethod" className="block text-sm font-medium text-gray-700 mb-1">
-            {t('waitlist.contactMethod')}
-          </label>
           <Input
-            id="contactMethod"
-            name="contactMethod"
-            type="text"
-            required
-            value={formData.contactMethod}
-            onChange={handleInputChange}
-            placeholder={t('waitlist.contactMethod')}
-            className="w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="preferredContact" className="block text-sm font-medium text-gray-700 mb-1">
-            {t('waitlist.preferredContact')}
-          </label>
-          <Input
-            id="preferredContact"
             name="preferredContact"
             type="text"
             required
             value={formData.preferredContact}
             onChange={handleInputChange}
             placeholder={t('waitlist.preferredContact')}
-            className="w-full"
+            className="w-full bg-white border-0 shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-4 rounded-none"
           />
         </div>
 
         <div>
-          <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700 mb-1">
-            {t('waitlist.contactInfo')}
-          </label>
           <Input
-            id="contactInfo"
             name="contactInfo"
             type="text"
             required
             value={formData.contactInfo}
             onChange={handleInputChange}
             placeholder={t('waitlist.contactInfo')}
-            className="w-full"
+            className="w-full bg-white border-0 shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-4 rounded-none"
           />
         </div>
 
         <div>
-          <label htmlFor="interests" className="block text-sm font-medium text-gray-700 mb-1">
-            {t('waitlist.interests')}
-          </label>
           <Textarea
-            id="interests"
             name="interests"
             value={formData.interests}
             onChange={handleInputChange}
-            placeholder={t('waitlist.message')}
-            className="w-full min-h-[100px]"
+            placeholder={t('waitlist.interests')}
+            className="w-full bg-white border-0 shadow-none text-[#333333] placeholder:text-[#999999] min-h-[120px] px-4 py-4 rounded-none resize-none"
           />
         </div>
 
         <Button 
           type="submit" 
           disabled={isSubmitting}
-          className="w-full bg-black hover:bg-gray-800 text-white py-3"
+          className="w-full bg-[#333333] hover:bg-[#555555] text-white py-4 h-auto text-base font-medium rounded-none"
         >
           {isSubmitting ? t('waitlist.submitting') : t('waitlist.submit')}
         </Button>
 
-        <p className="text-xs text-gray-500 text-center mt-4">
+        <p className="text-xs text-[#666666] text-center mt-6 leading-relaxed">
           {t('waitlist.consent')}
         </p>
       </form>
