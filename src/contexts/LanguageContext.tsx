@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 type Language = 'en' | 'zh';
@@ -290,7 +289,7 @@ const translations = {
     'waitlist.message': '您的留言',
     'waitlist.submit': '提交',
     'waitlist.submitting': '正在提交...',
-    'waitlist.consent': '点击"抢先预约"或"提交"即表示您同意我们与您联系，分享服务详情、专属活动及公司动态。',
+    'waitlist.consent': '点击"提交"即表示您同意我们与您联系，分享服务详情、专属活动及公司动态。',
 
     // Common buttons and actions
     'common.joinWaitlist': '抢先预约',
