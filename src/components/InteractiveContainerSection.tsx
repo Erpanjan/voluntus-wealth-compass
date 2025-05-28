@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
@@ -141,9 +140,9 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
       {/* Interactive container area - enhanced for better mobile animations */}
       <div 
         className={cn(
-          "relative w-full flex items-center justify-center overflow-hidden",
-          isMobile ? "min-h-[580px] sm:min-h-[660px]" : "min-h-[580px]",
-          isSwipeAnimating && "swipe-container animating"
+          "relative w-full flex items-center justify-center",
+          isMobile ? "min-h-[580px] sm:min-h-[660px]" : "min-h-[580px] overflow-hidden",
+          isSwipeAnimating && "pointer-events-none"
         )}
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave}
@@ -151,7 +150,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
         onTouchEnd={handleTouchEnd}
       >
         {/* Background containers - only show on desktop or when not animating */}
-        {(!isMobile || !isSwipeAnimating) && (
+        {!isMobile && (
           <BackgroundContainers 
             sections={sections}
             current={current}

@@ -91,19 +91,22 @@ const MainContainer: React.FC<MainContainerProps> = ({
     return (
       <div
         className={cn(
-          "relative mx-auto swipe-container",
-          isSwipeAnimating && "animating"
+          "relative mx-auto w-full h-full flex items-center justify-center",
+          "min-h-[480px] sm:min-h-[540px]",
+          isSwipeAnimating && "pointer-events-none"
         )}
         {...swipeProps}
       >
-        <SwipeCardTransition
-          currentSection={currentSection}
-          nextSection={nextSection}
-          prevSection={prevSection}
-          animationState={animationState}
-          swipeDirection={swipeDirection}
-          animationSpeed={getAnimationSpeed(1)} // Default normal speed
-        />
+        <div className="relative w-[90vw] max-w-md h-[480px] sm:h-[540px]">
+          <SwipeCardTransition
+            currentSection={currentSection}
+            nextSection={nextSection}
+            prevSection={prevSection}
+            animationState={animationState}
+            swipeDirection={swipeDirection}
+            animationSpeed={getAnimationSpeed(1)}
+          />
+        </div>
       </div>
     );
   }
