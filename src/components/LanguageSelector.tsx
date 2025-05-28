@@ -17,7 +17,7 @@ const LanguageSelector = () => {
       className="text-xs text-gray-600 hover:text-black transition-colors duration-200"
       onClick={handleLanguageToggle}
     >
-      中文
+      {language === 'en' ? '中文' : 'English'}
     </Button>
   );
 };
