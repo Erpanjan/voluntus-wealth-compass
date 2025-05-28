@@ -15,6 +15,7 @@ interface SectionProps {
   titleClassName?: string;
   subtitleClassName?: string;
   contentClassName?: string;
+  matchFAQHeight?: boolean; // New prop to match FAQ section height
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -28,7 +29,8 @@ const Section: React.FC<SectionProps> = ({
   carouselItem = false,
   titleClassName = '',
   subtitleClassName = '',
-  contentClassName = ''
+  contentClassName = '',
+  matchFAQHeight = false
 }) => {
   const isMobile = useIsMobile();
   
@@ -38,9 +40,16 @@ const Section: React.FC<SectionProps> = ({
     'dark': 'bg-black text-white',
   };
 
+  // Apply specific height classes when matching FAQ height
+  const sectionHeightClasses = matchFAQHeight 
+    ? 'py-16 md:py-24' 
+    : carouselItem 
+      ? 'py-3 md:py-6' 
+      : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
+
   return (
     <section id={id} className={cn(
-      carouselItem ? 'py-3 md:py-6' : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16',
+      sectionHeightClasses,
       'flex flex-col justify-center overflow-hidden relative',
       bgClasses[background],
       className

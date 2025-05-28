@@ -97,8 +97,13 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* What's Included Section - Updated to use ServiceTabs */}
-      <Section id="whats-included" title="What's Included" background="white">
+      {/* What's Included Section - Updated to match FAQ section height */}
+      <Section 
+        id="whats-included" 
+        title="What's Included" 
+        background="white"
+        matchFAQHeight={true}
+      >
         <div className="w-full">
           <ServiceTabs services={serviceItems} />
         </div>
