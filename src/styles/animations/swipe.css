@@ -1,0 +1,77 @@
+
+/* Swipe and touch animations for mobile interactions */
+@keyframes swipeSlideOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0.3;
+    transform: translateX(-100%) scale(0.9);
+  }
+}
+
+@keyframes swipeSlideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0.3;
+    transform: translateX(100%) scale(0.9);
+  }
+}
+
+@keyframes swipeSlideInLeft {
+  from {
+    opacity: 0.3;
+    transform: translateX(100%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes swipeSlideInRight {
+  from {
+    opacity: 0.3;
+    transform: translateX(-100%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Swipe animation classes */
+.animate-swipe-out-left {
+  animation: swipeSlideOutLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-swipe-out-right {
+  animation: swipeSlideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-swipe-in-left {
+  animation: swipeSlideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-swipe-in-right {
+  animation: swipeSlideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Swipe animation coordination */
+.swipe-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.swipe-container.animating {
+  pointer-events: none;
+}
+
+/* Touch-specific optimizations */
+.touch-manipulation {
+  touch-action: manipulation;
+}

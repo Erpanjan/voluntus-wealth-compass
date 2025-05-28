@@ -1,0 +1,47 @@
+
+/* Modal and dialog animations */
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+@keyframes modalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalScaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98) translateY(8px);
+  }
+}
+
+/* Modal animation classes */
+.animate-modal-backdrop {
+  animation: backdropFadeIn 0.2s ease-out forwards;
+}
+
+.animate-modal-scale-in {
+  animation: modalScaleIn 0.2s ease-out forwards;
+}
+
+.animate-modal-scale-out {
+  animation: modalScaleOut 0.2s ease-out forwards;
+}

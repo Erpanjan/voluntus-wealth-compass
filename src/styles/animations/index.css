@@ -1,0 +1,7 @@
+
+/* Animation imports - organized by category */
+@import './base.css';
+@import './modal.css';
+@import './interactive.css';
+@import './swipe.css';
+@import './mobile.css';
