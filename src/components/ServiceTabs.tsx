@@ -18,29 +18,58 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="bg-white rounded-2xl shadow-soft overflow-hidden">
-        {/* Tab Headers */}
-        <div className="flex bg-gray-50 p-2 gap-1">
-          {services.map((service, index) => (
-            <button
-              key={service.id}
-              onClick={() => setActiveTab(index)}
-              className={`
-                flex-1 h-10 sm:h-12 relative transition-all duration-300 rounded-xl font-medium text-sm sm:text-base
-                ${activeTab === index 
-                  ? 'bg-white text-black shadow-sm' 
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-                }
-              `}
-            >
-              <span className="relative z-10">
-                {service.title}
-              </span>
-            </button>
-          ))}
+        {/* Tab Headers with Two-Layer Structure */}
+        <div className="relative bg-[#efefef] p-2 rounded-t-2xl">
+          {/* Background Layer - Static positioned divs */}
+          <div className="absolute inset-2 flex gap-1">
+            {services.map((_, index) => (
+              <div key={index} className="flex-1 h-10 sm:h-12 rounded-xl" />
+            ))}
+          </div>
+          
+          {/* Moving Active Tab Indicator */}
+          <motion.div
+            layoutId="active-tab"
+            className="absolute inset-2 flex gap-1 pointer-events-none"
+            transition={{
+              type: "spring",
+              stiffness: 500,
+              damping: 30
+            }}
+          >
+            <div 
+              className="bg-white rounded-xl shadow-sm"
+              style={{
+                width: `${100 / services.length}%`,
+                transform: `translateX(${activeTab * (100 + (4 / services.length))}%)`,
+              }}
+            />
+          </motion.div>
+          
+          {/* Foreground Layer - Clean Text Buttons */}
+          <div className="relative flex gap-1">
+            {services.map((service, index) => (
+              <button
+                key={service.id}
+                onClick={() => setActiveTab(index)}
+                className={`
+                  flex-1 h-10 sm:h-12 relative transition-all duration-300 rounded-xl font-medium text-sm sm:text-base z-10
+                  ${activeTab === index 
+                    ? 'text-black' 
+                    : 'text-gray-600 hover:text-gray-900'
+                  }
+                `}
+              >
+                <span className="relative z-10">
+                  {service.title}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Content Panel */}
-        <div className="w-full h-[280px] sm:h-[320px] md:h-[360px] bg-white relative">
+        <div className="w-full h-[280px] sm:h-[320px] md:h-[360px] bg-[#efefef] relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
