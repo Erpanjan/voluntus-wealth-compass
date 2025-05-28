@@ -63,7 +63,7 @@ const NavLinks: React.FC<NavLinksProps> = ({
   }
 
   return (
-    <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 items-center space-x-8 -mt-1">
+    <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 items-center space-x-8 -mt-2">
       {navLinks.map((link) => (
         <Link
           key={link.path}
