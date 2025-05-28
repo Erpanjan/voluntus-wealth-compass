@@ -1,14 +1,11 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Separator } from "@/components/ui/separator";
 
 const Footer: React.FC = () => {
   return (
     <footer className="bg-white pt-4 pb-3 border-t border-gray-100">
       <div className="container-custom">
-        <Separator className="my-3 bg-gray-100" />
-        
         {/* Footer Bottom Section */}
         <div className="flex justify-between items-center pt-2">
           <p className="text-xs text-gray-500 font-light">
