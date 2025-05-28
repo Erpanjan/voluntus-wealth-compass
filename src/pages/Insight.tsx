@@ -3,7 +3,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ArticleCard from '@/components/ArticleCard';
-import ContactForm from '@/components/ContactForm';
+import WaitlistForm from '@/components/WaitlistForm';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { usePublishedArticles } from '@/hooks/usePublishedArticles';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -175,9 +175,9 @@ const Insight = () => {
         {articleStats}
       </Section>
 
-      {/* Contact Form */}
+      {/* Waitlist Form Section */}
       <Section id="contact" background="light">
-        <ContactForm />
+        <WaitlistForm />
       </Section>
     </div>
   );
