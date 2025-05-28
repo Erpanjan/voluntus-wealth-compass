@@ -15,15 +15,9 @@ interface ServiceTabsProps {
 const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
   const [activeTab, setActiveTab] = useState(0);
 
-  // Create mobile-friendly abbreviated titles
-  const getMobileTitle = (title: string) => {
-    const titleMap: { [key: string]: string } = {
-      'Investment Solution': 'Investment',
-      'Dedicated Advisor': 'Advisor',
-      'Risk Management': 'Risk',
-      'Policy Keeping': 'Policy'
-    };
-    return titleMap[title] || title;
+  // Create mobile-friendly numbered titles
+  const getMobileTitle = (index: number) => {
+    return (index + 1).toString(); // Returns "1", "2", "3", "4"
   };
 
   return (
@@ -64,7 +58,7 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
                 key={service.id}
                 onClick={() => setActiveTab(index)}
                 className={`
-                  flex-1 h-11 sm:h-12 relative transition-all duration-300 rounded-xl font-medium text-xs sm:text-sm md:text-base z-10 px-1 sm:px-2
+                  flex-1 h-11 sm:h-12 relative transition-all duration-300 rounded-xl font-medium text-sm sm:text-sm md:text-base z-10 px-1 sm:px-2
                   ${activeTab === index 
                     ? 'text-black' 
                     : 'text-gray-600 hover:text-gray-900'
@@ -74,8 +68,8 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
                 style={{ minHeight: '44px' }}
               >
                 <span className="relative z-10 leading-tight">
-                  {/* Show abbreviated title on mobile, full title on larger screens */}
-                  <span className="block sm:hidden">{getMobileTitle(service.title)}</span>
+                  {/* Show numbers on mobile, full title on larger screens */}
+                  <span className="block sm:hidden">{getMobileTitle(index)}</span>
                   <span className="hidden sm:block">{service.title}</span>
                 </span>
               </button>
@@ -83,8 +77,8 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
           </div>
         </div>
 
-        {/* Content Panel */}
-        <div className="w-full h-[320px] sm:h-[340px] md:h-[360px] bg-[#efefef] relative">
+        {/* Content Panel - Increased height on mobile */}
+        <div className="w-full h-[420px] sm:h-[340px] md:h-[360px] bg-[#efefef] relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
