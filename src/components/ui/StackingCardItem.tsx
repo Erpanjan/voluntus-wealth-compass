@@ -21,8 +21,8 @@ const StackingCardItem: React.FC<StackingCardItemProps> = ({
       )}
       style={{
         '--card-index': index,
-        zIndex: 100 - index,
-        transform: `translateY(${index * 20}px) scale(${1 - index * 0.05})`,
+        zIndex: 100 + index, // Fixed: new cards appear on top
+        transform: `translateY(${index * 20}px) scale(${1 - index * 0.02})`, // Reduced scale difference
       } as React.CSSProperties}
     >
       {children}

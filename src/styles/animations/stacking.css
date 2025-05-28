@@ -17,7 +17,7 @@
 }
 
 .stacking-card:hover {
-  transform: translateY(-5px) scale(1.02);
+  transform: translateY(-5px) scale(1.01); /* Reduced hover scale */
 }
 
 /* Smooth scroll for container */
@@ -44,10 +44,24 @@
   background-color: rgba(0, 0, 0, 0.3);
 }
 
-/* Card stacking effect */
+/* Improved card stacking effect */
 .stacking-card-item {
   backface-visibility: hidden;
   transform-style: preserve-3d;
+  position: relative;
+}
+
+/* Better visibility for stacked cards */
+.stacking-card-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 /* Mobile optimizations */

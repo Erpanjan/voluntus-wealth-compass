@@ -15,11 +15,12 @@ interface StackingCardsDemoProps {
   services: ServiceItem[];
 }
 
+// Updated color scheme to match theme
 const cardColors = [
-  'bg-[#f97316]', // Orange
-  'bg-[#0015ff]', // Blue
-  'bg-[#ff5941]', // Red
-  'bg-[#1f464d]', // Dark teal
+  'bg-[#333333]', // Charcoal - primary text color
+  'bg-[#0D9488]', // Teal dark - from voluntus palette
+  'bg-black', // Pure black
+  'bg-[#9F9EA1]', // Medium gray - from voluntus palette
 ];
 
 const StackingCardsDemo: React.FC<StackingCardsDemoProps> = ({ services }) => {
@@ -34,9 +35,7 @@ const StackingCardsDemo: React.FC<StackingCardsDemoProps> = ({ services }) => {
         totalCards={services.length}
         scrollOptions={{ container: { current: container } }}
       >
-        <div className="relative h-[620px] w-full z-10 text-2xl md:text-4xl font-semibold flex justify-center items-center text-[#333333] whitespace-pre">
-          Scroll down to explore our services ↓
-        </div>
+        {/* Removed the introductory "Scroll down to explore our services" card */}
         
         {services.map((service, index) => (
           <StackingCardItem key={service.id} index={index} className="h-[620px]">
