@@ -41,7 +41,7 @@ const MainContainer: React.FC<MainContainerProps> = ({
     <div
       className={cn(
         "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 cursor-pointer z-10 mx-auto",
-        isMobile ? "w-[90vw] max-w-md h-[420px] sm:h-[480px]" : "w-[500px] h-[480px]",
+        isMobile ? "w-[90vw] max-w-md h-[480px] sm:h-[540px]" : "w-[500px] h-[480px]",
         isFlipping && "animate-pulse"
       )}
       style={{

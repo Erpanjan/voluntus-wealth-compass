@@ -72,7 +72,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
       <div 
         className={cn(
           "relative w-full flex items-center justify-center overflow-hidden",
-          isMobile ? "min-h-[520px] sm:min-h-[600px]" : "min-h-[580px]"
+          isMobile ? "min-h-[580px] sm:min-h-[660px]" : "min-h-[580px]"
         )}
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave}

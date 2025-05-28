@@ -37,7 +37,7 @@ const BackgroundContainers: React.FC<BackgroundContainersProps> = ({
             <div
               key={section.id}
               className={cn(
-                "absolute w-[85vw] max-w-sm h-[400px] sm:w-[90vw] sm:max-w-md sm:h-[460px] bg-white rounded-2xl shadow-lg transition-all duration-1000 cursor-pointer",
+                "absolute w-[85vw] max-w-sm h-[460px] sm:w-[90vw] sm:max-w-md sm:h-[520px] bg-white rounded-2xl shadow-lg transition-all duration-1000 cursor-pointer",
                 "opacity-10 scale-75",
                 isNext && "translate-x-32 sm:translate-x-40",
                 isPrev && "-translate-x-32 sm:-translate-x-40"
