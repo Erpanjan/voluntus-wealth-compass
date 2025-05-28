@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -28,6 +29,14 @@ export const useHeaderLogic = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Scroll to top whenever location changes
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, [location.pathname]);
+
   const isActive = (path: string) => {
     if (path === '/') {
       return location.pathname === '/';
@@ -36,13 +45,13 @@ export const useHeaderLogic = () => {
   };
 
   const handleNavLinkClick = (e: React.MouseEvent, isActivePath: boolean) => {
-    if (isActivePath && location.pathname === '/') {
-      e.preventDefault();
+    // Always scroll to top when clicking any nav link
+    setTimeout(() => {
       window.scrollTo({
         top: 0,
         behavior: 'smooth'
       });
-    }
+    }, 50); // Small delay to ensure navigation has occurred
   };
 
   const handleLoginClick = (e: React.MouseEvent) => {
