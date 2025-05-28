@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import InteractiveContainerSection from '@/components/InteractiveContainerSection';
 
 const Index = () => {
-  // Define the interactive container sections with smaller paragraph text
+  // Define the interactive container sections with adjusted paragraph text sizes
   const containerSections = [
     {
       id: "gambling",
@@ -17,10 +17,10 @@ const Index = () => {
       background: "light" as const,
       content: (
         <>
-          <p className="mb-3 text-sm">
+          <p className="mb-3">
             Managing your wealth shouldn't feel like placing bets in a game where the odds are stacked against you. But for many, that's exactly what it is: guesswork, conflicting advice, and a constant fear of making the wrong move.
           </p>
-          <p className="text-sm">
+          <p>
             It is time for a strategic and systematic approach to financial success.
           </p>
         </>
@@ -32,10 +32,10 @@ const Index = () => {
       background: "light" as const,
       content: (
         <>
-          <p className="mb-3 text-sm">
+          <p className="mb-3">
             Investing can feel overwhelming—endless strategies, intricate products, and expensive fees. But does it really need to be this way?
           </p>
-          <p className="text-sm">
+          <p>
             Complexity provides only marginal value and oftentimes drives up the cost, while simplicity delivers clarity and confidence.
           </p>
         </>
@@ -47,10 +47,10 @@ const Index = () => {
       background: "light" as const,
       content: (
         <>
-          <p className="mb-3 text-sm">
+          <p className="mb-3">
             Everywhere you turn, you're bombarded with financial advice, all telling you what to do with your money. But most of this 'advice' comes with a catch: it's incentivized to get you to trade, transact, and eventually buy products.
           </p>
-          <p className="text-sm">
+          <p>
             Commission-based advice is not in your best interest, so we offer a subscription-based service.
           </p>
         </>
@@ -62,10 +62,10 @@ const Index = () => {
       background: "light" as const,
       content: (
         <>
-          <p className="mb-3 text-sm">
+          <p className="mb-3">
             Investment products are so much accessible, but what happens after the purchase? Once decisions are made, people are often left navigating the market volatility on their own.
           </p>
-          <p className="text-sm">
+          <p>
             Purchasing a product is only the start of the journey, what matters is what comes after the purchase.
           </p>
         </>
@@ -95,7 +95,7 @@ const Index = () => {
       </Hero>
 
       {/* Interactive Container Section */}
-      <Section id="how-we-can-help" background="white" className="py-12 md:py-16">
+      <Section id="how-we-can-help" background="white" className="py-16 md:py-20">
         <div className="w-full">
           <InteractiveContainerSection sections={containerSections} />
         </div>
