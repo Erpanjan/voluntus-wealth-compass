@@ -20,7 +20,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ handleLoginClick, isActive })
         variant="ghost" 
         size="sm"
         className={cn(
-          'transition-colors duration-200',
+          'transition-colors duration-200 text-xs',
           isActive ? 'text-black' : 'text-gray-600 hover:text-black'
         )}
       >
