@@ -33,10 +33,10 @@ const NavLinks: React.FC<NavLinksProps> = ({
             key={link.path}
             to={link.path}
             className={cn(
-              'text-lg font-medium py-2 transition-colors duration-200',
+              'text-lg py-2 transition-colors duration-200',
               isActive(link.path) 
-                ? 'text-black border-b-2 border-black' 
-                : 'text-gray-600 hover:text-black'
+                ? 'text-black font-bold' 
+                : 'text-gray-600 hover:text-black font-light'
             )}
             onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
           >
@@ -48,10 +48,10 @@ const NavLinks: React.FC<NavLinksProps> = ({
           <Link
             to="/login"
             className={cn(
-              'text-lg font-medium py-2 transition-colors duration-200',
+              'text-lg py-2 transition-colors duration-200',
               isActive('/login') 
-                ? 'text-black border-b-2 border-black' 
-                : 'text-gray-600 hover:text-black'
+                ? 'text-black font-bold' 
+                : 'text-gray-600 hover:text-black font-light'
             )}
             onClick={handleLoginClick}
           >
@@ -69,17 +69,14 @@ const NavLinks: React.FC<NavLinksProps> = ({
           key={link.path}
           to={link.path}
           className={cn(
-            'text-sm font-medium py-2 transition-colors duration-200 relative',
+            'text-sm py-2 transition-colors duration-200',
             isActive(link.path) 
-              ? 'text-black' 
-              : 'text-gray-600 hover:text-black'
+              ? 'text-black font-bold' 
+              : 'text-gray-600 hover:text-black font-light'
           )}
           onClick={(e) => handleNavLinkClick(e, isActive(link.path))}
         >
           {t(link.translationKey)}
-          {isActive(link.path) && (
-            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-black"></span>
-          )}
         </Link>
       ))}
     </nav>
