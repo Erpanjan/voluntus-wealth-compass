@@ -71,18 +71,18 @@ const WaitlistForm = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-[#F2F2F2] p-8 md:p-12">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-[#333333]">
+    <div className="max-w-2xl mx-auto bg-white p-8 md:p-12">
+      <div className="text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-semibold mb-6 text-[#333333] font-poppins">
           {t('contact.title')}
         </h2>
-        <p className="text-[#666666] text-base md:text-lg">
+        <p className="text-[#666666] text-lg font-poppins">
           {t('contact.subtitle')}
         </p>
       </div>
       
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <Input
               name="firstName"
@@ -91,7 +91,7 @@ const WaitlistForm = () => {
               value={formData.firstName}
               onChange={handleInputChange}
               placeholder={t('waitlist.firstName')}
-              className="w-full bg-white border-0 shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-4 rounded-none"
+              className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
             />
           </div>
           <div>
@@ -102,7 +102,7 @@ const WaitlistForm = () => {
               value={formData.lastName}
               onChange={handleInputChange}
               placeholder={t('waitlist.lastName')}
-              className="w-full bg-white border-0 shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-4 rounded-none"
+              className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
             />
           </div>
         </div>
@@ -115,7 +115,7 @@ const WaitlistForm = () => {
             value={formData.preferredContact}
             onChange={handleInputChange}
             placeholder={t('waitlist.preferredContact')}
-            className="w-full bg-white border-0 shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-4 rounded-none"
+            className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
           />
         </div>
 
@@ -127,7 +127,7 @@ const WaitlistForm = () => {
             value={formData.contactInfo}
             onChange={handleInputChange}
             placeholder={t('waitlist.contactInfo')}
-            className="w-full bg-white border-0 shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-4 rounded-none"
+            className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
           />
         </div>
 
@@ -137,19 +137,21 @@ const WaitlistForm = () => {
             value={formData.interests}
             onChange={handleInputChange}
             placeholder={t('waitlist.interests')}
-            className="w-full bg-white border-0 shadow-none text-[#333333] placeholder:text-[#999999] min-h-[120px] px-4 py-4 rounded-none resize-none"
+            className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] min-h-[80px] px-0 pb-3 pt-0 font-poppins resize-none focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
           />
         </div>
 
-        <Button 
-          type="submit" 
-          disabled={isSubmitting}
-          className="w-full bg-[#333333] hover:bg-[#555555] text-white py-4 h-auto text-base font-medium rounded-none"
-        >
-          {isSubmitting ? t('waitlist.submitting') : t('waitlist.submit')}
-        </Button>
+        <div className="pt-4">
+          <Button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="w-full bg-[#333333] hover:bg-[#555555] text-white py-4 h-auto text-base font-medium rounded-none font-poppins"
+          >
+            {isSubmitting ? t('waitlist.submitting') : t('waitlist.submit')}
+          </Button>
+        </div>
 
-        <p className="text-xs text-[#666666] text-center mt-6 leading-relaxed">
+        <p className="text-xs text-[#999999] text-center mt-8 leading-relaxed font-poppins">
           {t('waitlist.consent')}
         </p>
       </form>
