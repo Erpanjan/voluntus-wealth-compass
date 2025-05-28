@@ -16,7 +16,7 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full">
       <div className="relative">
         {/* Background layer with moving indicator */}
         <div className="absolute inset-0">
