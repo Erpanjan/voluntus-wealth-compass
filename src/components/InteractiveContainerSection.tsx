@@ -26,18 +26,19 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
   const [current, setCurrent] = useState(0);
   const [autoplayPaused, setAutoplayPaused] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
   const isMobile = useIsMobile();
   
-  // Auto-scroll effect
+  // Auto-scroll effect - pause when user is actively interacting
   useEffect(() => {
-    if (autoplayPaused) return;
+    if (autoplayPaused || isUserInteracting) return;
     
     const interval = setInterval(() => {
       setCurrent(prev => (prev + 1) % sections.length);
     }, autoplayInterval);
     
     return () => clearInterval(interval);
-  }, [autoplayPaused, autoplayInterval, sections.length]);
+  }, [autoplayPaused, isUserInteracting, autoplayInterval, sections.length]);
 
   // Handle manual navigation
   const scrollToSection = useCallback((index: number) => {
@@ -46,16 +47,36 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
     setIsFlipping(true);
     setCurrent(index);
     
-    setTimeout(() => setIsFlipping(false), 600);
+    // Mark user as interacting to pause autoplay temporarily
+    setIsUserInteracting(true);
+    
+    setTimeout(() => {
+      setIsFlipping(false);
+      // Resume autoplay after interaction
+      setTimeout(() => setIsUserInteracting(false), 3000);
+    }, 600);
   }, [isFlipping]);
 
-  // Pause autoplay when interacting
-  const handleMouseEnter = useCallback(() => setAutoplayPaused(true), []);
-  const handleMouseLeave = useCallback(() => setAutoplayPaused(false), []);
-  const handleTouch = useCallback(() => setAutoplayPaused(true), []);
+  // Pause autoplay when interacting (mouse events for desktop)
+  const handleMouseEnter = useCallback(() => {
+    if (!isMobile) setAutoplayPaused(true);
+  }, [isMobile]);
+  
+  const handleMouseLeave = useCallback(() => {
+    if (!isMobile) setAutoplayPaused(false);
+  }, [isMobile]);
+
+  // Touch events for mobile
+  const handleTouchStart = useCallback(() => {
+    if (isMobile) setIsUserInteracting(true);
+  }, [isMobile]);
+
   const handleTouchEnd = useCallback(() => {
-    setTimeout(() => setAutoplayPaused(false), 3000);
-  }, []);
+    if (isMobile) {
+      // Resume autoplay after a delay on mobile
+      setTimeout(() => setIsUserInteracting(false), 3000);
+    }
+  }, [isMobile]);
 
   const currentSection = sections[current];
 
@@ -76,7 +97,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
         )}
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave}
-        onTouchStart={handleTouch} 
+        onTouchStart={handleTouchStart} 
         onTouchEnd={handleTouchEnd}
       >
         {/* Background containers */}

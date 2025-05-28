@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { cn } from '@/lib/utils';
 
 type SectionData = {
@@ -37,18 +38,41 @@ const MainContainer: React.FC<MainContainerProps> = ({
     return rotations[index % rotations.length];
   };
 
+  // Handle swipe gestures on mobile
+  const handleSwipeLeft = () => {
+    onNavigate((current + 1) % sectionsLength);
+  };
+
+  const handleSwipeRight = () => {
+    onNavigate((current - 1 + sectionsLength) % sectionsLength);
+  };
+
+  const swipeProps = useSwipeGesture({
+    onSwipeLeft: handleSwipeLeft,
+    onSwipeRight: handleSwipeRight
+  });
+
+  // Handle click navigation (fallback for mobile, primary for desktop)
+  const handleClick = () => {
+    if (!isMobile) {
+      onNavigate((current + 1) % sectionsLength);
+    }
+  };
+
   return (
     <div
       className={cn(
-        "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 cursor-pointer z-10 mx-auto",
-        isMobile ? "w-[90vw] max-w-md h-[480px] sm:h-[540px]" : "w-[500px] h-[480px]",
+        "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 z-10 mx-auto",
+        isMobile ? "w-[90vw] max-w-md h-[480px] sm:h-[540px]" : "w-[500px] h-[480px] cursor-pointer",
         isFlipping && "animate-pulse"
       )}
       style={{
         // Only apply rotation on desktop, keep mobile containers straight
         transform: isMobile ? 'rotate(0deg)' : `rotate(${getRotation(current)}deg)`,
+        ...swipeProps.style
       }}
-      onClick={() => onNavigate((current + 1) % sectionsLength)}
+      onClick={handleClick}
+      {...(isMobile ? swipeProps : {})}
     >
       {/* Polaroid-style container with enhanced mobile layout */}
       <div className={cn("h-full flex flex-col", isMobile ? "p-6 sm:p-7" : "p-6")}>
@@ -82,8 +106,10 @@ const MainContainer: React.FC<MainContainerProps> = ({
         </div>
       </div>
 
-      {/* Hover overlay */}
-      <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none" />
+      {/* Hover overlay - only on desktop */}
+      {!isMobile && (
+        <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none" />
+      )}
     </div>
   );
 };
