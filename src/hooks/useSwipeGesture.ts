@@ -23,7 +23,7 @@ export const useSwipeGesture = (
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const touchEndRef = useRef<{ x: number; y: number; time: number } | null>(null);
 
-  const handleTouchStart = (e: TouchEvent) => {
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     const touch = e.touches[0];
     touchStartRef.current = {
       x: touch.clientX,
@@ -33,7 +33,7 @@ export const useSwipeGesture = (
     touchEndRef.current = null;
   };
 
-  const handleTouchEnd = (e: TouchEvent) => {
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     if (!touchStartRef.current) return;
 
     const touch = e.changedTouches[0];

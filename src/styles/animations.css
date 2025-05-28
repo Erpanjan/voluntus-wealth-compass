@@ -112,6 +112,63 @@
   100% { transform: rotate(0deg) translateX(0px); }
 }
 
+/* New swipe animations for card navigation */
+@keyframes swipeSlideOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0.3;
+    transform: translateX(-100%) scale(0.9);
+  }
+}
+
+@keyframes swipeSlideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0.3;
+    transform: translateX(100%) scale(0.9);
+  }
+}
+
+@keyframes swipeSlideInLeft {
+  from {
+    opacity: 0.3;
+    transform: translateX(100%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes swipeSlideInRight {
+  from {
+    opacity: 0.3;
+    transform: translateX(-100%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Touch feedback animation */
+@keyframes touchFeedback {
+  from {
+    transform: scale(1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+  to {
+    transform: scale(0.98);
+    box-shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.15);
+  }
+}
+
 .animate-modal-backdrop {
   animation: backdropFadeIn 0.2s ease-out forwards;
 }
@@ -138,6 +195,27 @@
 
 .animate-polaroid-shuffle {
   animation: polaroidShuffle 2s ease-in-out infinite;
+}
+
+/* New swipe animation classes */
+.animate-swipe-out-left {
+  animation: swipeSlideOutLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-swipe-out-right {
+  animation: swipeSlideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-swipe-in-left {
+  animation: swipeSlideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-swipe-in-right {
+  animation: swipeSlideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-touch-feedback {
+  animation: touchFeedback 0.15s ease-out forwards;
 }
 
 /* Touch-specific optimizations */
@@ -239,4 +317,14 @@
 
 .container-main {
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Swipe animation coordination */
+.swipe-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.swipe-container.animating {
+  pointer-events: none;
 }

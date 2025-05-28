@@ -21,6 +21,10 @@ interface MainContainerProps {
   isFlipping: boolean;
   onNavigate: (index: number) => void;
   sectionsLength: number;
+  swipeDirection?: 'left' | 'right' | null;
+  isSwipeAnimating?: boolean;
+  onSwipeLeft?: () => void;
+  onSwipeRight?: () => void;
 }
 
 const MainContainer: React.FC<MainContainerProps> = ({
@@ -28,7 +32,11 @@ const MainContainer: React.FC<MainContainerProps> = ({
   current,
   isFlipping,
   onNavigate,
-  sectionsLength
+  sectionsLength,
+  swipeDirection,
+  isSwipeAnimating,
+  onSwipeLeft,
+  onSwipeRight
 }) => {
   const isMobile = useIsMobile();
 
@@ -39,24 +47,28 @@ const MainContainer: React.FC<MainContainerProps> = ({
   };
 
   // Handle swipe gestures on mobile
-  const handleSwipeLeft = () => {
-    onNavigate((current + 1) % sectionsLength);
-  };
-
-  const handleSwipeRight = () => {
-    onNavigate((current - 1 + sectionsLength) % sectionsLength);
-  };
-
   const swipeProps = useSwipeGesture({
-    onSwipeLeft: handleSwipeLeft,
-    onSwipeRight: handleSwipeRight
+    onSwipeLeft,
+    onSwipeRight
   });
 
   // Handle click navigation (fallback for mobile, primary for desktop)
   const handleClick = () => {
-    if (!isMobile) {
+    if (!isMobile && !isSwipeAnimating) {
       onNavigate((current + 1) % sectionsLength);
     }
+  };
+
+  // Get animation classes based on swipe state
+  const getAnimationClasses = () => {
+    if (!isMobile || !isSwipeAnimating) return '';
+    
+    if (swipeDirection === 'left') {
+      return 'animate-swipe-out-left';
+    } else if (swipeDirection === 'right') {
+      return 'animate-swipe-out-right';
+    }
+    return '';
   };
 
   return (
@@ -64,12 +76,13 @@ const MainContainer: React.FC<MainContainerProps> = ({
       className={cn(
         "relative bg-white rounded-2xl shadow-2xl transition-all duration-600 z-10 mx-auto",
         isMobile ? "w-[90vw] max-w-md h-[480px] sm:h-[540px]" : "w-[500px] h-[480px] cursor-pointer",
-        isFlipping && "animate-pulse"
+        isFlipping && !isMobile && "animate-pulse",
+        getAnimationClasses()
       )}
       style={{
         // Only apply rotation on desktop, keep mobile containers straight
         transform: isMobile ? 'rotate(0deg)' : `rotate(${getRotation(current)}deg)`,
-        ...swipeProps.style
+        ...(!isMobile ? {} : swipeProps.style)
       }}
       onClick={handleClick}
       {...(isMobile ? swipeProps : {})}
