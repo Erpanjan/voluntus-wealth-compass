@@ -15,7 +15,6 @@ import TableEmptyState from './table/TableEmptyState';
 interface MultilingualArticleTableProps {
   articles: MultilingualArticle[];
   loading: boolean;
-  onEdit: (id: string) => void;
   onView: (slug: string) => void;
   onDelete: (id: string) => void;
   onTogglePublish: (id: string, isPublished: boolean) => void;
@@ -24,7 +23,6 @@ interface MultilingualArticleTableProps {
 const MultilingualArticleTable: React.FC<MultilingualArticleTableProps> = memo(({ 
   articles, 
   loading,
-  onEdit,
   onView, 
   onDelete,
   onTogglePublish
@@ -57,7 +55,6 @@ const MultilingualArticleTable: React.FC<MultilingualArticleTableProps> = memo((
             <SimpleArticleTableRow
               key={article.id}
               article={article}
-              onEdit={onEdit}
               onView={onView}
               onDelete={onDelete}
               onTogglePublish={onTogglePublish}
