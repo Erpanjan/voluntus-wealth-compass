@@ -34,6 +34,14 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
 
   useKeyboardShortcuts(editor, editorState.setLinkPopoverOpen);
 
+  // Handle value prop changes to update editor content
+  React.useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      console.log('TiptapEditor: Updating content from prop value:', value?.substring(0, 100) + '...');
+      editor.commands.setContent(value || '');
+    }
+  }, [value, editor]);
+
   if (!editor) {
     return null;
   }

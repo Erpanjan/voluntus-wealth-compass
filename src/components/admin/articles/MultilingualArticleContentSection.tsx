@@ -27,7 +27,7 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
   // Debug logging for language switching
   React.useEffect(() => {
     const currentContent = form.getValues(`${selectedLanguage}.content`);
-    console.log(`Language switched to ${selectedLanguage}, content:`, currentContent?.substring(0, 100) + '...');
+    console.log(`Content section: Language switched to ${selectedLanguage}, content:`, currentContent?.substring(0, 100) + '...');
   }, [selectedLanguage, form]);
   
   return (
@@ -75,7 +75,7 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
                 <FormItem>
                   <FormControl>
                     <TiptapEditor 
-                      key={`editor-${selectedLanguage}`}
+                      key={`content-editor-${selectedLanguage}`}
                       value={field.value || ''} 
                       onChange={field.onChange}
                     />
