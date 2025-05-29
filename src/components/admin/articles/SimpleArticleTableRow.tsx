@@ -3,7 +3,6 @@ import React, { memo, useMemo } from 'react';
 import { format } from 'date-fns';
 import { 
   MoreHorizontal, 
-  Edit, 
   Trash2, 
   Eye
 } from 'lucide-react';
@@ -21,7 +20,6 @@ import { MultilingualArticle } from '@/types/multilingual-article.types';
 
 interface SimpleArticleTableRowProps {
   article: MultilingualArticle;
-  onEdit: (id: string) => void;
   onView: (slug: string) => void;
   onDelete: (id: string) => void;
   onTogglePublish: (id: string, isPublished: boolean) => void;
@@ -29,7 +27,6 @@ interface SimpleArticleTableRowProps {
 
 const SimpleArticleTableRow = memo(({ 
   article, 
-  onEdit, 
   onView, 
   onDelete, 
   onTogglePublish 
@@ -135,10 +132,6 @@ const SimpleArticleTableRow = memo(({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[160px]">
-            <DropdownMenuItem onClick={() => onEdit(article.id)} className="cursor-pointer">
-              <Edit className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onView(article.slug)} className="cursor-pointer">
               <Eye className="mr-2 h-4 w-4" />
               View
