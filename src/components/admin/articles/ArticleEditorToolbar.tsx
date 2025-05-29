@@ -32,9 +32,6 @@ const ArticleEditorToolbar: React.FC<ArticleEditorToolbarProps> = ({
           <ArrowLeft size={18} className="mr-2" />
           Back
         </Button>
-        <h1 className="text-2xl font-semibold text-gray-800">
-          {isEditMode ? 'Edit Article' : 'Create New Article'}
-        </h1>
       </div>
       
       <div className="flex gap-3">
