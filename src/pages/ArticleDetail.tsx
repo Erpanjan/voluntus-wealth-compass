@@ -3,8 +3,9 @@ import React, { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useSimpleArticleDetail } from '@/hooks/useSimpleArticleDetail';
 import { useLanguage } from '@/contexts/LanguageContext';
-import ArticleDetailHeader from '@/components/article-detail/ArticleDetailHeader';
+import ArticleDetailNavigation from '@/components/article-detail/ArticleDetailNavigation';
 import ArticleDetailImage from '@/components/article-detail/ArticleDetailImage';
+import ArticleDetailHeader from '@/components/article-detail/ArticleDetailHeader';
 import ArticleDetailContent from '@/components/article-detail/ArticleDetailContent';
 import ArticleDetailReports from '@/components/article-detail/ArticleDetailReports';
 import ArticleDetailLoading from '@/components/article-detail/ArticleDetailLoading';
@@ -41,15 +42,30 @@ const ArticleDetail = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-6 py-8 max-w-4xl">
-        <ArticleDetailHeader article={article} />
+      <div className="container mx-auto px-6 max-w-4xl">
+        {/* Navigation Section - isolated at top */}
+        <div className="py-8">
+          <ArticleDetailNavigation />
+        </div>
 
+        {/* Featured Image Section */}
         {article.image_url && (
-          <ArticleDetailImage imageUrl={article.image_url} title={article.title} />
+          <div className="mb-12">
+            <ArticleDetailImage imageUrl={article.image_url} title={article.title} />
+          </div>
         )}
 
-        <ArticleDetailContent content={article.content} />
+        {/* Article Information Section - below image */}
+        <div className="mb-12">
+          <ArticleDetailHeader article={article} />
+        </div>
 
+        {/* Content Section */}
+        <div className="mb-12">
+          <ArticleDetailContent content={article.content} />
+        </div>
+
+        {/* Reports Section */}
         <ArticleDetailReports reports={article.reports || []} />
       </div>
     </div>
