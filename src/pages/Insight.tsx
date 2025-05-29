@@ -1,10 +1,11 @@
+
 import React, { useState, useCallback, useMemo } from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ArticleCard from '@/components/ArticleCard';
 import WaitlistForm from '@/components/WaitlistForm';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { usePublishedArticlesByLanguage } from '@/hooks/usePublishedArticlesByLanguage';
+import { usePublishedArticles } from '@/hooks/usePublishedArticles';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
@@ -12,7 +13,7 @@ import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Insight = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const { 
     articles, 
     loading, 
@@ -21,7 +22,7 @@ const Insight = () => {
     currentPage,
     setCurrentPage,
     refresh 
-  } = usePublishedArticlesByLanguage(4, language);
+  } = usePublishedArticles(4);
   
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page - 1); // Convert to 0-based for backend
@@ -138,7 +139,6 @@ const Insight = () => {
     totalCount, 
     totalPages,
     currentPage: currentPage + 1,
-    language
   });
 
   return (
