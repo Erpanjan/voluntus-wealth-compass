@@ -7,19 +7,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { useArticleDetail } from '@/hooks/useArticleDetail';
+import { useArticleDetailByLanguage } from '@/hooks/useArticleDetailByLanguage';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { article, loading, error, refetch } = useArticleDetail(id || '');
+  const { language } = useLanguage();
+  const { article, loading, error, refetch } = useArticleDetailByLanguage(id || '', language);
   const [contentRenderAttempted, setContentRenderAttempted] = useState(false);
 
   // Scroll to top on component mount
   useEffect(() => {
     window.scrollTo(0, 0);
-    console.log("ArticleDetail mounted, params:", id);
-  }, []);
+    console.log("ArticleDetail mounted, params:", id, "language:", language);
+  }, [id, language]);
 
   // Track render attempts
   useEffect(() => {
@@ -178,6 +180,13 @@ const ArticleDetail = () => {
                   {author.name}{index < article.authors.length - 1 ? ', ' : ''}
                 </span>
               ))}
+            </div>
+          )}
+          
+          {article.author_name && (
+            <div className="flex flex-wrap items-center gap-2 mb-6">
+              <span className="text-gray-600">By:</span>
+              <span className="text-gray-900 font-medium">{article.author_name}</span>
             </div>
           )}
         </div>
