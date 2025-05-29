@@ -16,31 +16,48 @@ interface TiptapEditorProps {
 
 const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const editorState = useEditorState();
-  const contentSetRef = useRef(false);
+  const initialContentSetRef = useRef(false);
+  const userIsEditingRef = useRef(false);
   
   const editor = useEditor({
     extensions: getEditorExtensions(),
     content: '<p></p>',
     onUpdate: ({ editor }) => {
+      userIsEditingRef.current = true;
       const html = editor.getHTML();
       onChange(html);
+    },
+    onFocus: () => {
+      userIsEditingRef.current = true;
     },
     editorProps: getEditorProps(editorState.isFullscreen),
   });
 
-  // Set content when editor is ready and value changes
+  // Set content only when editor is ready and we haven't set initial content yet
   useEffect(() => {
-    if (editor && value && value !== '<p></p>') {
-      // Only set content if it's different from current content
+    if (editor && value && value !== '<p></p>' && !initialContentSetRef.current) {
+      console.log('🔄 [TIPTAP] Setting initial editor content:', {
+        valueLength: value.length,
+        valuePreview: value.substring(0, 100) + '...',
+      });
+      editor.commands.setContent(value, false);
+      initialContentSetRef.current = true;
+      userIsEditingRef.current = false;
+    }
+  }, [editor, value]);
+
+  // Reset the initial content flag when value changes significantly (e.g., language switch)
+  useEffect(() => {
+    if (editor && value && !userIsEditingRef.current) {
       const currentContent = editor.getHTML();
-      if (currentContent !== value) {
-        console.log('🔄 [TIPTAP] Setting editor content:', {
-          valueLength: value.length,
-          valuePreview: value.substring(0, 100) + '...',
-          currentContentLength: currentContent.length
+      // Check if this is a significant content change (like language switch)
+      if (currentContent !== value && Math.abs(currentContent.length - value.length) > 100) {
+        console.log('🔄 [TIPTAP] Significant content change detected, updating editor:', {
+          currentLength: currentContent.length,
+          newLength: value.length,
         });
         editor.commands.setContent(value, false);
-        contentSetRef.current = true;
+        userIsEditingRef.current = false;
       }
     }
   }, [editor, value]);
