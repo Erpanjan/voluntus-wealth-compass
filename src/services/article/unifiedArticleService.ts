@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { 
   MultilingualArticle, 
@@ -31,6 +32,21 @@ class UnifiedArticleService {
   }
 
   /**
+   * Safely process content with fallback to empty object
+   */
+  private safeProcessContent(content: any): any {
+    if (!content) return {};
+    if (typeof content === 'string') {
+      try {
+        return processContent(JSON.parse(content));
+      } catch {
+        return {};
+      }
+    }
+    return processContent(content);
+  }
+
+  /**
    * Get published articles by language with pagination
    */
   async getPublishedArticlesByLanguage(
@@ -58,12 +74,12 @@ class UnifiedArticleService {
     const totalCount = data[0]?.total_count || 0;
     const articles = data.map((article: any): Article => ({
       id: article.id,
-      title: article.title,
+      title: article.title || '',
       slug: article.slug,
-      description: article.description,
-      content: processContent(article.content),
-      category: article.category,
-      author_name: article.author_name,
+      description: article.description || '',
+      content: this.safeProcessContent(article.content),
+      category: article.category || '',
+      author_name: article.author_name || '',
       image_url: article.image_url,
       published_at: article.published_at,
       created_at: article.created_at,
@@ -101,12 +117,12 @@ class UnifiedArticleService {
     const article = data[0];
     return {
       id: article.id,
-      title: article.title,
+      title: article.title || '',
       slug: article.slug,
-      description: article.description,
-      content: processContent(article.content),
-      category: article.category,
-      author_name: article.author_name,
+      description: article.description || '',
+      content: this.safeProcessContent(article.content),
+      category: article.category || '',
+      author_name: article.author_name || '',
       image_url: article.image_url,
       published_at: article.published_at,
       created_at: article.created_at,
@@ -147,16 +163,16 @@ class UnifiedArticleService {
       published_at: article.published_at,
       created_at: article.created_at,
       updated_at: article.updated_at,
-      title_en: article.title_en,
-      title_zh: article.title_zh,
-      description_en: article.description_en,
-      description_zh: article.description_zh,
-      content_en: processContent(article.content_en),
-      content_zh: processContent(article.content_zh),
-      category_en: article.category_en,
-      category_zh: article.category_zh,
-      author_name_en: article.author_name_en,
-      author_name_zh: article.author_name_zh,
+      title_en: article.title_en || '',
+      title_zh: article.title_zh || '',
+      description_en: article.description_en || '',
+      description_zh: article.description_zh || '',
+      content_en: this.safeProcessContent(article.content_en),
+      content_zh: this.safeProcessContent(article.content_zh),
+      category_en: article.category_en || '',
+      category_zh: article.category_zh || '',
+      author_name_en: article.author_name_en || '',
+      author_name_zh: article.author_name_zh || '',
       authors: [],
       reports: this.safeArrayConvert<Report>(article.reports),
     }));
@@ -191,16 +207,16 @@ class UnifiedArticleService {
       published_at: article.published_at,
       created_at: article.created_at,
       updated_at: article.updated_at,
-      title_en: article.title_en,
-      title_zh: article.title_zh,
-      description_en: article.description_en,
-      description_zh: article.description_zh,
-      content_en: processContent(article.content_en),
-      content_zh: processContent(article.content_zh),
-      category_en: article.category_en,
-      category_zh: article.category_zh,
-      author_name_en: article.author_name_en,
-      author_name_zh: article.author_name_zh,
+      title_en: article.title_en || '',
+      title_zh: article.title_zh || '',
+      description_en: article.description_en || '',
+      description_zh: article.description_zh || '',
+      content_en: this.safeProcessContent(article.content_en),
+      content_zh: this.safeProcessContent(article.content_zh),
+      category_en: article.category_en || '',
+      category_zh: article.category_zh || '',
+      author_name_en: article.author_name_en || '',
+      author_name_zh: article.author_name_zh || '',
       authors: [],
       reports: this.safeArrayConvert<Report>(article.reports),
     };

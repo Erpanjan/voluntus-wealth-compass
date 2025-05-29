@@ -44,8 +44,9 @@ const MultilingualArticleTableRow = memo(({
     [article.published_at]
   );
 
-  // Smart title display with fallback
+  // Smart title display with better fallback handling
   const displayTitle = useMemo(() => {
+    // Prioritize English, fallback to Chinese, then default
     if (article.title_en && article.title_en.trim()) {
       return article.title_en;
     } else if (article.title_zh && article.title_zh.trim()) {
@@ -55,7 +56,7 @@ const MultilingualArticleTableRow = memo(({
     }
   }, [article.title_en, article.title_zh]);
 
-  // Smart category display with fallback
+  // Smart category display with better fallback handling
   const displayCategory = useMemo(() => {
     if (article.category_en && article.category_en.trim()) {
       return article.category_en;
@@ -66,33 +67,35 @@ const MultilingualArticleTableRow = memo(({
     }
   }, [article.category_en, article.category_zh]);
 
-  // Smart author display with fallback
+  // Smart author display with better fallback handling
   const displayAuthor = useMemo(() => {
     if (article.author_name_en && article.author_name_en.trim()) {
       return article.author_name_en;
     } else if (article.author_name_zh && article.author_name_zh.trim()) {
       return article.author_name_zh;
     } else {
-      return '-';
+      return 'Unknown Author';
     }
   }, [article.author_name_en, article.author_name_zh]);
 
-  // Language availability indicators
-  const hasEnglishContent = useMemo(() => 
-    article.title_en && article.title_en.trim() && article.content_en,
-    [article.title_en, article.content_en]
-  );
+  // Language availability indicators - improved logic
+  const hasEnglishContent = useMemo(() => {
+    const hasTitle = article.title_en && article.title_en.trim();
+    const hasContent = article.content_en && typeof article.content_en === 'object' && Object.keys(article.content_en).length > 0;
+    return Boolean(hasTitle && hasContent);
+  }, [article.title_en, article.content_en]);
 
-  const hasChineseContent = useMemo(() => 
-    article.title_zh && article.title_zh.trim() && article.content_zh,
-    [article.title_zh, article.content_zh]
-  );
+  const hasChineseContent = useMemo(() => {
+    const hasTitle = article.title_zh && article.title_zh.trim();
+    const hasContent = article.content_zh && typeof article.content_zh === 'object' && Object.keys(article.content_zh).length > 0;
+    return Boolean(hasTitle && hasContent);
+  }, [article.title_zh, article.content_zh]);
 
   return (
     <TableRow className="hover:bg-gray-50">
       <TableCell className="font-medium max-w-[300px]">
         <div className="flex flex-col gap-1">
-          <div className="truncate">{displayTitle}</div>
+          <div className="truncate" title={displayTitle}>{displayTitle}</div>
           <div className="flex gap-1">
             {hasEnglishContent && (
               <Badge variant="secondary" className="text-xs bg-blue-50 text-blue-700">
@@ -102,6 +105,11 @@ const MultilingualArticleTableRow = memo(({
             {hasChineseContent && (
               <Badge variant="secondary" className="text-xs bg-green-50 text-green-700">
                 中文
+              </Badge>
+            )}
+            {!hasEnglishContent && !hasChineseContent && (
+              <Badge variant="secondary" className="text-xs bg-yellow-50 text-yellow-700">
+                No Content
               </Badge>
             )}
           </div>

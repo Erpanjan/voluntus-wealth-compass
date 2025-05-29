@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 import MultilingualArticleTable from '@/components/admin/articles/MultilingualArticleTable';
 import ArticleSearch from '@/components/admin/articles/ArticleSearch';
 import { useOptimizedMultilingualArticles } from '@/hooks/useOptimizedMultilingualArticles';
@@ -26,7 +26,8 @@ const ArticlesManagement = () => {
     articles, 
     loading, 
     deleteArticle, 
-    togglePublishStatus 
+    togglePublishStatus,
+    refetch
   } = useOptimizedMultilingualArticles();
   
   const handleCreateNew = () => {
@@ -47,6 +48,10 @@ const ArticlesManagement = () => {
   
   const handleTogglePublish = async (id: string, currentStatus: boolean) => {
     await togglePublishStatus(id, !currentStatus);
+  };
+
+  const handleRefresh = () => {
+    refetch();
   };
   
   // Filter articles based on search term and filters with multilingual support
@@ -92,13 +97,20 @@ const ArticlesManagement = () => {
     <AdminLayout>
       <div className="flex justify-between items-center mb-6">
         <div>
-          {/* Title and subtitle removed as requested */}
+          <h1 className="text-2xl font-semibold text-gray-800">Articles Management</h1>
+          <p className="text-gray-600 mt-1">Manage your multilingual articles and content</p>
         </div>
         
-        <Button onClick={handleCreateNew}>
-          <Plus size={16} className="mr-2" />
-          Create New Article
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleRefresh} disabled={loading}>
+            <RefreshCw size={16} className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button onClick={handleCreateNew}>
+            <Plus size={16} className="mr-2" />
+            Create New Article
+          </Button>
+        </div>
       </div>
       
       <Card className="border-none shadow-sm">
