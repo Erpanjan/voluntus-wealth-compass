@@ -1,4 +1,3 @@
-
 import { authorService } from '../authorService';
 import { articleQueryService } from './articleQueryService';
 import { articleMutationService } from './articleMutationService';
@@ -10,16 +9,17 @@ export type { Author, Article, Report } from './types';
 export const articleService = {
   // Query operations
   getArticles: articleQueryService.getArticles,
+  getMultilingualArticles: articleQueryService.getMultilingualArticles, // New multilingual function
   getArticleById: articleQueryService.getArticleById,
-  getMultilingualArticleById: articleQueryService.getMultilingualArticleById, // New multilingual function
+  getMultilingualArticleById: articleQueryService.getMultilingualArticleById,
   getPublishedArticles: articleQueryService.getPublishedArticles,
-  getPublishedArticlesByLanguage: articleQueryService.getPublishedArticlesByLanguage, // New language-aware function
+  getPublishedArticlesByLanguage: articleQueryService.getPublishedArticlesByLanguage,
   getArticleBySlug: articleQueryService.getArticleBySlug,
-  getArticleBySlugAndLanguage: articleQueryService.getArticleBySlugAndLanguage, // New language-aware function
+  getArticleBySlugAndLanguage: articleQueryService.getArticleBySlugAndLanguage,
   
   // Mutation operations
   saveArticle: articleMutationService.saveArticle,
-  saveMultilingualArticle: articleMutationService.saveMultilingualArticle, // New multilingual function
+  saveMultilingualArticle: articleMutationService.saveMultilingualArticle,
   deleteArticle: articleMutationService.deleteArticle,
   togglePublishStatus: articleMutationService.togglePublishStatus,
   

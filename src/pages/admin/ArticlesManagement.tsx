@@ -1,11 +1,12 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import ArticleTable from '@/components/admin/articles/ArticleTable';
+import MultilingualArticleTable from '@/components/admin/articles/MultilingualArticleTable';
 import ArticleSearch from '@/components/admin/articles/ArticleSearch';
-import { useArticles } from '@/hooks/useArticles';
+import { useMultilingualArticles } from '@/hooks/useMultilingualArticles';
 import { Card, CardContent } from '@/components/ui/card';
 import ArticleFilters from '@/components/admin/articles/ArticleFilters';
 import { DateRange } from 'react-day-picker';
@@ -19,7 +20,7 @@ const ArticlesManagement = () => {
     dateRange: undefined as DateRange | undefined,
     author: ''
   });
-  const { articles, loading, deleteArticle, updateArticleStatus } = useArticles();
+  const { articles, loading, deleteArticle, updateArticleStatus } = useMultilingualArticles();
   
   const handleCreateNew = () => {
     navigate('/admin/articles/create');
@@ -41,18 +42,21 @@ const ArticlesManagement = () => {
     await updateArticleStatus(id, !currentStatus);
   };
   
-  // Filter articles based on search term and filters
+  // Filter articles based on search term and filters with multilingual support
   const filteredArticles = articles.filter(article => {
-    // Search term filter - search in title, content and author names
+    // Multilingual search - search across both language fields
     const matchesSearch = searchTerm === '' || 
-      article.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      article.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (article.authors && article.authors.some((author: any) => 
-        author.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ));
+      (article.title_en && article.title_en.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (article.title_zh && article.title_zh.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (article.content_en && JSON.stringify(article.content_en).toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (article.content_zh && JSON.stringify(article.content_zh).toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (article.author_name_en && article.author_name_en.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (article.author_name_zh && article.author_name_zh.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    // Category filter
-    const matchesCategory = filters.category === '' || article.category === filters.category;
+    // Category filter - check both language fields
+    const matchesCategory = filters.category === '' || 
+      article.category_en === filters.category || 
+      article.category_zh === filters.category;
     
     // Status filter
     const isPublished = new Date(article.published_at) <= new Date();
@@ -69,11 +73,10 @@ const ArticlesManagement = () => {
       matchesDateRange = new Date(article.published_at) <= new Date(filters.dateRange.to);
     }
     
-    // Author filter
+    // Author filter - check both language fields
     const matchesAuthor = filters.author === '' || 
-      (article.authors && article.authors.some((author: any) => 
-        author.id === filters.author || author.name.toLowerCase().includes(filters.author.toLowerCase())
-      ));
+      (article.author_name_en && article.author_name_en.toLowerCase().includes(filters.author.toLowerCase())) ||
+      (article.author_name_zh && article.author_name_zh.toLowerCase().includes(filters.author.toLowerCase()));
     
     return matchesSearch && matchesCategory && matchesStatus && matchesDateRange && matchesAuthor;
   });
@@ -100,20 +103,21 @@ const ArticlesManagement = () => {
                   <ArticleSearch 
                     value={searchTerm}
                     onChange={setSearchTerm}
+                    placeholder="Search by title, content, or author (English & Chinese)..."
                   />
                 </div>
                 <div className="md:col-span-1">
                   <ArticleFilters 
                     filters={filters}
                     setFilters={setFilters}
-                    articles={articles}
+                    articles={filteredArticles}
                   />
                 </div>
               </div>
             </div>
           </div>
           
-          <ArticleTable 
+          <MultilingualArticleTable 
             articles={filteredArticles}
             loading={loading}
             onEdit={handleEdit}
