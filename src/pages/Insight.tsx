@@ -5,7 +5,7 @@ import Section from '@/components/ui/Section';
 import ArticleCard from '@/components/ArticleCard';
 import WaitlistForm from '@/components/WaitlistForm';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { usePublishedArticlesByLanguage } from '@/hooks/usePublishedArticlesByLanguage';
+import { useSimplePublishedArticles } from '@/hooks/useSimplePublishedArticles';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
@@ -22,7 +22,7 @@ const Insight = () => {
     currentPage,
     setCurrentPage,
     refresh 
-  } = usePublishedArticlesByLanguage(4, language);
+  } = useSimplePublishedArticles(4, language);
   
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page - 1); // Convert to 0-based for backend
