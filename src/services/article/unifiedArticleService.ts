@@ -31,72 +31,111 @@ class UnifiedArticleService {
   };
 
   /**
-   * Safely process content with enhanced handling for PostgreSQL data types
+   * Safely process content - SIMPLIFIED to handle HTML strings directly
    */
-  private safeProcessContent = (content: any): any => {
+  private safeProcessContent = (content: any): string => {
     console.log('🔍 [DEBUG] Processing content:', typeof content, content);
     
     // Handle null or undefined
     if (!content) {
-      console.log('📝 [DEBUG] Content is null/undefined, returning empty object');
-      return {};
+      console.log('📝 [DEBUG] Content is null/undefined, returning empty string');
+      return '';
     }
     
-    // Handle PostgreSQL's map[] format for empty JSONB fields
+    // If it's already a string (HTML content), return it directly
     if (typeof content === 'string') {
+      // Handle PostgreSQL's map[] format for empty JSONB fields
       if (content === 'map[]' || content.trim() === '') {
-        console.log('📝 [DEBUG] Content is map[] or empty string, returning empty object');
-        return {};
+        console.log('📝 [DEBUG] Content is map[] or empty string, returning empty string');
+        return '';
       }
       
+      // If it looks like HTML or plain text, return as-is
+      if (content.includes('<') || !content.startsWith('{')) {
+        console.log('📝 [DEBUG] Content is HTML string, returning as-is:', content.substring(0, 100) + '...');
+        return content;
+      }
+      
+      // Try to parse as JSON if it looks like JSON
       try {
         const parsed = JSON.parse(content);
         console.log('📝 [DEBUG] Successfully parsed JSON string:', parsed);
-        return this.processContentRecursively(parsed);
+        return this.extractContentFromObject(parsed);
       } catch (error) {
-        console.warn('⚠️ [DEBUG] Failed to parse JSON string, returning as-is:', content);
+        console.warn('⚠️ [DEBUG] Failed to parse JSON string, returning as-is:', content.substring(0, 100) + '...');
         return content;
       }
     }
     
     // Handle objects (including already parsed JSON)
     if (typeof content === 'object') {
-      console.log('📝 [DEBUG] Content is object, processing recursively');
-      return this.processContentRecursively(content);
+      console.log('📝 [DEBUG] Content is object, extracting content');
+      return this.extractContentFromObject(content);
     }
     
-    // Handle other types
-    console.log('📝 [DEBUG] Content is other type, returning as-is:', typeof content);
-    return content;
+    // Handle other types - convert to string
+    console.log('📝 [DEBUG] Content is other type, converting to string:', typeof content);
+    return String(content);
   };
 
   /**
-   * Recursively process content object to handle nested structures
+   * Extract HTML content from object structures (like TipTap editor output)
    */
-  private processContentRecursively = (obj: any): any => {
+  private extractContentFromObject = (obj: any): string => {
     if (obj === null || obj === undefined) {
-      return {};
+      return '';
     }
     
-    if (Array.isArray(obj)) {
-      return obj.map(item => this.processContentRecursively(item));
+    // If it's a TipTap editor structure with content array
+    if (obj.type && obj.content && Array.isArray(obj.content)) {
+      // This would need proper TipTap to HTML conversion
+      // For now, return a simple representation
+      return this.convertTipTapToHTML(obj);
     }
     
-    if (typeof obj === 'object') {
-      const processed: any = {};
-      for (const [key, value] of Object.entries(obj)) {
-        if (typeof value === 'string' && value === 'map[]') {
-          processed[key] = {};
-        } else if (typeof value === 'object') {
-          processed[key] = this.processContentRecursively(value);
-        } else {
-          processed[key] = value;
+    // If it's an object with HTML property
+    if (obj.html && typeof obj.html === 'string') {
+      return obj.html;
+    }
+    
+    // If it's an object with content property
+    if (obj.content && typeof obj.content === 'string') {
+      return obj.content;
+    }
+    
+    // If it's an object with value property
+    if (obj.value && typeof obj.value === 'string') {
+      return obj.value;
+    }
+    
+    // Fallback: stringify the object
+    return JSON.stringify(obj);
+  };
+
+  /**
+   * Simple TipTap to HTML conversion (basic implementation)
+   */
+  private convertTipTapToHTML = (tipTapContent: any): string => {
+    if (!tipTapContent.content || !Array.isArray(tipTapContent.content)) {
+      return '';
+    }
+    
+    // Very basic conversion - in a real app, you'd use TipTap's generateHTML
+    let html = '';
+    for (const node of tipTapContent.content) {
+      if (node.type === 'paragraph') {
+        html += '<p>';
+        if (node.content && Array.isArray(node.content)) {
+          for (const textNode of node.content) {
+            if (textNode.type === 'text') {
+              html += textNode.text || '';
+            }
+          }
         }
+        html += '</p>';
       }
-      return processed;
     }
-    
-    return obj;
+    return html;
   };
 
   /**
@@ -272,7 +311,7 @@ class UnifiedArticleService {
   }
 
   /**
-   * Get multilingual article by ID (admin) - FIXED METHOD
+   * Get multilingual article by ID (admin) - SIMPLIFIED CONTENT PROCESSING
    */
   async getMultilingualArticleById(id: string): Promise<MultilingualArticle | null> {
     console.log(`🔍 [DEBUG] Fetching multilingual article by ID: ${id}`);
@@ -295,12 +334,24 @@ class UnifiedArticleService {
       }
 
       const article = data[0];
-      console.log(`📊 [DEBUG] Processing article data:`, {
+      console.log(`📊 [DEBUG] Raw article from database:`, {
         id: article.id,
         title_en: article.title_en,
         title_zh: article.title_zh,
-        hasContent_en: !!article.content_en,
-        hasContent_zh: !!article.content_zh
+        content_en_type: typeof article.content_en,
+        content_zh_type: typeof article.content_zh,
+        content_en_preview: article.content_en ? String(article.content_en).substring(0, 100) : 'null',
+        content_zh_preview: article.content_zh ? String(article.content_zh).substring(0, 100) : 'null'
+      });
+
+      const content_en = this.safeProcessContent(article.content_en);
+      const content_zh = this.safeProcessContent(article.content_zh);
+
+      console.log(`📝 [DEBUG] Processed content:`, {
+        content_en_length: content_en.length,
+        content_zh_length: content_zh.length,
+        content_en_preview: content_en.substring(0, 100) + '...',
+        content_zh_preview: content_zh.substring(0, 100) + '...'
       });
 
       const processedArticle: MultilingualArticle = {
@@ -314,8 +365,8 @@ class UnifiedArticleService {
         title_zh: article.title_zh || '',
         description_en: article.description_en || '',
         description_zh: article.description_zh || '',
-        content_en: this.safeProcessContent(article.content_en),
-        content_zh: this.safeProcessContent(article.content_zh),
+        content_en: content_en,
+        content_zh: content_zh,
         category_en: article.category_en || '',
         category_zh: article.category_zh || '',
         author_name_en: article.author_name_en || '',
@@ -324,12 +375,12 @@ class UnifiedArticleService {
         reports: this.safeArrayConvert<Report>(article.reports),
       };
 
-      console.log(`✅ [DEBUG] Successfully processed multilingual article:`, {
+      console.log(`✅ [DEBUG] Final processed article:`, {
         id: processedArticle.id,
         title_en: processedArticle.title_en,
         title_zh: processedArticle.title_zh,
-        content_en_keys: processedArticle.content_en ? Object.keys(processedArticle.content_en) : [],
-        content_zh_keys: processedArticle.content_zh ? Object.keys(processedArticle.content_zh) : []
+        content_en_length: processedArticle.content_en.length,
+        content_zh_length: processedArticle.content_zh.length
       });
 
       return processedArticle;

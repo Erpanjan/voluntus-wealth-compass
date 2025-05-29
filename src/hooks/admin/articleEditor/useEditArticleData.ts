@@ -25,7 +25,7 @@ export const useEditArticleData = () => {
       }
 
       try {
-        console.log(`🔍 Loading article data for ID: ${id}`);
+        console.log(`🔍 [EDIT] Loading article data for ID: ${id}`);
         
         const article = await unifiedArticleService.getMultilingualArticleById(id);
 
@@ -38,59 +38,34 @@ export const useEditArticleData = () => {
           return;
         }
 
-        console.log(`📊 Raw article data:`, article);
+        console.log(`📊 [EDIT] Article loaded:`, {
+          id: article.id,
+          title_en: article.title_en,
+          title_zh: article.title_zh,
+          content_en_length: article.content_en.length,
+          content_zh_length: article.content_zh.length,
+          content_en_preview: article.content_en.substring(0, 100),
+          content_zh_preview: article.content_zh.substring(0, 100)
+        });
 
         // Load existing image if available
         if (article.image_url) {
           loadImageData(article.image_url);
         }
 
-        // Extract content directly - handle both string and object cases
-        const extractContent = (content: any) => {
-          console.log('🔍 Extracting content:', { content, type: typeof content });
-          
-          // If it's already a string, use it directly
-          if (typeof content === 'string') {
-            return content;
-          }
-          
-          // If it's an object with a value property, extract that
-          if (content && typeof content === 'object' && content.value) {
-            return content.value;
-          }
-          
-          // If it's an object but not the expected format, stringify it
-          if (content && typeof content === 'object') {
-            return JSON.stringify(content);
-          }
-          
-          // Default to empty string
-          return '';
-        };
-
-        const contentEn = extractContent(article.content_en);
-        const contentZh = extractContent(article.content_zh);
-
-        console.log('📝 Extracted content:', {
-          contentEn: contentEn.substring(0, 100) + '...',
-          contentZh: contentZh.substring(0, 100) + '...',
-          contentEnLength: contentEn.length,
-          contentZhLength: contentZh.length
-        });
-
-        // Set form data directly with extracted content
+        // Content is now guaranteed to be a string from the service layer
         const formData = {
           en: {
             title: article.title_en || '',
             description: article.description_en || '',
-            content: contentEn,
+            content: article.content_en || '', // Direct string assignment
             category: article.category_en || '',
             author_name: article.author_name_en || '',
           },
           zh: {
             title: article.title_zh || '',
             description: article.description_zh || '',
-            content: contentZh,
+            content: article.content_zh || '', // Direct string assignment
             category: article.category_zh || '',
             author_name: article.author_name_zh || '',
           },
@@ -98,12 +73,19 @@ export const useEditArticleData = () => {
           published_at: article.published_at?.split('T')[0] || new Date().toISOString().split('T')[0],
         };
 
-        console.log(`✅ Setting form with data:`, formData);
+        console.log(`✅ [EDIT] Setting form with processed data:`, {
+          en_content_length: formData.en.content.length,
+          zh_content_length: formData.zh.content.length,
+          en_content_preview: formData.en.content.substring(0, 100),
+          zh_content_preview: formData.zh.content.substring(0, 100)
+        });
         
         form.reset(formData);
 
+        console.log(`🎯 [EDIT] Form data set successfully`);
+
       } catch (error) {
-        console.error('💥 Error loading article:', error);
+        console.error('💥 [EDIT] Error loading article:', error);
         toast({
           title: 'Error',
           description: 'Failed to load article data. Please try again.',
