@@ -44,6 +44,15 @@ export const useMultilingualForm = () => {
     }
   });
 
+  // Handle language switching with proper form updates
+  const handleLanguageChange = (newLanguage: Language) => {
+    setSelectedLanguage(newLanguage);
+    // Force form to re-render by triggering validation
+    setTimeout(() => {
+      form.trigger();
+    }, 0);
+  };
+
   // Force re-render when language changes to ensure form fields update
   useEffect(() => {
     form.trigger();
@@ -74,7 +83,7 @@ export const useMultilingualForm = () => {
   return {
     form,
     selectedLanguage,
-    setSelectedLanguage,
+    setSelectedLanguage: handleLanguageChange,
     getCurrentLanguageData,
     updateCurrentLanguageData,
     getCurrentFieldValue,

@@ -36,6 +36,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
             </FormLabel>
             <FormControl>
               <Input 
+                key={`${selectedLanguage}-title`}
                 placeholder="Enter article title" 
                 value={field.value || ''}
                 onChange={field.onChange}
@@ -60,6 +61,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
             </FormLabel>
             <FormControl>
               <Textarea 
+                key={`${selectedLanguage}-description`}
                 placeholder="Enter article description (optional)" 
                 rows={3}
                 value={field.value || ''}
@@ -86,6 +88,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               </FormLabel>
               <FormControl>
                 <Input 
+                  key={`${selectedLanguage}-category`}
                   placeholder="Enter category (optional)" 
                   value={field.value || ''}
                   onChange={field.onChange}
@@ -110,6 +113,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               </FormLabel>
               <FormControl>
                 <Input 
+                  key={`${selectedLanguage}-author`}
                   placeholder="Enter author name (optional)" 
                   value={field.value || ''}
                   onChange={field.onChange}
