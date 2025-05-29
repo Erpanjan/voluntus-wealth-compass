@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Tabs } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/components/admin/AdminLayout';
 import DatabaseNotice from '@/components/admin/articles/DatabaseNotice';
@@ -17,8 +16,6 @@ const ArticlesManagement = () => {
     setSearchTerm,
     currentPage,
     setCurrentPage,
-    selectedLanguage,
-    setSelectedLanguage,
     articles,
     totalPages,
     isLoading,
@@ -27,7 +24,7 @@ const ArticlesManagement = () => {
     handleDeleteArticle,
     handleTogglePublish,
     isPublished,
-    getLanguageBadges,
+    getDisplayTitle,
   } = useArticlesManagement();
 
   const handleCreateArticle = () => {
@@ -60,30 +57,25 @@ const ArticlesManagement = () => {
         <DatabaseNotice />
         <ArticlesHeader onCreateArticle={handleCreateArticle} />
 
-        <Tabs value={selectedLanguage} onValueChange={(value) => setSelectedLanguage(value as 'all' | 'en' | 'zh')}>
-          <ArticlesFiltersSection
-            selectedLanguage={selectedLanguage}
-            onLanguageChange={(value) => setSelectedLanguage(value as 'all' | 'en' | 'zh')}
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-          />
+        <ArticlesFiltersSection
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
 
-          <ArticlesContent
-            selectedLanguage={selectedLanguage}
-            articles={articles}
-            isLoading={isLoading}
-            searchTerm={searchTerm}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onCreateArticle={handleCreateArticle}
-            onEdit={handleEditArticle}
-            onTogglePublish={handleTogglePublish}
-            onDelete={handleDeleteArticle}
-            onPageChange={setCurrentPage}
-            isPublished={isPublished}
-            getLanguageBadges={getLanguageBadges}
-          />
-        </Tabs>
+        <ArticlesContent
+          articles={articles}
+          isLoading={isLoading}
+          searchTerm={searchTerm}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onCreateArticle={handleCreateArticle}
+          onEdit={handleEditArticle}
+          onTogglePublish={handleTogglePublish}
+          onDelete={handleDeleteArticle}
+          onPageChange={setCurrentPage}
+          isPublished={isPublished}
+          getDisplayTitle={getDisplayTitle}
+        />
       </div>
     </AdminLayout>
   );

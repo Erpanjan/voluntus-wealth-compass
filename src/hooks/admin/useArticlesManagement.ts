@@ -7,7 +7,6 @@ import { Article } from '@/services/article/types';
 export const useArticlesManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedLanguage, setSelectedLanguage] = useState<'all' | 'en' | 'zh'>('all');
   const pageSize = 10;
 
   const { data: articles, isLoading, error, refetch } = useOptimizedQuery<Article[]>({
@@ -22,24 +21,23 @@ export const useArticlesManagement = () => {
   const totalCount = articlesList.length;
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  const filteredArticles = articlesList.filter(article => {
-    const matchesSearch = searchTerm === '' || 
-      article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      article.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      article.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      article.author_name?.toLowerCase().includes(searchTerm.toLowerCase());
+  const getDisplayTitle = (article: any) => {
+    return article.title_en || article.title_zh || article.title || 'Untitled';
+  };
 
-    if (selectedLanguage === 'all') return matchesSearch;
+  const filteredArticles = articlesList.filter(article => {
+    if (searchTerm === '') return true;
     
-    // Filter by language availability
-    if (selectedLanguage === 'en') {
-      return matchesSearch && article.title_en && article.title_en.trim() !== '';
-    }
-    if (selectedLanguage === 'zh') {
-      return matchesSearch && article.title_zh && article.title_zh.trim() !== '';
-    }
+    const searchLower = searchTerm.toLowerCase();
+    const title = getDisplayTitle(article).toLowerCase();
+    const description = (article.description_en || article.description_zh || article.description || '').toLowerCase();
+    const category = (article.category_en || article.category_zh || article.category || '').toLowerCase();
+    const author = (article.author_name_en || article.author_name_zh || article.author_name || '').toLowerCase();
     
-    return matchesSearch;
+    return title.includes(searchLower) ||
+           description.includes(searchLower) ||
+           category.includes(searchLower) ||
+           author.includes(searchLower);
   });
 
   const handleDeleteArticle = async (id: string) => {
@@ -71,24 +69,11 @@ export const useArticlesManagement = () => {
     return new Date(article.published_at) <= new Date();
   };
 
-  const getLanguageBadges = (article: any) => {
-    const badges = [];
-    if (article.title_en && article.title_en.trim() !== '') {
-      badges.push('EN');
-    }
-    if (article.title_zh && article.title_zh.trim() !== '') {
-      badges.push('中文');
-    }
-    return badges;
-  };
-
   return {
     searchTerm,
     setSearchTerm,
     currentPage,
     setCurrentPage,
-    selectedLanguage,
-    setSelectedLanguage,
     articles: filteredArticles,
     totalCount,
     totalPages,
@@ -98,6 +83,6 @@ export const useArticlesManagement = () => {
     handleDeleteArticle,
     handleTogglePublish,
     isPublished,
-    getLanguageBadges,
+    getDisplayTitle,
   };
 };
