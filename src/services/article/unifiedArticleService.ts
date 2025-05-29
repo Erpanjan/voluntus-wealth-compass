@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { 
   MultilingualArticle, 
@@ -32,18 +31,72 @@ class UnifiedArticleService {
   }
 
   /**
-   * Safely process content with fallback to empty object
+   * Safely process content with enhanced handling for PostgreSQL data types
    */
   private safeProcessContent(content: any): any {
-    if (!content) return {};
+    console.log('🔍 [DEBUG] Processing content:', typeof content, content);
+    
+    // Handle null or undefined
+    if (!content) {
+      console.log('📝 [DEBUG] Content is null/undefined, returning empty object');
+      return {};
+    }
+    
+    // Handle PostgreSQL's map[] format for empty JSONB fields
     if (typeof content === 'string') {
-      try {
-        return processContent(JSON.parse(content));
-      } catch {
+      if (content === 'map[]' || content.trim() === '') {
+        console.log('📝 [DEBUG] Content is map[] or empty string, returning empty object');
         return {};
       }
+      
+      try {
+        const parsed = JSON.parse(content);
+        console.log('📝 [DEBUG] Successfully parsed JSON string:', parsed);
+        return this.processContentRecursively(parsed);
+      } catch (error) {
+        console.warn('⚠️ [DEBUG] Failed to parse JSON string, returning as-is:', content);
+        return content;
+      }
     }
-    return processContent(content);
+    
+    // Handle objects (including already parsed JSON)
+    if (typeof content === 'object') {
+      console.log('📝 [DEBUG] Content is object, processing recursively');
+      return this.processContentRecursively(content);
+    }
+    
+    // Handle other types
+    console.log('📝 [DEBUG] Content is other type, returning as-is:', typeof content);
+    return content;
+  }
+
+  /**
+   * Recursively process content object to handle nested structures
+   */
+  private processContentRecursively(obj: any): any {
+    if (obj === null || obj === undefined) {
+      return {};
+    }
+    
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.processContentRecursively(item));
+    }
+    
+    if (typeof obj === 'object') {
+      const processed: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        if (typeof value === 'string' && value === 'map[]') {
+          processed[key] = {};
+        } else if (typeof value === 'object') {
+          processed[key] = this.processContentRecursively(value);
+        } else {
+          processed[key] = value;
+        }
+      }
+      return processed;
+    }
+    
+    return obj;
   }
 
   /**
