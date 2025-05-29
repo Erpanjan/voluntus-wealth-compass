@@ -17,43 +17,52 @@ import ArticleEditorToolbar from '@/components/admin/articles/ArticleEditorToolb
 import MultilingualArticlePreviewDialog from '@/components/admin/articles/MultilingualArticlePreviewDialog';
 import { useEditArticleActions } from '@/hooks/admin/articleEditor/useEditArticleActions';
 
-// Enhanced helper function to convert content to HTML string
+// Simplified content conversion function focused on HTML strings
 const convertContentToHtml = (content: any): string => {
-  if (!content) return '';
+  console.log('🔍 [CONTENT DEBUG] Converting content:', { 
+    type: typeof content, 
+    isString: typeof content === 'string',
+    isObject: typeof content === 'object',
+    value: content 
+  });
   
-  console.log('🔍 Converting content:', { type: typeof content, value: content });
+  // Handle null/undefined
+  if (!content) {
+    console.log('📝 [CONTENT DEBUG] Content is null/undefined, returning empty string');
+    return '';
+  }
   
-  // If it's already a string, return it
+  // Priority 1: Handle direct HTML strings (most common case from our database)
   if (typeof content === 'string') {
+    console.log('✅ [CONTENT DEBUG] Content is string, returning as-is:', content.substring(0, 100) + '...');
     return content;
   }
   
-  // Handle the specific structure we see in the logs: { _type: "String", value: "..." }
+  // Priority 2: Handle object with _type: "String" structure
   if (typeof content === 'object' && content._type === 'String' && content.value) {
-    console.log('✅ Found _type: String structure, extracting value');
+    console.log('✅ [CONTENT DEBUG] Found _type: String structure, extracting value');
     return content.value;
   }
   
-  // If it's an object with an html property, use that
+  // Priority 3: Handle object with html property
   if (typeof content === 'object' && content.html) {
-    console.log('✅ Found html property, using it');
+    console.log('✅ [CONTENT DEBUG] Found html property, using it');
     return content.html;
   }
   
-  // If it's a Tiptap/ProseMirror document, try to extract text content
+  // Priority 4: Handle Tiptap/ProseMirror document structure
   if (typeof content === 'object' && content.type === 'doc' && content.content) {
-    console.log('✅ Found ProseMirror document structure');
-    // For now, return a simple paragraph - in a real app you'd use Tiptap's generateHTML
-    return '<p></p>';
+    console.log('✅ [CONTENT DEBUG] Found ProseMirror document structure');
+    return '<p></p>'; // Simple fallback for complex docs
   }
   
-  // If it's any other object, stringify it as fallback
+  // Fallback: Convert unknown objects to string
   if (typeof content === 'object') {
-    console.log('⚠️ Unknown object structure, stringifying');
+    console.log('⚠️ [CONTENT DEBUG] Unknown object structure, stringifying');
     return JSON.stringify(content);
   }
   
-  console.log('⚠️ Unknown content type, returning empty string');
+  console.log('⚠️ [CONTENT DEBUG] Unknown content type, returning empty string');
   return '';
 };
 
@@ -92,7 +101,7 @@ const EditArticle = () => {
       }
 
       try {
-        console.log(`🔍 Loading article data for ID: ${id}`);
+        console.log(`🔍 [LOAD DEBUG] Loading article data for ID: ${id}`);
         
         const article = await unifiedArticleService.getMultilingualArticleById(id);
 
@@ -106,7 +115,15 @@ const EditArticle = () => {
           return;
         }
 
-        console.log(`📊 Loaded article data:`, article);
+        console.log(`📊 [LOAD DEBUG] Loaded article data:`, {
+          id: article.id,
+          title_en: article.title_en,
+          title_zh: article.title_zh,
+          content_en_type: typeof article.content_en,
+          content_zh_type: typeof article.content_zh,
+          content_en_preview: typeof article.content_en === 'string' ? article.content_en.substring(0, 100) : article.content_en,
+          content_zh_preview: typeof article.content_zh === 'string' ? article.content_zh.substring(0, 100) : article.content_zh
+        });
 
         // Load existing image if available
         if (article.image_url) {
@@ -117,11 +134,11 @@ const EditArticle = () => {
         const convertedContentEn = convertContentToHtml(article.content_en);
         const convertedContentZh = convertContentToHtml(article.content_zh);
 
-        console.log('📝 Converting content:', {
+        console.log('📝 [LOAD DEBUG] Content conversion results:', {
           originalEn: article.content_en,
-          convertedEn: convertedContentEn,
+          convertedEn: convertedContentEn.substring(0, 100) + '...',
           originalZh: article.content_zh,
-          convertedZh: convertedContentZh
+          convertedZh: convertedContentZh.substring(0, 100) + '...'
         });
 
         // Populate form with article data - this happens ONCE
@@ -144,11 +161,28 @@ const EditArticle = () => {
           published_at: article.published_at?.split('T')[0] || new Date().toISOString().split('T')[0],
         };
 
-        console.log(`✅ Setting form data once:`, formData);
+        console.log(`✅ [LOAD DEBUG] Setting form data:`, {
+          en_content_length: formData.en.content.length,
+          zh_content_length: formData.zh.content.length,
+          en_content_preview: formData.en.content.substring(0, 100) + '...',
+          zh_content_preview: formData.zh.content.substring(0, 100) + '...'
+        });
+        
         form.reset(formData);
 
+        // Verify the form was set correctly
+        setTimeout(() => {
+          const currentValues = form.getValues();
+          console.log('🔍 [VERIFICATION] Form values after reset:', {
+            en_content_length: currentValues.en?.content?.length || 0,
+            zh_content_length: currentValues.zh?.content?.length || 0,
+            en_content_preview: currentValues.en?.content?.substring(0, 100) + '...',
+            zh_content_preview: currentValues.zh?.content?.substring(0, 100) + '...'
+          });
+        }, 100);
+
       } catch (error) {
-        console.error('💥 Error loading article:', error);
+        console.error('💥 [LOAD ERROR] Error loading article:', error);
         toast({
           title: 'Error',
           description: 'Failed to load article data. Please try again.',
