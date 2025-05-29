@@ -17,34 +17,43 @@ import ArticleEditorToolbar from '@/components/admin/articles/ArticleEditorToolb
 import MultilingualArticlePreviewDialog from '@/components/admin/articles/MultilingualArticlePreviewDialog';
 import { useEditArticleActions } from '@/hooks/admin/articleEditor/useEditArticleActions';
 
-// Helper function to convert content to HTML string
+// Enhanced helper function to convert content to HTML string
 const convertContentToHtml = (content: any): string => {
   if (!content) return '';
+  
+  console.log('🔍 Converting content:', { type: typeof content, value: content });
   
   // If it's already a string, return it
   if (typeof content === 'string') {
     return content;
   }
   
-  // If it's an object (JSONB from database), try to extract HTML
-  if (typeof content === 'object') {
-    // If it has an html property, use that
-    if (content.html) {
-      return content.html;
-    }
-    
-    // If it's a Tiptap/ProseMirror document, convert to HTML
-    if (content.type === 'doc' && content.content) {
-      // This is a simplified conversion - in a real app you'd use Tiptap's generateHTML
-      return '<p></p>'; // Fallback for now
-    }
-    
-    // If it's already HTML-like content, stringify it
-    if (content.type || content.content) {
-      return JSON.stringify(content);
-    }
+  // Handle the specific structure we see in the logs: { _type: "String", value: "..." }
+  if (typeof content === 'object' && content._type === 'String' && content.value) {
+    console.log('✅ Found _type: String structure, extracting value');
+    return content.value;
   }
   
+  // If it's an object with an html property, use that
+  if (typeof content === 'object' && content.html) {
+    console.log('✅ Found html property, using it');
+    return content.html;
+  }
+  
+  // If it's a Tiptap/ProseMirror document, try to extract text content
+  if (typeof content === 'object' && content.type === 'doc' && content.content) {
+    console.log('✅ Found ProseMirror document structure');
+    // For now, return a simple paragraph - in a real app you'd use Tiptap's generateHTML
+    return '<p></p>';
+  }
+  
+  // If it's any other object, stringify it as fallback
+  if (typeof content === 'object') {
+    console.log('⚠️ Unknown object structure, stringifying');
+    return JSON.stringify(content);
+  }
+  
+  console.log('⚠️ Unknown content type, returning empty string');
   return '';
 };
 
