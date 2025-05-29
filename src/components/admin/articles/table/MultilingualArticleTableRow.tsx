@@ -34,6 +34,14 @@ const MultilingualArticleTableRow = memo(({
   onDelete, 
   onTogglePublish 
 }: MultilingualArticleTableRowProps) => {
+  // Debug logging for each article row
+  console.log(`🔍 [ROW DEBUG] Rendering article row:`, {
+    id: article.id,
+    title_en: article.title_en,
+    title_zh: article.title_zh,
+    slug: article.slug
+  });
+
   const isPublished = useMemo(() => 
     new Date(article.published_at) <= new Date(), 
     [article.published_at]
@@ -44,19 +52,29 @@ const MultilingualArticleTableRow = memo(({
     [article.published_at]
   );
 
-  // Smart title display with better fallback handling
+  // Enhanced title display with better fallback handling and debugging
   const displayTitle = useMemo(() => {
+    console.log(`🏷️ [TITLE DEBUG] Processing title for article ${article.id}:`, {
+      title_en: article.title_en,
+      title_zh: article.title_zh,
+      has_en: !!(article.title_en && article.title_en.trim()),
+      has_zh: !!(article.title_zh && article.title_zh.trim())
+    });
+
     // Prioritize English, fallback to Chinese, then default
     if (article.title_en && article.title_en.trim()) {
+      console.log(`✅ [TITLE] Using English title: ${article.title_en}`);
       return article.title_en;
     } else if (article.title_zh && article.title_zh.trim()) {
+      console.log(`✅ [TITLE] Using Chinese title: ${article.title_zh}`);
       return article.title_zh;
     } else {
+      console.log(`⚠️ [TITLE] No title found, using default`);
       return 'Untitled Article';
     }
-  }, [article.title_en, article.title_zh]);
+  }, [article.title_en, article.title_zh, article.id]);
 
-  // Smart category display with better fallback handling
+  // Enhanced category display with debugging
   const displayCategory = useMemo(() => {
     if (article.category_en && article.category_en.trim()) {
       return article.category_en;
@@ -67,7 +85,7 @@ const MultilingualArticleTableRow = memo(({
     }
   }, [article.category_en, article.category_zh]);
 
-  // Smart author display with better fallback handling
+  // Enhanced author display with debugging
   const displayAuthor = useMemo(() => {
     if (article.author_name_en && article.author_name_en.trim()) {
       return article.author_name_en;
@@ -78,18 +96,34 @@ const MultilingualArticleTableRow = memo(({
     }
   }, [article.author_name_en, article.author_name_zh]);
 
-  // Language availability indicators - improved logic
+  // Enhanced language availability indicators with debugging
   const hasEnglishContent = useMemo(() => {
     const hasTitle = article.title_en && article.title_en.trim();
     const hasContent = article.content_en && typeof article.content_en === 'object' && Object.keys(article.content_en).length > 0;
-    return Boolean(hasTitle && hasContent);
-  }, [article.title_en, article.content_en]);
+    const result = Boolean(hasTitle && hasContent);
+    
+    console.log(`🔍 [EN CONTENT] Article ${article.id} English content check:`, {
+      hasTitle: !!hasTitle,
+      hasContent: !!hasContent,
+      result
+    });
+    
+    return result;
+  }, [article.title_en, article.content_en, article.id]);
 
   const hasChineseContent = useMemo(() => {
     const hasTitle = article.title_zh && article.title_zh.trim();
     const hasContent = article.content_zh && typeof article.content_zh === 'object' && Object.keys(article.content_zh).length > 0;
-    return Boolean(hasTitle && hasContent);
-  }, [article.title_zh, article.content_zh]);
+    const result = Boolean(hasTitle && hasContent);
+    
+    console.log(`🔍 [ZH CONTENT] Article ${article.id} Chinese content check:`, {
+      hasTitle: !!hasTitle,
+      hasContent: !!hasContent,
+      result
+    });
+    
+    return result;
+  }, [article.title_zh, article.content_zh, article.id]);
 
   return (
     <TableRow className="hover:bg-gray-50">

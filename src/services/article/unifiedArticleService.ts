@@ -133,51 +133,89 @@ class UnifiedArticleService {
   }
 
   /**
-   * Get multilingual articles with pagination (admin)
+   * Get multilingual articles with pagination (admin) - ENHANCED WITH DEBUGGING
    */
   async getMultilingualArticles(
     page: number = 0, 
     pageSize: number = 50
   ): Promise<PaginatedMultilingualArticlesResponse> {
-    console.log(`Fetching multilingual articles: page=${page}, size=${pageSize}`);
+    console.log(`🔍 [DEBUG] Fetching multilingual articles: page=${page}, size=${pageSize}`);
     
-    const { data, error } = await supabase.rpc('get_multilingual_articles_paginated', {
-      page_num: page,
-      page_size: pageSize
-    });
+    try {
+      const { data, error } = await supabase.rpc('get_multilingual_articles_paginated', {
+        page_num: page,
+        page_size: pageSize
+      });
 
-    if (error) {
-      console.error('Error fetching multilingual articles:', error);
+      console.log(`🔍 [DEBUG] Raw response from database:`, { data, error });
+
+      if (error) {
+        console.error('❌ [ERROR] Database error fetching multilingual articles:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.log(`⚠️ [WARNING] No data returned from database`);
+        return { articles: [], totalCount: 0 };
+      }
+
+      console.log(`📊 [DEBUG] Database returned ${data.length} articles`);
+      console.log(`📊 [DEBUG] First article sample:`, data[0]);
+
+      const totalCount = data[0]?.total_count || 0;
+      console.log(`📊 [DEBUG] Total count from database: ${totalCount}`);
+
+      const articles = data.map((article: any, index: number): MultilingualArticle => {
+        console.log(`🔄 [DEBUG] Processing article ${index + 1}:`, {
+          id: article.id,
+          title_en: article.title_en,
+          title_zh: article.title_zh,
+          hasContent_en: !!article.content_en,
+          hasContent_zh: !!article.content_zh
+        });
+
+        const processedArticle: MultilingualArticle = {
+          id: article.id,
+          slug: article.slug,
+          image_url: article.image_url,
+          published_at: article.published_at,
+          created_at: article.created_at,
+          updated_at: article.updated_at,
+          title_en: article.title_en || '',
+          title_zh: article.title_zh || '',
+          description_en: article.description_en || '',
+          description_zh: article.description_zh || '',
+          content_en: this.safeProcessContent(article.content_en),
+          content_zh: this.safeProcessContent(article.content_zh),
+          category_en: article.category_en || '',
+          category_zh: article.category_zh || '',
+          author_name_en: article.author_name_en || '',
+          author_name_zh: article.author_name_zh || '',
+          authors: [],
+          reports: this.safeArrayConvert<Report>(article.reports),
+        };
+
+        console.log(`✅ [DEBUG] Processed article ${index + 1}:`, {
+          id: processedArticle.id,
+          title_en: processedArticle.title_en,
+          title_zh: processedArticle.title_zh
+        });
+
+        return processedArticle;
+      });
+
+      console.log(`✅ [DEBUG] Successfully processed ${articles.length} articles`);
+      console.log(`📤 [DEBUG] Returning response:`, { 
+        articlesCount: articles.length, 
+        totalCount 
+      });
+
+      return { articles, totalCount };
+
+    } catch (error) {
+      console.error('💥 [FATAL ERROR] Exception in getMultilingualArticles:', error);
       throw error;
     }
-
-    if (!data || data.length === 0) {
-      return { articles: [], totalCount: 0 };
-    }
-
-    const totalCount = data[0]?.total_count || 0;
-    const articles = data.map((article: any): MultilingualArticle => ({
-      id: article.id,
-      slug: article.slug,
-      image_url: article.image_url,
-      published_at: article.published_at,
-      created_at: article.created_at,
-      updated_at: article.updated_at,
-      title_en: article.title_en || '',
-      title_zh: article.title_zh || '',
-      description_en: article.description_en || '',
-      description_zh: article.description_zh || '',
-      content_en: this.safeProcessContent(article.content_en),
-      content_zh: this.safeProcessContent(article.content_zh),
-      category_en: article.category_en || '',
-      category_zh: article.category_zh || '',
-      author_name_en: article.author_name_en || '',
-      author_name_zh: article.author_name_zh || '',
-      authors: [],
-      reports: this.safeArrayConvert<Report>(article.reports),
-    }));
-
-    return { articles, totalCount };
   }
 
   /**
@@ -264,22 +302,17 @@ class UnifiedArticleService {
       .replace(/-+/g, '-')
       .trim();
 
-    // Prepare article data for database
+    // Prepare article data for database - only multilingual fields
     const dbData = {
       id: articleData.id,
-      title: articleData.en.title || articleData.zh.title || '',
       title_en: articleData.en.title || '',
       title_zh: articleData.zh.title || '',
-      description: articleData.en.description || articleData.zh.description || '',
       description_en: articleData.en.description || '',
       description_zh: articleData.zh.description || '',
-      content: articleData.en.content || articleData.zh.content || {},
       content_en: articleData.en.content || {},
       content_zh: articleData.zh.content || {},
-      category: articleData.en.category || articleData.zh.category || '',
       category_en: articleData.en.category || '',
       category_zh: articleData.zh.category || '',
-      author_name: articleData.en.author_name || articleData.zh.author_name || '',
       author_name_en: articleData.en.author_name || '',
       author_name_zh: articleData.zh.author_name || '',
       image_url: imageUrl,
