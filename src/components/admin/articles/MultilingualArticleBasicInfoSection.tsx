@@ -24,8 +24,6 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
   form,
   selectedLanguage
 }) => {
-  const isEnglish = selectedLanguage === 'en';
-  
   return (
     <div className="space-y-8">
       <FormField
@@ -34,20 +32,17 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-700 text-base">
-              {isEnglish ? 'Title *' : '标题 *'}
+              Title *
             </FormLabel>
             <FormControl>
               <Input 
-                placeholder={isEnglish ? "Enter article title" : "输入文章标题"} 
+                placeholder="Enter article title" 
                 {...field} 
                 className="focus-visible:ring-gray-400"
               />
             </FormControl>
             <FormDescription className="text-gray-500">
-              {isEnglish 
-                ? 'The main title of your article (required)' 
-                : '文章的主标题（必填）'
-              }
+              The main title of your article (required)
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -60,21 +55,18 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-700 text-base">
-              {isEnglish ? 'Description' : '描述'}
+              Description
             </FormLabel>
             <FormControl>
               <Textarea 
-                placeholder={isEnglish ? "Enter article description (optional)" : "输入文章描述（可选）"} 
+                placeholder="Enter article description (optional)" 
                 rows={3}
                 {...field} 
                 className="focus-visible:ring-gray-400 resize-none"
               />
             </FormControl>
             <FormDescription className="text-gray-500">
-              {isEnglish 
-                ? 'A brief summary of your article (optional)' 
-                : '文章的简要摘要（可选）'
-              }
+              A brief summary of your article (optional)
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -88,20 +80,17 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-gray-700 text-base">
-                {isEnglish ? 'Category' : '分类'}
+                Category
               </FormLabel>
               <FormControl>
                 <Input 
-                  placeholder={isEnglish ? "Enter category (optional)" : "输入分类（可选）"} 
+                  placeholder="Enter category (optional)" 
                   {...field} 
                   className="focus-visible:ring-gray-400"
                 />
               </FormControl>
               <FormDescription className="text-gray-500">
-                {isEnglish 
-                  ? 'Category of your article (optional)' 
-                  : '文章分类（可选）'
-                }
+                Category of your article (optional)
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -114,20 +103,17 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-gray-700 text-base">
-                {isEnglish ? 'Author' : '作者'}
+                Author
               </FormLabel>
               <FormControl>
                 <Input 
-                  placeholder={isEnglish ? "Enter author name (optional)" : "输入作者姓名（可选）"} 
+                  placeholder="Enter author name (optional)" 
                   {...field} 
                   className="focus-visible:ring-gray-400"
                 />
               </FormControl>
               <FormDescription className="text-gray-500">
-                {isEnglish 
-                  ? 'Name of the article author (optional)' 
-                  : '文章作者姓名（可选）'
-                }
+                Name of the article author (optional)
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -141,7 +127,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-700 text-base">
-              {isEnglish ? 'Publish Date' : '发布日期'}
+              Publish Date
             </FormLabel>
             <FormControl>
               <div className="relative">
@@ -154,10 +140,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               </div>
             </FormControl>
             <FormDescription className="text-gray-500">
-              {isEnglish 
-                ? 'When the article should be published' 
-                : '文章应该发布的时间'
-              }
+              When the article should be published
             </FormDescription>
             <FormMessage />
           </FormItem>
