@@ -12,6 +12,7 @@ export const useSimpleArticleDetail = (slug: string, language: Language = 'en') 
 
   const loadArticle = async () => {
     if (!slug) {
+      console.warn('⚠️ [useSimpleArticleDetail] No slug provided');
       setLoading(false);
       return;
     }
@@ -21,13 +22,28 @@ export const useSimpleArticleDetail = (slug: string, language: Language = 'en') 
     setError(null);
     
     try {
+      // Decode the slug in case it was URL encoded
       const decodedSlug = decodeURIComponent(slug);
+      console.log(`🔄 [useSimpleArticleDetail] Decoded slug: ${decodedSlug}`);
+      
       const result = await getArticleBySlugAndLanguage(decodedSlug, language);
-      setArticle(result);
-      console.log(`✅ [useSimpleArticleDetail] Loaded article: ${result?.title || 'Not found'}`);
+      
+      if (result) {
+        setArticle(result);
+        console.log(`✅ [useSimpleArticleDetail] Successfully loaded article: ${result.title}`);
+      } else {
+        console.log(`⚠️ [useSimpleArticleDetail] No article found for slug: ${decodedSlug}`);
+        setArticle(null);
+      }
     } catch (err) {
       const error = err as Error;
-      console.error('❌ [useSimpleArticleDetail] Error loading article:', error);
+      console.error('❌ [useSimpleArticleDetail] Error loading article:', {
+        slug: slug,
+        decodedSlug: decodeURIComponent(slug),
+        language: language,
+        error: error.message,
+        stack: error.stack
+      });
       setError(error);
       toast({
         title: 'Error loading article',

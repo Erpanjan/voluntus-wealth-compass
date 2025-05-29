@@ -13,6 +13,7 @@ interface ArticleCardProps {
   image?: string;
   className?: string;
   priority?: boolean; // For above-the-fold images
+  slug?: string; // Add slug prop
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = memo(({ 
@@ -24,10 +25,12 @@ const ArticleCard: React.FC<ArticleCardProps> = memo(({
   authors,
   image,
   className,
-  priority = false
+  priority = false,
+  slug
 }) => {
-  // Properly encode the slug for URL navigation
-  const encodedSlug = encodeURIComponent(id);
+  // Use slug if available, otherwise fallback to id
+  const linkSlug = slug || id;
+  const encodedSlug = encodeURIComponent(linkSlug);
 
   return (
     <Link 
