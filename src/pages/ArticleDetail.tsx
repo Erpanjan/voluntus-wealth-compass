@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useSimpleArticleDetail } from '@/hooks/useSimpleArticleDetail';
@@ -63,7 +62,7 @@ const ArticleDetail = () => {
 
         {/* Key Takeaways Section */}
         <div className="mb-12">
-          <ArticleDetailKeyTakeaways />
+          <ArticleDetailKeyTakeaways article={article} />
         </div>
 
         {/* Content Section */}

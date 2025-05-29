@@ -1,15 +1,22 @@
 
 import React from 'react';
 import { Lightbulb } from 'lucide-react';
+import { Article } from '@/types/multilingual-article.types';
 
-const ArticleDetailKeyTakeaways: React.FC = () => {
-  // Sample key takeaways - in a real implementation, these would come from article data
-  const keyTakeaways = [
-    "Market volatility may persist as trade negotiations continue to evolve",
-    "Diversification remains crucial for managing portfolio risk during uncertain times",
-    "Long-term investors should focus on fundamental analysis rather than short-term market movements",
-    "Emerging markets may present opportunities amid global trade adjustments"
-  ];
+interface ArticleDetailKeyTakeawaysProps {
+  article: Article;
+}
+
+const ArticleDetailKeyTakeaways: React.FC<ArticleDetailKeyTakeawaysProps> = ({ article }) => {
+  // Use the article description/summary as key takeaways
+  // Split by periods and filter out empty strings to create bullet points
+  const keyTakeaways = article.description 
+    ? article.description
+        .split('.')
+        .map(item => item.trim())
+        .filter(item => item.length > 0)
+        .map(item => item + (item.endsWith('.') ? '' : '.'))
+    : ["No key takeaways available for this article."];
 
   return (
     <div className="bg-white rounded-2xl shadow-soft border border-gray-200 p-8">
