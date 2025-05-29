@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useOptimizedQuery } from '@/hooks/useOptimizedQuery';
 import { articleService } from '@/services/article';
-import { ArticlesResponse } from '@/services/article/types';
+import { Article } from '@/services/article/types';
 
 export const useArticlesManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -10,19 +10,19 @@ export const useArticlesManagement = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<'all' | 'en' | 'zh'>('all');
   const pageSize = 10;
 
-  const { data: articlesData, isLoading, error, refetch } = useOptimizedQuery<ArticlesResponse>({
+  const { data: articles, isLoading, error, refetch } = useOptimizedQuery<Article[]>({
     queryKey: ['admin-articles', currentPage, pageSize],
     queryFn: () => articleService.getArticles(currentPage, pageSize),
     priority: 'high',
     cacheStrategy: 'aggressive',
   });
 
-  // Handle the case where articlesData might be undefined or the expected object
-  const articles = articlesData?.articles || [];
-  const totalCount = articlesData?.totalCount || 0;
+  // Handle the case where articles might be undefined
+  const articlesList = articles || [];
+  const totalCount = articlesList.length;
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  const filteredArticles = articles.filter(article => {
+  const filteredArticles = articlesList.filter(article => {
     const matchesSearch = searchTerm === '' || 
       article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       article.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
