@@ -1,11 +1,13 @@
 
-import { Author, Article, Report } from '@/types/article.types';
-
-// Re-export types
-export type { Author, Article, Report };
-
-// Define additional type exports if needed for article services
-export interface ArticleQueryOptions {
-  limit?: number;
-  includeUnpublished?: boolean;
-}
+// Re-export all types from the unified types file
+export type { 
+  Author, 
+  Article, 
+  Report, 
+  MultilingualArticle,
+  MultilingualArticleInput,
+  Language,
+  PaginatedArticlesResponse,
+  PaginatedMultilingualArticlesResponse,
+  ArticleQueryOptions
+} from '@/types/multilingual-article.types';
