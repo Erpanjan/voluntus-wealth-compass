@@ -12,7 +12,7 @@ export type {
   Language,
   PaginatedArticlesResponse,
   PaginatedMultilingualArticlesResponse
-} from '@/types/article.types';
+} from '@/types/multilingual-article.types';
 
 /**
  * Main article service using the unified implementation

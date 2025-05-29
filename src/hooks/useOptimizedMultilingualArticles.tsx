@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { articleService } from '@/services/article';
 import { useBaseArticleOperations } from './useBaseArticleOperations';
-import { MultilingualArticle } from '@/types/article.types';
+import { MultilingualArticle } from '@/types/multilingual-article.types';
 
 interface UseOptimizedMultilingualArticlesResult {
   articles: MultilingualArticle[];
