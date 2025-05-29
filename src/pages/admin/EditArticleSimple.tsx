@@ -2,34 +2,53 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TiptapEditor from '@/components/admin/articles/TiptapEditor';
 import ArticleImageUpload from '@/components/admin/articles/ArticleImageUpload';
+import LanguageSelector from '@/components/admin/articles/LanguageSelector';
+import MultilingualArticleBasicInfoSection from '@/components/admin/articles/MultilingualArticleBasicInfoSection';
 import { useArticleImage } from '@/hooks/admin/articleEditor';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 
-interface ArticleFormData {
-  title_en: string;
-  title_zh: string;
-  description_en: string;
-  description_zh: string;
-  content_en: string;
-  content_zh: string;
-  category_en: string;
-  category_zh: string;
-  author_name_en: string;
-  author_name_zh: string;
+interface MultilingualFormData {
+  en: {
+    title: string;
+    description: string;
+    content: string;
+    category: string;
+    author_name: string;
+  };
+  zh: {
+    title: string;
+    description: string;
+    content: string;
+    category: string;
+    author_name: string;
+  };
   image_url: string;
   published_at: string;
 }
+
+// Mock data for testing
+const MOCK_ARTICLE_DATA = {
+  id: '8905fc91-9acf-4a36-b1f0-9e4b3ad6a444',
+  title_en: 'Sample English Article',
+  title_zh: '示例中文文章',
+  description_en: 'This is a sample English description for testing the edit functionality.',
+  description_zh: '这是用于测试编辑功能的示例中文描述。',
+  content_en: '<p>This is sample English content. You can edit this content and switch between languages to see how the form preserves your changes.</p>',
+  content_zh: '<p>这是示例中文内容。您可以编辑此内容并在语言之间切换，以查看表单如何保留您的更改。</p>',
+  category_en: 'Technology',
+  category_zh: '技术',
+  author_name_en: 'John Doe',
+  author_name_zh: '张三',
+  image_url: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800',
+  published_at: '2024-01-15T00:00:00.000Z'
+};
 
 const EditArticleSimple = () => {
   const { id } = useParams<{ id: string }>();
@@ -49,108 +68,95 @@ const EditArticleSimple = () => {
     loadImageData,
   } = useArticleImage();
 
-  const form = useForm<ArticleFormData>({
+  const form = useForm<MultilingualFormData>({
     defaultValues: {
-      title_en: '',
-      title_zh: '',
-      description_en: '',
-      description_zh: '',
-      content_en: '',
-      content_zh: '',
-      category_en: '',
-      category_zh: '',
-      author_name_en: '',
-      author_name_zh: '',
+      en: {
+        title: '',
+        description: '',
+        content: '',
+        category: '',
+        author_name: '',
+      },
+      zh: {
+        title: '',
+        description: '',
+        content: '',
+        category: '',
+        author_name: '',
+      },
       image_url: '',
       published_at: '',
     }
   });
 
-  // Simplified language switching - just change the language state
+  // Simple language switching
   const handleLanguageSwitch = (newLanguage: 'en' | 'zh') => {
     console.log('🌍 [LANGUAGE SWITCH] Switching from', selectedLanguage, 'to', newLanguage);
     setSelectedLanguage(newLanguage);
   };
 
-  // Load article data directly from database
+  // Helper function to get current field value
+  const getCurrentFieldValue = (fieldName: string) => {
+    const formValues = form.getValues();
+    const languageData = formValues[selectedLanguage];
+    return languageData?.[fieldName as keyof typeof languageData] || '';
+  };
+
+  // Check if there's content in each language
+  const hasContent = {
+    en: Boolean(form.watch('en.title') || form.watch('en.content')),
+    zh: Boolean(form.watch('zh.title') || form.watch('zh.content'))
+  };
+
+  // Load mock article data
   useEffect(() => {
-    const loadArticle = async () => {
-      if (!id) {
-        toast({
-          title: 'Error',
-          description: 'No article ID provided',
-          variant: 'destructive',
-        });
-        return;
-      }
-
+    const loadMockArticle = () => {
+      console.log(`🔍 [MOCK EDIT] Loading mock article with ID: ${id}`);
+      
       try {
-        console.log(`🔍 [SIMPLE EDIT] Loading article with ID: ${id}`);
-        
-        // Direct database query to get the article
-        const { data, error } = await supabase
-          .from('articles')
-          .select('*')
-          .eq('id', id)
-          .single();
+        // Simulate loading delay
+        setTimeout(() => {
+          console.log(`📊 [MOCK EDIT] Loading mock article data`);
 
-        if (error) {
-          console.error('❌ [SIMPLE EDIT] Database error:', error);
-          throw error;
-        }
+          // Transform flat mock structure to nested multilingual structure
+          const formData: MultilingualFormData = {
+            en: {
+              title: MOCK_ARTICLE_DATA.title_en,
+              description: MOCK_ARTICLE_DATA.description_en,
+              content: MOCK_ARTICLE_DATA.content_en,
+              category: MOCK_ARTICLE_DATA.category_en,
+              author_name: MOCK_ARTICLE_DATA.author_name_en,
+            },
+            zh: {
+              title: MOCK_ARTICLE_DATA.title_zh,
+              description: MOCK_ARTICLE_DATA.description_zh,
+              content: MOCK_ARTICLE_DATA.content_zh,
+              category: MOCK_ARTICLE_DATA.category_zh,
+              author_name: MOCK_ARTICLE_DATA.author_name_zh,
+            },
+            image_url: MOCK_ARTICLE_DATA.image_url,
+            published_at: new Date(MOCK_ARTICLE_DATA.published_at).toISOString().split('T')[0],
+          };
 
-        if (!data) {
-          toast({
-            title: 'Article Not Found',
-            description: 'Could not find the article you are trying to edit.',
-            variant: 'destructive',
+          // Load existing image if available
+          if (formData.image_url) {
+            loadImageData(formData.image_url);
+          }
+
+          console.log(`✅ [MOCK EDIT] Processed multilingual form data:`, {
+            en_content_length: formData.en.content.length,
+            zh_content_length: formData.zh.content.length,
+            en_title: formData.en.title,
+            zh_title: formData.zh.title,
+            image_url: formData.image_url
           });
-          return;
-        }
 
-        console.log(`📊 [SIMPLE EDIT] Raw article data:`, data);
-
-        // Process content - handle both string and object types
-        const processContent = (content: any): string => {
-          if (!content) return '';
-          if (typeof content === 'string') return content;
-          if (typeof content === 'object') return JSON.stringify(content);
-          return String(content);
-        };
-
-        const formData: ArticleFormData = {
-          title_en: data.title_en || '',
-          title_zh: data.title_zh || '',
-          description_en: data.description_en || '',
-          description_zh: data.description_zh || '',
-          content_en: processContent(data.content_en),
-          content_zh: processContent(data.content_zh),
-          category_en: data.category_en || '',
-          category_zh: data.category_zh || '',
-          author_name_en: data.author_name_en || '',
-          author_name_zh: data.author_name_zh || '',
-          image_url: data.image_url || '',
-          published_at: data.published_at ? new Date(data.published_at).toISOString().split('T')[0] : '',
-        };
-
-        // Load existing image if available
-        if (formData.image_url) {
-          loadImageData(formData.image_url);
-        }
-
-        console.log(`✅ [SIMPLE EDIT] Processed form data:`, {
-          content_en_length: formData.content_en.length,
-          content_zh_length: formData.content_zh.length,
-          content_en_preview: formData.content_en.substring(0, 100) + '...',
-          content_zh_preview: formData.content_zh.substring(0, 100) + '...',
-          image_url: formData.image_url
-        });
-
-        form.reset(formData);
-        setLoading(false);
+          form.reset(formData);
+          setLoading(false);
+        }, 500); // Simulate network delay
 
       } catch (error) {
-        console.error('💥 [SIMPLE EDIT] Error loading article:', error);
+        console.error('💥 [MOCK EDIT] Error loading mock article:', error);
         toast({
           title: 'Error',
           description: 'Failed to load article data. Please try again.',
@@ -160,69 +166,26 @@ const EditArticleSimple = () => {
       }
     };
 
-    loadArticle();
+    loadMockArticle();
   }, [id, form, toast, loadImageData]);
 
-  const handleSave = async (data: ArticleFormData) => {
+  const handleSave = async (data: MultilingualFormData) => {
     setSaving(true);
     try {
-      console.log(`💾 [SIMPLE EDIT] Saving article with ID: ${id}`);
+      console.log(`💾 [MOCK EDIT] Saving article with ID: ${id}`);
+      console.log('📊 [MOCK EDIT] Form data to save:', data);
       
-      let finalImageUrl = imagePreview || data.image_url;
-
-      // Handle image upload if there's a new file
-      if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-        
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('article-assets')
-          .upload(fileName, imageFile);
-
-        if (uploadError) {
-          console.error('Error uploading image:', uploadError);
-          throw new Error('Failed to upload image');
-        }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('article-assets')
-          .getPublicUrl(fileName);
-        
-        finalImageUrl = publicUrl;
-      }
-
-      const { error } = await supabase
-        .from('articles')
-        .update({
-          title_en: data.title_en,
-          title_zh: data.title_zh,
-          description_en: data.description_en,
-          description_zh: data.description_zh,
-          content_en: data.content_en,
-          content_zh: data.content_zh,
-          category_en: data.category_en,
-          category_zh: data.category_zh,
-          author_name_en: data.author_name_en,
-          author_name_zh: data.author_name_zh,
-          image_url: finalImageUrl,
-          published_at: data.published_at ? new Date(data.published_at).toISOString() : null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id);
-
-      if (error) {
-        console.error('❌ [SIMPLE EDIT] Save error:', error);
-        throw error;
-      }
+      // Simulate save delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast({
         title: 'Success',
-        description: 'Article saved successfully.',
+        description: 'Article saved successfully. (This is using mock data)',
       });
 
-      console.log(`✅ [SIMPLE EDIT] Article saved successfully`);
+      console.log(`✅ [MOCK EDIT] Article saved successfully`);
     } catch (error) {
-      console.error('💥 [SIMPLE EDIT] Error saving article:', error);
+      console.error('💥 [MOCK EDIT] Error saving article:', error);
       toast({
         title: 'Error',
         description: 'Failed to save article. Please try again.',
@@ -239,7 +202,7 @@ const EditArticleSimple = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Loading article...</p>
+            <p className="mt-2 text-gray-600">Loading mock article...</p>
           </div>
         </div>
       </AdminLayout>
@@ -261,7 +224,7 @@ const EditArticleSimple = () => {
               <ArrowLeft size={16} />
               Back to Articles
             </Button>
-            <h1 className="text-2xl font-semibold">Edit Article</h1>
+            <h1 className="text-2xl font-semibold">Edit Article (Mock Mode)</h1>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -269,6 +232,7 @@ const EditArticleSimple = () => {
               variant="outline"
               size="sm"
               className="flex items-center gap-2"
+              onClick={() => toast({ title: 'Preview', description: 'Preview functionality (mock)' })}
             >
               <Eye size={16} />
               Preview
@@ -293,12 +257,11 @@ const EditArticleSimple = () => {
                 <CardTitle>Language</CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs value={selectedLanguage} onValueChange={handleLanguageSwitch}>
-                  <TabsList>
-                    <TabsTrigger value="en">English</TabsTrigger>
-                    <TabsTrigger value="zh">中文</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <LanguageSelector
+                  selectedLanguage={selectedLanguage}
+                  onLanguageChange={handleLanguageSwitch}
+                  hasContent={hasContent}
+                />
               </CardContent>
             </Card>
 
@@ -322,78 +285,12 @@ const EditArticleSimple = () => {
               <CardHeader>
                 <CardTitle>Article Information</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name={selectedLanguage === 'en' ? 'title_en' : 'title_zh'}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title ({selectedLanguage === 'en' ? 'English' : '中文'})</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Enter article title" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={selectedLanguage === 'en' ? 'category_en' : 'category_zh'}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category ({selectedLanguage === 'en' ? 'English' : '中文'})</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Enter category" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name={selectedLanguage === 'en' ? 'description_en' : 'description_zh'}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description ({selectedLanguage === 'en' ? 'English' : '中文'})</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} placeholder="Enter article description" rows={3} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+              <CardContent>
+                <MultilingualArticleBasicInfoSection
+                  form={form}
+                  selectedLanguage={selectedLanguage}
+                  getCurrentFieldValue={getCurrentFieldValue}
                 />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name={selectedLanguage === 'en' ? 'author_name_en' : 'author_name_zh'}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Author ({selectedLanguage === 'en' ? 'English' : '中文'})</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Enter author name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="published_at"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Publish Date</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="date" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
               </CardContent>
             </Card>
 
@@ -405,7 +302,7 @@ const EditArticleSimple = () => {
               <CardContent>
                 <FormField
                   control={form.control}
-                  name={selectedLanguage === 'en' ? 'content_en' : 'content_zh'}
+                  name={`${selectedLanguage}.content`}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
