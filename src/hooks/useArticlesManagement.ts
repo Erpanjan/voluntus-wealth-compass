@@ -1,8 +1,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { articleService } from '@/services/article';
-import { MultilingualArticle } from '@/types/article.types';
+import { articlesService } from '@/services/articlesService';
+import { MultilingualArticle } from '@/types/multilingual-article.types';
 
 export const useArticlesManagement = () => {
   const [articles, setArticles] = useState<MultilingualArticle[]>([]);
@@ -15,7 +15,7 @@ export const useArticlesManagement = () => {
     setLoading(true);
     
     try {
-      const response = await articleService.getMultilingualArticles(0, 50);
+      const response = await articlesService.getMultilingualArticles(0, 50);
       setArticles(response.articles);
       setTotalCount(response.totalCount);
       console.log(`✅ [useArticlesManagement] Loaded ${response.articles.length} articles`);
@@ -33,7 +33,7 @@ export const useArticlesManagement = () => {
 
   const deleteArticle = useCallback(async (id: string) => {
     try {
-      await articleService.deleteArticle(id);
+      await articlesService.deleteArticle(id);
       toast({
         title: 'Success',
         description: 'Article deleted successfully.'
@@ -51,7 +51,7 @@ export const useArticlesManagement = () => {
 
   const togglePublishStatus = useCallback(async (id: string, isPublished: boolean) => {
     try {
-      await articleService.togglePublishStatus(id, isPublished);
+      await articlesService.togglePublishStatus(id, isPublished);
       toast({
         title: 'Success',
         description: `Article ${isPublished ? 'unpublished' : 'published'} successfully.`

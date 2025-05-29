@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { articleService } from '@/services/article';
 import { useOptimizedQuery } from './useOptimizedQuery';
-import { MultilingualArticle } from '@/types/article.types';
+import { MultilingualArticle } from '@/types/multilingual-article.types';
 
 export const useMultilingualArticles = () => {
   const { toast } = useToast();
