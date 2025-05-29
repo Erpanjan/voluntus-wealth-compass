@@ -3,7 +3,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/components/admin/AdminLayout';
-import DatabaseNotice from '@/components/admin/articles/DatabaseNotice';
 import ArticlesHeader from '@/components/admin/articles/ArticlesHeader';
 import ArticlesFiltersSection from '@/components/admin/articles/ArticlesFiltersSection';
 import ArticlesContent from '@/components/admin/articles/ArticlesContent';
@@ -39,7 +38,6 @@ const ArticlesManagement = () => {
     return (
       <AdminLayout>
         <div className="space-y-6">
-          <DatabaseNotice />
           <div className="text-center py-12">
             <p className="text-red-600">Error loading articles: {error.message}</p>
             <Button onClick={() => refetch()} className="mt-4">
@@ -54,7 +52,6 @@ const ArticlesManagement = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <DatabaseNotice />
         <ArticlesHeader onCreateArticle={handleCreateArticle} />
 
         <ArticlesFiltersSection
