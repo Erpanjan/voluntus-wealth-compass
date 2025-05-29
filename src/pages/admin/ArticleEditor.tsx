@@ -14,7 +14,7 @@ import MultilingualArticleBasicInfoSection from '@/components/admin/articles/Mul
 import MultilingualArticleContentSection from '@/components/admin/articles/MultilingualArticleContentSection';
 import ArticleImageUpload from '@/components/admin/articles/ArticleImageUpload';
 import ArticleEditorToolbar from '@/components/admin/articles/ArticleEditorToolbar';
-import ArticlePreviewDialog from '@/components/admin/articles/ArticlePreviewDialog';
+import MultilingualArticlePreviewDialog from '@/components/admin/articles/MultilingualArticlePreviewDialog';
 
 const ArticleEditor = () => {
   const { isEditMode, loadArticleData } = useMultilingualArticleData();
@@ -84,7 +84,8 @@ const ArticleEditor = () => {
     await publishArticle({ ...formData, image_url: imagePreview }, imageFile);
   };
 
-  const currentLanguageData = form.watch(selectedLanguage);
+  // Get all form data for preview
+  const formData = form.watch();
 
   return (
     <AdminLayout>
@@ -154,16 +155,26 @@ const ArticleEditor = () => {
           />
         </div>
 
-        <ArticlePreviewDialog
+        <MultilingualArticlePreviewDialog
           open={previewOpen}
           setOpen={setPreviewOpen}
-          title={currentLanguageData?.title || ''}
-          description={currentLanguageData?.description || ''}
-          content={currentLanguageData?.content || ''}
+          content={{
+            en: {
+              title: formData?.en?.title || '',
+              description: formData?.en?.description || '',
+              content: formData?.en?.content || '',
+              category: formData?.en?.category || '',
+              author_name: formData?.en?.author_name || '',
+            },
+            zh: {
+              title: formData?.zh?.title || '',
+              description: formData?.zh?.description || '',
+              content: formData?.zh?.content || '',
+              category: formData?.zh?.category || '',
+              author_name: formData?.zh?.author_name || '',
+            }
+          }}
           imagePreview={imagePreview}
-          category={currentLanguageData?.category || ''}
-          authors={currentLanguageData?.author_name ? [{ id: '1', name: currentLanguageData.author_name, image_url: null }] : []}
-          attachments={[]}
         />
       </div>
     </AdminLayout>
