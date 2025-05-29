@@ -16,16 +16,20 @@ const ArticleDetail = () => {
   const { language } = useLanguage();
   const { article, loading, error, refetch } = useSimpleArticleDetail(slug || '', language);
 
+  console.log(`📄 [ArticleDetail] Rendering with slug: ${slug}, loading: ${loading}, error: ${error?.message || 'none'}`);
+
   // Scroll to top when component mounts or slug changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [slug]);
 
   if (!slug) {
+    console.log('❌ [ArticleDetail] No slug provided, redirecting to insight');
     return <Navigate to="/insight" replace />;
   }
 
   if (loading) {
+    console.log('⏳ [ArticleDetail] Loading article...');
     return (
       <div className="min-h-screen">
         <div className="bg-gray-50 py-16">
@@ -47,6 +51,7 @@ const ArticleDetail = () => {
   }
 
   if (error || !article) {
+    console.log(`❌ [ArticleDetail] Error or no article found:`, { error: error?.message, hasArticle: !!article });
     return (
       <div className="min-h-screen">
         <Hero 
@@ -70,38 +75,75 @@ const ArticleDetail = () => {
     );
   }
 
-  // Process content for rendering
+  console.log(`✅ [ArticleDetail] Successfully loaded article:`, { 
+    title: article.title, 
+    contentType: typeof article.content,
+    hasContent: !!article.content 
+  });
+
+  // Process content for rendering - handle both HTML strings and JSON structures
   const renderContent = (content: any) => {
-    if (!content || typeof content !== 'object') {
-      return <p>No content available.</p>;
+    if (!content) {
+      return <p className="text-gray-500">No content available.</p>;
     }
 
-    // Handle different content structures
-    if (content.blocks && Array.isArray(content.blocks)) {
-      return content.blocks.map((block: any, index: number) => {
-        switch (block.type) {
-          case 'paragraph':
-            return <p key={index} className="mb-4">{block.data?.text || ''}</p>;
-          case 'header':
-            const HeaderTag = `h${Math.min(block.data?.level || 2, 6)}` as keyof JSX.IntrinsicElements;
-            return <HeaderTag key={index} className="font-bold mb-4">{block.data?.text || ''}</HeaderTag>;
-          case 'list':
-            const ListTag = block.data?.style === 'ordered' ? 'ol' : 'ul';
-            return (
-              <ListTag key={index} className="mb-4 ml-6">
-                {block.data?.items?.map((item: string, itemIndex: number) => (
-                  <li key={itemIndex} className="mb-2">{item}</li>
-                ))}
-              </ListTag>
-            );
-          default:
-            return <div key={index} className="mb-4">{JSON.stringify(block.data)}</div>;
-        }
-      });
+    // If content is a string (HTML), render it directly
+    if (typeof content === 'string') {
+      return (
+        <div 
+          className="prose prose-lg max-w-none"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      );
     }
 
-    // Fallback for simple content
-    return <div className="prose max-w-none">{JSON.stringify(content)}</div>;
+    // If content is an object with blocks (Editor.js format)
+    if (content && typeof content === 'object' && content.blocks && Array.isArray(content.blocks)) {
+      return (
+        <div className="prose prose-lg max-w-none">
+          {content.blocks.map((block: any, index: number) => {
+            switch (block.type) {
+              case 'paragraph':
+                return <p key={index} className="mb-4">{block.data?.text || ''}</p>;
+              case 'header':
+                const HeaderTag = `h${Math.min(block.data?.level || 2, 6)}` as keyof JSX.IntrinsicElements;
+                return <HeaderTag key={index} className="font-bold mb-4">{block.data?.text || ''}</HeaderTag>;
+              case 'list':
+                const ListTag = block.data?.style === 'ordered' ? 'ol' : 'ul';
+                return (
+                  <ListTag key={index} className="mb-4 ml-6">
+                    {block.data?.items?.map((item: string, itemIndex: number) => (
+                      <li key={itemIndex} className="mb-2">{item}</li>
+                    ))}
+                  </ListTag>
+                );
+              default:
+                return <div key={index} className="mb-4">{JSON.stringify(block.data)}</div>;
+            }
+          })}
+        </div>
+      );
+    }
+
+    // If content is some other object, try to render as HTML or JSON
+    if (typeof content === 'object') {
+      // Check if it might be HTML content stored as an object
+      const htmlContent = content.html || content.content || JSON.stringify(content);
+      if (typeof htmlContent === 'string' && htmlContent.includes('<')) {
+        return (
+          <div 
+            className="prose prose-lg max-w-none"
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
+          />
+        );
+      }
+      
+      // Fallback for other object structures
+      return <div className="prose prose-lg max-w-none whitespace-pre-wrap">{JSON.stringify(content, null, 2)}</div>;
+    }
+
+    // Final fallback
+    return <div className="prose prose-lg max-w-none">{String(content)}</div>;
   };
 
   return (
@@ -164,9 +206,7 @@ const ArticleDetail = () => {
       {/* Article Content */}
       <Section>
         <div className="max-w-4xl mx-auto">
-          <div className="prose prose-lg max-w-none">
-            {renderContent(article.content)}
-          </div>
+          {renderContent(article.content)}
         </div>
       </Section>
 
