@@ -69,7 +69,8 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
                 <FormItem>
                   <FormControl>
                     <TiptapEditor 
-                      value={field.value} 
+                      key={`${selectedLanguage}-editor`}
+                      value={field.value || ''} 
                       onChange={field.onChange}
                     />
                   </FormControl>

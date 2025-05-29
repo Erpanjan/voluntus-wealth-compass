@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 
@@ -44,6 +44,11 @@ export const useMultilingualForm = () => {
     }
   });
 
+  // Force re-render when language changes to ensure form fields update
+  useEffect(() => {
+    form.trigger();
+  }, [selectedLanguage, form]);
+
   const getCurrentLanguageData = () => {
     return form.getValues()[selectedLanguage];
   };
@@ -61,12 +66,18 @@ export const useMultilingualForm = () => {
     zh: Boolean(form.watch('zh.title') || form.watch('zh.content'))
   };
 
+  // Get current language field values for proper display
+  const getCurrentFieldValue = (fieldName: keyof MultilingualContent) => {
+    return form.watch(`${selectedLanguage}.${fieldName}`) || '';
+  };
+
   return {
     form,
     selectedLanguage,
     setSelectedLanguage,
     getCurrentLanguageData,
     updateCurrentLanguageData,
+    getCurrentFieldValue,
     hasContent
   };
 };

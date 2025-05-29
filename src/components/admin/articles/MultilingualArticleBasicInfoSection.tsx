@@ -37,7 +37,8 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
             <FormControl>
               <Input 
                 placeholder="Enter article title" 
-                {...field} 
+                value={field.value || ''}
+                onChange={field.onChange}
                 className="focus-visible:ring-gray-400"
               />
             </FormControl>
@@ -61,7 +62,8 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               <Textarea 
                 placeholder="Enter article description (optional)" 
                 rows={3}
-                {...field} 
+                value={field.value || ''}
+                onChange={field.onChange}
                 className="focus-visible:ring-gray-400 resize-none"
               />
             </FormControl>
@@ -85,7 +87,8 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               <FormControl>
                 <Input 
                   placeholder="Enter category (optional)" 
-                  {...field} 
+                  value={field.value || ''}
+                  onChange={field.onChange}
                   className="focus-visible:ring-gray-400"
                 />
               </FormControl>
@@ -108,7 +111,8 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               <FormControl>
                 <Input 
                   placeholder="Enter author name (optional)" 
-                  {...field} 
+                  value={field.value || ''}
+                  onChange={field.onChange}
                   className="focus-visible:ring-gray-400"
                 />
               </FormControl>
