@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { MultilingualArticle, MultilingualArticleInput } from '@/types/multilingual-article.types';
+import { MultilingualArticle, Report } from '@/types/multilingual-article.types';
 import MultilingualArticleBasicInfoSection from '@/components/admin/articles/MultilingualArticleBasicInfoSection';
 import MultilingualArticleContentSection from '@/components/admin/articles/MultilingualArticleContentSection';
 import LanguageSelector from '@/components/admin/articles/LanguageSelector';
@@ -47,6 +47,7 @@ const EditArticle = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [originalArticle, setOriginalArticle] = useState<MultilingualArticle | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const form = useForm<MultilingualArticleFormData>({
     resolver: zodResolver(multilingualArticleSchema),
@@ -66,7 +67,7 @@ const EditArticle = () => {
         author_name: '',
       },
       image_url: '',
-      published_at: new Date().toISOString(),
+      published_at: new Date().toISOString().split('T')[0],
     },
   });
 
@@ -108,7 +109,7 @@ const EditArticle = () => {
         const article = data[0];
         console.log(`📊 Raw article data:`, article);
 
-        // Process and store original article
+        // Process and store original article with proper type handling
         const processedArticle: MultilingualArticle = {
           id: article.id,
           slug: article.slug,
@@ -127,7 +128,7 @@ const EditArticle = () => {
           author_name_en: article.author_name_en || '',
           author_name_zh: article.author_name_zh || '',
           authors: [],
-          reports: article.reports || [],
+          reports: Array.isArray(article.reports) ? article.reports as Report[] : [],
         };
 
         setOriginalArticle(processedArticle);
@@ -149,11 +150,12 @@ const EditArticle = () => {
             author_name: processedArticle.author_name_zh,
           },
           image_url: processedArticle.image_url || '',
-          published_at: processedArticle.published_at,
+          published_at: processedArticle.published_at?.split('T')[0] || new Date().toISOString().split('T')[0],
         };
 
         console.log(`✅ Populating form with data:`, formData);
         form.reset(formData);
+        setRefreshKey(prev => prev + 1);
 
       } catch (error) {
         console.error('💥 Error loading article:', error);
@@ -169,6 +171,16 @@ const EditArticle = () => {
 
     loadArticleData();
   }, [id, form, navigate, toast]);
+
+  // Helper function to get current field value
+  const getCurrentFieldValue = (fieldName: string): string => {
+    const formData = form.getValues();
+    const currentLangData = formData[currentLanguage];
+    if (!currentLangData) return '';
+    
+    const value = (currentLangData as any)[fieldName];
+    return typeof value === 'string' ? value : '';
+  };
 
   const handleSave = async (formData: MultilingualArticleFormData) => {
     if (!id || !originalArticle) return;
@@ -214,7 +226,7 @@ const EditArticle = () => {
         author_name_en: formData.en.author_name || '',
         author_name_zh: formData.zh.author_name || '',
         image_url: imageUrl,
-        published_at: formData.published_at,
+        published_at: new Date(formData.published_at).toISOString(),
       };
 
       console.log(`📝 Updating article with data:`, updateData);
@@ -301,9 +313,12 @@ const EditArticle = () => {
 
           <div className="flex items-center gap-3">
             <LanguageSelector
-              currentLanguage={currentLanguage}
+              selectedLanguage={currentLanguage}
               onLanguageChange={setCurrentLanguage}
-              formData={form.watch()}
+              hasContent={{
+                en: !!(form.getValues().en?.title || form.getValues().en?.content),
+                zh: !!(form.getValues().zh?.title || form.getValues().zh?.content)
+              }}
             />
             <Button
               variant="outline"
@@ -319,14 +334,16 @@ const EditArticle = () => {
         <form onSubmit={form.handleSubmit(handleSave)} className="space-y-8">
           <MultilingualArticleBasicInfoSection
             form={form}
-            currentLanguage={currentLanguage}
-            imageFile={imageFile}
-            onImageChange={setImageFile}
+            selectedLanguage={currentLanguage}
+            getCurrentFieldValue={getCurrentFieldValue}
+            refreshKey={refreshKey}
           />
 
           <MultilingualArticleContentSection
             form={form}
-            currentLanguage={currentLanguage}
+            selectedLanguage={currentLanguage}
+            getCurrentFieldValue={getCurrentFieldValue}
+            refreshKey={refreshKey}
           />
 
           <div className="flex justify-end gap-4 pt-6 border-t">
@@ -350,9 +367,24 @@ const EditArticle = () => {
 
         <MultilingualArticlePreviewDialog
           open={previewOpen}
-          onOpenChange={setPreviewOpen}
-          formData={form.watch()}
-          currentLanguage={currentLanguage}
+          setOpen={setPreviewOpen}
+          content={{
+            en: {
+              title: form.getValues().en?.title || '',
+              description: form.getValues().en?.description || '',
+              content: form.getValues().en?.content || '',
+              category: form.getValues().en?.category || '',
+              author_name: form.getValues().en?.author_name || '',
+            },
+            zh: {
+              title: form.getValues().zh?.title || '',
+              description: form.getValues().zh?.description || '',
+              content: form.getValues().zh?.content || '',
+              category: form.getValues().zh?.category || '',
+              author_name: form.getValues().zh?.author_name || '',
+            }
+          }}
+          imagePreview={form.getValues().image_url || null}
         />
       </div>
     </AdminLayout>
