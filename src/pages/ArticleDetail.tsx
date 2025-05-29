@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -5,7 +6,7 @@ import { useSimpleArticleDetail } from '@/hooks/useSimpleArticleDetail';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Download, RefreshCw, Clock, User } from 'lucide-react';
+import { ArrowLeft, Download, RefreshCw, Clock, User, Tag } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const ArticleDetail = () => {
@@ -33,11 +34,11 @@ const ArticleDetail = () => {
           {/* Loading Header */}
           <div className="mb-8">
             <Skeleton className="h-6 w-24 mb-6" />
-            <Skeleton className="h-4 w-32 mb-4" />
             <Skeleton className="h-12 w-3/4 mb-6" />
             <div className="flex items-center gap-6 mb-6">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-20" />
             </div>
           </div>
           
@@ -180,21 +181,12 @@ const ArticleDetail = () => {
             Back to Articles
           </Button>
           
-          {/* Category Tag */}
-          {article.category && (
-            <div className="mb-4">
-              <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-                {article.category}
-              </span>
-            </div>
-          )}
-          
           {/* Title */}
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight font-poppins">
             {article.title}
           </h1>
           
-          {/* Metadata */}
+          {/* Metadata with Category, Date, and Author */}
           <div className="flex flex-wrap items-center gap-6 text-gray-600 mb-4">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
@@ -204,6 +196,14 @@ const ArticleDetail = () => {
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 <span>By {article.author_name}</span>
+              </div>
+            )}
+            {article.category && (
+              <div className="flex items-center gap-2">
+                <Tag className="h-4 w-4" />
+                <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+                  {article.category}
+                </span>
               </div>
             )}
           </div>
