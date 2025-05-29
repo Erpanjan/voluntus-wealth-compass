@@ -63,8 +63,13 @@ const Header = () => {
 
         {/* Right side elements: Language selector, Login button, Mobile menu */}
         <div className="flex items-center space-x-2">
-          {/* Language selector - always visible */}
-          <LanguageSelector />
+          {/* Language selector - now with conditional visibility */}
+          <div className={cn(
+            "transition-opacity duration-300 ease-in-out",
+            isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
+          )}>
+            <LanguageSelector />
+          </div>
           
           {/* Login button - hidden on login page */}
           <div className={cn(
