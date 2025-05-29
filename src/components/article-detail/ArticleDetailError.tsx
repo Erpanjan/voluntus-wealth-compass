@@ -9,7 +9,7 @@ interface ArticleDetailErrorProps {
 
 const ArticleDetailError: React.FC<ArticleDetailErrorProps> = ({ onRefresh }) => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-6 py-16 max-w-4xl">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">

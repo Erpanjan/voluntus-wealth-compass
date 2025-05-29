@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import ArticleDetailNavigation from '@/components/article-detail/ArticleDetailNavigation';
 import ArticleDetailImage from '@/components/article-detail/ArticleDetailImage';
 import ArticleDetailHeader from '@/components/article-detail/ArticleDetailHeader';
+import ArticleDetailKeyTakeaways from '@/components/article-detail/ArticleDetailKeyTakeaways';
 import ArticleDetailContent from '@/components/article-detail/ArticleDetailContent';
 import ArticleDetailReports from '@/components/article-detail/ArticleDetailReports';
 import ArticleDetailLoading from '@/components/article-detail/ArticleDetailLoading';
@@ -41,7 +42,7 @@ const ArticleDetail = () => {
   console.log('✅ [ArticleDetail] Successfully rendering article:', article.title);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-6 max-w-4xl">
         {/* Navigation Section - positioned below fixed header */}
         <div className="pt-28 pb-8">
@@ -58,6 +59,11 @@ const ArticleDetail = () => {
         {/* Article Information Section - below image */}
         <div className="mb-12">
           <ArticleDetailHeader article={article} />
+        </div>
+
+        {/* Key Takeaways Section */}
+        <div className="mb-12">
+          <ArticleDetailKeyTakeaways />
         </div>
 
         {/* Content Section */}
