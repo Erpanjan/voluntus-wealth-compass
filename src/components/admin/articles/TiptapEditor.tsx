@@ -16,11 +16,11 @@ interface TiptapEditorProps {
 
 const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const editorState = useEditorState();
-  const initialLoadComplete = useRef(false);
+  const contentSetRef = useRef(false);
   
   const editor = useEditor({
     extensions: getEditorExtensions(),
-    content: value || '<p></p>',
+    content: '<p></p>',
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onChange(html);
@@ -28,14 +28,22 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
     editorProps: getEditorProps(editorState.isFullscreen),
   });
 
-  // Only set initial content once when the editor is first created
+  // Set content when editor is ready and value changes
   useEffect(() => {
-    if (editor && !initialLoadComplete.current) {
-      const initialContent = value || '<p></p>';
-      editor.commands.setContent(initialContent, false);
-      initialLoadComplete.current = true;
+    if (editor && value && value !== '<p></p>') {
+      // Only set content if it's different from current content
+      const currentContent = editor.getHTML();
+      if (currentContent !== value) {
+        console.log('🔄 [TIPTAP] Setting editor content:', {
+          valueLength: value.length,
+          valuePreview: value.substring(0, 100) + '...',
+          currentContentLength: currentContent.length
+        });
+        editor.commands.setContent(value, false);
+        contentSetRef.current = true;
+      }
     }
-  }, [editor]); // Only depend on editor, not value
+  }, [editor, value]);
 
   const editorHandlers = useEditorHandlers({
     editor,
