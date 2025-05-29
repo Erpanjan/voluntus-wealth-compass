@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Filter } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,57 +21,21 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({
   isPublished,
   getDisplayTitle,
 }) => {
-  const getDisplayDescription = (article: any) => {
-    return article.description_en || article.description_zh || article.description || '';
-  };
-
-  const getDisplayCategory = (article: any) => {
-    return article.category_en || article.category_zh || article.category || '';
-  };
-
-  const getDisplayAuthor = (article: any) => {
-    return article.author_name_en || article.author_name_zh || article.author_name || '';
-  };
-
   return (
     <div className="grid gap-4">
       {articles.map((article) => (
         <Card key={article.id} className="p-6 hover:shadow-md transition-shadow">
-          <div className="flex justify-between items-start">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
-                  {getDisplayTitle(article)}
-                </h3>
-                <Badge variant={isPublished(article) ? "default" : "secondary"}>
-                  {isPublished(article) ? "Published" : "Draft"}
-                </Badge>
-              </div>
-              
-              {getDisplayDescription(article) && (
-                <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                  {getDisplayDescription(article)}
-                </p>
-              )}
-              
-              <div className="flex items-center text-xs text-gray-500 space-x-4">
-                {getDisplayCategory(article) && (
-                  <span className="flex items-center">
-                    <Filter className="mr-1 h-3 w-3" />
-                    {getDisplayCategory(article)}
-                  </span>
-                )}
-                {getDisplayAuthor(article) && <span>By {getDisplayAuthor(article)}</span>}
-                <span>
-                  {isPublished(article) 
-                    ? `Published ${new Date(article.published_at).toLocaleDateString()}`
-                    : `Updated ${new Date(article.updated_at).toLocaleDateString()}`
-                  }
-                </span>
-              </div>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <h3 className="text-lg font-semibold text-gray-900 truncate">
+                {getDisplayTitle(article)}
+              </h3>
+              <Badge variant={isPublished(article) ? "default" : "secondary"}>
+                {isPublished(article) ? "Published" : "Draft"}
+              </Badge>
             </div>
             
-            <div className="flex space-x-2 ml-4">
+            <div className="flex space-x-2 ml-4 flex-shrink-0">
               <Button
                 variant="outline"
                 size="sm"
