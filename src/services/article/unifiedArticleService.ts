@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { 
   MultilingualArticle, 
@@ -32,18 +31,62 @@ class UnifiedArticleService {
   }
 
   /**
-   * Safely process content with fallback to empty object
+   * Safely process content with enhanced handling for PostgreSQL JSONB types
    */
   private safeProcessContent(content: any): any {
+    // Handle null or undefined
     if (!content) return {};
+    
+    // Handle PostgreSQL empty JSONB returned as 'map[]'
+    if (typeof content === 'string' && content === 'map[]') {
+      return {};
+    }
+    
+    // Handle string content (JSON encoded)
     if (typeof content === 'string') {
       try {
-        return processContent(JSON.parse(content));
+        const parsed = JSON.parse(content);
+        return this.processContentRecursively(parsed);
       } catch {
-        return {};
+        // If JSON parsing fails, treat as plain text content
+        return { type: 'text', content: content };
       }
     }
-    return processContent(content);
+    
+    // Handle object content
+    if (typeof content === 'object') {
+      return this.processContentRecursively(content);
+    }
+    
+    // Fallback for any other type
+    console.warn('Unexpected content type:', typeof content, content);
+    return {};
+  }
+
+  /**
+   * Recursively process content object to handle nested structures
+   */
+  private processContentRecursively(obj: any): any {
+    if (!obj || typeof obj !== 'object') {
+      return obj;
+    }
+    
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.processContentRecursively(item));
+    }
+    
+    const processed: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (typeof value === 'string' && value === 'map[]') {
+        processed[key] = {};
+      } else if (typeof value === 'object') {
+        processed[key] = this.processContentRecursively(value);
+      } else {
+        processed[key] = value;
+      }
+    }
+    
+    return processed;
   }
 
   /**
@@ -56,39 +99,44 @@ class UnifiedArticleService {
   ): Promise<PaginatedArticlesResponse> {
     console.log(`Fetching published articles: page=${page}, size=${pageSize}, lang=${language}`);
     
-    const { data, error } = await supabase.rpc('get_articles_by_language', {
-      lang: language,
-      page_num: page,
-      page_size: pageSize
-    });
+    try {
+      const { data, error } = await supabase.rpc('get_articles_by_language', {
+        lang: language,
+        page_num: page,
+        page_size: pageSize
+      });
 
-    if (error) {
-      console.error('Error fetching published articles by language:', error);
+      if (error) {
+        console.error('Error fetching published articles by language:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        return { articles: [], totalCount: 0 };
+      }
+
+      const totalCount = data[0]?.total_count || 0;
+      const articles = data.map((article: any): Article => ({
+        id: article.id,
+        title: article.title || '',
+        slug: article.slug,
+        description: article.description || '',
+        content: this.safeProcessContent(article.content),
+        category: article.category || '',
+        author_name: article.author_name || '',
+        image_url: article.image_url,
+        published_at: article.published_at,
+        created_at: article.created_at,
+        updated_at: article.updated_at,
+        authors: this.safeArrayConvert<Author>(article.authors),
+        reports: this.safeArrayConvert<Report>(article.reports),
+      }));
+
+      return { articles, totalCount };
+    } catch (error) {
+      console.error('💥 [FATAL ERROR] Exception in getPublishedArticlesByLanguage:', error);
       throw error;
     }
-
-    if (!data || data.length === 0) {
-      return { articles: [], totalCount: 0 };
-    }
-
-    const totalCount = data[0]?.total_count || 0;
-    const articles = data.map((article: any): Article => ({
-      id: article.id,
-      title: article.title || '',
-      slug: article.slug,
-      description: article.description || '',
-      content: this.safeProcessContent(article.content),
-      category: article.category || '',
-      author_name: article.author_name || '',
-      image_url: article.image_url,
-      published_at: article.published_at,
-      created_at: article.created_at,
-      updated_at: article.updated_at,
-      authors: this.safeArrayConvert<Author>(article.authors),
-      reports: this.safeArrayConvert<Report>(article.reports),
-    }));
-
-    return { articles, totalCount };
   }
 
   /**
@@ -100,40 +148,45 @@ class UnifiedArticleService {
   ): Promise<Article | null> {
     console.log(`Fetching article by slug: ${slug}, language: ${language}`);
     
-    const { data, error } = await supabase.rpc('get_article_by_slug_and_language', {
-      slug_param: slug,
-      lang: language
-    });
+    try {
+      const { data, error } = await supabase.rpc('get_article_by_slug_and_language', {
+        slug_param: slug,
+        lang: language
+      });
 
-    if (error) {
-      console.error('Error fetching article by slug and language:', error);
+      if (error) {
+        console.error('Error fetching article by slug and language:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        return null;
+      }
+
+      const article = data[0];
+      return {
+        id: article.id,
+        title: article.title || '',
+        slug: article.slug,
+        description: article.description || '',
+        content: this.safeProcessContent(article.content),
+        category: article.category || '',
+        author_name: article.author_name || '',
+        image_url: article.image_url,
+        published_at: article.published_at,
+        created_at: article.created_at,
+        updated_at: article.updated_at,
+        authors: this.safeArrayConvert<Author>(article.authors),
+        reports: this.safeArrayConvert<Report>(article.reports),
+      };
+    } catch (error) {
+      console.error('💥 [FATAL ERROR] Exception in getArticleBySlugAndLanguage:', error);
       throw error;
     }
-
-    if (!data || data.length === 0) {
-      return null;
-    }
-
-    const article = data[0];
-    return {
-      id: article.id,
-      title: article.title || '',
-      slug: article.slug,
-      description: article.description || '',
-      content: this.safeProcessContent(article.content),
-      category: article.category || '',
-      author_name: article.author_name || '',
-      image_url: article.image_url,
-      published_at: article.published_at,
-      created_at: article.created_at,
-      updated_at: article.updated_at,
-      authors: this.safeArrayConvert<Author>(article.authors),
-      reports: this.safeArrayConvert<Report>(article.reports),
-    };
   }
 
   /**
-   * Get multilingual articles with pagination (admin) - ENHANCED WITH DEBUGGING
+   * Get multilingual articles with pagination (admin) - ENHANCED WITH BETTER ERROR HANDLING
    */
   async getMultilingualArticles(
     page: number = 0, 
@@ -170,8 +223,10 @@ class UnifiedArticleService {
           id: article.id,
           title_en: article.title_en,
           title_zh: article.title_zh,
-          hasContent_en: !!article.content_en,
-          hasContent_zh: !!article.content_zh
+          content_en_type: typeof article.content_en,
+          content_zh_type: typeof article.content_zh,
+          content_en_value: article.content_en,
+          content_zh_value: article.content_zh
         });
 
         const processedArticle: MultilingualArticle = {
@@ -198,7 +253,9 @@ class UnifiedArticleService {
         console.log(`✅ [DEBUG] Processed article ${index + 1}:`, {
           id: processedArticle.id,
           title_en: processedArticle.title_en,
-          title_zh: processedArticle.title_zh
+          title_zh: processedArticle.title_zh,
+          content_en_processed: typeof processedArticle.content_en,
+          content_zh_processed: typeof processedArticle.content_zh
         });
 
         return processedArticle;
