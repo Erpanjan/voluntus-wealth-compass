@@ -34,6 +34,10 @@ const ArticlesManagement = () => {
     navigate('/admin/articles/create');
   };
   
+  const handleEdit = (id: string) => {
+    navigate(`/admin/articles/edit/${id}`);
+  };
+  
   const handleView = (slug: string) => {
     window.open(`/insight/${slug}`, '_blank');
   };
@@ -135,6 +139,7 @@ const ArticlesManagement = () => {
           <MultilingualArticleTable 
             articles={filteredArticles}
             loading={loading}
+            onEdit={handleEdit}
             onView={handleView}
             onDelete={handleDelete}
             onTogglePublish={handleTogglePublish}
