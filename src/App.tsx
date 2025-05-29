@@ -25,6 +25,7 @@ import UserAccountManagement from "./pages/admin/UserAccountManagement";
 import ContactManagement from "./pages/admin/ContactManagement";
 import ArticlesManagement from "./pages/admin/ArticlesManagement";
 import ArticleEditor from "./pages/admin/ArticleEditor";
+import EditArticle from "./pages/admin/EditArticle";
 import AuthorManagement from "./pages/admin/AuthorManagement";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
@@ -103,7 +104,7 @@ const App = () => (
               <Route path="/admin/contacts" element={<ContactManagement />} />
               <Route path="/admin/articles" element={<ArticlesManagement />} />
               <Route path="/admin/articles/create" element={<ArticleEditor />} />
-              <Route path="/admin/articles/edit/:id" element={<ArticleEditor />} />
+              <Route path="/admin/articles/edit/:id" element={<EditArticle />} />
               <Route path="/admin/authors" element={<AuthorManagement />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
