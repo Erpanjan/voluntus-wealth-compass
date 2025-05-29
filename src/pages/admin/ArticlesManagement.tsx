@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -27,7 +26,7 @@ const ArticlesManagement = () => {
     loading, 
     deleteArticle, 
     togglePublishStatus,
-    refetch
+    refresh
   } = useOptimizedMultilingualArticles();
   
   const handleCreateNew = () => {
@@ -51,7 +50,7 @@ const ArticlesManagement = () => {
   };
 
   const handleRefresh = () => {
-    refetch();
+    refresh();
   };
   
   // Filter articles based on search term and filters with multilingual support
