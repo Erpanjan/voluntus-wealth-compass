@@ -16,13 +16,8 @@ const Contact = () => {
       />
 
       {/* Waitlist Form Section */}
-      <Section>
-        <div className="grid md:grid-cols-1 gap-12">
-          {/* Waitlist Form */}
-          <div className="max-w-2xl mx-auto w-full">
-            <WaitlistForm />
-          </div>
-        </div>
+      <Section id="contact">
+        <WaitlistForm />
       </Section>
     </div>
   );
