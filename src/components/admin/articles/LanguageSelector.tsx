@@ -22,7 +22,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">Article Language</h3>
+        <h3 className="text-lg font-semibold text-gray-800">Language</h3>
         <div className="flex gap-2">
           {hasContent.en && (
             <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
@@ -35,13 +35,6 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
             </Badge>
           )}
         </div>
-      </div>
-      
-      <div className="mb-3">
-        <p className="text-sm text-gray-600">
-          Switch between languages to edit content in each language separately. 
-          Your content for each language is saved independently.
-        </p>
       </div>
       
       <Tabs value={selectedLanguage} onValueChange={(value) => onLanguageChange(value as Language)}>
@@ -66,12 +59,6 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           </TabsTrigger>
         </TabsList>
       </Tabs>
-      
-      <div className="mt-3 text-xs text-gray-500">
-        Currently editing: <span className="font-medium">
-          {selectedLanguage === 'en' ? 'English' : 'Chinese'}
-        </span> version
-      </div>
     </div>
   );
 };

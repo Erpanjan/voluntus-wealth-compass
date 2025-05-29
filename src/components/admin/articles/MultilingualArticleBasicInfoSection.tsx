@@ -5,7 +5,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from 'lucide-react';
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -30,34 +29,23 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
     console.log(`Basic info language switched to ${selectedLanguage}:`, currentData);
   }, [selectedLanguage, form]);
 
-  const languageLabel = selectedLanguage === 'en' ? 'English' : 'Chinese';
-
   return (
     <div className="space-y-8">
-      <div className="text-sm text-gray-600 mb-4">
-        Currently editing: <span className="font-medium">{languageLabel}</span> version
-      </div>
-      
       <FormField
         key={`title-field-${selectedLanguage}`}
         control={form.control}
         name={`${selectedLanguage}.title`}
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 text-base">
-              Title * ({languageLabel})
-            </FormLabel>
+            <FormLabel className="text-gray-700 text-base">Title *</FormLabel>
             <FormControl>
               <Input 
                 key={`title-input-${selectedLanguage}`}
-                placeholder={`Enter article title in ${languageLabel}`}
+                placeholder="Title"
                 {...field} 
                 className="focus-visible:ring-gray-400"
               />
             </FormControl>
-            <FormDescription className="text-gray-500">
-              The main title of your article in {languageLabel} (required)
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -69,21 +57,16 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
         name={`${selectedLanguage}.description`}
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 text-base">
-              Description ({languageLabel})
-            </FormLabel>
+            <FormLabel className="text-gray-700 text-base">Description</FormLabel>
             <FormControl>
               <Textarea 
                 key={`description-input-${selectedLanguage}`}
-                placeholder={`Enter article description in ${languageLabel} (optional)`}
+                placeholder="Description"
                 rows={3}
                 {...field} 
                 className="focus-visible:ring-gray-400 resize-none"
               />
             </FormControl>
-            <FormDescription className="text-gray-500">
-              A brief summary of your article in {languageLabel} (optional)
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -96,20 +79,15 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
           name={`${selectedLanguage}.category`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 text-base">
-                Category ({languageLabel})
-              </FormLabel>
+              <FormLabel className="text-gray-700 text-base">Category</FormLabel>
               <FormControl>
                 <Input 
                   key={`category-input-${selectedLanguage}`}
-                  placeholder={`Enter category in ${languageLabel} (optional)`}
+                  placeholder="Category"
                   {...field} 
                   className="focus-visible:ring-gray-400"
                 />
               </FormControl>
-              <FormDescription className="text-gray-500">
-                Category of your article in {languageLabel} (optional)
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -121,20 +99,15 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
           name={`${selectedLanguage}.author_name`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 text-base">
-                Author ({languageLabel})
-              </FormLabel>
+              <FormLabel className="text-gray-700 text-base">Author</FormLabel>
               <FormControl>
                 <Input 
                   key={`author-input-${selectedLanguage}`}
-                  placeholder={`Enter author name in ${languageLabel} (optional)`}
+                  placeholder="Author"
                   {...field} 
                   className="focus-visible:ring-gray-400"
                 />
               </FormControl>
-              <FormDescription className="text-gray-500">
-                Name of the article author in {languageLabel} (optional)
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -146,9 +119,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
         name="published_at"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 text-base">
-              Publish Date
-            </FormLabel>
+            <FormLabel className="text-gray-700 text-base">Publish Date</FormLabel>
             <FormControl>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
@@ -159,9 +130,6 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
                 />
               </div>
             </FormControl>
-            <FormDescription className="text-gray-500">
-              When the article should be published (applies to both languages)
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
