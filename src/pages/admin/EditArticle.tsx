@@ -122,14 +122,27 @@ const EditArticle = () => {
         const article = data[0];
         console.log(`📊 Raw article data:`, article);
 
-        // Safe conversion of reports array
+        // Safe conversion of reports array with proper type handling
         let reports: Report[] = [];
         if (article.reports) {
           try {
             if (Array.isArray(article.reports)) {
-              reports = article.reports as Report[];
+              reports = (article.reports as unknown[]).map((report: any) => ({
+                id: report.id || '',
+                title: report.title || '',
+                description: report.description || '',
+                file_url: report.file_url || '',
+                created_at: report.created_at || new Date().toISOString(),
+              }));
             } else if (typeof article.reports === 'string') {
-              reports = JSON.parse(article.reports) as Report[];
+              const parsed = JSON.parse(article.reports);
+              reports = Array.isArray(parsed) ? parsed.map((report: any) => ({
+                id: report.id || '',
+                title: report.title || '',
+                description: report.description || '',
+                file_url: report.file_url || '',
+                created_at: report.created_at || new Date().toISOString(),
+              })) : [];
             }
           } catch (error) {
             console.warn('Error parsing reports:', error);
