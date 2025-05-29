@@ -54,6 +54,12 @@ const Insight = () => {
 
   // Memoized article cards
   const articleCards = useMemo(() => {
+    console.log('Rendering article cards:', { 
+      articlesCount: articles.length, 
+      language,
+      articles: articles.map(a => ({ id: a.id, title: a.title, hasContent: !!a.content }))
+    });
+    
     return articles.map((article, index) => (
       <ArticleCard
         key={article.id}
@@ -67,7 +73,7 @@ const Insight = () => {
         priority={index < 2} // First 2 images load eagerly
       />
     ));
-  }, [articles]);
+  }, [articles, language]);
 
   // Memoized pagination
   const paginationComponent = useMemo(() => {
@@ -139,7 +145,9 @@ const Insight = () => {
     totalCount, 
     totalPages,
     currentPage: currentPage + 1,
-    language
+    language,
+    hasArticles: articles.length > 0,
+    isDataReady: !loading && articles.length >= 0
   });
 
   return (
@@ -168,6 +176,9 @@ const Insight = () => {
                 <RefreshCw size={16} className="mr-2" />
                 {t('insight.refresh')}
               </Button>
+              <div className="mt-4 text-sm text-gray-400">
+                Debug: Language={language}, Total Count={totalCount}, Loading={loading ? 'true' : 'false'}
+              </div>
             </div>
           )}
         </div>
