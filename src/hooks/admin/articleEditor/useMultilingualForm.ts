@@ -56,17 +56,17 @@ export const useMultilingualForm = () => {
     });
   };
 
-  // Enhanced content detection
+  // Enhanced content detection with proper type checking
   const hasContent = {
     en: Boolean(
-      form.watch('en.title')?.trim() || 
-      form.watch('en.content')?.trim() || 
-      form.watch('en.description')?.trim()
+      (typeof form.watch('en.title') === 'string' && form.watch('en.title').trim()) || 
+      (typeof form.watch('en.content') === 'string' && form.watch('en.content').trim()) || 
+      (typeof form.watch('en.description') === 'string' && form.watch('en.description').trim())
     ),
     zh: Boolean(
-      form.watch('zh.title')?.trim() || 
-      form.watch('zh.content')?.trim() || 
-      form.watch('zh.description')?.trim()
+      (typeof form.watch('zh.title') === 'string' && form.watch('zh.title').trim()) || 
+      (typeof form.watch('zh.content') === 'string' && form.watch('zh.content').trim()) || 
+      (typeof form.watch('zh.description') === 'string' && form.watch('zh.description').trim())
     )
   };
 
