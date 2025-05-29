@@ -1,4 +1,3 @@
-
 import React, { memo, useMemo } from 'react';
 import { format } from 'date-fns';
 import { 
@@ -26,25 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
-interface MultilingualArticle {
-  id: string;
-  title_en: string;
-  title_zh: string;
-  slug: string;
-  description_en: string;
-  description_zh: string;
-  content_en: any;
-  content_zh: any;
-  category_en: string;
-  category_zh: string;
-  author_name_en: string;
-  author_name_zh: string;
-  image_url: string;
-  published_at: string;
-  created_at: string;
-  updated_at: string;
-}
+import { MultilingualArticle } from '@/types/multilingual-article.types';
 
 interface MultilingualArticleTableProps {
   articles: MultilingualArticle[];
