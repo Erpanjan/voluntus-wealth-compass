@@ -38,10 +38,10 @@ const ArticleDetailHeader: React.FC<ArticleDetailHeaderProps> = ({ article }) =>
         )}
       </div>
       
-      {/* Description/Summary with light grey background */}
+      {/* Description/Summary with grey background */}
       {article.description && (
         <div className="pt-4 border-t border-gray-100">
-          <div className="bg-gray-50 rounded-2xl p-6">
+          <div className="bg-gray-100 rounded-2xl p-6">
             <p className="text-xl text-gray-700 leading-relaxed font-light">
               {article.description}
             </p>
