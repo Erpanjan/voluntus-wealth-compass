@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { 
   MultilingualArticle, 
@@ -15,7 +16,7 @@ class UnifiedArticleService {
   /**
    * Safely convert database array field to typed array
    */
-  private safeArrayConvert<T>(field: any): T[] {
+  private safeArrayConvert = <T>(field: any): T[] => {
     if (Array.isArray(field)) {
       return field;
     }
@@ -28,12 +29,12 @@ class UnifiedArticleService {
       }
     }
     return [];
-  }
+  };
 
   /**
    * Safely process content with enhanced handling for PostgreSQL data types
    */
-  private safeProcessContent(content: any): any {
+  private safeProcessContent = (content: any): any => {
     console.log('🔍 [DEBUG] Processing content:', typeof content, content);
     
     // Handle null or undefined
@@ -68,12 +69,12 @@ class UnifiedArticleService {
     // Handle other types
     console.log('📝 [DEBUG] Content is other type, returning as-is:', typeof content);
     return content;
-  }
+  };
 
   /**
    * Recursively process content object to handle nested structures
    */
-  private processContentRecursively(obj: any): any {
+  private processContentRecursively = (obj: any): any => {
     if (obj === null || obj === undefined) {
       return {};
     }
@@ -97,7 +98,7 @@ class UnifiedArticleService {
     }
     
     return obj;
-  }
+  };
 
   /**
    * Get published articles by language with pagination
