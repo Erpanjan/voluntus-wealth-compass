@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Filter } from 'lucide-react';
@@ -26,8 +25,9 @@ const ArticlesManagement = () => {
     cacheStrategy: 'aggressive',
   });
 
-  const articles = articlesData?.articles || [];
-  const totalCount = articlesData?.totalCount || 0;
+  // Handle the case where articlesData might be an array (fallback) or the expected object
+  const articles = Array.isArray(articlesData) ? articlesData : articlesData?.articles || [];
+  const totalCount = Array.isArray(articlesData) ? articlesData.length : articlesData?.totalCount || 0;
   const totalPages = Math.ceil(totalCount / pageSize);
 
   const filteredArticles = articles.filter(article => {
