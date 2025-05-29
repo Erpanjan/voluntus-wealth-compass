@@ -5,7 +5,7 @@ import Section from '@/components/ui/Section';
 import ArticleCard from '@/components/ArticleCard';
 import WaitlistForm from '@/components/WaitlistForm';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { usePublishedArticles } from '@/hooks/usePublishedArticles';
+import { usePublishedArticlesByLanguage } from '@/hooks/usePublishedArticlesByLanguage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Insight = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { 
     articles, 
     loading, 
@@ -22,7 +22,7 @@ const Insight = () => {
     currentPage,
     setCurrentPage,
     refresh 
-  } = usePublishedArticles(4);
+  } = usePublishedArticlesByLanguage(4, language);
   
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page - 1); // Convert to 0-based for backend
@@ -139,6 +139,7 @@ const Insight = () => {
     totalCount, 
     totalPages,
     currentPage: currentPage + 1,
+    language
   });
 
   return (
