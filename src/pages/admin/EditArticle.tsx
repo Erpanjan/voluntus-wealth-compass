@@ -14,6 +14,8 @@ import MultilingualArticleBasicInfoSection from '@/components/admin/articles/Mul
 import MultilingualArticleContentSection from '@/components/admin/articles/MultilingualArticleContentSection';
 import LanguageSelector from '@/components/admin/articles/LanguageSelector';
 import MultilingualArticlePreviewDialog from '@/components/admin/articles/MultilingualArticlePreviewDialog';
+import ArticleImageUpload from '@/components/admin/articles/ArticleImageUpload';
+import { useArticleImage } from '@/hooks/admin/articleEditor/useArticleImage';
 
 const multilingualArticleSchema = z.object({
   en: z.object({
@@ -44,10 +46,21 @@ const EditArticle = () => {
   const [currentLanguage, setCurrentLanguage] = useState<'en' | 'zh'>('en');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [originalArticle, setOriginalArticle] = useState<MultilingualArticle | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // Integrate image upload functionality
+  const {
+    imageFile,
+    setImageFile,
+    imagePreview,
+    setImagePreview,
+    fileInputRef,
+    handleImageChange,
+    handleRemoveImage,
+    loadImageData,
+  } = useArticleImage();
 
   const form = useForm<MultilingualArticleFormData>({
     resolver: zodResolver(multilingualArticleSchema),
@@ -109,6 +122,21 @@ const EditArticle = () => {
         const article = data[0];
         console.log(`📊 Raw article data:`, article);
 
+        // Safe conversion of reports array
+        let reports: Report[] = [];
+        if (article.reports) {
+          try {
+            if (Array.isArray(article.reports)) {
+              reports = article.reports as Report[];
+            } else if (typeof article.reports === 'string') {
+              reports = JSON.parse(article.reports) as Report[];
+            }
+          } catch (error) {
+            console.warn('Error parsing reports:', error);
+            reports = [];
+          }
+        }
+
         // Process and store original article with proper type handling
         const processedArticle: MultilingualArticle = {
           id: article.id,
@@ -128,10 +156,15 @@ const EditArticle = () => {
           author_name_en: article.author_name_en || '',
           author_name_zh: article.author_name_zh || '',
           authors: [],
-          reports: Array.isArray(article.reports) ? article.reports as Report[] : [],
+          reports: reports,
         };
 
         setOriginalArticle(processedArticle);
+
+        // Load existing image if available
+        if (processedArticle.image_url) {
+          loadImageData(processedArticle.image_url);
+        }
 
         // Populate form with article data
         const formData: MultilingualArticleFormData = {
@@ -170,7 +203,7 @@ const EditArticle = () => {
     };
 
     loadArticleData();
-  }, [id, form, navigate, toast]);
+  }, [id, form, navigate, toast, loadImageData]);
 
   // Helper function to get current field value
   const getCurrentFieldValue = (fieldName: string): string => {
@@ -346,6 +379,16 @@ const EditArticle = () => {
             refreshKey={refreshKey}
           />
 
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Featured Image</h3>
+            <ArticleImageUpload
+              imagePreview={imagePreview}
+              fileInputRef={fileInputRef}
+              handleImageChange={handleImageChange}
+              handleRemoveImage={handleRemoveImage}
+            />
+          </div>
+
           <div className="flex justify-end gap-4 pt-6 border-t">
             <Button
               type="button"
@@ -384,7 +427,7 @@ const EditArticle = () => {
               author_name: form.getValues().zh?.author_name || '',
             }
           }}
-          imagePreview={form.getValues().image_url || null}
+          imagePreview={imagePreview}
         />
       </div>
     </AdminLayout>
