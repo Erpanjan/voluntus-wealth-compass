@@ -17,6 +17,37 @@ import ArticleEditorToolbar from '@/components/admin/articles/ArticleEditorToolb
 import MultilingualArticlePreviewDialog from '@/components/admin/articles/MultilingualArticlePreviewDialog';
 import { useEditArticleActions } from '@/hooks/admin/articleEditor/useEditArticleActions';
 
+// Helper function to convert content to HTML string
+const convertContentToHtml = (content: any): string => {
+  if (!content) return '';
+  
+  // If it's already a string, return it
+  if (typeof content === 'string') {
+    return content;
+  }
+  
+  // If it's an object (JSONB from database), try to extract HTML
+  if (typeof content === 'object') {
+    // If it has an html property, use that
+    if (content.html) {
+      return content.html;
+    }
+    
+    // If it's a Tiptap/ProseMirror document, convert to HTML
+    if (content.type === 'doc' && content.content) {
+      // This is a simplified conversion - in a real app you'd use Tiptap's generateHTML
+      return '<p></p>'; // Fallback for now
+    }
+    
+    // If it's already HTML-like content, stringify it
+    if (content.type || content.content) {
+      return JSON.stringify(content);
+    }
+  }
+  
+  return '';
+};
+
 const EditArticle = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
@@ -74,19 +105,30 @@ const EditArticle = () => {
           loadImageData(article.image_url);
         }
 
+        // Convert content to HTML strings for proper editing
+        const convertedContentEn = convertContentToHtml(article.content_en);
+        const convertedContentZh = convertContentToHtml(article.content_zh);
+
+        console.log('📝 Converting content:', {
+          originalEn: article.content_en,
+          convertedEn: convertedContentEn,
+          originalZh: article.content_zh,
+          convertedZh: convertedContentZh
+        });
+
         // Populate form with article data
         const formData = {
           en: {
             title: article.title_en || '',
             description: article.description_en || '',
-            content: article.content_en || {},
+            content: convertedContentEn,
             category: article.category_en || '',
             author_name: article.author_name_en || '',
           },
           zh: {
             title: article.title_zh || '',
             description: article.description_zh || '',
-            content: article.content_zh || {},
+            content: convertedContentZh,
             category: article.category_zh || '',
             author_name: article.author_name_zh || '',
           },

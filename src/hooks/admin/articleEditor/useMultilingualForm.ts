@@ -100,6 +100,18 @@ export const useMultilingualForm = () => {
       refreshKey
     });
     
+    // For content field, ensure we return a string
+    if (fieldName === 'content') {
+      if (typeof value === 'string') {
+        return value;
+      }
+      if (typeof value === 'object' && value !== null) {
+        // Convert object to string if needed
+        return JSON.stringify(value);
+      }
+      return '';
+    }
+    
     return value;
   };
 

@@ -19,7 +19,7 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   
   const editor = useEditor({
     extensions: getEditorExtensions(),
-    content: value,
+    content: value || '<p></p>',
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onChange(html);
@@ -27,7 +27,7 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
     editorProps: getEditorProps(editorState.isFullscreen),
   });
 
-  // Update editor content when value prop changes (language switching)
+  // Update editor content when value prop changes (language switching or data loading)
   useEffect(() => {
     if (editor) {
       const currentContent = editor.getHTML();
@@ -37,24 +37,15 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
       console.log('TiptapEditor value change detected:', {
         currentContent: normalizedCurrentContent,
         newValue: normalizedNewValue,
-        isDifferent: normalizedCurrentContent !== normalizedNewValue
+        isDifferent: normalizedCurrentContent !== normalizedNewValue,
+        valueType: typeof value
       });
       
       if (normalizedCurrentContent !== normalizedNewValue) {
         console.log('Updating editor content from', normalizedCurrentContent, 'to', normalizedNewValue);
         
-        // Clear the editor first, then set new content
-        editor.commands.clearContent();
-        
-        if (normalizedNewValue) {
-          editor.commands.setContent(normalizedNewValue);
-        }
-        
-        // Force a re-render
-        setTimeout(() => {
-          editor.commands.focus();
-          editor.commands.blur();
-        }, 10);
+        // Prevent infinite update loops
+        editor.commands.setContent(normalizedNewValue || '<p></p>', false);
       }
     }
   }, [editor, value]);
@@ -67,7 +58,15 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   useKeyboardShortcuts(editor, editorState.setLinkPopoverOpen);
 
   if (!editor) {
-    return null;
+    return (
+      <div className="border rounded-md bg-white shadow-sm p-4">
+        <div className="animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        </div>
+      </div>
+    );
   }
 
   return (

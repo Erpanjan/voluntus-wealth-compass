@@ -70,11 +70,15 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
               control={form.control}
               name={`${selectedLanguage}.content`}
               render={({ field }) => {
+                // Get current content value and ensure it's a string
                 const currentValue = getCurrentFieldValue('content');
+                const contentValue = typeof currentValue === 'string' ? currentValue : '';
+                
                 console.log('Content field render:', {
                   selectedLanguage,
                   fieldValue: field.value,
                   currentValue,
+                  contentValue,
                   refreshKey
                 });
                 
@@ -83,10 +87,15 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
                     <FormControl>
                       <TiptapEditor 
                         key={`${selectedLanguage}-content-editor-${refreshKey}`}
-                        value={currentValue}
+                        value={contentValue}
                         onChange={(value) => {
                           console.log('TiptapEditor onChange:', { selectedLanguage, value });
-                          field.onChange(value);
+                          // Ensure we're setting a string value
+                          const stringValue = typeof value === 'string' ? value : '';
+                          field.onChange(stringValue);
+                          
+                          // Also update the form directly to ensure consistency
+                          form.setValue(`${selectedLanguage}.content`, stringValue);
                         }}
                       />
                     </FormControl>
