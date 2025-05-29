@@ -8,6 +8,15 @@ interface MetaTagsConfig {
   type?: string;
 }
 
+const getAbsoluteUrl = (url: string): string => {
+  if (url.startsWith('http')) {
+    return url;
+  }
+  // Convert relative URLs to absolute URLs using the current domain
+  const baseUrl = window.location.origin;
+  return `${baseUrl}${url.startsWith('/') ? url : '/' + url}`;
+};
+
 export const useDynamicMetaTags = (config: MetaTagsConfig) => {
   useEffect(() => {
     const originalTitle = document.title;
@@ -19,6 +28,7 @@ export const useDynamicMetaTags = (config: MetaTagsConfig) => {
       'meta[property="og:description"]', 
       'meta[property="og:image"]',
       'meta[property="og:type"]',
+      'meta[property="og:url"]',
       'meta[name="twitter:image"]',
       'meta[name="description"]'
     ];
@@ -43,11 +53,15 @@ export const useDynamicMetaTags = (config: MetaTagsConfig) => {
       }
     };
 
+    // Convert image URL to absolute if provided
+    const absoluteImageUrl = config.image ? getAbsoluteUrl(config.image) : undefined;
+
     updateMetaTag('meta[property="og:title"]', config.title);
     updateMetaTag('meta[property="og:description"]', config.description || '');
-    updateMetaTag('meta[property="og:image"]', config.image);
+    updateMetaTag('meta[property="og:image"]', absoluteImageUrl);
     updateMetaTag('meta[property="og:type"]', config.type || 'article');
-    updateMetaTag('meta[name="twitter:image"]', config.image);
+    updateMetaTag('meta[property="og:url"]', window.location.href);
+    updateMetaTag('meta[name="twitter:image"]', absoluteImageUrl);
     updateMetaTag('meta[name="description"]', config.description || '');
 
     // Cleanup function to restore original values
