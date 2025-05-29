@@ -17,14 +17,12 @@ interface MultilingualArticleContentSectionProps {
   form: UseFormReturn<any>;
   selectedLanguage: Language;
   getCurrentFieldValue: (fieldName: string) => string;
-  refreshKey?: number;
 }
 
 const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSectionProps> = ({ 
   form, 
   selectedLanguage,
   getCurrentFieldValue,
-  refreshKey = 0
 }) => {
   const [isOpen, setIsOpen] = React.useState(true);
   
@@ -70,32 +68,12 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
               control={form.control}
               name={`${selectedLanguage}.content`}
               render={({ field }) => {
-                // Get current content value and ensure it's a string
-                const currentValue = getCurrentFieldValue('content');
-                const contentValue = typeof currentValue === 'string' ? currentValue : '';
-                
-                console.log('Content field render:', {
-                  selectedLanguage,
-                  fieldValue: field.value,
-                  currentValue,
-                  contentValue,
-                  refreshKey
-                });
-                
                 return (
                   <FormItem>
                     <FormControl>
                       <TiptapEditor 
-                        key={`${selectedLanguage}-content-editor-${refreshKey}`}
-                        value={contentValue}
-                        onChange={(value) => {
-                          console.log('TiptapEditor onChange:', { selectedLanguage, value });
-                          // Ensure we're setting a string value
-                          const stringValue = typeof value === 'string' ? value : '';
-                          
-                          // Update form field directly with proper validation
-                          field.onChange(stringValue);
-                        }}
+                        value={field.value || ''}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />

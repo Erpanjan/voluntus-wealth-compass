@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 
@@ -22,8 +22,6 @@ interface MultilingualFormData {
 
 export const useMultilingualForm = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<Language>('en');
-  const [refreshKey, setRefreshKey] = useState(0);
-  const isLanguageSwitching = useRef(false);
   
   const form = useForm<MultilingualFormData>({
     defaultValues: {
@@ -46,27 +44,11 @@ export const useMultilingualForm = () => {
     }
   });
 
-  // Handle language switching with proper form updates
+  // Simple language switching - just changes which fields are displayed
   const handleLanguageChange = (newLanguage: Language) => {
-    console.log('Language switching from', selectedLanguage, 'to', newLanguage);
-    
-    // Set flag to indicate we're switching languages
-    isLanguageSwitching.current = true;
-    
+    console.log('Switching language from', selectedLanguage, 'to', newLanguage);
     setSelectedLanguage(newLanguage);
-    setRefreshKey(prev => prev + 1);
-    
-    // Reset flag after language switch is complete
-    setTimeout(() => {
-      isLanguageSwitching.current = false;
-    }, 100);
   };
-
-  // Force re-render when language changes to ensure form fields update
-  useEffect(() => {
-    console.log('Language changed to:', selectedLanguage);
-    form.trigger();
-  }, [selectedLanguage, form, refreshKey]);
 
   const getCurrentLanguageData = () => {
     return form.getValues()[selectedLanguage];
@@ -85,25 +67,18 @@ export const useMultilingualForm = () => {
     zh: Boolean(form.watch('zh.title') || form.watch('zh.content'))
   };
 
-  // Get current language field values for proper display
+  // Simple field value getter - no complex syncing
   const getCurrentFieldValue = (fieldName: keyof MultilingualContent) => {
     const formValues = form.getValues();
     const languageData = formValues[selectedLanguage];
     const value = languageData?.[fieldName] || '';
     
-    console.log(`Getting field value for ${selectedLanguage}.${fieldName}:`, {
-      value,
-      isLanguageSwitching: isLanguageSwitching.current,
-      refreshKey
-    });
-    
-    // For content field, ensure we return a string
+    // Ensure content field returns a string
     if (fieldName === 'content') {
       if (typeof value === 'string') {
         return value;
       }
       if (typeof value === 'object' && value !== null) {
-        // Convert object to string if needed
         return JSON.stringify(value);
       }
       return '';
@@ -120,7 +95,5 @@ export const useMultilingualForm = () => {
     updateCurrentLanguageData,
     getCurrentFieldValue,
     hasContent,
-    refreshKey,
-    isLanguageSwitching: isLanguageSwitching.current
   };
 };

@@ -58,7 +58,6 @@ const EditArticle = () => {
     setSelectedLanguage, 
     hasContent,
     getCurrentFieldValue,
-    refreshKey
   } = useMultilingualForm();
   
   const { 
@@ -70,7 +69,7 @@ const EditArticle = () => {
   const { previewOpen, setPreviewOpen, openPreview } = useArticlePreview();
   const { submitting, navigateBack, updateDraft, updateAndPublish } = useEditArticleActions(id);
 
-  // Load article data on mount
+  // Load article data ONCE on mount
   useEffect(() => {
     const loadArticleData = async () => {
       if (!id) {
@@ -116,7 +115,7 @@ const EditArticle = () => {
           convertedZh: convertedContentZh
         });
 
-        // Populate form with article data
+        // Populate form with article data - this happens ONCE
         const formData = {
           en: {
             title: article.title_en || '',
@@ -136,7 +135,7 @@ const EditArticle = () => {
           published_at: article.published_at?.split('T')[0] || new Date().toISOString().split('T')[0],
         };
 
-        console.log(`✅ Populating form with data:`, formData);
+        console.log(`✅ Setting form data once:`, formData);
         form.reset(formData);
 
       } catch (error) {
@@ -150,7 +149,7 @@ const EditArticle = () => {
     };
 
     loadArticleData();
-  }, [id, form, toast, navigateBack, loadImageData]);
+  }, [id]); // Only depend on id, not form or other dependencies
 
   const handleSaveDraft = async () => {
     const formData = form.getValues();
@@ -209,7 +208,6 @@ const EditArticle = () => {
                       form={form} 
                       selectedLanguage={selectedLanguage}
                       getCurrentFieldValue={getCurrentFieldValue}
-                      refreshKey={refreshKey}
                     />
                     
                     <div className="border-t border-gray-100 pt-8"></div>
@@ -231,7 +229,6 @@ const EditArticle = () => {
             form={form} 
             selectedLanguage={selectedLanguage}
             getCurrentFieldValue={getCurrentFieldValue}
-            refreshKey={refreshKey}
           />
         </div>
 

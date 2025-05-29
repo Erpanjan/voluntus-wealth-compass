@@ -16,47 +16,26 @@ interface TiptapEditorProps {
 
 const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const editorState = useEditorState();
-  const isInternalUpdate = useRef(false);
-  const lastExternalValue = useRef<string>('');
+  const initialLoadComplete = useRef(false);
   
   const editor = useEditor({
     extensions: getEditorExtensions(),
     content: value || '<p></p>',
     onUpdate: ({ editor }) => {
-      // Mark as internal update to prevent sync conflicts
-      isInternalUpdate.current = true;
       const html = editor.getHTML();
       onChange(html);
-      // Reset flag after a brief delay
-      setTimeout(() => {
-        isInternalUpdate.current = false;
-      }, 10);
     },
     editorProps: getEditorProps(editorState.isFullscreen),
   });
 
-  // Update editor content only when value changes externally (not from user editing)
+  // Only set initial content once when the editor is first created
   useEffect(() => {
-    if (editor && !isInternalUpdate.current) {
-      const currentContent = editor.getHTML();
-      const normalizedCurrentContent = currentContent === '<p></p>' ? '' : currentContent;
-      const normalizedNewValue = value || '';
-      
-      // Only sync if the value actually changed and it's not from internal editing
-      if (normalizedCurrentContent !== normalizedNewValue && lastExternalValue.current !== normalizedNewValue) {
-        console.log('TiptapEditor external value change detected:', {
-          currentContent: normalizedCurrentContent,
-          newValue: normalizedNewValue,
-          isInternalUpdate: isInternalUpdate.current
-        });
-        
-        lastExternalValue.current = normalizedNewValue;
-        
-        // Update editor content without triggering onUpdate
-        editor.commands.setContent(normalizedNewValue || '<p></p>', false);
-      }
+    if (editor && !initialLoadComplete.current) {
+      const initialContent = value || '<p></p>';
+      editor.commands.setContent(initialContent, false);
+      initialLoadComplete.current = true;
     }
-  }, [editor, value]);
+  }, [editor]); // Only depend on editor, not value
 
   const editorHandlers = useEditorHandlers({
     editor,
