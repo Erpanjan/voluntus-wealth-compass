@@ -409,18 +409,42 @@ class UnifiedArticleService {
       const fileExt = imageFile.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
       
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('article-images')
-        .upload(fileName, imageFile);
+      // Try article-images bucket first, then article-assets as fallback
+      let uploadData, uploadError;
+      
+      try {
+        const { data, error } = await supabase.storage
+          .from('article-images')
+          .upload(fileName, imageFile);
+        uploadData = data;
+        uploadError = error;
+      } catch (error) {
+        console.log('article-images bucket not found, trying article-assets...');
+        const { data, error: fallbackError } = await supabase.storage
+          .from('article-assets')
+          .upload(fileName, imageFile);
+        uploadData = data;
+        uploadError = fallbackError;
+      }
 
       if (uploadError) {
         console.error('Error uploading image:', uploadError);
         throw new Error('Failed to upload image');
       }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('article-images')
-        .getPublicUrl(fileName);
+      // Get public URL using the same bucket that worked
+      let publicUrl;
+      try {
+        const { data: { publicUrl: url1 } } = supabase.storage
+          .from('article-images')
+          .getPublicUrl(fileName);
+        publicUrl = url1;
+      } catch {
+        const { data: { publicUrl: url2 } } = supabase.storage
+          .from('article-assets')
+          .getPublicUrl(fileName);
+        publicUrl = url2;
+      }
       
       imageUrl = publicUrl;
     }
@@ -451,6 +475,7 @@ class UnifiedArticleService {
       image_url: imageUrl,
       slug: slug, // Will be overridden by trigger if needed
       published_at: articleData.published_at,
+      updated_at: new Date().toISOString(),
     };
 
     console.log(`📝 [SAVE DEBUG] Prepared clean multilingual article data:`, dbData);
