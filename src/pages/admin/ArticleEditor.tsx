@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Form } from '@/components/ui/form';
@@ -157,12 +156,23 @@ const ArticleEditor = () => {
         <ArticlePreviewDialog
           open={previewOpen}
           setOpen={setPreviewOpen}
-          title={currentLanguageData?.title || ''}
-          description={currentLanguageData?.description || ''}
-          content={currentLanguageData?.content || ''}
+          multilingualData={{
+            en: form.watch('en') || {
+              title: '',
+              description: '',
+              content: '',
+              category: '',
+              author_name: ''
+            },
+            zh: form.watch('zh') || {
+              title: '',
+              description: '',
+              content: '',
+              category: '',
+              author_name: ''
+            }
+          }}
           imagePreview={imagePreview}
-          category={currentLanguageData?.category || ''}
-          authors={currentLanguageData?.author_name ? [{ id: '1', name: currentLanguageData.author_name, image_url: null }] : []}
           attachments={[]}
         />
       </div>
