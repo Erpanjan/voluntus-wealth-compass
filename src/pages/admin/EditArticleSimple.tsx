@@ -13,6 +13,7 @@ import LanguageSelector from '@/components/admin/articles/LanguageSelector';
 import MultilingualArticleBasicInfoSection from '@/components/admin/articles/MultilingualArticleBasicInfoSection';
 import { useArticleImage } from '@/hooks/admin/articleEditor';
 import { unifiedArticleService } from '@/services/article/unifiedArticleService';
+import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 
 interface MultilingualFormData {
@@ -177,59 +178,139 @@ const EditArticleSimple = () => {
     loadArticle();
   }, [id, form, toast, loadImageData]);
 
-  // Save article with real Supabase integration
+  // Save article with direct Supabase update (simplified approach)
   const handleSave = async (data: MultilingualFormData) => {
     if (!id) return;
 
     setSaving(true);
     try {
-      console.log(`💾 [EDIT] Saving article with ID: ${id}`);
+      console.log(`💾 [EDIT] Starting save for article ID: ${id}`);
       console.log('📊 [EDIT] Form data to save:', data);
 
-      // Transform nested form structure back to the format expected by the service
-      const articleData = {
-        id,
-        en: {
-          title: data.en.title,
-          description: data.en.description,
-          content: data.en.content,
-          category: data.en.category,
-          author_name: data.en.author_name,
-        },
-        zh: {
-          title: data.zh.title,
-          description: data.zh.description,
-          content: data.zh.content,
-          category: data.zh.category,
-          author_name: data.zh.author_name,
-        },
-        image_url: data.image_url,
-        published_at: data.published_at,
-      };
+      let imageUrl = data.image_url;
 
-      // Use the unified article service to save
-      const savedId = await unifiedArticleService.saveMultilingualArticle(
-        articleData,
-        [], // authors array (empty for now)
-        imageFile, // image file for upload
-        [] // attachments array (empty for now)
-      );
+      // Handle image upload if provided
+      if (imageFile) {
+        console.log('📸 [EDIT] Uploading new image...');
+        
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        
+        // Try article-images bucket first, then article-assets as fallback
+        let uploadData, uploadError;
+        
+        try {
+          const { data: uploadResult, error } = await supabase.storage
+            .from('article-images')
+            .upload(fileName, imageFile);
+          uploadData = uploadResult;
+          uploadError = error;
+        } catch (error) {
+          console.log('📸 [EDIT] article-images bucket not found, trying article-assets...');
+          const { data: uploadResult, error: fallbackError } = await supabase.storage
+            .from('article-assets')
+            .upload(fileName, imageFile);
+          uploadData = uploadResult;
+          uploadError = fallbackError;
+        }
 
-      if (savedId) {
-        toast({
-          title: 'Success',
-          description: 'Article updated successfully.',
-        });
-        console.log(`✅ [EDIT] Article saved successfully with ID: ${savedId}`);
-      } else {
-        throw new Error('Failed to save article');
+        if (uploadError) {
+          console.error('💥 [EDIT] Error uploading image:', uploadError);
+          throw new Error('Failed to upload image');
+        }
+
+        // Get public URL using the same bucket that worked
+        let publicUrl;
+        try {
+          const { data: { publicUrl: url1 } } = supabase.storage
+            .from('article-images')
+            .getPublicUrl(fileName);
+          publicUrl = url1;
+        } catch {
+          const { data: { publicUrl: url2 } } = supabase.storage
+            .from('article-assets')
+            .getPublicUrl(fileName);
+          publicUrl = url2;
+        }
+        
+        imageUrl = publicUrl;
+        console.log('✅ [EDIT] Image uploaded successfully:', imageUrl);
       }
 
-    } catch (error) {
-      console.error('💥 [EDIT] Error saving article:', error);
+      // Convert date string to proper timestamp
+      const publishedAtTimestamp = data.published_at 
+        ? new Date(data.published_at + 'T00:00:00.000Z').toISOString()
+        : new Date().toISOString();
+
+      console.log('📅 [EDIT] Date conversion:', {
+        original: data.published_at,
+        converted: publishedAtTimestamp
+      });
+
+      // Prepare clean update data - store content as HTML strings (not jsonb objects)
+      const updateData = {
+        title_en: data.en.title?.trim() || '',
+        title_zh: data.zh.title?.trim() || '',
+        description_en: data.en.description?.trim() || '',
+        description_zh: data.zh.description?.trim() || '',
+        content_en: data.en.content || '', // Store as HTML string
+        content_zh: data.zh.content || '', // Store as HTML string
+        category_en: data.en.category?.trim() || '',
+        category_zh: data.zh.category?.trim() || '',
+        author_name_en: data.en.author_name?.trim() || '',
+        author_name_zh: data.zh.author_name?.trim() || '',
+        image_url: imageUrl,
+        published_at: publishedAtTimestamp,
+        updated_at: new Date().toISOString(),
+      };
+
+      console.log('🔄 [EDIT] Final update data:', {
+        id,
+        titles: { en: updateData.title_en, zh: updateData.title_zh },
+        content_lengths: { 
+          en: updateData.content_en.length, 
+          zh: updateData.content_zh.length 
+        },
+        published_at: updateData.published_at,
+        image_url: updateData.image_url ? 'has image' : 'no image'
+      });
+
+      // Direct Supabase update with detailed error handling
+      const { data: updateResult, error: updateError } = await supabase
+        .from('articles')
+        .update(updateData)
+        .eq('id', id)
+        .select('id, title_en, title_zh, updated_at')
+        .single();
+
+      if (updateError) {
+        console.error('💥 [EDIT] Database update error:', updateError);
+        console.error('💥 [EDIT] Error details:', {
+          message: updateError.message,
+          details: updateError.details,
+          hint: updateError.hint,
+          code: updateError.code
+        });
+        throw updateError;
+      }
+
+      if (!updateResult) {
+        console.error('💥 [EDIT] No result returned from update');
+        throw new Error('Update operation returned no result');
+      }
+
+      console.log('✅ [EDIT] Article updated successfully:', updateResult);
+
+      toast({
+        title: 'Success',
+        description: 'Article updated successfully.',
+      });
+
+    } catch (error: any) {
+      console.error('💥 [EDIT] Save operation failed:', error);
       toast({
         title: 'Error',
-        description: 'Failed to save article. Please try again.',
+        description: error.message || 'Failed to save article. Please try again.',
         variant: 'destructive',
       });
     } finally {
