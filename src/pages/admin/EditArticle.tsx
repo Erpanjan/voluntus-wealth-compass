@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -66,43 +65,47 @@ const EditArticle = () => {
           return;
         }
 
-        console.log(`📊 Raw article data:`, {
-          id: article.id,
-          title_en: article.title_en,
-          title_zh: article.title_zh,
-          content_en: article.content_en,
-          content_zh: article.content_zh
-        });
+        console.log(`📊 Raw article data:`, article);
 
         // Load existing image if available
         if (article.image_url) {
           loadImageData(article.image_url);
         }
 
-        // Simple content extraction - just get the string directly from the database
-        let contentEn = '';
-        let contentZh = '';
+        // Extract content directly - handle both string and object cases
+        const extractContent = (content: any) => {
+          console.log('🔍 Extracting content:', { content, type: typeof content });
+          
+          // If it's already a string, use it directly
+          if (typeof content === 'string') {
+            return content;
+          }
+          
+          // If it's an object with a value property, extract that
+          if (content && typeof content === 'object' && content.value) {
+            return content.value;
+          }
+          
+          // If it's an object but not the expected format, stringify it
+          if (content && typeof content === 'object') {
+            return JSON.stringify(content);
+          }
+          
+          // Default to empty string
+          return '';
+        };
 
-        // Handle content_en
-        if (typeof article.content_en === 'string') {
-          contentEn = article.content_en;
-        } else if (article.content_en && typeof article.content_en === 'object' && article.content_en.value) {
-          contentEn = article.content_en.value;
-        }
-
-        // Handle content_zh  
-        if (typeof article.content_zh === 'string') {
-          contentZh = article.content_zh;
-        } else if (article.content_zh && typeof article.content_zh === 'object' && article.content_zh.value) {
-          contentZh = article.content_zh.value;
-        }
+        const contentEn = extractContent(article.content_en);
+        const contentZh = extractContent(article.content_zh);
 
         console.log('📝 Extracted content:', {
           contentEn: contentEn.substring(0, 100) + '...',
-          contentZh: contentZh.substring(0, 100) + '...'
+          contentZh: contentZh.substring(0, 100) + '...',
+          contentEnLength: contentEn.length,
+          contentZhLength: contentZh.length
         });
 
-        // Set form data directly
+        // Set form data directly with extracted content
         const formData = {
           en: {
             title: article.title_en || '',
@@ -122,10 +125,7 @@ const EditArticle = () => {
           published_at: article.published_at?.split('T')[0] || new Date().toISOString().split('T')[0],
         };
 
-        console.log(`✅ Setting form with content lengths:`, {
-          en_content_length: formData.en.content.length,
-          zh_content_length: formData.zh.content.length
-        });
+        console.log(`✅ Setting form with data:`, formData);
         
         form.reset(formData);
 
