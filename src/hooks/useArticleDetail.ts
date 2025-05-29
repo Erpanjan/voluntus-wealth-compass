@@ -1,45 +1,90 @@
 
-import { useState, useEffect } from 'react';
-import { articleService } from '@/services/articleService';
-import { Article, Language } from '@/types/article.types';
+import { useToast } from '@/hooks/use-toast';
+import { articleService, Article } from '@/services/article';
+import { useOptimizedQuery } from './useOptimizedQuery';
+import { useEffect } from 'react';
 
-interface UseArticleDetailResult {
-  article: Article | null;
-  loading: boolean;
-  error: string | null;
-  refetch: () => Promise<void>;
-}
+export const useArticleDetail = (slug: string) => {
+  const { toast } = useToast();
 
-export const useArticleDetail = (slug: string, language: Language = 'en'): UseArticleDetailResult => {
-  const [article, setArticle] = useState<Article | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: article,
+    isLoading: loading,
+    error,
+    refetch
+  } = useOptimizedQuery({
+    queryKey: ['article-detail', slug],
+    queryFn: async () => {
+      if (!slug) {
+        throw new Error('No slug provided');
+      }
 
-  const fetchArticle = async () => {
-    if (!slug) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const result = await articleService.getArticleBySlugAndLanguage(slug, language);
-      setArticle(result);
-    } catch (err) {
-      console.error('Error fetching article:', err);
-      setError('Failed to load article');
-    } finally {
-      setLoading(false);
+      console.log(`Fetching article with slug: ${slug}`);
+      
+      // Properly decode the slug in case it was URL encoded
+      const decodedSlug = decodeURIComponent(slug);
+      console.log(`Decoded slug: ${decodedSlug}`);
+      
+      const data = await articleService.getArticleBySlug(decodedSlug);
+      
+      if (!data) {
+        console.error("Article not found", { slug, decodedSlug });
+        throw new Error("Article not found");
+      }
+      
+      // Ensure content is properly formatted
+      if (data.content) {
+        console.log("Content type:", typeof data.content);
+        if (typeof data.content === 'string') {
+          try {
+            console.log("Attempting to parse content as JSON string");
+            data.content = JSON.parse(data.content);
+          } catch (e) {
+            console.log("Content is not a valid JSON string, keeping as is");
+          }
+        }
+      } else {
+        console.log("Content is empty or null, setting default");
+        data.content = {};
+      }
+      
+      console.log("Processed article data:", data);
+      
+      if (data.reports) {
+        console.log("Article reports:", data.reports);
+      } else {
+        console.log("No reports found for this article");
+      }
+      
+      return data;
+    },
+    enabled: !!slug,
+    priority: 'high',
+    cacheStrategy: 'aggressive',
+    retry: 2,
+  });
+
+  // Handle errors with useEffect
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching article details:', error);
+      toast({
+        title: "Error loading article",
+        description: "There was a problem loading the article details. Please try again later.",
+        variant: "destructive",
+      });
     }
+  }, [error, toast]);
+
+  const handleRefetch = () => {
+    console.log("Manually retrying article fetch");
+    refetch();
   };
 
-  useEffect(() => {
-    fetchArticle();
-  }, [slug, language]);
-
-  return {
-    article,
-    loading,
-    error,
-    refetch: fetchArticle
+  return { 
+    article: article || null, 
+    loading, 
+    error, 
+    refetch: handleRefetch
   };
 };

@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Plus, RefreshCw } from 'lucide-react';
 import MultilingualArticleTable from '@/components/admin/articles/MultilingualArticleTable';
 import ArticleSearch from '@/components/admin/articles/ArticleSearch';
-import { useUnifiedArticles } from '@/hooks/useUnifiedArticles';
+import { useArticlesManagement } from '@/hooks/useArticlesManagement';
 import { Card, CardContent } from '@/components/ui/card';
 import ArticleFilters from '@/components/admin/articles/ArticleFilters';
 import { DateRange } from 'react-day-picker';
-import { MultilingualArticle } from '@/types/article.types';
+import { MultilingualArticle } from '@/types/multilingual-article.types';
 
 const ArticlesManagement = () => {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const ArticlesManagement = () => {
     deleteArticle, 
     togglePublishStatus,
     refresh
-  } = useUnifiedArticles({ mode: 'admin' });
+  } = useArticlesManagement();
   
   const handleCreateNew = () => {
     navigate('/admin/articles/create');
@@ -57,7 +57,7 @@ const ArticlesManagement = () => {
   };
   
   // Filter articles based on search term and filters with multilingual support
-  const filteredArticles: MultilingualArticle[] = (articles as MultilingualArticle[]).filter(article => {
+  const filteredArticles: MultilingualArticle[] = articles.filter(article => {
     // Multilingual search - search across both language fields
     const matchesSearch = searchTerm === '' || 
       (article.title_en && article.title_en.toLowerCase().includes(searchTerm.toLowerCase())) ||
