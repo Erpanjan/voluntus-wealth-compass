@@ -41,70 +41,55 @@ export type Database = {
       }
       articles: {
         Row: {
-          author_name: string | null
           author_name_en: string | null
           author_name_zh: string | null
-          category: string | null
           category_en: string | null
           category_zh: string | null
-          content: Json
           content_en: Json | null
           content_zh: Json | null
           created_at: string
-          description: string | null
           description_en: string | null
           description_zh: string | null
           id: string
           image_url: string | null
           published_at: string
           slug: string
-          title: string
           title_en: string | null
           title_zh: string | null
           updated_at: string
         }
         Insert: {
-          author_name?: string | null
           author_name_en?: string | null
           author_name_zh?: string | null
-          category?: string | null
           category_en?: string | null
           category_zh?: string | null
-          content?: Json
           content_en?: Json | null
           content_zh?: Json | null
           created_at?: string
-          description?: string | null
           description_en?: string | null
           description_zh?: string | null
           id?: string
           image_url?: string | null
           published_at?: string
           slug: string
-          title: string
           title_en?: string | null
           title_zh?: string | null
           updated_at?: string
         }
         Update: {
-          author_name?: string | null
           author_name_en?: string | null
           author_name_zh?: string | null
-          category?: string | null
           category_en?: string | null
           category_zh?: string | null
-          content?: Json
           content_en?: Json | null
           content_zh?: Json | null
           created_at?: string
-          description?: string | null
           description_en?: string | null
           description_zh?: string | null
           id?: string
           image_url?: string | null
           published_at?: string
           slug?: string
-          title?: string
           title_en?: string | null
           title_zh?: string | null
           updated_at?: string

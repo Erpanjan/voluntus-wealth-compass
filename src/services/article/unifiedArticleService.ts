@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { 
   MultilingualArticle, 
@@ -260,7 +261,7 @@ class UnifiedArticleService {
   }
 
   /**
-   * Save multilingual article - FIXED TO INCLUDE LEGACY FIELDS
+   * Save multilingual article - CLEANED UP FOR PURE MULTILINGUAL SCHEMA
    */
   async saveMultilingualArticle(
     articleData: MultilingualArticleInput,
@@ -293,7 +294,7 @@ class UnifiedArticleService {
       imageUrl = publicUrl;
     }
 
-    // Generate slug from English title, fallback to Chinese
+    // Generate slug from English title, fallback to Chinese (handled by trigger now)
     const titleForSlug = articleData.en.title || articleData.zh.title || 'untitled';
     const slug = titleForSlug.toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
@@ -301,14 +302,7 @@ class UnifiedArticleService {
       .replace(/-+/g, '-')
       .trim();
 
-    // Prepare fallback values for legacy fields (required by current schema)
-    const primaryTitle = articleData.en.title || articleData.zh.title || 'Untitled Article';
-    const primaryDescription = articleData.en.description || articleData.zh.description || '';
-    const primaryContent = articleData.en.content || articleData.zh.content || {};
-    const primaryCategory = articleData.en.category || articleData.zh.category || '';
-    const primaryAuthor = articleData.en.author_name || articleData.zh.author_name || '';
-
-    // Prepare article data for database - include both multilingual and legacy fields
+    // Prepare article data for database - only multilingual fields
     const dbData = {
       id: articleData.id,
       // Multilingual fields
@@ -322,19 +316,13 @@ class UnifiedArticleService {
       category_zh: articleData.zh.category || '',
       author_name_en: articleData.en.author_name || '',
       author_name_zh: articleData.zh.author_name || '',
-      // Legacy fields (required by current schema)
-      title: primaryTitle,
-      description: primaryDescription,
-      content: primaryContent,
-      category: primaryCategory,
-      author_name: primaryAuthor,
       // Common fields
       image_url: imageUrl,
-      slug: slug,
+      slug: slug, // Will be overridden by trigger if needed
       published_at: articleData.published_at,
     };
 
-    console.log(`📝 [SAVE DEBUG] Prepared article data:`, dbData);
+    console.log(`📝 [SAVE DEBUG] Prepared clean multilingual article data:`, dbData);
 
     // Insert or update article
     const { data, error } = await supabase
