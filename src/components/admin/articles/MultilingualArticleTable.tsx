@@ -8,7 +8,7 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { MultilingualArticle } from '@/types/multilingual-article.types';
-import MultilingualArticleTableRow from './table/MultilingualArticleTableRow';
+import SimpleArticleTableRow from './SimpleArticleTableRow';
 import TableLoadingSkeleton from './table/TableLoadingSkeleton';
 import TableEmptyState from './table/TableEmptyState';
 
@@ -29,6 +29,8 @@ const MultilingualArticleTable: React.FC<MultilingualArticleTableProps> = memo((
   onDelete,
   onTogglePublish
 }) => {
+  console.log(`🔍 [MultilingualArticleTable] Rendering with ${articles.length} articles, loading: ${loading}`);
+
   if (loading) {
     return <TableLoadingSkeleton />;
   }
@@ -52,7 +54,7 @@ const MultilingualArticleTable: React.FC<MultilingualArticleTableProps> = memo((
         </TableHeader>
         <TableBody>
           {articles.map((article) => (
-            <MultilingualArticleTableRow
+            <SimpleArticleTableRow
               key={article.id}
               article={article}
               onEdit={onEdit}

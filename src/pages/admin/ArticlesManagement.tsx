@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, RefreshCw } from 'lucide-react';
 import MultilingualArticleTable from '@/components/admin/articles/MultilingualArticleTable';
 import ArticleSearch from '@/components/admin/articles/ArticleSearch';
-import { useOptimizedMultilingualArticles } from '@/hooks/useOptimizedMultilingualArticles';
+import { useArticlesManagement } from '@/hooks/useArticlesManagement';
 import { Card, CardContent } from '@/components/ui/card';
 import ArticleFilters from '@/components/admin/articles/ArticleFilters';
 import { DateRange } from 'react-day-picker';
@@ -27,7 +28,7 @@ const ArticlesManagement = () => {
     deleteArticle, 
     togglePublishStatus,
     refresh
-  } = useOptimizedMultilingualArticles();
+  } = useArticlesManagement();
   
   const handleCreateNew = () => {
     navigate('/admin/articles/create');
@@ -42,11 +43,13 @@ const ArticlesManagement = () => {
   };
   
   const handleDelete = async (id: string) => {
-    await deleteArticle(id);
+    if (window.confirm('Are you sure you want to delete this article?')) {
+      await deleteArticle(id);
+    }
   };
   
   const handleTogglePublish = async (id: string, currentStatus: boolean) => {
-    await togglePublishStatus(id, !currentStatus);
+    await togglePublishStatus(id, currentStatus);
   };
 
   const handleRefresh = () => {
@@ -59,8 +62,6 @@ const ArticlesManagement = () => {
     const matchesSearch = searchTerm === '' || 
       (article.title_en && article.title_en.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (article.title_zh && article.title_zh.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (article.content_en && JSON.stringify(article.content_en).toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (article.content_zh && JSON.stringify(article.content_zh).toLowerCase().includes(searchTerm.toLowerCase())) ||
       (article.author_name_en && article.author_name_en.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (article.author_name_zh && article.author_name_zh.toLowerCase().includes(searchTerm.toLowerCase()));
     
