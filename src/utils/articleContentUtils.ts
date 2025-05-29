@@ -1,5 +1,28 @@
 
-import { MultilingualArticle, Article, Language } from '@/types/multilingual-article.types';
+import { MultilingualArticle, MultilingualArticleWithNested, Article, Language } from '@/types/multilingual-article.types';
+
+/**
+ * Convert MultilingualArticle to nested structure for editing
+ */
+export const convertToNestedStructure = (article: MultilingualArticle): MultilingualArticleWithNested => {
+  return {
+    ...article,
+    en: {
+      title: article.title_en,
+      description: article.description_en,
+      content: article.content_en,
+      category: article.category_en,
+      author_name: article.author_name_en,
+    },
+    zh: {
+      title: article.title_zh,
+      description: article.description_zh,
+      content: article.content_zh,
+      category: article.category_zh,
+      author_name: article.author_name_zh,
+    }
+  };
+};
 
 /**
  * Normalize article content for display based on language preference

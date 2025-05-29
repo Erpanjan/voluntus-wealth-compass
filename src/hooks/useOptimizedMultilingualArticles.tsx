@@ -21,7 +21,7 @@ export const useOptimizedMultilingualArticles = (
 ): UseOptimizedMultilingualArticlesResult => {
   const [currentPage, setCurrentPage] = useState(0);
   const { createQuery, showErrorToast, showSuccessToast } = useBaseArticleOperations({
-    priority: 'medium',
+    priority: 'normal', // Fixed: changed from 'medium' to 'normal'
     staleTime: 2 * 60 * 1000, // 2 minutes for admin data
   });
 

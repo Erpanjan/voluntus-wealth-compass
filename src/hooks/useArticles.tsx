@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { articleService } from '@/services/article';
 import { Article } from '@/types/multilingual-article.types';
+import { normalizeArticleContent } from '@/utils/articleContentUtils';
 import { useOptimizedQuery } from './useOptimizedQuery';
 
 export const useArticles = () => {
@@ -20,8 +21,14 @@ export const useArticles = () => {
       console.log('Fetching articles...');
       const data = await articleService.getMultilingualArticles();
       console.log('Articles fetched successfully:', data);
-      setLocalArticles(data.articles || []);
-      return data.articles || [];
+      
+      // Convert multilingual articles to Article format
+      const normalizedArticles = data.articles.map(article => 
+        normalizeArticleContent(article, 'en')
+      );
+      
+      setLocalArticles(normalizedArticles);
+      return normalizedArticles;
     },
     priority: 'normal',
     cacheStrategy: 'normal',

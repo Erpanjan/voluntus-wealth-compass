@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { 
   MultilingualArticle, 
@@ -13,6 +12,24 @@ import {
 import { normalizeArticleContent, processContent } from '@/utils/articleContentUtils';
 
 class UnifiedArticleService {
+  /**
+   * Safely convert database array field to typed array
+   */
+  private safeArrayConvert<T>(field: any): T[] {
+    if (Array.isArray(field)) {
+      return field;
+    }
+    if (typeof field === 'string') {
+      try {
+        const parsed = JSON.parse(field);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  }
+
   /**
    * Get published articles by language with pagination
    */
@@ -51,8 +68,8 @@ class UnifiedArticleService {
       published_at: article.published_at,
       created_at: article.created_at,
       updated_at: article.updated_at,
-      authors: article.authors || [],
-      reports: article.reports || [],
+      authors: this.safeArrayConvert<Author>(article.authors),
+      reports: this.safeArrayConvert<Report>(article.reports),
     }));
 
     return { articles, totalCount };
@@ -94,8 +111,8 @@ class UnifiedArticleService {
       published_at: article.published_at,
       created_at: article.created_at,
       updated_at: article.updated_at,
-      authors: article.authors || [],
-      reports: article.reports || [],
+      authors: this.safeArrayConvert<Author>(article.authors),
+      reports: this.safeArrayConvert<Report>(article.reports),
     };
   }
 
@@ -141,7 +158,7 @@ class UnifiedArticleService {
       author_name_en: article.author_name_en,
       author_name_zh: article.author_name_zh,
       authors: [],
-      reports: article.reports || [],
+      reports: this.safeArrayConvert<Report>(article.reports),
     }));
 
     return { articles, totalCount };
@@ -185,7 +202,7 @@ class UnifiedArticleService {
       author_name_en: article.author_name_en,
       author_name_zh: article.author_name_zh,
       authors: [],
-      reports: article.reports || [],
+      reports: this.safeArrayConvert<Report>(article.reports),
     };
   }
 

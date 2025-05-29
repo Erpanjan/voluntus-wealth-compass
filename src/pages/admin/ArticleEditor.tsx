@@ -9,6 +9,7 @@ import { useArticleImage } from '@/hooks/admin/articleEditor/useArticleImage';
 import { useArticlePreview } from '@/hooks/admin/articleEditor/useArticlePreview';
 import { useMultilingualArticleActions } from '@/hooks/admin/articleEditor/useMultilingualArticleActions';
 import { useMultilingualArticleData } from '@/hooks/admin/articleEditor/useMultilingualArticleData';
+import { convertToNestedStructure } from '@/utils/articleContentUtils';
 import LanguageSelector from '@/components/admin/articles/LanguageSelector';
 import MultilingualArticleBasicInfoSection from '@/components/admin/articles/MultilingualArticleBasicInfoSection';
 import MultilingualArticleContentSection from '@/components/admin/articles/MultilingualArticleContentSection';
@@ -45,21 +46,24 @@ const ArticleEditor = () => {
         if (articleData) {
           console.log('Loading existing multilingual data:', articleData);
           
+          // Convert to nested structure for form
+          const nestedData = convertToNestedStructure(articleData);
+          
           // Set form data with multilingual content
           form.reset({
             en: {
-              title: articleData.en.title || '',
-              description: articleData.en.description || '',
-              content: articleData.en.content || '',
-              category: articleData.en.category || '',
-              author_name: articleData.en.author_name || '',
+              title: nestedData.en.title || '',
+              description: nestedData.en.description || '',
+              content: nestedData.en.content || '',
+              category: nestedData.en.category || '',
+              author_name: nestedData.en.author_name || '',
             },
             zh: {
-              title: articleData.zh.title || '',
-              description: articleData.zh.description || '',
-              content: articleData.zh.content || '',
-              category: articleData.zh.category || '',
-              author_name: articleData.zh.author_name || '',
+              title: nestedData.zh.title || '',
+              description: nestedData.zh.description || '',
+              content: nestedData.zh.content || '',
+              category: nestedData.zh.category || '',
+              author_name: nestedData.zh.author_name || '',
             },
             image_url: articleData.image_url || '',
             published_at: articleData.published_at ? new Date(articleData.published_at).toISOString().split('T')[0] : '',

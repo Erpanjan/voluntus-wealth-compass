@@ -57,6 +57,24 @@ export interface Article {
   reports?: Report[];
 }
 
+// Enhanced multilingual article with nested language structure
+export interface MultilingualArticleWithNested extends MultilingualArticle {
+  en: {
+    title?: string;
+    description?: string;
+    content?: any;
+    category?: string;
+    author_name?: string;
+  };
+  zh: {
+    title?: string;
+    description?: string;
+    content?: any;
+    category?: string;
+    author_name?: string;
+  };
+}
+
 // Input types for creating/updating articles
 export interface MultilingualArticleInput {
   id?: string;
@@ -74,6 +92,18 @@ export interface MultilingualArticleInput {
     category?: string;
     author_name?: string;
   };
+  image_url?: string;
+  published_at: string;
+}
+
+// Legacy article input for backward compatibility
+export interface ArticleInput {
+  id?: string;
+  title: string;
+  description?: string;
+  content: any;
+  category?: string;
+  author_name?: string;
   image_url?: string;
   published_at: string;
 }
