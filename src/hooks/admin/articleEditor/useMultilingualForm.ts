@@ -22,7 +22,6 @@ interface MultilingualFormData {
 
 export const useMultilingualForm = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<Language>('en');
-  const [refreshKey, setRefreshKey] = useState(0);
   
   const form = useForm<MultilingualFormData>({
     defaultValues: {
@@ -45,30 +44,6 @@ export const useMultilingualForm = () => {
     }
   });
 
-  // Handle language switching with proper form updates
-  const handleLanguageChange = (newLanguage: Language) => {
-    console.log('Language switching from', selectedLanguage, 'to', newLanguage);
-    const currentFormData = form.getValues();
-    console.log('Current form data before switch:', currentFormData);
-    
-    setSelectedLanguage(newLanguage);
-    setRefreshKey(prev => prev + 1);
-    
-    // Force form to re-render and update field values
-    setTimeout(() => {
-      form.trigger();
-      const newFormData = form.getValues();
-      console.log('Form data after language switch:', newFormData);
-      console.log('New language content:', newFormData[newLanguage]);
-    }, 10);
-  };
-
-  // Force re-render when language changes to ensure form fields update
-  useEffect(() => {
-    console.log('Language changed to:', selectedLanguage);
-    form.trigger();
-  }, [selectedLanguage, form, refreshKey]);
-
   const getCurrentLanguageData = () => {
     return form.getValues()[selectedLanguage];
   };
@@ -81,27 +56,52 @@ export const useMultilingualForm = () => {
     });
   };
 
+  // Enhanced content detection with proper type checking
   const hasContent = {
-    en: Boolean(form.watch('en.title') || form.watch('en.content')),
-    zh: Boolean(form.watch('zh.title') || form.watch('zh.content'))
+    en: Boolean(
+      (typeof form.watch('en.title') === 'string' && form.watch('en.title').trim()) || 
+      (typeof form.watch('en.content') === 'string' && form.watch('en.content').trim()) || 
+      (typeof form.watch('en.description') === 'string' && form.watch('en.description').trim())
+    ),
+    zh: Boolean(
+      (typeof form.watch('zh.title') === 'string' && form.watch('zh.title').trim()) || 
+      (typeof form.watch('zh.content') === 'string' && form.watch('zh.content').trim()) || 
+      (typeof form.watch('zh.description') === 'string' && form.watch('zh.description').trim())
+    )
   };
 
-  // Get current language field values for proper display
-  const getCurrentFieldValue = (fieldName: keyof MultilingualContent) => {
-    const formValues = form.getValues();
-    const languageData = formValues[selectedLanguage];
-    const value = languageData?.[fieldName] || '';
+  // Language switching with forced field updates
+  const handleLanguageChange = (newLanguage: Language) => {
+    const currentData = form.getValues();
+    console.log('Switching from', selectedLanguage, 'to', newLanguage);
+    console.log('Current form data:', currentData);
+    console.log('Target language data:', currentData[newLanguage]);
     
-    console.log(`Getting field value for ${selectedLanguage}.${fieldName}:`, {
-      formValues,
-      languageData,
-      fieldName,
-      value,
-      refreshKey
+    setSelectedLanguage(newLanguage);
+  };
+
+  // Force form field updates when language changes
+  useEffect(() => {
+    const currentFormData = form.getValues();
+    console.log('Language changed to:', selectedLanguage);
+    console.log('Current language data:', currentFormData[selectedLanguage]);
+    
+    // Force all fields to update by triggering a re-render
+    // This ensures form fields display the correct values for the selected language
+    const languageData = currentFormData[selectedLanguage];
+    
+    // Explicitly set each field to force React Hook Form to update the UI
+    Object.keys(languageData).forEach(key => {
+      const fieldName = `${selectedLanguage}.${key}` as any;
+      const value = languageData[key as keyof MultilingualContent];
+      form.setValue(fieldName, value, { shouldValidate: false });
     });
     
-    return value;
-  };
+    // Trigger form validation after a short delay to ensure all fields are updated
+    setTimeout(() => {
+      form.trigger();
+    }, 10);
+  }, [selectedLanguage, form]);
 
   return {
     form,
@@ -109,8 +109,6 @@ export const useMultilingualForm = () => {
     setSelectedLanguage: handleLanguageChange,
     getCurrentLanguageData,
     updateCurrentLanguageData,
-    getCurrentFieldValue,
-    hasContent,
-    refreshKey
+    hasContent
   };
 };

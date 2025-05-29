@@ -30,41 +30,17 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
 
-// Helper function to determine if a route should show public layout (Header/Footer)
-const shouldShowPublicLayout = (pathname: string): boolean => {
-  // Admin routes - no public layout
-  if (pathname.startsWith('/admin')) {
-    return false;
-  }
-  
-  // Client portal routes - no public layout
-  const clientPortalRoutes = [
-    '/onboarding',
-    '/dashboard', 
-    '/welcome',
-    '/pending-approval',
-    '/questionnaire'
-  ];
-  
-  if (clientPortalRoutes.includes(pathname)) {
-    return false;
-  }
-  
-  // Public website routes - show public layout
-  return true;
-};
-
 // Layout component that conditionally renders Header/Footer
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const showPublicLayout = shouldShowPublicLayout(location.pathname);
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
-  if (!showPublicLayout) {
-    // Admin routes and client portal routes: render only the content
+  if (isAdminRoute) {
+    // Admin routes: render only the content (AdminLayout will handle its own layout)
     return <>{children}</>;
   }
 
-  // Public website routes: render with Header and Footer
+  // Non-admin routes: render with Header and Footer
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

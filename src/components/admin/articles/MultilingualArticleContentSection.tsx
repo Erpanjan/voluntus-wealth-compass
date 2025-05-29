@@ -16,17 +16,19 @@ type Language = 'en' | 'zh';
 interface MultilingualArticleContentSectionProps {
   form: UseFormReturn<any>;
   selectedLanguage: Language;
-  getCurrentFieldValue: (fieldName: string) => string;
-  refreshKey?: number;
 }
 
 const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSectionProps> = ({ 
   form, 
-  selectedLanguage,
-  getCurrentFieldValue,
-  refreshKey = 0
+  selectedLanguage 
 }) => {
   const [isOpen, setIsOpen] = React.useState(true);
+  
+  // Debug logging for language switching
+  React.useEffect(() => {
+    const currentContent = form.getValues(`${selectedLanguage}.content`);
+    console.log(`Content section: Language switched to ${selectedLanguage}, content:`, currentContent?.substring(0, 100) + '...');
+  }, [selectedLanguage, form]);
   
   return (
     <Card className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow">
@@ -37,9 +39,7 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
       >
         <div className="flex items-center justify-between px-6 py-5 border-b bg-gray-50">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-semibold text-gray-800">
-              Article Content
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800">Content</h2>
           </div>
           <CollapsibleTrigger asChild>
             <button className="p-2 rounded-md hover:bg-gray-200 transition-colors">
@@ -67,33 +67,21 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
         >
           <div className={`${isOpen ? 'block' : 'hidden'} p-6`}>
             <FormField
+              key={`content-field-${selectedLanguage}`}
               control={form.control}
               name={`${selectedLanguage}.content`}
-              render={({ field }) => {
-                const currentValue = getCurrentFieldValue('content');
-                console.log('Content field render:', {
-                  selectedLanguage,
-                  fieldValue: field.value,
-                  currentValue,
-                  refreshKey
-                });
-                
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <TiptapEditor 
-                        key={`${selectedLanguage}-content-editor-${refreshKey}`}
-                        value={currentValue}
-                        onChange={(value) => {
-                          console.log('TiptapEditor onChange:', { selectedLanguage, value });
-                          field.onChange(value);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <TiptapEditor 
+                      key={`content-editor-${selectedLanguage}`}
+                      value={field.value || ''} 
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
         </CollapsibleContent>

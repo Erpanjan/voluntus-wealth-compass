@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Article, Author, Report } from './types';
 
@@ -439,55 +440,6 @@ export const articleQueryService = {
     } catch (error) {
       console.error('Error in getArticleBySlug:', error, { slug });
       return null;
-    }
-  },
-
-  /**
-   * Get all articles with multilingual support for admin management
-   * @param page Page number (0-based)
-   * @param pageSize Number of articles per page
-   * @returns List of articles with multilingual data
-   */
-  async getMultilingualArticles(page: number = 0, pageSize: number = 50): Promise<any[]> {
-    try {
-      console.log(`Fetching multilingual articles page ${page} with size ${pageSize}`);
-      const { data, error } = await supabase.rpc('get_multilingual_articles_paginated', {
-        page_num: page,
-        page_size: pageSize
-      });
-      
-      if (error) {
-        console.error('Error fetching multilingual articles:', error);
-        throw error;
-      }
-      
-      console.log('Raw multilingual articles data:', data);
-      
-      // Process the data to ensure correct typing
-      const processedData: any[] = data?.map((item: any) => ({
-        id: item.id,
-        title_en: item.title_en || '',
-        title_zh: item.title_zh || '',
-        slug: item.slug,
-        description_en: item.description_en || '',
-        description_zh: item.description_zh || '',
-        content_en: normalizeContent(item.content_en),
-        content_zh: normalizeContent(item.content_zh),
-        category_en: item.category_en || '',
-        category_zh: item.category_zh || '',
-        author_name_en: item.author_name_en || '',
-        author_name_zh: item.author_name_zh || '',
-        image_url: item.image_url || '',
-        published_at: item.published_at,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-      })) || [];
-      
-      console.log('Processed multilingual articles data:', processedData);
-      return processedData;
-    } catch (error) {
-      console.error('Error in getMultilingualArticles:', error);
-      return [];
     }
   }
 };

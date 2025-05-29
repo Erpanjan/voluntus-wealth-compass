@@ -1,24 +1,20 @@
 
+import { useToast } from '@/hooks/use-toast';
+import { articleService, Article } from '@/services/article';
+import { useOptimizedQuery } from './useOptimizedQuery';
 import { useEffect } from 'react';
-import { articleService } from '@/services/article';
-import { useBaseArticleOperations } from './useBaseArticleOperations';
-import { Language } from '@/types/multilingual-article.types';
-import { processContent } from '@/utils/articleContentUtils';
 
-export const useArticleDetailByLanguage = (slug: string, language: Language = 'en') => {
-  const { createQuery, showErrorToast } = useBaseArticleOperations({
-    priority: 'high',
-    retry: 2,
-  });
+export const useArticleDetailByLanguage = (slug: string, language: string = 'en') => {
+  const { toast } = useToast();
 
   const {
     data: article,
     isLoading: loading,
     error,
     refetch
-  } = createQuery(
-    ['article-detail-by-language', slug, language],
-    async () => {
+  } = useOptimizedQuery({
+    queryKey: ['article-detail-by-language', slug, language],
+    queryFn: async () => {
       if (!slug) {
         throw new Error('No slug provided');
       }
@@ -36,35 +32,49 @@ export const useArticleDetailByLanguage = (slug: string, language: Language = 'e
         throw new Error("Article not found");
       }
       
-      // Process content
-      const processedData = {
-        ...data,
-        content: processContent(data.content)
-      };
+      // Ensure content is properly formatted
+      if (data.content) {
+        console.log("Content type:", typeof data.content);
+        if (typeof data.content === 'string') {
+          try {
+            console.log("Attempting to parse content as JSON string");
+            data.content = JSON.parse(data.content);
+          } catch (e) {
+            console.log("Content is not a valid JSON string, keeping as is");
+          }
+        }
+      } else {
+        console.log("Content is empty or null, setting default");
+        data.content = {};
+      }
       
-      console.log("Processed article data:", processedData);
+      console.log("Processed article data:", data);
       
-      if (processedData.reports) {
-        console.log("Article reports:", processedData.reports);
+      if (data.reports) {
+        console.log("Article reports:", data.reports);
       } else {
         console.log("No reports found for this article");
       }
       
-      return processedData;
+      return data;
     },
-    { enabled: !!slug }
-  );
+    enabled: !!slug,
+    priority: 'high',
+    cacheStrategy: 'aggressive',
+    retry: 2,
+  });
 
   // Handle errors with useEffect
   useEffect(() => {
     if (error) {
       console.error('Error fetching article details by language:', error);
-      showErrorToast(
-        "Error loading article",
-        "There was a problem loading the article details. Please try again later."
-      );
+      toast({
+        title: "Error loading article",
+        description: "There was a problem loading the article details. Please try again later.",
+        variant: "destructive",
+      });
     }
-  }, [error, showErrorToast]);
+  }, [error, toast]);
 
   const handleRefetch = () => {
     console.log("Manually retrying article fetch by language");
