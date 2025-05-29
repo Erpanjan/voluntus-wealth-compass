@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TiptapEditor from '@/components/admin/articles/TiptapEditor';
+import ArticleImageUpload from '@/components/admin/articles/ArticleImageUpload';
+import { useArticleImage } from '@/hooks/admin/articleEditor';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 
 interface ArticleFormData {
@@ -36,6 +38,16 @@ const EditArticleSimple = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'zh'>('en');
+
+  // Image handling
+  const {
+    imageFile,
+    imagePreview,
+    fileInputRef,
+    handleImageChange,
+    handleRemoveImage,
+    loadImageData,
+  } = useArticleImage();
 
   const form = useForm<ArticleFormData>({
     defaultValues: {
@@ -115,11 +127,17 @@ const EditArticleSimple = () => {
           published_at: data.published_at ? new Date(data.published_at).toISOString().split('T')[0] : '',
         };
 
+        // Load existing image if available
+        if (formData.image_url) {
+          loadImageData(formData.image_url);
+        }
+
         console.log(`✅ [SIMPLE EDIT] Processed form data:`, {
           content_en_length: formData.content_en.length,
           content_zh_length: formData.content_zh.length,
           content_en_preview: formData.content_en.substring(0, 100) + '...',
-          content_zh_preview: formData.content_zh.substring(0, 100) + '...'
+          content_zh_preview: formData.content_zh.substring(0, 100) + '...',
+          image_url: formData.image_url
         });
 
         form.reset(formData);
@@ -137,13 +155,36 @@ const EditArticleSimple = () => {
     };
 
     loadArticle();
-  }, [id, form, toast]);
+  }, [id, form, toast, loadImageData]);
 
   const handleSave = async (data: ArticleFormData) => {
     setSaving(true);
     try {
       console.log(`💾 [SIMPLE EDIT] Saving article with ID: ${id}`);
       
+      let finalImageUrl = imagePreview || data.image_url;
+
+      // Handle image upload if there's a new file
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('article-images')
+          .upload(fileName, imageFile);
+
+        if (uploadError) {
+          console.error('Error uploading image:', uploadError);
+          throw new Error('Failed to upload image');
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('article-images')
+          .getPublicUrl(fileName);
+        
+        finalImageUrl = publicUrl;
+      }
+
       const { error } = await supabase
         .from('articles')
         .update({
@@ -157,7 +198,7 @@ const EditArticleSimple = () => {
           category_zh: data.category_zh,
           author_name_en: data.author_name_en,
           author_name_zh: data.author_name_zh,
-          image_url: data.image_url,
+          image_url: finalImageUrl,
           published_at: data.published_at ? new Date(data.published_at).toISOString() : null,
           updated_at: new Date().toISOString(),
         })
@@ -255,6 +296,21 @@ const EditArticleSimple = () => {
               </CardContent>
             </Card>
 
+            {/* Feature Image Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Feature Image</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ArticleImageUpload
+                  imagePreview={imagePreview}
+                  fileInputRef={fileInputRef}
+                  handleImageChange={handleImageChange}
+                  handleRemoveImage={handleRemoveImage}
+                />
+              </CardContent>
+            </Card>
+
             {/* Article Information */}
             <Card>
               <CardHeader>
@@ -332,20 +388,6 @@ const EditArticleSimple = () => {
                     )}
                   />
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="image_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Image URL</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter image URL" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </CardContent>
             </Card>
 
