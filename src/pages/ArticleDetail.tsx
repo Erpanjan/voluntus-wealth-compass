@@ -67,6 +67,11 @@ const ArticleDetail = () => {
 
         {/* Reports Section */}
         <ArticleDetailReports reports={article.reports || []} />
+
+        {/* Bottom Navigation - Back to Articles */}
+        <div className="mt-16 pb-16 border-t border-gray-200 pt-8">
+          <ArticleDetailNavigation />
+        </div>
       </div>
     </div>
   );
