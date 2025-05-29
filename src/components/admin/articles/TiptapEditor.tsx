@@ -10,16 +10,29 @@ import EditorToolbar from './editor/EditorToolbar';
 import EditorStylesComponent from './editor/EditorStylesComponent';
 
 interface TiptapEditorProps {
-  value: string;
+  value: string | { _type?: string; value?: string } | any;
   onChange: (value: string) => void;
 }
 
 const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const editorState = useEditorState();
   
+  // Handle different value formats - extract string content
+  const getStringValue = (val: any): string => {
+    if (typeof val === 'string') {
+      return val;
+    }
+    if (val && typeof val === 'object' && val.value && typeof val.value === 'string') {
+      return val.value;
+    }
+    return '';
+  };
+
+  const stringValue = getStringValue(value);
+  
   const editor = useEditor({
     extensions: getEditorExtensions(),
-    content: value,
+    content: stringValue,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onChange(html);
@@ -36,17 +49,19 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
 
   // Handle value prop changes to update editor content
   React.useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      console.log('TiptapEditor: Updating content from prop value:', value?.substring(0, 100) + '...');
-      editor.commands.setContent(value || '', false);
+    const currentStringValue = getStringValue(value);
+    if (editor && currentStringValue !== editor.getHTML()) {
+      console.log('TiptapEditor: Updating content from prop value:', typeof currentStringValue === 'string' ? currentStringValue.substring(0, 100) + '...' : 'Not a string');
+      editor.commands.setContent(currentStringValue || '', false);
     }
   }, [value, editor]);
 
   // Force editor to update when key changes (language switch)
   React.useEffect(() => {
     if (editor) {
-      console.log('TiptapEditor: Editor re-mounted, setting content:', value?.substring(0, 100) + '...');
-      editor.commands.setContent(value || '', false);
+      const currentStringValue = getStringValue(value);
+      console.log('TiptapEditor: Editor re-mounted, setting content:', typeof currentStringValue === 'string' ? currentStringValue.substring(0, 100) + '...' : 'Not a string');
+      editor.commands.setContent(currentStringValue || '', false);
     }
   }, [editor]);
 
