@@ -1,251 +1,168 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { format } from 'date-fns';
-import { ArrowLeft, Calendar, FileDown, RefreshCcw } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Download, User, Calendar, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { useArticleDetail } from '@/hooks/useArticleDetail';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import { useArticleDetailByLanguage } from '@/hooks/useArticleDetailByLanguage';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ArticleDetail = () => {
-  const { id } = useParams<{ id: string }>();
-  const { article, loading, error, refetch } = useArticleDetail(id || '');
-  const [contentRenderAttempted, setContentRenderAttempted] = useState(false);
+  const { slug } = useParams<{ slug: string }>();
+  const { language, t } = useLanguage();
+  const { article, loading, error } = useArticleDetailByLanguage(slug || '', language);
 
-  // Scroll to top on component mount
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    console.log("ArticleDetail mounted, params:", id);
-  }, []);
-
-  // Track render attempts
-  useEffect(() => {
-    if (article && !contentRenderAttempted) {
-      console.log("First render attempt with article data:", article);
-      setContentRenderAttempted(true);
-    }
-  }, [article]);
-
-  // Handle missing article ID
-  if (!id) {
-    return (
-      <div className="container mx-auto px-4 py-16 text-center mt-20">
-        <h1 className="text-2xl font-semibold text-red-600">Error</h1>
-        <p className="mt-4">Article ID is missing. Please go back and try again.</p>
-        <Button asChild className="mt-6">
-          <Link to="/insight">
-            <ArrowLeft size={18} className="mr-2" />
-            Back to Insights
-          </Link>
-        </Button>
-      </div>
-    );
-  }
-
-  // Loading state
   if (loading) {
     return (
-      <div className="container mx-auto max-w-6xl px-4 py-12 mt-20">
-        <div className="mb-8">
-          <Skeleton className="h-10 w-3/4 mb-4" />
-          <Skeleton className="h-6 w-1/2" />
-        </div>
-        
-        <Skeleton className="h-64 w-full mb-8" />
-        
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
+      <div className="min-h-screen bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="h-64 bg-gray-200 rounded-lg mb-8"></div>
+            <div className="h-12 bg-gray-200 rounded w-3/4 mb-4"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/2 mb-8"></div>
+            <div className="space-y-4">
+              <div className="h-4 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Error state
   if (error || !article) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center mt-20">
-        <h1 className="text-2xl font-semibold text-red-600">Article Not Found</h1>
-        <p className="mt-4">
-          {error ? `Error: ${error.message}` : 'The article you are looking for does not exist or has been removed.'}
-        </p>
-        <div className="mt-6 space-x-4">
-          <Button variant="outline" onClick={() => refetch()} className="mr-4">
-            <RefreshCcw size={18} className="mr-2" />
-            Try Again
-          </Button>
-          <Button asChild>
+      <div className="min-h-screen bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              {t('common.error')}
+            </h1>
+            <p className="text-gray-600 mb-8">
+              The article you're looking for could not be found or may not be available in the selected language.
+            </p>
             <Link to="/insight">
-              <ArrowLeft size={18} className="mr-2" />
-              Back to Insights
+              <Button>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Insights
+              </Button>
             </Link>
-          </Button>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Render content with better error handling
-  const renderContent = () => {
-    console.log("Rendering content, type:", typeof article.content);
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const renderContent = (content: any) => {
+    if (typeof content === 'string') {
+      return <div dangerouslySetInnerHTML={{ __html: content }} />;
+    }
     
-    try {
-      // Handle string content (description or HTML)
-      if (typeof article.content === 'string') {
-        console.log("Rendering string content");
-        return <div dangerouslySetInnerHTML={{ __html: article.content }} />;
-      } 
-      // Handle object content (JSON)
-      else if (article.content && typeof article.content === 'object') {
-        console.log("Rendering object content");
-        // For rich text content stored as JSON, implement a more sophisticated renderer
-        // For now, we'll just display it as formatted text
-        return (
-          <div className="prose max-w-none">
-            <p className="text-lg">{article.description}</p>
-          </div>
-        );
-      }
-      // Fallback to description
-      return <p>{article.description}</p>;
-    } catch (e) {
-      console.error("Error rendering content:", e);
-      return <p className="text-red-600">There was an error displaying this article's content. {article.description}</p>;
+    if (content && typeof content === 'object') {
+      return <div dangerouslySetInnerHTML={{ __html: content.html || '' }} />;
     }
+    
+    return <p>No content available</p>;
   };
-
-  // Get file type from URL
-  const getFileTypeFromUrl = (url: string) => {
-    const extension = url.split('.').pop()?.toLowerCase() || '';
-    return extension;
-  };
-  
-  // Get icon based on file type
-  const getFileIcon = (url: string) => {
-    // Can be expanded with different icons based on fileType
-    return <FileDown size={16} className="mr-2" />;
-  };
-  
-  // Format file name from URL
-  const getFileNameFromUrl = (url: string) => {
-    try {
-      const urlObj = new URL(url);
-      const pathSegments = urlObj.pathname.split('/');
-      const fileName = pathSegments[pathSegments.length - 1];
-      // Remove any UUID prefixes if present
-      return decodeURIComponent(fileName.replace(/^[a-f0-9-]+-/, ''));
-    } catch (e) {
-      // If URL parsing fails, return the last segment of the URL
-      const segments = url.split('/');
-      return segments[segments.length - 1];
-    }
-  };
-
-  // Check if reports exist and have items
-  const hasAttachments = Array.isArray(article.reports) && article.reports.length > 0;
-  console.log("Has attachments:", hasAttachments, article.reports);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-28">
-      <div className="container mx-auto max-w-6xl px-6 py-8">
-        {/* Back button */}
-        <Button variant="ghost" asChild className="mb-8 hover:bg-gray-100 group">
-          <Link to="/insight">
-            <ArrowLeft size={18} className="mr-2 group-hover:transform group-hover:-translate-x-1 transition-transform" />
-            Back to Insights
-          </Link>
-        </Button>
-        
-        {/* Article header */}
-        <div className="mb-6">
-          <Badge className="mb-3">{article.category}</Badge>
-          <h1 className="text-3xl font-semibold text-gray-900 mb-4">{article.title}</h1>
-          
-          <div className="flex items-center text-gray-600 mb-4">
-            <Calendar size={16} className="mr-2" />
-            <span>{format(new Date(article.published_at), 'MMMM dd, yyyy')}</span>
-          </div>
-          
-          {article.authors && article.authors.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 mb-6">
-              <span className="text-gray-600">By:</span>
-              {article.authors.map((author, index) => (
-                <span key={author.id} className="text-gray-900 font-medium">
-                  {author.name}{index < article.authors.length - 1 ? ', ' : ''}
-                </span>
-              ))}
+    <div className="min-h-screen bg-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <Link 
+          to="/insight" 
+          className="inline-flex items-center text-gray-600 hover:text-gray-800 mb-8 transition-colors"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Insights
+        </Link>
+
+        <article className="space-y-8">
+          {article.image_url && (
+            <div className="w-full h-64 md:h-96 overflow-hidden rounded-lg shadow-lg">
+              <img 
+                src={article.image_url} 
+                alt={article.title}
+                className="w-full h-full object-cover"
+              />
             </div>
           )}
-        </div>
-        
-        {/* Feature image */}
-        {article.image_url && (
-          <div className="rounded-xl overflow-hidden mb-8">
-            <img 
-              src={article.image_url} 
-              alt={article.title} 
-              className="w-full h-auto object-cover"
-            />
-          </div>
-        )}
-        
-        {/* Article content */}
-        <div className="prose max-w-none mb-12">
-          <p className="text-xl font-medium text-gray-700 mb-6">{article.description}</p>
-          <Separator className="my-6" />
-          {renderContent()}
-        </div>
-        
-        {/* Attachments section */}
-        {hasAttachments && (
-          <div className="mt-12 mb-8">
-            <h3 className="text-xl font-semibold mb-4">Attachments</h3>
-            <div className="grid gap-4 md:grid-cols-2">
-              {article.reports.map((report) => (
-                <Card key={report.id} className="p-4 flex justify-between items-center hover:bg-gray-50 transition-all">
-                  <div>
-                    <h4 className="font-medium">{report.title || getFileNameFromUrl(report.file_url)}</h4>
-                    {report.description && (
-                      <p className="text-sm text-gray-600">{report.description}</p>
-                    )}
-                    <p className="text-xs text-gray-500 mt-1">
-                      {getFileTypeFromUrl(report.file_url).toUpperCase()} file
-                    </p>
-                  </div>
-                  <Button variant="outline" asChild>
-                    <a 
-                      href={report.file_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      download
-                      className="flex items-center"
-                      onClick={(e) => {
-                        console.log("Downloading file:", report.file_url);
-                      }}
-                    >
-                      {getFileIcon(report.file_url)}
-                      Download
-                    </a>
-                  </Button>
-                </Card>
-              ))}
+
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+                {article.title}
+              </h1>
+              
+              {article.description && (
+                <p className="text-xl text-gray-600 leading-relaxed">
+                  {article.description}
+                </p>
+              )}
             </div>
+
+            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 border-b border-gray-200 pb-6">
+              {article.author_name && (
+                <div className="flex items-center">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>{article.author_name}</span>
+                </div>
+              )}
+              
+              <div className="flex items-center">
+                <Calendar className="mr-2 h-4 w-4" />
+                <span>{formatDate(article.published_at)}</span>
+              </div>
+              
+              {article.category && (
+                <div className="flex items-center">
+                  <Tag className="mr-2 h-4 w-4" />
+                  <Badge variant="secondary">{article.category}</Badge>
+                </div>
+              )}
+            </div>
+
+            <div className="prose prose-lg max-w-none">
+              {renderContent(article.content)}
+            </div>
+
+            {article.reports && article.reports.length > 0 && (
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Related Reports</h3>
+                <div className="space-y-3">
+                  {article.reports.map((report: any) => (
+                    <div key={report.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                      <div>
+                        <h4 className="font-medium">{report.title}</h4>
+                        {report.description && (
+                          <p className="text-sm text-gray-600">{report.description}</p>
+                        )}
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => window.open(report.file_url, '_blank')}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
           </div>
-        )}
-        
-        {/* Bottom back link */}
-        <div className="mt-16 mb-12 text-center">
-          <Button variant="outline" asChild size="lg" className="hover:bg-gray-100">
-            <Link to="/insight" className="flex items-center">
-              <ArrowLeft size={18} className="mr-2" />
-              Back to Insights
-            </Link>
-          </Button>
-        </div>
+        </article>
       </div>
     </div>
   );
