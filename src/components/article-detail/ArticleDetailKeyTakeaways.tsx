@@ -19,7 +19,7 @@ const ArticleDetailKeyTakeaways: React.FC<ArticleDetailKeyTakeawaysProps> = ({ a
     : ["No key takeaways available for this article."];
 
   return (
-    <div className="bg-white rounded-2xl shadow-soft border border-gray-200 p-8">
+    <div className="bg-gray-50 rounded-2xl shadow-soft border border-gray-100 p-8">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-voluntus-teal-light rounded-full flex items-center justify-center">
           <Lightbulb className="h-5 w-5 text-voluntus-teal-dark" />
