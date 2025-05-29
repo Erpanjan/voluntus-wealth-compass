@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useSimpleArticleDetail } from '@/hooks/useSimpleArticleDetail';
+import { useDynamicMetaTags } from '@/hooks/useDynamicMetaTags';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ArticleDetailNavigation from '@/components/article-detail/ArticleDetailNavigation';
 import ArticleDetailImage from '@/components/article-detail/ArticleDetailImage';
@@ -15,6 +16,14 @@ const ArticleDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const { article, loading, error, refetch } = useSimpleArticleDetail(slug || '', language);
+
+  // Dynamic meta tags for social media sharing
+  useDynamicMetaTags({
+    title: article?.title,
+    description: undefined, // No description for articles as requested
+    image: article?.image_url || '/lovable-uploads/381e43eb-0108-4ca1-9195-758748a7bfc8.png',
+    type: 'article'
+  });
 
   // Scroll to top when component mounts or slug changes
   useEffect(() => {
