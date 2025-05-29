@@ -9,7 +9,7 @@ import { useArticleImage } from '@/hooks/admin/articleEditor/useArticleImage';
 import { useArticlePreview } from '@/hooks/admin/articleEditor/useArticlePreview';
 import { useMultilingualArticleActions } from '@/hooks/admin/articleEditor/useMultilingualArticleActions';
 import { useMultilingualArticleData } from '@/hooks/admin/articleEditor/useMultilingualArticleData';
-import { convertToNestedStructure } from '@/utils/articleContentUtils';
+import { convertToNestedStructure } from '@/utils/articleHelpers';
 import LanguageSelector from '@/components/admin/articles/LanguageSelector';
 import MultilingualArticleBasicInfoSection from '@/components/admin/articles/MultilingualArticleBasicInfoSection';
 import MultilingualArticleContentSection from '@/components/admin/articles/MultilingualArticleContentSection';
@@ -44,8 +44,6 @@ const ArticleEditor = () => {
       if (isEditMode) {
         const articleData = await loadArticleData();
         if (articleData) {
-          console.log('Loading existing multilingual data:', articleData);
-          
           // Convert to nested structure for form
           const nestedData = convertToNestedStructure(articleData);
           

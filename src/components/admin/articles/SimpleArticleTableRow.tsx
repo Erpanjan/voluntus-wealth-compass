@@ -17,7 +17,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MultilingualArticle } from '@/types/multilingual-article.types';
+import { MultilingualArticle } from '@/types/article.types';
+import { isArticlePublished } from '@/utils/articleHelpers';
 
 interface SimpleArticleTableRowProps {
   article: MultilingualArticle;
@@ -35,7 +36,7 @@ const SimpleArticleTableRow = memo(({
   onTogglePublish 
 }: SimpleArticleTableRowProps) => {
   const isPublished = useMemo(() => 
-    new Date(article.published_at) <= new Date(), 
+    isArticlePublished(article.published_at), 
     [article.published_at]
   );
 
