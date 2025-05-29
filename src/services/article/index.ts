@@ -29,6 +29,7 @@ export const articleService = {
   
   // Legacy compatibility methods (deprecated - use multilingual versions)
   getArticles: unifiedArticleService.getMultilingualArticles,
+  saveArticle: unifiedArticleService.saveMultilingualArticle,
   getArticleById: async (id: string) => {
     const article = await unifiedArticleService.getMultilingualArticleById(id);
     return article ? {

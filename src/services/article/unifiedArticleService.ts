@@ -6,7 +6,9 @@ import {
   Language, 
   MultilingualArticleInput,
   PaginatedArticlesResponse,
-  PaginatedMultilingualArticlesResponse
+  PaginatedMultilingualArticlesResponse,
+  Author,
+  Report
 } from '@/types/multilingual-article.types';
 import { normalizeArticleContent, processContent } from '@/utils/articleContentUtils';
 
@@ -37,9 +39,20 @@ class UnifiedArticleService {
     }
 
     const totalCount = data[0]?.total_count || 0;
-    const articles = data.map((article: any) => ({
-      ...article,
-      content: processContent(article.content)
+    const articles = data.map((article: any): Article => ({
+      id: article.id,
+      title: article.title,
+      slug: article.slug,
+      description: article.description,
+      content: processContent(article.content),
+      category: article.category,
+      author_name: article.author_name,
+      image_url: article.image_url,
+      published_at: article.published_at,
+      created_at: article.created_at,
+      updated_at: article.updated_at,
+      authors: article.authors || [],
+      reports: article.reports || [],
     }));
 
     return { articles, totalCount };
@@ -70,8 +83,19 @@ class UnifiedArticleService {
 
     const article = data[0];
     return {
-      ...article,
-      content: processContent(article.content)
+      id: article.id,
+      title: article.title,
+      slug: article.slug,
+      description: article.description,
+      content: processContent(article.content),
+      category: article.category,
+      author_name: article.author_name,
+      image_url: article.image_url,
+      published_at: article.published_at,
+      created_at: article.created_at,
+      updated_at: article.updated_at,
+      authors: article.authors || [],
+      reports: article.reports || [],
     };
   }
 
@@ -99,10 +123,25 @@ class UnifiedArticleService {
     }
 
     const totalCount = data[0]?.total_count || 0;
-    const articles = data.map((article: any) => ({
-      ...article,
+    const articles = data.map((article: any): MultilingualArticle => ({
+      id: article.id,
+      slug: article.slug,
+      image_url: article.image_url,
+      published_at: article.published_at,
+      created_at: article.created_at,
+      updated_at: article.updated_at,
+      title_en: article.title_en,
+      title_zh: article.title_zh,
+      description_en: article.description_en,
+      description_zh: article.description_zh,
       content_en: processContent(article.content_en),
-      content_zh: processContent(article.content_zh)
+      content_zh: processContent(article.content_zh),
+      category_en: article.category_en,
+      category_zh: article.category_zh,
+      author_name_en: article.author_name_en,
+      author_name_zh: article.author_name_zh,
+      authors: [],
+      reports: article.reports || [],
     }));
 
     return { articles, totalCount };
@@ -129,9 +168,24 @@ class UnifiedArticleService {
 
     const article = data[0];
     return {
-      ...article,
+      id: article.id,
+      slug: article.slug,
+      image_url: article.image_url,
+      published_at: article.published_at,
+      created_at: article.created_at,
+      updated_at: article.updated_at,
+      title_en: article.title_en,
+      title_zh: article.title_zh,
+      description_en: article.description_en,
+      description_zh: article.description_zh,
       content_en: processContent(article.content_en),
-      content_zh: processContent(article.content_zh)
+      content_zh: processContent(article.content_zh),
+      category_en: article.category_en,
+      category_zh: article.category_zh,
+      author_name_en: article.author_name_en,
+      author_name_zh: article.author_name_zh,
+      authors: [],
+      reports: article.reports || [],
     };
   }
 
@@ -180,14 +234,19 @@ class UnifiedArticleService {
     // Prepare article data for database
     const dbData = {
       id: articleData.id,
+      title: articleData.en.title || articleData.zh.title || '',
       title_en: articleData.en.title || '',
       title_zh: articleData.zh.title || '',
+      description: articleData.en.description || articleData.zh.description || '',
       description_en: articleData.en.description || '',
       description_zh: articleData.zh.description || '',
+      content: articleData.en.content || articleData.zh.content || {},
       content_en: articleData.en.content || {},
       content_zh: articleData.zh.content || {},
+      category: articleData.en.category || articleData.zh.category || '',
       category_en: articleData.en.category || '',
       category_zh: articleData.zh.category || '',
+      author_name: articleData.en.author_name || articleData.zh.author_name || '',
       author_name_en: articleData.en.author_name || '',
       author_name_zh: articleData.zh.author_name || '',
       image_url: imageUrl,

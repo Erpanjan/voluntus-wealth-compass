@@ -1,7 +1,8 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { articleService, Article } from '@/services/article';
+import { articleService } from '@/services/article';
+import { Article } from '@/types/multilingual-article.types';
 import { useOptimizedQuery } from './useOptimizedQuery';
 
 export const useArticles = () => {
@@ -9,7 +10,7 @@ export const useArticles = () => {
   const [localArticles, setLocalArticles] = useState<Article[]>([]);
 
   const {
-    data: articles = [],
+    data: articlesData,
     isLoading: loading,
     error,
     refetch
@@ -17,10 +18,10 @@ export const useArticles = () => {
     queryKey: ['articles'],
     queryFn: async () => {
       console.log('Fetching articles...');
-      const data = await articleService.getArticles();
+      const data = await articleService.getMultilingualArticles();
       console.log('Articles fetched successfully:', data);
-      setLocalArticles(data);
-      return data;
+      setLocalArticles(data.articles || []);
+      return data.articles || [];
     },
     priority: 'normal',
     cacheStrategy: 'normal',
@@ -44,24 +45,20 @@ export const useArticles = () => {
     }
 
     try {
-      const success = await articleService.deleteArticle(id);
+      await articleService.deleteArticle(id);
       
-      if (success) {
-        // Optimistically update local state
-        setLocalArticles(prevArticles => 
-          prevArticles.filter(article => article.id !== id)
-        );
-        
-        toast({
-          title: "Article deleted",
-          description: "The article has been deleted successfully.",
-        });
-        
-        // Refetch to ensure consistency
-        setTimeout(() => refetch(), 100);
-      } else {
-        throw new Error("Failed to delete article");
-      }
+      // Optimistically update local state
+      setLocalArticles(prevArticles => 
+        prevArticles.filter(article => article.id !== id)
+      );
+      
+      toast({
+        title: "Article deleted",
+        description: "The article has been deleted successfully.",
+      });
+      
+      // Refetch to ensure consistency
+      setTimeout(() => refetch(), 100);
       
       return true;
     } catch (error) {
@@ -78,35 +75,31 @@ export const useArticles = () => {
 
   const updateArticleStatus = useCallback(async (id: string, isPublished: boolean) => {
     try {
-      const success = await articleService.togglePublishStatus(id, isPublished);
+      await articleService.togglePublishStatus(id, isPublished);
       
-      if (success) {
-        // Optimistically update local state
-        setLocalArticles(prevArticles => prevArticles.map(article => {
-          if (article.id === id) {
-            const newPublishedAt = isPublished 
-              ? new Date().toISOString() 
-              : new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString();
-            
-            return { ...article, published_at: newPublishedAt };
-          }
-          return article;
-        }));
-        
-        toast({
-          title: isPublished ? "Article published" : "Article unpublished",
-          description: isPublished 
-            ? "The article has been published successfully." 
-            : "The article has been unpublished and is now a draft.",
-        });
-        
-        // Refetch to ensure consistency
-        setTimeout(() => refetch(), 100);
-        
-        return true;
-      } else {
-        throw new Error("Failed to update article status");
-      }
+      // Optimistically update local state
+      setLocalArticles(prevArticles => prevArticles.map(article => {
+        if (article.id === id) {
+          const newPublishedAt = isPublished 
+            ? new Date().toISOString() 
+            : new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString();
+          
+          return { ...article, published_at: newPublishedAt };
+        }
+        return article;
+      }));
+      
+      toast({
+        title: isPublished ? "Article published" : "Article unpublished",
+        description: isPublished 
+          ? "The article has been published successfully." 
+          : "The article has been unpublished and is now a draft.",
+      });
+      
+      // Refetch to ensure consistency
+      setTimeout(() => refetch(), 100);
+      
+      return true;
     } catch (error) {
       console.error('Error updating article status:', error);
       toast({
@@ -124,7 +117,7 @@ export const useArticles = () => {
   }, [refetch]);
 
   // Use local state if available for better responsiveness
-  const currentArticles = localArticles.length > 0 ? localArticles : articles;
+  const currentArticles = localArticles.length > 0 ? localArticles : (articlesData || []);
 
   return {
     articles: currentArticles,

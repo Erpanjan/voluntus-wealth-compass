@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import MultilingualArticleTable from '@/components/admin/articles/MultilingualArticleTable';
 import ArticleSearch from '@/components/admin/articles/ArticleSearch';
-import { useMultilingualArticles } from '@/hooks/useMultilingualArticles';
+import { useOptimizedMultilingualArticles } from '@/hooks/useOptimizedMultilingualArticles';
 import { Card, CardContent } from '@/components/ui/card';
 import ArticleFilters from '@/components/admin/articles/ArticleFilters';
 import { DateRange } from 'react-day-picker';
@@ -20,7 +20,13 @@ const ArticlesManagement = () => {
     dateRange: undefined as DateRange | undefined,
     author: ''
   });
-  const { articles, loading, deleteArticle, updateArticleStatus } = useMultilingualArticles();
+  
+  const { 
+    articles, 
+    loading, 
+    deleteArticle, 
+    togglePublishStatus 
+  } = useOptimizedMultilingualArticles();
   
   const handleCreateNew = () => {
     navigate('/admin/articles/create');
@@ -39,7 +45,7 @@ const ArticlesManagement = () => {
   };
   
   const handleTogglePublish = async (id: string, currentStatus: boolean) => {
-    await updateArticleStatus(id, !currentStatus);
+    await togglePublishStatus(id, !currentStatus);
   };
   
   // Filter articles based on search term and filters with multilingual support

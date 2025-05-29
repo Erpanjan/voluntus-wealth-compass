@@ -6,7 +6,7 @@ import { Language } from '@/types/multilingual-article.types';
 
 interface BaseArticleOperationsConfig {
   cacheStrategy?: 'normal' | 'aggressive';
-  priority?: 'high' | 'medium' | 'low';
+  priority?: 'high' | 'normal' | 'low';
   staleTime?: number;
   retry?: number;
 }
@@ -16,7 +16,7 @@ export const useBaseArticleOperations = (config: BaseArticleOperationsConfig = {
   
   const defaultConfig = useMemo(() => ({
     cacheStrategy: 'aggressive' as const,
-    priority: 'medium' as const,
+    priority: 'normal' as const,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
     ...config
