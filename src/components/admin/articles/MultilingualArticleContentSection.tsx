@@ -23,7 +23,6 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
   selectedLanguage 
 }) => {
   const [isOpen, setIsOpen] = React.useState(true);
-  const isEnglish = selectedLanguage === 'en';
   
   return (
     <Card className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow">
@@ -35,7 +34,7 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
         <div className="flex items-center justify-between px-6 py-5 border-b bg-gray-50">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-semibold text-gray-800">
-              {isEnglish ? 'Article Content' : '文章内容'}
+              Article Content
             </h2>
           </div>
           <CollapsibleTrigger asChild>
