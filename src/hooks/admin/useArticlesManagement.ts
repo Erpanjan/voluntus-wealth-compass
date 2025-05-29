@@ -55,7 +55,12 @@ export const useArticlesManagement = () => {
 
   const handleTogglePublish = async (id: string) => {
     try {
-      await articleService.togglePublishStatus(id);
+      // Find the article to determine current publish status
+      const article = articlesList.find(a => a.id === id);
+      if (!article) return;
+      
+      const currentlyPublished = isPublished(article);
+      await articleService.togglePublishStatus(id, !currentlyPublished);
       refetch();
     } catch (error) {
       console.error('Error toggling publish status:', error);
