@@ -22,6 +22,7 @@ interface MultilingualFormData {
 
 export const useMultilingualForm = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<Language>('en');
+  const [refreshKey, setRefreshKey] = useState(0);
   
   const form = useForm<MultilingualFormData>({
     defaultValues: {
@@ -46,17 +47,26 @@ export const useMultilingualForm = () => {
 
   // Handle language switching with proper form updates
   const handleLanguageChange = (newLanguage: Language) => {
+    console.log('Language switching from', selectedLanguage, 'to', newLanguage);
+    const currentFormData = form.getValues();
+    console.log('Current form data:', currentFormData);
+    
     setSelectedLanguage(newLanguage);
-    // Force form to re-render by triggering validation
+    setRefreshKey(prev => prev + 1);
+    
+    // Force form to re-render and update field values
     setTimeout(() => {
       form.trigger();
-    }, 0);
+      console.log('Form data after language switch:', form.getValues());
+      console.log('New language content:', form.getValues()[newLanguage]);
+    }, 10);
   };
 
   // Force re-render when language changes to ensure form fields update
   useEffect(() => {
+    console.log('Language changed to:', selectedLanguage);
     form.trigger();
-  }, [selectedLanguage, form]);
+  }, [selectedLanguage, form, refreshKey]);
 
   const getCurrentLanguageData = () => {
     return form.getValues()[selectedLanguage];
@@ -77,7 +87,9 @@ export const useMultilingualForm = () => {
 
   // Get current language field values for proper display
   const getCurrentFieldValue = (fieldName: keyof MultilingualContent) => {
-    return form.watch(`${selectedLanguage}.${fieldName}`) || '';
+    const value = form.watch(`${selectedLanguage}.${fieldName}`) || '';
+    console.log(`Getting field value for ${selectedLanguage}.${fieldName}:`, value);
+    return value;
   };
 
   return {
@@ -87,6 +99,7 @@ export const useMultilingualForm = () => {
     getCurrentLanguageData,
     updateCurrentLanguageData,
     getCurrentFieldValue,
-    hasContent
+    hasContent,
+    refreshKey
   };
 };

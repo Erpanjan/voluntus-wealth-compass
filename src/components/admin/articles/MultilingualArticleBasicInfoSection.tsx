@@ -18,14 +18,16 @@ type Language = 'en' | 'zh';
 interface MultilingualArticleBasicInfoSectionProps {
   form: UseFormReturn<any>;
   selectedLanguage: Language;
+  refreshKey?: number;
 }
 
 const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfoSectionProps> = ({
   form,
-  selectedLanguage
+  selectedLanguage,
+  refreshKey = 0
 }) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" key={`basic-info-${selectedLanguage}-${refreshKey}`}>
       <FormField
         control={form.control}
         name={`${selectedLanguage}.title`}
@@ -36,7 +38,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
             </FormLabel>
             <FormControl>
               <Input 
-                key={`${selectedLanguage}-title`}
+                key={`${selectedLanguage}-title-${refreshKey}`}
                 placeholder="Enter article title" 
                 value={field.value || ''}
                 onChange={field.onChange}
@@ -61,7 +63,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
             </FormLabel>
             <FormControl>
               <Textarea 
-                key={`${selectedLanguage}-description`}
+                key={`${selectedLanguage}-description-${refreshKey}`}
                 placeholder="Enter article description (optional)" 
                 rows={3}
                 value={field.value || ''}
@@ -88,7 +90,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               </FormLabel>
               <FormControl>
                 <Input 
-                  key={`${selectedLanguage}-category`}
+                  key={`${selectedLanguage}-category-${refreshKey}`}
                   placeholder="Enter category (optional)" 
                   value={field.value || ''}
                   onChange={field.onChange}
@@ -113,7 +115,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               </FormLabel>
               <FormControl>
                 <Input 
-                  key={`${selectedLanguage}-author`}
+                  key={`${selectedLanguage}-author-${refreshKey}`}
                   placeholder="Enter author name (optional)" 
                   value={field.value || ''}
                   onChange={field.onChange}

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { getEditorExtensions } from './editor/EditorExtensions';
 import { useEditorState } from './editor/hooks/useEditorState';
@@ -26,6 +26,14 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
     },
     editorProps: getEditorProps(editorState.isFullscreen),
   });
+
+  // Update editor content when value prop changes (language switching)
+  useEffect(() => {
+    if (editor && editor.getHTML() !== value) {
+      console.log('Editor content updating:', { currentContent: editor.getHTML(), newValue: value });
+      editor.commands.setContent(value || '');
+    }
+  }, [editor, value]);
 
   const editorHandlers = useEditorHandlers({
     editor,

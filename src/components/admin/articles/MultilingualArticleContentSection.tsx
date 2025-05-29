@@ -16,11 +16,13 @@ type Language = 'en' | 'zh';
 interface MultilingualArticleContentSectionProps {
   form: UseFormReturn<any>;
   selectedLanguage: Language;
+  refreshKey?: number;
 }
 
 const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSectionProps> = ({ 
   form, 
-  selectedLanguage 
+  selectedLanguage,
+  refreshKey = 0
 }) => {
   const [isOpen, setIsOpen] = React.useState(true);
   
@@ -69,7 +71,7 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
                 <FormItem>
                   <FormControl>
                     <TiptapEditor 
-                      key={`${selectedLanguage}-content-editor-${Date.now()}`}
+                      key={`${selectedLanguage}-content-editor-${refreshKey}`}
                       value={field.value || ''} 
                       onChange={field.onChange}
                     />
