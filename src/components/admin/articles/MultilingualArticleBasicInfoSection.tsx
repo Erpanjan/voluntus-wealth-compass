@@ -39,6 +39,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
       </div>
       
       <FormField
+        key={`title-field-${selectedLanguage}`}
         control={form.control}
         name={`${selectedLanguage}.title`}
         render={({ field }) => (
@@ -48,7 +49,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
             </FormLabel>
             <FormControl>
               <Input 
-                key={`title-${selectedLanguage}`}
+                key={`title-input-${selectedLanguage}`}
                 placeholder={`Enter article title in ${languageLabel}`}
                 {...field} 
                 className="focus-visible:ring-gray-400"
@@ -63,6 +64,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
       />
       
       <FormField
+        key={`description-field-${selectedLanguage}`}
         control={form.control}
         name={`${selectedLanguage}.description`}
         render={({ field }) => (
@@ -72,7 +74,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
             </FormLabel>
             <FormControl>
               <Textarea 
-                key={`description-${selectedLanguage}`}
+                key={`description-input-${selectedLanguage}`}
                 placeholder={`Enter article description in ${languageLabel} (optional)`}
                 rows={3}
                 {...field} 
@@ -89,6 +91,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <FormField
+          key={`category-field-${selectedLanguage}`}
           control={form.control}
           name={`${selectedLanguage}.category`}
           render={({ field }) => (
@@ -98,7 +101,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               </FormLabel>
               <FormControl>
                 <Input 
-                  key={`category-${selectedLanguage}`}
+                  key={`category-input-${selectedLanguage}`}
                   placeholder={`Enter category in ${languageLabel} (optional)`}
                   {...field} 
                   className="focus-visible:ring-gray-400"
@@ -113,6 +116,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
         />
         
         <FormField
+          key={`author-field-${selectedLanguage}`}
           control={form.control}
           name={`${selectedLanguage}.author_name`}
           render={({ field }) => (
@@ -122,7 +126,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               </FormLabel>
               <FormControl>
                 <Input 
-                  key={`author-${selectedLanguage}`}
+                  key={`author-input-${selectedLanguage}`}
                   placeholder={`Enter author name in ${languageLabel} (optional)`}
                   {...field} 
                   className="focus-visible:ring-gray-400"

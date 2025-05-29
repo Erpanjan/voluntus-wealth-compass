@@ -1,6 +1,5 @@
 
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 
@@ -71,7 +70,7 @@ export const useMultilingualForm = () => {
     )
   };
 
-  // Simplified language switching
+  // Language switching with forced field updates
   const handleLanguageChange = (newLanguage: Language) => {
     const currentData = form.getValues();
     console.log('Switching from', selectedLanguage, 'to', newLanguage);
@@ -80,6 +79,29 @@ export const useMultilingualForm = () => {
     
     setSelectedLanguage(newLanguage);
   };
+
+  // Force form field updates when language changes
+  useEffect(() => {
+    const currentFormData = form.getValues();
+    console.log('Language changed to:', selectedLanguage);
+    console.log('Current language data:', currentFormData[selectedLanguage]);
+    
+    // Force all fields to update by triggering a re-render
+    // This ensures form fields display the correct values for the selected language
+    const languageData = currentFormData[selectedLanguage];
+    
+    // Explicitly set each field to force React Hook Form to update the UI
+    Object.keys(languageData).forEach(key => {
+      const fieldName = `${selectedLanguage}.${key}` as any;
+      const value = languageData[key as keyof MultilingualContent];
+      form.setValue(fieldName, value, { shouldValidate: false });
+    });
+    
+    // Trigger form validation after a short delay to ensure all fields are updated
+    setTimeout(() => {
+      form.trigger();
+    }, 10);
+  }, [selectedLanguage, form]);
 
   return {
     form,
@@ -90,4 +112,3 @@ export const useMultilingualForm = () => {
     hasContent
   };
 };
-

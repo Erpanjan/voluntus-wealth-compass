@@ -69,6 +69,7 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
         >
           <div className={`${isOpen ? 'block' : 'hidden'} p-6`}>
             <FormField
+              key={`content-field-${selectedLanguage}`}
               control={form.control}
               name={`${selectedLanguage}.content`}
               render={({ field }) => (

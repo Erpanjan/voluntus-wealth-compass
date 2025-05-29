@@ -38,9 +38,17 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   React.useEffect(() => {
     if (editor && value !== editor.getHTML()) {
       console.log('TiptapEditor: Updating content from prop value:', value?.substring(0, 100) + '...');
-      editor.commands.setContent(value || '');
+      editor.commands.setContent(value || '', false);
     }
   }, [value, editor]);
+
+  // Force editor to update when key changes (language switch)
+  React.useEffect(() => {
+    if (editor) {
+      console.log('TiptapEditor: Editor re-mounted, setting content:', value?.substring(0, 100) + '...');
+      editor.commands.setContent(value || '', false);
+    }
+  }, [editor]);
 
   if (!editor) {
     return null;
