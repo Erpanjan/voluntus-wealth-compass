@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -70,9 +69,30 @@ const EditArticleSimple = () => {
   const handleLanguageSwitch = (newLanguage: 'en' | 'zh') => {
     console.log('🌍 [LANGUAGE SWITCH] Switching from', selectedLanguage, 'to', newLanguage);
     
-    // Force form to update with current values before switching
+    // Get current form values
+    const currentValues = form.getValues();
+    
+    // Save current field values to the appropriate language fields
+    if (selectedLanguage === 'en') {
+      // Save current values to English fields
+      form.setValue('title_en', currentValues[`title_${selectedLanguage}` as keyof ArticleFormData] as string);
+      form.setValue('description_en', currentValues[`description_${selectedLanguage}` as keyof ArticleFormData] as string);
+      form.setValue('category_en', currentValues[`category_${selectedLanguage}` as keyof ArticleFormData] as string);
+      form.setValue('author_name_en', currentValues[`author_name_${selectedLanguage}` as keyof ArticleFormData] as string);
+      form.setValue('content_en', currentValues[`content_${selectedLanguage}` as keyof ArticleFormData] as string);
+    } else {
+      // Save current values to Chinese fields
+      form.setValue('title_zh', currentValues[`title_${selectedLanguage}` as keyof ArticleFormData] as string);
+      form.setValue('description_zh', currentValues[`description_${selectedLanguage}` as keyof ArticleFormData] as string);
+      form.setValue('category_zh', currentValues[`category_${selectedLanguage}` as keyof ArticleFormData] as string);
+      form.setValue('author_name_zh', currentValues[`author_name_${selectedLanguage}` as keyof ArticleFormData] as string);
+      form.setValue('content_zh', currentValues[`content_${selectedLanguage}` as keyof ArticleFormData] as string);
+    }
+    
+    // Trigger form validation to ensure all values are saved
     form.trigger();
     
+    console.log('🔄 [LANGUAGE SWITCH] Saved current values and switching to', newLanguage);
     setSelectedLanguage(newLanguage);
   };
 
