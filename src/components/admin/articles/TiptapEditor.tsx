@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { getEditorExtensions } from './editor/EditorExtensions';
 import { useEditorState } from './editor/hooks/useEditorState';
@@ -16,35 +16,43 @@ interface TiptapEditorProps {
 
 const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const editorState = useEditorState();
+  const isInternalUpdate = useRef(false);
+  const lastExternalValue = useRef<string>('');
   
   const editor = useEditor({
     extensions: getEditorExtensions(),
     content: value || '<p></p>',
     onUpdate: ({ editor }) => {
+      // Mark as internal update to prevent sync conflicts
+      isInternalUpdate.current = true;
       const html = editor.getHTML();
       onChange(html);
+      // Reset flag after a brief delay
+      setTimeout(() => {
+        isInternalUpdate.current = false;
+      }, 10);
     },
     editorProps: getEditorProps(editorState.isFullscreen),
   });
 
-  // Update editor content when value prop changes (language switching or data loading)
+  // Update editor content only when value changes externally (not from user editing)
   useEffect(() => {
-    if (editor) {
+    if (editor && !isInternalUpdate.current) {
       const currentContent = editor.getHTML();
       const normalizedCurrentContent = currentContent === '<p></p>' ? '' : currentContent;
       const normalizedNewValue = value || '';
       
-      console.log('TiptapEditor value change detected:', {
-        currentContent: normalizedCurrentContent,
-        newValue: normalizedNewValue,
-        isDifferent: normalizedCurrentContent !== normalizedNewValue,
-        valueType: typeof value
-      });
-      
-      if (normalizedCurrentContent !== normalizedNewValue) {
-        console.log('Updating editor content from', normalizedCurrentContent, 'to', normalizedNewValue);
+      // Only sync if the value actually changed and it's not from internal editing
+      if (normalizedCurrentContent !== normalizedNewValue && lastExternalValue.current !== normalizedNewValue) {
+        console.log('TiptapEditor external value change detected:', {
+          currentContent: normalizedCurrentContent,
+          newValue: normalizedNewValue,
+          isInternalUpdate: isInternalUpdate.current
+        });
         
-        // Prevent infinite update loops
+        lastExternalValue.current = normalizedNewValue;
+        
+        // Update editor content without triggering onUpdate
         editor.commands.setContent(normalizedNewValue || '<p></p>', false);
       }
     }

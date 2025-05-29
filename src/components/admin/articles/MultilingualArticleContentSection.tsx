@@ -92,10 +92,9 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
                           console.log('TiptapEditor onChange:', { selectedLanguage, value });
                           // Ensure we're setting a string value
                           const stringValue = typeof value === 'string' ? value : '';
-                          field.onChange(stringValue);
                           
-                          // Also update the form directly to ensure consistency
-                          form.setValue(`${selectedLanguage}.content`, stringValue);
+                          // Update form field directly with proper validation
+                          field.onChange(stringValue);
                         }}
                       />
                     </FormControl>
