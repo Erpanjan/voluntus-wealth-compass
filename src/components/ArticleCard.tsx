@@ -16,7 +16,7 @@ interface ArticleCardProps {
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = memo(({ 
-  id, // This is actually the slug from the articles data
+  id,
   title, 
   date, 
   description, 
@@ -26,14 +26,12 @@ const ArticleCard: React.FC<ArticleCardProps> = memo(({
   className,
   priority = false
 }) => {
-  // Use the slug directly for URL navigation
-  const articleSlug = id; // id prop is actually the slug
-
-  console.log(`🔗 [ArticleCard] Creating link for article: ${title}, slug: ${articleSlug}`);
+  // Properly encode the slug for URL navigation
+  const encodedSlug = encodeURIComponent(id);
 
   return (
     <Link 
-      to={`/insight/${articleSlug}`}
+      to={`/insight/${encodedSlug}`}
       className={cn(
         "block bg-white rounded-xl overflow-hidden transition-all duration-300 group",
         "border border-gray-200 shadow-sm hover:shadow-md",

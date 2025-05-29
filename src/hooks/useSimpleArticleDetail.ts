@@ -12,7 +12,6 @@ export const useSimpleArticleDetail = (slug: string, language: Language = 'en') 
 
   const loadArticle = async () => {
     if (!slug) {
-      console.log('⚠️ [useSimpleArticleDetail] No slug provided, skipping load');
       setLoading(false);
       return;
     }
@@ -23,20 +22,9 @@ export const useSimpleArticleDetail = (slug: string, language: Language = 'en') 
     
     try {
       const decodedSlug = decodeURIComponent(slug);
-      console.log(`🔍 [useSimpleArticleDetail] Decoded slug: ${decodedSlug}`);
-      
       const result = await getArticleBySlugAndLanguage(decodedSlug, language);
       setArticle(result);
-      
-      if (result) {
-        console.log(`✅ [useSimpleArticleDetail] Loaded article: ${result.title}`, {
-          slug: result.slug,
-          hasContent: !!result.content,
-          contentType: typeof result.content
-        });
-      } else {
-        console.log(`⚠️ [useSimpleArticleDetail] Article not found for slug: ${decodedSlug}`);
-      }
+      console.log(`✅ [useSimpleArticleDetail] Loaded article: ${result?.title || 'Not found'}`);
     } catch (err) {
       const error = err as Error;
       console.error('❌ [useSimpleArticleDetail] Error loading article:', error);
