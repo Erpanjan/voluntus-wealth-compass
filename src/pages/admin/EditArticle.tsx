@@ -17,55 +17,6 @@ import ArticleEditorToolbar from '@/components/admin/articles/ArticleEditorToolb
 import MultilingualArticlePreviewDialog from '@/components/admin/articles/MultilingualArticlePreviewDialog';
 import { useEditArticleActions } from '@/hooks/admin/articleEditor/useEditArticleActions';
 
-// Simplified content conversion function focused on HTML strings
-const convertContentToHtml = (content: any): string => {
-  console.log('🔍 [CONTENT DEBUG] Converting content:', { 
-    type: typeof content, 
-    isString: typeof content === 'string',
-    isObject: typeof content === 'object',
-    value: content 
-  });
-  
-  // Handle null/undefined
-  if (!content) {
-    console.log('📝 [CONTENT DEBUG] Content is null/undefined, returning empty string');
-    return '';
-  }
-  
-  // Priority 1: Handle direct HTML strings (most common case from our database)
-  if (typeof content === 'string') {
-    console.log('✅ [CONTENT DEBUG] Content is string, returning as-is:', content.substring(0, 100) + '...');
-    return content;
-  }
-  
-  // Priority 2: Handle object with _type: "String" structure
-  if (typeof content === 'object' && content._type === 'String' && content.value) {
-    console.log('✅ [CONTENT DEBUG] Found _type: String structure, extracting value');
-    return content.value;
-  }
-  
-  // Priority 3: Handle object with html property
-  if (typeof content === 'object' && content.html) {
-    console.log('✅ [CONTENT DEBUG] Found html property, using it');
-    return content.html;
-  }
-  
-  // Priority 4: Handle Tiptap/ProseMirror document structure
-  if (typeof content === 'object' && content.type === 'doc' && content.content) {
-    console.log('✅ [CONTENT DEBUG] Found ProseMirror document structure');
-    return '<p></p>'; // Simple fallback for complex docs
-  }
-  
-  // Fallback: Convert unknown objects to string
-  if (typeof content === 'object') {
-    console.log('⚠️ [CONTENT DEBUG] Unknown object structure, stringifying');
-    return JSON.stringify(content);
-  }
-  
-  console.log('⚠️ [CONTENT DEBUG] Unknown content type, returning empty string');
-  return '';
-};
-
 const EditArticle = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
@@ -101,7 +52,7 @@ const EditArticle = () => {
       }
 
       try {
-        console.log(`🔍 [LOAD DEBUG] Loading article data for ID: ${id}`);
+        console.log(`🔍 Loading article data for ID: ${id}`);
         
         const article = await unifiedArticleService.getMultilingualArticleById(id);
 
@@ -115,14 +66,12 @@ const EditArticle = () => {
           return;
         }
 
-        console.log(`📊 [LOAD DEBUG] Loaded article data:`, {
+        console.log(`📊 Raw article data:`, {
           id: article.id,
           title_en: article.title_en,
           title_zh: article.title_zh,
-          content_en_type: typeof article.content_en,
-          content_zh_type: typeof article.content_zh,
-          content_en_preview: typeof article.content_en === 'string' ? article.content_en.substring(0, 100) : article.content_en,
-          content_zh_preview: typeof article.content_zh === 'string' ? article.content_zh.substring(0, 100) : article.content_zh
+          content_en: article.content_en,
+          content_zh: article.content_zh
         });
 
         // Load existing image if available
@@ -130,30 +79,42 @@ const EditArticle = () => {
           loadImageData(article.image_url);
         }
 
-        // Convert content to HTML strings for proper editing
-        const convertedContentEn = convertContentToHtml(article.content_en);
-        const convertedContentZh = convertContentToHtml(article.content_zh);
+        // Simple content extraction - just get the string directly from the database
+        let contentEn = '';
+        let contentZh = '';
 
-        console.log('📝 [LOAD DEBUG] Content conversion results:', {
-          originalEn: article.content_en,
-          convertedEn: convertedContentEn.substring(0, 100) + '...',
-          originalZh: article.content_zh,
-          convertedZh: convertedContentZh.substring(0, 100) + '...'
+        // Handle content_en
+        if (typeof article.content_en === 'string') {
+          contentEn = article.content_en;
+        } else if (article.content_en && typeof article.content_en === 'object' && article.content_en.value) {
+          contentEn = article.content_en.value;
+        }
+
+        // Handle content_zh  
+        if (typeof article.content_zh === 'string') {
+          contentZh = article.content_zh;
+        } else if (article.content_zh && typeof article.content_zh === 'object' && article.content_zh.value) {
+          contentZh = article.content_zh.value;
+        }
+
+        console.log('📝 Extracted content:', {
+          contentEn: contentEn.substring(0, 100) + '...',
+          contentZh: contentZh.substring(0, 100) + '...'
         });
 
-        // Populate form with article data - this happens ONCE
+        // Set form data directly
         const formData = {
           en: {
             title: article.title_en || '',
             description: article.description_en || '',
-            content: convertedContentEn,
+            content: contentEn,
             category: article.category_en || '',
             author_name: article.author_name_en || '',
           },
           zh: {
             title: article.title_zh || '',
             description: article.description_zh || '',
-            content: convertedContentZh,
+            content: contentZh,
             category: article.category_zh || '',
             author_name: article.author_name_zh || '',
           },
@@ -161,28 +122,15 @@ const EditArticle = () => {
           published_at: article.published_at?.split('T')[0] || new Date().toISOString().split('T')[0],
         };
 
-        console.log(`✅ [LOAD DEBUG] Setting form data:`, {
+        console.log(`✅ Setting form with content lengths:`, {
           en_content_length: formData.en.content.length,
-          zh_content_length: formData.zh.content.length,
-          en_content_preview: formData.en.content.substring(0, 100) + '...',
-          zh_content_preview: formData.zh.content.substring(0, 100) + '...'
+          zh_content_length: formData.zh.content.length
         });
         
         form.reset(formData);
 
-        // Verify the form was set correctly
-        setTimeout(() => {
-          const currentValues = form.getValues();
-          console.log('🔍 [VERIFICATION] Form values after reset:', {
-            en_content_length: currentValues.en?.content?.length || 0,
-            zh_content_length: currentValues.zh?.content?.length || 0,
-            en_content_preview: currentValues.en?.content?.substring(0, 100) + '...',
-            zh_content_preview: currentValues.zh?.content?.substring(0, 100) + '...'
-          });
-        }, 100);
-
       } catch (error) {
-        console.error('💥 [LOAD ERROR] Error loading article:', error);
+        console.error('💥 Error loading article:', error);
         toast({
           title: 'Error',
           description: 'Failed to load article data. Please try again.',
@@ -192,7 +140,7 @@ const EditArticle = () => {
     };
 
     loadArticleData();
-  }, [id]); // Only depend on id, not form or other dependencies
+  }, [id]);
 
   const handleSaveDraft = async () => {
     const formData = form.getValues();
