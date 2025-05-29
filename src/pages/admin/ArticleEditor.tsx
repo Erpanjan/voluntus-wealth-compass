@@ -26,6 +26,7 @@ const ArticleEditor = () => {
     setSelectedLanguage, 
     hasContent,
     getCurrentFieldValue,
+    refreshKey
   } = useMultilingualForm();
   
   const { 
@@ -137,6 +138,7 @@ const ArticleEditor = () => {
                         form={form} 
                         selectedLanguage={selectedLanguage}
                         getCurrentFieldValue={getCurrentFieldValue}
+                        refreshKey={refreshKey}
                       />
                       
                       <div className="border-t border-gray-100 pt-8"></div>
@@ -159,6 +161,7 @@ const ArticleEditor = () => {
             form={form} 
             selectedLanguage={selectedLanguage}
             getCurrentFieldValue={getCurrentFieldValue}
+            refreshKey={refreshKey}
           />
         </div>
 

@@ -44,32 +44,9 @@ const MultilingualArticlePreviewDialog: React.FC<MultilingualArticlePreviewDialo
   
   const currentContent = content[selectedLanguage];
   
-  // Helper function to check if content exists - handle both string and object content
-  const hasContentForLanguage = (langContent: any): boolean => {
-    if (!langContent) return false;
-    
-    // Check title
-    if (langContent.title && typeof langContent.title === 'string' && langContent.title.trim()) {
-      return true;
-    }
-    
-    // Check content - handle both string and object types
-    if (langContent.content) {
-      if (typeof langContent.content === 'string' && langContent.content.trim()) {
-        return true;
-      } else if (typeof langContent.content === 'object' && langContent.content !== null) {
-        // For object content (like from rich text editor), check if it has meaningful content
-        const contentStr = JSON.stringify(langContent.content);
-        return contentStr !== '{}' && contentStr !== '[]' && contentStr.length > 10;
-      }
-    }
-    
-    return false;
-  };
-  
   // Check which languages have content
-  const hasEnglishContent = hasContentForLanguage(content.en);
-  const hasChineseContent = hasContentForLanguage(content.zh);
+  const hasEnglishContent = content.en.title?.trim() || content.en.content?.trim();
+  const hasChineseContent = content.zh.title?.trim() || content.zh.content?.trim();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -6,5 +6,3 @@ export { useArticleAttachments } from './useArticleAttachments';
 export { useArticlePreview } from './useArticlePreview';
 export { useArticleActions } from './useArticleActions';
 export { useMultilingualArticleActions } from './useMultilingualArticleActions';
-export { useEditArticleActions } from './useEditArticleActions';
-export { useEditArticleData } from './useEditArticleData';

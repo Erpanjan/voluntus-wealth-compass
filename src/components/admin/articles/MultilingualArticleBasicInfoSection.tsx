@@ -1,15 +1,17 @@
 
 import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from 'lucide-react';
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { UseFormReturn } from 'react-hook-form';
 
 type Language = 'en' | 'zh';
 
@@ -17,53 +19,114 @@ interface MultilingualArticleBasicInfoSectionProps {
   form: UseFormReturn<any>;
   selectedLanguage: Language;
   getCurrentFieldValue: (fieldName: string) => string;
+  refreshKey?: number;
 }
 
-const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfoSectionProps> = ({ 
-  form, 
+const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfoSectionProps> = ({
+  form,
   selectedLanguage,
   getCurrentFieldValue,
+  refreshKey = 0
 }) => {
-  const isEnglish = selectedLanguage === 'en';
-  
   return (
-    <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2">
-        <FormField
-          control={form.control}
-          name={`${selectedLanguage}.title`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-gray-700 font-medium">
-                {isEnglish ? 'Article Title' : '文章标题'}
-              </FormLabel>
-              <FormControl>
-                <Input 
-                  {...field}
-                  placeholder={isEnglish ? 'Enter article title...' : '输入文章标题...'}
-                  className="border-gray-300 focus:border-blue-500"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
+    <div className="space-y-8" key={`basic-info-${selectedLanguage}-${refreshKey}`}>
+      <FormField
+        control={form.control}
+        name={`${selectedLanguage}.title`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-700 text-base">
+              Title *
+            </FormLabel>
+            <FormControl>
+              <Input 
+                key={`${selectedLanguage}-title-${refreshKey}`}
+                placeholder="Enter article title" 
+                value={getCurrentFieldValue('title')}
+                onChange={field.onChange}
+                className="focus-visible:ring-gray-400"
+              />
+            </FormControl>
+            <FormDescription className="text-gray-500">
+              The main title of your article (required)
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      <FormField
+        control={form.control}
+        name={`${selectedLanguage}.description`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-700 text-base">
+              Description
+            </FormLabel>
+            <FormControl>
+              <Textarea 
+                key={`${selectedLanguage}-description-${refreshKey}`}
+                placeholder="Enter article description (optional)" 
+                rows={3}
+                value={getCurrentFieldValue('description')}
+                onChange={field.onChange}
+                className="focus-visible:ring-gray-400 resize-none"
+              />
+            </FormControl>
+            <FormDescription className="text-gray-500">
+              A brief summary of your article (optional)
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <FormField
           control={form.control}
           name={`${selectedLanguage}.category`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 font-medium">
-                {isEnglish ? 'Category' : '分类'}
+              <FormLabel className="text-gray-700 text-base">
+                Category
               </FormLabel>
               <FormControl>
                 <Input 
-                  {...field}
-                  placeholder={isEnglish ? 'Enter category...' : '输入分类...'}
-                  className="border-gray-300 focus:border-blue-500"
+                  key={`${selectedLanguage}-category-${refreshKey}`}
+                  placeholder="Enter category (optional)" 
+                  value={getCurrentFieldValue('category')}
+                  onChange={field.onChange}
+                  className="focus-visible:ring-gray-400"
                 />
               </FormControl>
+              <FormDescription className="text-gray-500">
+                Category of your article (optional)
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name={`${selectedLanguage}.author_name`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-700 text-base">
+                Author
+              </FormLabel>
+              <FormControl>
+                <Input 
+                  key={`${selectedLanguage}-author-${refreshKey}`}
+                  placeholder="Enter author name (optional)" 
+                  value={getCurrentFieldValue('author_name')}
+                  onChange={field.onChange}
+                  className="focus-visible:ring-gray-400"
+                />
+              </FormControl>
+              <FormDescription className="text-gray-500">
+                Name of the article author (optional)
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -72,65 +135,29 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
 
       <FormField
         control={form.control}
-        name={`${selectedLanguage}.description`}
+        name="published_at"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 font-medium">
-              {isEnglish ? 'Description' : '描述'}
+            <FormLabel className="text-gray-700 text-base">
+              Publish Date
             </FormLabel>
             <FormControl>
-              <Textarea 
-                {...field}
-                placeholder={isEnglish ? 'Enter article description...' : '输入文章描述...'}
-                className="border-gray-300 focus:border-blue-500 min-h-[100px]"
-              />
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                <Input
+                  type="date"
+                  className="pl-10 focus-visible:ring-gray-400"
+                  {...field}
+                />
+              </div>
             </FormControl>
+            <FormDescription className="text-gray-500">
+              When the article should be published
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <FormField
-          control={form.control}
-          name={`${selectedLanguage}.author_name`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-gray-700 font-medium">
-                {isEnglish ? 'Author Name' : '作者姓名'}
-              </FormLabel>
-              <FormControl>
-                <Input 
-                  {...field}
-                  placeholder={isEnglish ? 'Enter author name...' : '输入作者姓名...'}
-                  className="border-gray-300 focus:border-blue-500"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="published_at"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-gray-700 font-medium">
-                {isEnglish ? 'Publication Date' : '发布日期'}
-              </FormLabel>
-              <FormControl>
-                <Input 
-                  {...field}
-                  type="date"
-                  className="border-gray-300 focus:border-blue-500"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
     </div>
   );
 };

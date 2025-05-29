@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { 
   MultilingualArticle, 
@@ -31,111 +32,72 @@ class UnifiedArticleService {
   };
 
   /**
-   * Safely process content - SIMPLIFIED to handle HTML strings directly
+   * Safely process content with enhanced handling for PostgreSQL data types
    */
-  private safeProcessContent = (content: any): string => {
+  private safeProcessContent = (content: any): any => {
     console.log('🔍 [DEBUG] Processing content:', typeof content, content);
     
     // Handle null or undefined
     if (!content) {
-      console.log('📝 [DEBUG] Content is null/undefined, returning empty string');
-      return '';
+      console.log('📝 [DEBUG] Content is null/undefined, returning empty object');
+      return {};
     }
     
-    // If it's already a string (HTML content), return it directly
+    // Handle PostgreSQL's map[] format for empty JSONB fields
     if (typeof content === 'string') {
-      // Handle PostgreSQL's map[] format for empty JSONB fields
       if (content === 'map[]' || content.trim() === '') {
-        console.log('📝 [DEBUG] Content is map[] or empty string, returning empty string');
-        return '';
+        console.log('📝 [DEBUG] Content is map[] or empty string, returning empty object');
+        return {};
       }
       
-      // If it looks like HTML or plain text, return as-is
-      if (content.includes('<') || !content.startsWith('{')) {
-        console.log('📝 [DEBUG] Content is HTML string, returning as-is:', content.substring(0, 100) + '...');
-        return content;
-      }
-      
-      // Try to parse as JSON if it looks like JSON
       try {
         const parsed = JSON.parse(content);
         console.log('📝 [DEBUG] Successfully parsed JSON string:', parsed);
-        return this.extractContentFromObject(parsed);
+        return this.processContentRecursively(parsed);
       } catch (error) {
-        console.warn('⚠️ [DEBUG] Failed to parse JSON string, returning as-is:', content.substring(0, 100) + '...');
+        console.warn('⚠️ [DEBUG] Failed to parse JSON string, returning as-is:', content);
         return content;
       }
     }
     
     // Handle objects (including already parsed JSON)
     if (typeof content === 'object') {
-      console.log('📝 [DEBUG] Content is object, extracting content');
-      return this.extractContentFromObject(content);
+      console.log('📝 [DEBUG] Content is object, processing recursively');
+      return this.processContentRecursively(content);
     }
     
-    // Handle other types - convert to string
-    console.log('📝 [DEBUG] Content is other type, converting to string:', typeof content);
-    return String(content);
+    // Handle other types
+    console.log('📝 [DEBUG] Content is other type, returning as-is:', typeof content);
+    return content;
   };
 
   /**
-   * Extract HTML content from object structures (like TipTap editor output)
+   * Recursively process content object to handle nested structures
    */
-  private extractContentFromObject = (obj: any): string => {
+  private processContentRecursively = (obj: any): any => {
     if (obj === null || obj === undefined) {
-      return '';
+      return {};
     }
     
-    // If it's a TipTap editor structure with content array
-    if (obj.type && obj.content && Array.isArray(obj.content)) {
-      // This would need proper TipTap to HTML conversion
-      // For now, return a simple representation
-      return this.convertTipTapToHTML(obj);
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.processContentRecursively(item));
     }
     
-    // If it's an object with HTML property
-    if (obj.html && typeof obj.html === 'string') {
-      return obj.html;
-    }
-    
-    // If it's an object with content property
-    if (obj.content && typeof obj.content === 'string') {
-      return obj.content;
-    }
-    
-    // If it's an object with value property
-    if (obj.value && typeof obj.value === 'string') {
-      return obj.value;
-    }
-    
-    // Fallback: stringify the object
-    return JSON.stringify(obj);
-  };
-
-  /**
-   * Simple TipTap to HTML conversion (basic implementation)
-   */
-  private convertTipTapToHTML = (tipTapContent: any): string => {
-    if (!tipTapContent.content || !Array.isArray(tipTapContent.content)) {
-      return '';
-    }
-    
-    // Very basic conversion - in a real app, you'd use TipTap's generateHTML
-    let html = '';
-    for (const node of tipTapContent.content) {
-      if (node.type === 'paragraph') {
-        html += '<p>';
-        if (node.content && Array.isArray(node.content)) {
-          for (const textNode of node.content) {
-            if (textNode.type === 'text') {
-              html += textNode.text || '';
-            }
-          }
+    if (typeof obj === 'object') {
+      const processed: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        if (typeof value === 'string' && value === 'map[]') {
+          processed[key] = {};
+        } else if (typeof value === 'object') {
+          processed[key] = this.processContentRecursively(value);
+        } else {
+          processed[key] = value;
         }
-        html += '</p>';
       }
+      return processed;
     }
-    return html;
+    
+    return obj;
   };
 
   /**
@@ -311,84 +273,45 @@ class UnifiedArticleService {
   }
 
   /**
-   * Get multilingual article by ID (admin) - SIMPLIFIED CONTENT PROCESSING
+   * Get multilingual article by ID (admin)
    */
   async getMultilingualArticleById(id: string): Promise<MultilingualArticle | null> {
-    console.log(`🔍 [DEBUG] Fetching multilingual article by ID: ${id}`);
+    console.log(`Fetching multilingual article by ID: ${id}`);
     
-    try {
-      const { data, error } = await supabase.rpc('get_article_by_id_multilingual', {
-        article_id: id
-      });
+    const { data, error } = await supabase.rpc('get_article_by_id_multilingual', {
+      article_id: id
+    });
 
-      console.log(`🔍 [DEBUG] Raw response from get_article_by_id_multilingual:`, { data, error });
-
-      if (error) {
-        console.error('❌ [ERROR] Database error fetching multilingual article by ID:', error);
-        throw error;
-      }
-
-      if (!data || data.length === 0) {
-        console.log(`⚠️ [WARNING] No article found with ID: ${id}`);
-        return null;
-      }
-
-      const article = data[0];
-      console.log(`📊 [DEBUG] Raw article from database:`, {
-        id: article.id,
-        title_en: article.title_en,
-        title_zh: article.title_zh,
-        content_en_type: typeof article.content_en,
-        content_zh_type: typeof article.content_zh,
-        content_en_preview: article.content_en ? String(article.content_en).substring(0, 100) : 'null',
-        content_zh_preview: article.content_zh ? String(article.content_zh).substring(0, 100) : 'null'
-      });
-
-      const content_en = this.safeProcessContent(article.content_en);
-      const content_zh = this.safeProcessContent(article.content_zh);
-
-      console.log(`📝 [DEBUG] Processed content:`, {
-        content_en_length: content_en.length,
-        content_zh_length: content_zh.length,
-        content_en_preview: content_en.substring(0, 100) + '...',
-        content_zh_preview: content_zh.substring(0, 100) + '...'
-      });
-
-      const processedArticle: MultilingualArticle = {
-        id: article.id,
-        slug: article.slug,
-        image_url: article.image_url,
-        published_at: article.published_at,
-        created_at: article.created_at,
-        updated_at: article.updated_at,
-        title_en: article.title_en || '',
-        title_zh: article.title_zh || '',
-        description_en: article.description_en || '',
-        description_zh: article.description_zh || '',
-        content_en: content_en,
-        content_zh: content_zh,
-        category_en: article.category_en || '',
-        category_zh: article.category_zh || '',
-        author_name_en: article.author_name_en || '',
-        author_name_zh: article.author_name_zh || '',
-        authors: [],
-        reports: this.safeArrayConvert<Report>(article.reports),
-      };
-
-      console.log(`✅ [DEBUG] Final processed article:`, {
-        id: processedArticle.id,
-        title_en: processedArticle.title_en,
-        title_zh: processedArticle.title_zh,
-        content_en_length: processedArticle.content_en.length,
-        content_zh_length: processedArticle.content_zh.length
-      });
-
-      return processedArticle;
-
-    } catch (error) {
-      console.error('💥 [FATAL ERROR] Exception in getMultilingualArticleById:', error);
+    if (error) {
+      console.error('Error fetching multilingual article by ID:', error);
       throw error;
     }
+
+    if (!data || data.length === 0) {
+      return null;
+    }
+
+    const article = data[0];
+    return {
+      id: article.id,
+      slug: article.slug,
+      image_url: article.image_url,
+      published_at: article.published_at,
+      created_at: article.created_at,
+      updated_at: article.updated_at,
+      title_en: article.title_en || '',
+      title_zh: article.title_zh || '',
+      description_en: article.description_en || '',
+      description_zh: article.description_zh || '',
+      content_en: this.safeProcessContent(article.content_en),
+      content_zh: this.safeProcessContent(article.content_zh),
+      category_en: article.category_en || '',
+      category_zh: article.category_zh || '',
+      author_name_en: article.author_name_en || '',
+      author_name_zh: article.author_name_zh || '',
+      authors: [],
+      reports: this.safeArrayConvert<Report>(article.reports),
+    };
   }
 
   /**
@@ -409,42 +332,18 @@ class UnifiedArticleService {
       const fileExt = imageFile.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
       
-      // Try article-images bucket first, then article-assets as fallback
-      let uploadData, uploadError;
-      
-      try {
-        const { data, error } = await supabase.storage
-          .from('article-images')
-          .upload(fileName, imageFile);
-        uploadData = data;
-        uploadError = error;
-      } catch (error) {
-        console.log('article-images bucket not found, trying article-assets...');
-        const { data, error: fallbackError } = await supabase.storage
-          .from('article-assets')
-          .upload(fileName, imageFile);
-        uploadData = data;
-        uploadError = fallbackError;
-      }
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('article-images')
+        .upload(fileName, imageFile);
 
       if (uploadError) {
         console.error('Error uploading image:', uploadError);
         throw new Error('Failed to upload image');
       }
 
-      // Get public URL using the same bucket that worked
-      let publicUrl;
-      try {
-        const { data: { publicUrl: url1 } } = supabase.storage
-          .from('article-images')
-          .getPublicUrl(fileName);
-        publicUrl = url1;
-      } catch {
-        const { data: { publicUrl: url2 } } = supabase.storage
-          .from('article-assets')
-          .getPublicUrl(fileName);
-        publicUrl = url2;
-      }
+      const { data: { publicUrl } } = supabase.storage
+        .from('article-images')
+        .getPublicUrl(fileName);
       
       imageUrl = publicUrl;
     }
@@ -475,7 +374,6 @@ class UnifiedArticleService {
       image_url: imageUrl,
       slug: slug, // Will be overridden by trigger if needed
       published_at: articleData.published_at,
-      updated_at: new Date().toISOString(),
     };
 
     console.log(`📝 [SAVE DEBUG] Prepared clean multilingual article data:`, dbData);

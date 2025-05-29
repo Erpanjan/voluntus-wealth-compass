@@ -30,16 +30,8 @@ const ArticleEditorToolbar: React.FC<ArticleEditorToolbarProps> = ({
           size="sm"
         >
           <ArrowLeft size={18} className="mr-2" />
-          Back to Articles
+          Back
         </Button>
-        <div>
-          <h1 className="text-xl font-semibold text-gray-800">
-            {isEditMode ? 'Edit Article' : 'Create Article'}
-          </h1>
-          <p className="text-sm text-gray-600">
-            {isEditMode ? 'Update your multilingual article content' : 'Create a new multilingual article'}
-          </p>
-        </div>
       </div>
       
       <div className="flex gap-3">
@@ -61,7 +53,7 @@ const ArticleEditorToolbar: React.FC<ArticleEditorToolbarProps> = ({
           size="sm"
         >
           <Save size={16} className="mr-2" />
-          {submitting ? 'Saving...' : isEditMode ? 'Update Draft' : 'Save Draft'}
+          {submitting ? 'Saving...' : 'Save Draft'}
         </Button>
         
         <Button 
@@ -70,7 +62,7 @@ const ArticleEditorToolbar: React.FC<ArticleEditorToolbarProps> = ({
           size="sm"
         >
           <Send size={16} className="mr-2" />
-          {submitting ? 'Publishing...' : isEditMode ? 'Update & Publish' : 'Publish'}
+          {submitting ? 'Publishing...' : 'Publish'}
         </Button>
       </div>
     </div>

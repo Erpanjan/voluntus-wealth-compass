@@ -1,10 +1,11 @@
+
 import React, { memo, useMemo } from 'react';
 import { format } from 'date-fns';
 import { 
   MoreHorizontal, 
+  Edit, 
   Trash2, 
-  Eye,
-  Edit
+  Eye
 } from 'lucide-react';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -28,7 +29,7 @@ interface SimpleArticleTableRowProps {
 
 const SimpleArticleTableRow = memo(({ 
   article, 
-  onEdit,
+  onEdit, 
   onView, 
   onDelete, 
   onTogglePublish 

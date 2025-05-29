@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { getEditorExtensions } from './editor/EditorExtensions';
 import { useEditorState } from './editor/hooks/useEditorState';
@@ -12,62 +12,49 @@ import EditorStylesComponent from './editor/EditorStylesComponent';
 interface TiptapEditorProps {
   value: string;
   onChange: (value: string) => void;
-  languageKey?: string; // Add language key to track language switches
 }
 
-const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange, languageKey }) => {
+const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const editorState = useEditorState();
-  const currentLanguageRef = useRef<string | undefined>(languageKey);
-  const userIsEditingRef = useRef(false);
   
   const editor = useEditor({
     extensions: getEditorExtensions(),
-    content: '<p></p>',
+    content: value,
     onUpdate: ({ editor }) => {
-      userIsEditingRef.current = true;
       const html = editor.getHTML();
       onChange(html);
-    },
-    onFocus: () => {
-      userIsEditingRef.current = true;
     },
     editorProps: getEditorProps(editorState.isFullscreen),
   });
 
-  // Handle language switching - clear editing flag and load new content
+  // Update editor content when value prop changes (language switching)
   useEffect(() => {
-    if (editor && languageKey && currentLanguageRef.current !== languageKey) {
-      console.log('🌍 [TIPTAP] Language switch detected:', {
-        from: currentLanguageRef.current,
-        to: languageKey,
-        newContentLength: value?.length || 0
+    if (editor) {
+      const currentContent = editor.getHTML();
+      const normalizedCurrentContent = currentContent === '<p></p>' ? '' : currentContent;
+      const normalizedNewValue = value || '';
+      
+      console.log('TiptapEditor value change detected:', {
+        currentContent: normalizedCurrentContent,
+        newValue: normalizedNewValue,
+        isDifferent: normalizedCurrentContent !== normalizedNewValue
       });
       
-      // Reset editing state for language switch
-      userIsEditingRef.current = false;
-      currentLanguageRef.current = languageKey;
-      
-      // Set content for new language
-      if (value && value !== '<p></p>') {
-        editor.commands.setContent(value, false);
-      } else {
-        editor.commands.setContent('<p></p>', false);
-      }
-    }
-  }, [editor, languageKey, value]);
-
-  // Handle initial content loading (only when not editing)
-  useEffect(() => {
-    if (editor && value && value !== '<p></p>' && !userIsEditingRef.current) {
-      const currentContent = editor.getHTML();
-      
-      // Only update if content is significantly different
-      if (currentContent !== value && Math.abs(currentContent.length - value.length) > 10) {
-        console.log('🔄 [TIPTAP] Loading content:', {
-          valueLength: value.length,
-          valuePreview: value.substring(0, 100) + '...',
-        });
-        editor.commands.setContent(value, false);
+      if (normalizedCurrentContent !== normalizedNewValue) {
+        console.log('Updating editor content from', normalizedCurrentContent, 'to', normalizedNewValue);
+        
+        // Clear the editor first, then set new content
+        editor.commands.clearContent();
+        
+        if (normalizedNewValue) {
+          editor.commands.setContent(normalizedNewValue);
+        }
+        
+        // Force a re-render
+        setTimeout(() => {
+          editor.commands.focus();
+          editor.commands.blur();
+        }, 10);
       }
     }
   }, [editor, value]);
@@ -80,15 +67,7 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange, languageKe
   useKeyboardShortcuts(editor, editorState.setLinkPopoverOpen);
 
   if (!editor) {
-    return (
-      <div className="border rounded-md bg-white shadow-sm p-4">
-        <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
