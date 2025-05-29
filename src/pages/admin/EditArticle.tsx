@@ -1,90 +1,45 @@
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Save, Eye } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { useMultilingualForm } from '@/hooks/admin/articleEditor/useMultilingualForm';
+import { useArticleImage } from '@/hooks/admin/articleEditor/useArticleImage';
+import { useArticlePreview } from '@/hooks/admin/articleEditor/useArticlePreview';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { MultilingualArticle, Report } from '@/types/multilingual-article.types';
+import { unifiedArticleService } from '@/services/article/unifiedArticleService';
+import LanguageSelector from '@/components/admin/articles/LanguageSelector';
 import MultilingualArticleBasicInfoSection from '@/components/admin/articles/MultilingualArticleBasicInfoSection';
 import MultilingualArticleContentSection from '@/components/admin/articles/MultilingualArticleContentSection';
-import LanguageSelector from '@/components/admin/articles/LanguageSelector';
-import MultilingualArticlePreviewDialog from '@/components/admin/articles/MultilingualArticlePreviewDialog';
 import ArticleImageUpload from '@/components/admin/articles/ArticleImageUpload';
-import { useArticleImage } from '@/hooks/admin/articleEditor/useArticleImage';
-
-const multilingualArticleSchema = z.object({
-  en: z.object({
-    title: z.string().optional(),
-    description: z.string().optional(),
-    content: z.any().optional(),
-    category: z.string().optional(),
-    author_name: z.string().optional(),
-  }),
-  zh: z.object({
-    title: z.string().optional(),
-    description: z.string().optional(),
-    content: z.any().optional(),
-    category: z.string().optional(),
-    author_name: z.string().optional(),
-  }),
-  image_url: z.string().optional(),
-  published_at: z.string(),
-});
-
-type MultilingualArticleFormData = z.infer<typeof multilingualArticleSchema>;
+import ArticleEditorToolbar from '@/components/admin/articles/ArticleEditorToolbar';
+import MultilingualArticlePreviewDialog from '@/components/admin/articles/MultilingualArticlePreviewDialog';
+import { useEditArticleActions } from '@/hooks/admin/articleEditor/useEditArticleActions';
 
 const EditArticle = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [currentLanguage, setCurrentLanguage] = useState<'en' | 'zh'>('en');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [originalArticle, setOriginalArticle] = useState<MultilingualArticle | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  // Integrate image upload functionality
-  const {
-    imageFile,
-    setImageFile,
-    imagePreview,
-    setImagePreview,
-    fileInputRef,
-    handleImageChange,
-    handleRemoveImage,
-    loadImageData,
+  const { 
+    form, 
+    selectedLanguage, 
+    setSelectedLanguage, 
+    hasContent,
+    getCurrentFieldValue,
+    refreshKey
+  } = useMultilingualForm();
+  
+  const { 
+    imageFile, setImageFile, 
+    imagePreview, setImagePreview, 
+    fileInputRef, handleImageChange, handleRemoveImage, loadImageData 
   } = useArticleImage();
+  
+  const { previewOpen, setPreviewOpen, openPreview } = useArticlePreview();
+  const { submitting, navigateBack, updateDraft, updateAndPublish } = useEditArticleActions(id);
 
-  const form = useForm<MultilingualArticleFormData>({
-    resolver: zodResolver(multilingualArticleSchema),
-    defaultValues: {
-      en: {
-        title: '',
-        description: '',
-        content: {},
-        category: '',
-        author_name: '',
-      },
-      zh: {
-        title: '',
-        description: '',
-        content: {},
-        category: '',
-        author_name: '',
-      },
-      image_url: '',
-      published_at: new Date().toISOString().split('T')[0],
-    },
-  });
-
-  // Load article data
+  // Load article data on mount
   useEffect(() => {
     const loadArticleData = async () => {
       if (!id) {
@@ -93,115 +48,54 @@ const EditArticle = () => {
           description: 'No article ID provided',
           variant: 'destructive',
         });
-        navigate('/admin/articles');
+        navigateBack();
         return;
       }
 
       try {
         console.log(`🔍 Loading article data for ID: ${id}`);
         
-        const { data, error } = await supabase.rpc('get_article_by_id_multilingual', {
-          article_id: id
-        });
+        const article = await unifiedArticleService.getMultilingualArticleById(id);
 
-        if (error) {
-          console.error('❌ Error fetching article:', error);
-          throw error;
-        }
-
-        if (!data || data.length === 0) {
+        if (!article) {
           toast({
             title: 'Article Not Found',
             description: 'Could not find the article you are trying to edit.',
             variant: 'destructive',
           });
-          navigate('/admin/articles');
+          navigateBack();
           return;
         }
 
-        const article = data[0];
-        console.log(`📊 Raw article data:`, article);
-
-        // Safe conversion of reports array with proper type handling
-        let reports: Report[] = [];
-        if (article.reports) {
-          try {
-            if (Array.isArray(article.reports)) {
-              reports = (article.reports as unknown[]).map((report: any) => ({
-                id: report.id || '',
-                title: report.title || '',
-                description: report.description || '',
-                file_url: report.file_url || '',
-                created_at: report.created_at || new Date().toISOString(),
-              }));
-            } else if (typeof article.reports === 'string') {
-              const parsed = JSON.parse(article.reports);
-              reports = Array.isArray(parsed) ? parsed.map((report: any) => ({
-                id: report.id || '',
-                title: report.title || '',
-                description: report.description || '',
-                file_url: report.file_url || '',
-                created_at: report.created_at || new Date().toISOString(),
-              })) : [];
-            }
-          } catch (error) {
-            console.warn('Error parsing reports:', error);
-            reports = [];
-          }
-        }
-
-        // Process and store original article with proper type handling
-        const processedArticle: MultilingualArticle = {
-          id: article.id,
-          slug: article.slug,
-          image_url: article.image_url,
-          published_at: article.published_at,
-          created_at: article.created_at,
-          updated_at: article.updated_at,
-          title_en: article.title_en || '',
-          title_zh: article.title_zh || '',
-          description_en: article.description_en || '',
-          description_zh: article.description_zh || '',
-          content_en: article.content_en || {},
-          content_zh: article.content_zh || {},
-          category_en: article.category_en || '',
-          category_zh: article.category_zh || '',
-          author_name_en: article.author_name_en || '',
-          author_name_zh: article.author_name_zh || '',
-          authors: [],
-          reports: reports,
-        };
-
-        setOriginalArticle(processedArticle);
+        console.log(`📊 Loaded article data:`, article);
 
         // Load existing image if available
-        if (processedArticle.image_url) {
-          loadImageData(processedArticle.image_url);
+        if (article.image_url) {
+          loadImageData(article.image_url);
         }
 
         // Populate form with article data
-        const formData: MultilingualArticleFormData = {
+        const formData = {
           en: {
-            title: processedArticle.title_en,
-            description: processedArticle.description_en,
-            content: processedArticle.content_en,
-            category: processedArticle.category_en,
-            author_name: processedArticle.author_name_en,
+            title: article.title_en || '',
+            description: article.description_en || '',
+            content: article.content_en || {},
+            category: article.category_en || '',
+            author_name: article.author_name_en || '',
           },
           zh: {
-            title: processedArticle.title_zh,
-            description: processedArticle.description_zh,
-            content: processedArticle.content_zh,
-            category: processedArticle.category_zh,
-            author_name: processedArticle.author_name_zh,
+            title: article.title_zh || '',
+            description: article.description_zh || '',
+            content: article.content_zh || {},
+            category: article.category_zh || '',
+            author_name: article.author_name_zh || '',
           },
-          image_url: processedArticle.image_url || '',
-          published_at: processedArticle.published_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+          image_url: article.image_url || '',
+          published_at: article.published_at?.split('T')[0] || new Date().toISOString().split('T')[0],
         };
 
         console.log(`✅ Populating form with data:`, formData);
         form.reset(formData);
-        setRefreshKey(prev => prev + 1);
 
       } catch (error) {
         console.error('💥 Error loading article:', error);
@@ -210,234 +104,112 @@ const EditArticle = () => {
           description: 'Failed to load article data. Please try again.',
           variant: 'destructive',
         });
-      } finally {
-        setLoading(false);
       }
     };
 
     loadArticleData();
-  }, [id, form, navigate, toast, loadImageData]);
+  }, [id, form, toast, navigateBack, loadImageData]);
 
-  // Helper function to get current field value
-  const getCurrentFieldValue = (fieldName: string): string => {
+  const handleSaveDraft = async () => {
     const formData = form.getValues();
-    const currentLangData = formData[currentLanguage];
-    if (!currentLangData) return '';
-    
-    const value = (currentLangData as any)[fieldName];
-    return typeof value === 'string' ? value : '';
+    await updateDraft({ ...formData, image_url: imagePreview }, imageFile);
   };
 
-  const handleSave = async (formData: MultilingualArticleFormData) => {
-    if (!id || !originalArticle) return;
-
-    setSaving(true);
-    try {
-      console.log(`💾 Saving article with data:`, formData);
-
-      let imageUrl = formData.image_url || '';
-
-      // Handle image upload if new image is provided
-      if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-        
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('article-images')
-          .upload(fileName, imageFile);
-
-        if (uploadError) {
-          console.error('Error uploading image:', uploadError);
-          throw new Error('Failed to upload image');
-        }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('article-images')
-          .getPublicUrl(fileName);
-        
-        imageUrl = publicUrl;
-      }
-
-      // Prepare update data
-      const updateData = {
-        id: originalArticle.id,
-        title_en: formData.en.title || '',
-        title_zh: formData.zh.title || '',
-        description_en: formData.en.description || '',
-        description_zh: formData.zh.description || '',
-        content_en: formData.en.content || {},
-        content_zh: formData.zh.content || {},
-        category_en: formData.en.category || '',
-        category_zh: formData.zh.category || '',
-        author_name_en: formData.en.author_name || '',
-        author_name_zh: formData.zh.author_name || '',
-        image_url: imageUrl,
-        published_at: new Date(formData.published_at).toISOString(),
-      };
-
-      console.log(`📝 Updating article with data:`, updateData);
-
-      const { error } = await supabase
-        .from('articles')
-        .update(updateData)
-        .eq('id', originalArticle.id);
-
-      if (error) {
-        console.error('❌ Error updating article:', error);
-        throw error;
-      }
-
-      toast({
-        title: 'Success',
-        description: 'Article updated successfully!',
-      });
-
-      navigate('/admin/articles');
-
-    } catch (error) {
-      console.error('💥 Error saving article:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save article. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setSaving(false);
-    }
+  const handlePublishArticle = async () => {
+    const formData = form.getValues();
+    await updateAndPublish({ ...formData, image_url: imagePreview }, imageFile);
   };
 
-  const handlePreview = () => {
-    setPreviewOpen(true);
-  };
-
-  if (loading) {
-    return (
-      <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading article...</p>
-          </div>
-        </div>
-      </AdminLayout>
-    );
-  }
-
-  if (!originalArticle) {
-    return (
-      <AdminLayout>
-        <div className="text-center py-16">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">Article Not Found</h2>
-          <p className="text-gray-600 mb-4">The article you're looking for could not be found.</p>
-          <Button onClick={() => navigate('/admin/articles')}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Articles
-          </Button>
-        </div>
-      </AdminLayout>
-    );
-  }
+  // Get all form data for preview
+  const formData = form.watch();
 
   return (
     <AdminLayout>
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              onClick={() => navigate('/admin/articles')}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Articles
-            </Button>
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-800">Edit Article</h1>
-              <p className="text-gray-600 mt-1">Update your multilingual article content</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
+      <div className="max-w-5xl mx-auto pb-16">
+        <ArticleEditorToolbar 
+          isEditMode={true}
+          submitting={submitting}
+          onBack={navigateBack}
+          onPreview={openPreview}
+          onSaveDraft={handleSaveDraft}
+          onPublish={handlePublishArticle}
+        />
+        
+        <div className="space-y-6">
+          {/* Language Selector */}
+          <Card className="p-6 border-gray-200 shadow-sm">
             <LanguageSelector
-              selectedLanguage={currentLanguage}
-              onLanguageChange={setCurrentLanguage}
-              hasContent={{
-                en: !!(form.getValues().en?.title || form.getValues().en?.content),
-                zh: !!(form.getValues().zh?.title || form.getValues().zh?.content)
-              }}
+              selectedLanguage={selectedLanguage}
+              onLanguageChange={setSelectedLanguage}
+              hasContent={hasContent}
             />
-            <Button
-              variant="outline"
-              onClick={handlePreview}
-              className="flex items-center gap-2"
+          </Card>
+
+          {/* Article Information */}
+          <Card className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <Accordion
+              type="single" 
+              collapsible 
+              defaultValue="article-info"
+              className="border-none"
             >
-              <Eye className="w-4 h-4" />
-              Preview
-            </Button>
-          </div>
+              <AccordionItem value="article-info" className="border-none">
+                <AccordionTrigger className="px-6 py-5 hover:no-underline bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <div className="flex items-center">
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      Article Information
+                    </h2>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-8 py-6 bg-white">
+                  <div className="space-y-8">
+                    <MultilingualArticleBasicInfoSection 
+                      form={form} 
+                      selectedLanguage={selectedLanguage}
+                      getCurrentFieldValue={getCurrentFieldValue}
+                      refreshKey={refreshKey}
+                    />
+                    
+                    <div className="border-t border-gray-100 pt-8"></div>
+                    
+                    <ArticleImageUpload
+                      imagePreview={imagePreview}
+                      fileInputRef={fileInputRef}
+                      handleImageChange={handleImageChange}
+                      handleRemoveImage={handleRemoveImage}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </Card>
+          
+          {/* Article Content */}
+          <MultilingualArticleContentSection 
+            form={form} 
+            selectedLanguage={selectedLanguage}
+            getCurrentFieldValue={getCurrentFieldValue}
+            refreshKey={refreshKey}
+          />
         </div>
-
-        <form onSubmit={form.handleSubmit(handleSave)} className="space-y-8">
-          <MultilingualArticleBasicInfoSection
-            form={form}
-            selectedLanguage={currentLanguage}
-            getCurrentFieldValue={getCurrentFieldValue}
-            refreshKey={refreshKey}
-          />
-
-          <MultilingualArticleContentSection
-            form={form}
-            selectedLanguage={currentLanguage}
-            getCurrentFieldValue={getCurrentFieldValue}
-            refreshKey={refreshKey}
-          />
-
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Featured Image</h3>
-            <ArticleImageUpload
-              imagePreview={imagePreview}
-              fileInputRef={fileInputRef}
-              handleImageChange={handleImageChange}
-              handleRemoveImage={handleRemoveImage}
-            />
-          </div>
-
-          <div className="flex justify-end gap-4 pt-6 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate('/admin/articles')}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={saving}
-              className="flex items-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              {saving ? 'Saving...' : 'Update Article'}
-            </Button>
-          </div>
-        </form>
 
         <MultilingualArticlePreviewDialog
           open={previewOpen}
           setOpen={setPreviewOpen}
           content={{
             en: {
-              title: form.getValues().en?.title || '',
-              description: form.getValues().en?.description || '',
-              content: form.getValues().en?.content || '',
-              category: form.getValues().en?.category || '',
-              author_name: form.getValues().en?.author_name || '',
+              title: formData?.en?.title || '',
+              description: formData?.en?.description || '',
+              content: formData?.en?.content || '',
+              category: formData?.en?.category || '',
+              author_name: formData?.en?.author_name || '',
             },
             zh: {
-              title: form.getValues().zh?.title || '',
-              description: form.getValues().zh?.description || '',
-              content: form.getValues().zh?.content || '',
-              category: form.getValues().zh?.category || '',
-              author_name: form.getValues().zh?.author_name || '',
+              title: formData?.zh?.title || '',
+              description: formData?.zh?.description || '',
+              content: formData?.zh?.content || '',
+              category: formData?.zh?.category || '',
+              author_name: formData?.zh?.author_name || '',
             }
           }}
           imagePreview={imagePreview}
