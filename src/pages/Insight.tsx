@@ -1,104 +1,184 @@
 
-import React from 'react';
-import { Card } from '@/components/ui/card';
+import React, { useState, useCallback, useMemo } from 'react';
+import Hero from '@/components/ui/Hero';
+import Section from '@/components/ui/Section';
+import ArticleCard from '@/components/ArticleCard';
+import WaitlistForm from '@/components/WaitlistForm';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { usePublishedArticles } from '@/hooks/usePublishedArticles';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
-import ArticleCard from '@/components/ArticleCard';
-import { usePublishedArticlesByLanguage } from '@/hooks/usePublishedArticlesByLanguage';
+import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Insight = () => {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const { 
     articles, 
     loading, 
-    hasMore, 
-    totalCount,
+    totalPages, 
+    totalCount, 
     currentPage,
-    loadMore, 
+    setCurrentPage,
     refresh 
-  } = usePublishedArticlesByLanguage(4, language);
+  } = usePublishedArticles(4);
+  
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page - 1); // Convert to 0-based for backend
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [setCurrentPage]);
 
-  const showingCount = Math.min((currentPage + 1) * 4, totalCount);
+  const handleRefresh = useCallback(() => {
+    console.log('Refreshing articles...');
+    refresh();
+  }, [refresh]);
+
+  // Memoized skeleton renderer
+  const renderSkeletons = useMemo(() => (
+    <>
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="bg-white rounded-xl overflow-hidden">
+          <Skeleton className="h-48 w-full" />
+          <div className="p-6 space-y-3">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        </div>
+      ))}
+    </>
+  ), []);
+
+  // Memoized article cards
+  const articleCards = useMemo(() => {
+    return articles.map((article, index) => (
+      <ArticleCard
+        key={article.id}
+        id={article.slug}
+        title={article.title}
+        date={format(new Date(article.published_at), 'MMMM dd, yyyy')}
+        description={article.description}
+        category={article.category}
+        authors={article.authors?.map(author => author.name) || []}
+        image={article.image_url}
+        priority={index < 2} // First 2 images load eagerly
+      />
+    ));
+  }, [articles]);
+
+  // Memoized pagination
+  const paginationComponent = useMemo(() => {
+    if (totalPages <= 1 || loading) return null;
+
+    const displayPage = currentPage + 1; // Convert to 1-based for UI
+
+    return (
+      <div className="mt-12">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (displayPage > 1) handlePageChange(displayPage - 1);
+                }}
+                className={displayPage === 1 ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+            
+            {[...Array(totalPages)].map((_, i) => (
+              <PaginationItem key={i + 1}>
+                <PaginationLink 
+                  href="#" 
+                  isActive={displayPage === i + 1}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(i + 1);
+                  }}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            
+            <PaginationItem>
+              <PaginationNext 
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (displayPage < totalPages) handlePageChange(displayPage + 1);
+                }}
+                className={displayPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+    );
+  }, [totalPages, loading, currentPage, handlePageChange]);
+
+  // Memoized article stats
+  const articleStats = useMemo(() => {
+    if (loading || totalCount === 0) return null;
+
+    const startIndex = currentPage * 4;
+    return (
+      <div className="mt-8 text-center text-sm text-gray-600">
+        {t('insight.showing')} {Math.min(startIndex + 1, totalCount)} - {Math.min(startIndex + 4, totalCount)} {t('insight.of')} {totalCount} {t('insight.articles')}
+      </div>
+    );
+  }, [loading, totalCount, currentPage, t]);
+
+  console.log('Insight page render:', { 
+    articles: articles.length, 
+    loading, 
+    totalCount, 
+    totalPages,
+    currentPage: currentPage + 1,
+  });
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-semibold text-gray-800 mb-6">
-            {t('insight.title')}
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            {t('insight.subtitle')}
-          </p>
-        </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <Hero 
+        title={t('insight.title')}
+        subtitle={t('insight.subtitle')}
+        background="light"
+      />
 
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800">
-              {t('insight.latestResearch')}
-            </h2>
-            <Button 
-              onClick={refresh}
-              variant="outline" 
-              size="sm"
-              disabled={loading}
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              {t('insight.refresh')}
-            </Button>
-          </div>
-
-          {loading && articles.length === 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {[...Array(4)].map((_, i) => (
-                <Card key={i} className="p-6">
-                  <div className="animate-pulse">
-                    <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
-                    <div className="h-6 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded mb-4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  </div>
-                </Card>
-              ))}
+      {/* Latest Research Section */}
+      <Section title={t('insight.latestResearch')} titleCentered={true}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
+          {loading ? renderSkeletons : articleCards}
+          
+          {!loading && articles.length === 0 && (
+            <div className="col-span-full text-center py-16">
+              <h3 className="text-xl font-medium text-gray-600">{t('insight.noArticles')}</h3>
+              <p className="mt-2 text-gray-500">{t('insight.noArticles.subtitle')}</p>
+              <Button 
+                variant="outline" 
+                onClick={handleRefresh}
+                className="mt-4"
+              >
+                <RefreshCw size={16} className="mr-2" />
+                {t('insight.refresh')}
+              </Button>
             </div>
-          ) : articles.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                {articles.map((article) => (
-                  <ArticleCard key={article.id} article={article} />
-                ))}
-              </div>
-              
-              <div className="flex flex-col items-center space-y-4">
-                <p className="text-gray-600 text-sm">
-                  {t('insight.showing')} {showingCount} {t('insight.of')} {totalCount} {t('insight.articles')}
-                </p>
-                
-                {hasMore && (
-                  <Button 
-                    onClick={loadMore}
-                    variant="outline"
-                    disabled={loading}
-                    size="lg"
-                  >
-                    {loading ? t('common.loading') : t('common.learnMore')}
-                  </Button>
-                )}
-              </div>
-            </>
-          ) : (
-            <Card className="p-12 text-center">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                {t('insight.noArticles')}
-              </h3>
-              <p className="text-gray-600">
-                {t('insight.noArticles.subtitle')}
-              </p>
-            </Card>
           )}
         </div>
-      </div>
+        
+        {paginationComponent}
+        {articleStats}
+      </Section>
+
+      {/* Waitlist Form Section */}
+      <Section id="contact" background="light">
+        <WaitlistForm />
+      </Section>
     </div>
   );
 };
