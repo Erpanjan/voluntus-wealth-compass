@@ -497,6 +497,28 @@ export type Database = {
           total_count: number
         }[]
       }
+      get_multilingual_articles_paginated: {
+        Args: { page_num?: number; page_size?: number }
+        Returns: {
+          id: string
+          title_en: string
+          title_zh: string
+          slug: string
+          description_en: string
+          description_zh: string
+          content_en: Json
+          content_zh: Json
+          category_en: string
+          category_zh: string
+          author_name_en: string
+          author_name_zh: string
+          image_url: string
+          published_at: string
+          created_at: string
+          updated_at: string
+          total_count: number
+        }[]
+      }
       get_published_articles_paginated: {
         Args: { page_num?: number; page_size?: number }
         Returns: {
