@@ -77,6 +77,10 @@ const translations = {
     'container.accountability.text1': 'Investment products are so much accessible, but what happens after the purchase? Once decisions are made, people are often left navigating the market volatility on their own.',
     'container.accountability.text2': 'Purchasing a product is only the start of the journey, what matters is what comes after the purchase.',
 
+    'container.staticAdvice.title': 'Is Static Advice Enough in a Dynamic Life?',
+    'container.staticAdvice.text1': 'Most wealth advice is given once, at a single point in time — assuming your goals, needs, and circumstances will stay the same. But life doesn\'t work like that. Priorities shift. New goals emerge. And when your situation changes, the original investment plan may no longer serve its purpose.',
+    'container.staticAdvice.text2': 'That\'s why your investment strategy should evolve with you. We deliver ongoing, personalized advice that adapts to both your changing life and the markets — so your money is always working toward the right future.',
+
     // About page
     'about.title': 'About Us',
     'about.subtitle': 'We are a Hong Kong-based wealth advisory firm dedicated to helping households secure their financial future through tailored investment planning',
@@ -216,6 +220,10 @@ const translations = {
     'container.accountability.title': '投资难道买入产品就完事了？',
     'container.accountability.text1': '投资产品触手可及，但购买后会怎样？一旦做出决定，人们往往只能独自面对市场的波动。',
     'container.accountability.text2': '购买产品只是旅程的起点，真正重要的是后续的管理与规划。',
+
+    'container.staticAdvice.title': '生活在变，投资策略却一成不变，真的合适吗？',
+    'container.staticAdvice.text1': '多数理财服务，只是在某个时点提供一次性的方案——假设您的目标和需求不会改变。但现实生活并非如此。人生会变，目标会变，原来的投资组合可能就不再适用。',
+    'container.staticAdvice.text2': '因此，投资策略也应与您的生活变化而做调整。我们提供持续更新的个性化建议，确保您的资金始终服务于您想要的未来。',
 
     // About page
     'about.title': '关于我们',

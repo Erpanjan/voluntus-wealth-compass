@@ -73,6 +73,21 @@ const Index = () => {
           </p>
         </>
       )
+    },
+    {
+      id: "static-advice",
+      title: t('container.staticAdvice.title'),
+      background: "light" as const,
+      content: (
+        <>
+          <p className="mb-3">
+            {t('container.staticAdvice.text1')}
+          </p>
+          <p>
+            {t('container.staticAdvice.text2')}
+          </p>
+        </>
+      )
     }
   ];
 
