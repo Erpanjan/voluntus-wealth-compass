@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 
 type Language = 'en' | 'zh';
 
@@ -21,21 +20,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
 }) => {
   return (
     <div className="mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">Language</h3>
-        <div className="flex gap-2">
-          {hasContent.en && (
-            <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-              EN Content ✓
-            </Badge>
-          )}
-          {hasContent.zh && (
-            <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-              中文 Content ✓
-            </Badge>
-          )}
-        </div>
-      </div>
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Language</h3>
       
       <Tabs value={selectedLanguage} onValueChange={(value) => onLanguageChange(value as Language)}>
         <TabsList className="grid w-full grid-cols-2 max-w-md bg-gray-100 p-1 rounded-lg">
