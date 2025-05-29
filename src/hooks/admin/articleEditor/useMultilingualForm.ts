@@ -49,7 +49,7 @@ export const useMultilingualForm = () => {
   const handleLanguageChange = (newLanguage: Language) => {
     console.log('Language switching from', selectedLanguage, 'to', newLanguage);
     const currentFormData = form.getValues();
-    console.log('Current form data:', currentFormData);
+    console.log('Current form data before switch:', currentFormData);
     
     setSelectedLanguage(newLanguage);
     setRefreshKey(prev => prev + 1);
@@ -57,8 +57,9 @@ export const useMultilingualForm = () => {
     // Force form to re-render and update field values
     setTimeout(() => {
       form.trigger();
-      console.log('Form data after language switch:', form.getValues());
-      console.log('New language content:', form.getValues()[newLanguage]);
+      const newFormData = form.getValues();
+      console.log('Form data after language switch:', newFormData);
+      console.log('New language content:', newFormData[newLanguage]);
     }, 10);
   };
 
@@ -87,8 +88,18 @@ export const useMultilingualForm = () => {
 
   // Get current language field values for proper display
   const getCurrentFieldValue = (fieldName: keyof MultilingualContent) => {
-    const value = form.watch(`${selectedLanguage}.${fieldName}`) || '';
-    console.log(`Getting field value for ${selectedLanguage}.${fieldName}:`, value);
+    const formValues = form.getValues();
+    const languageData = formValues[selectedLanguage];
+    const value = languageData?.[fieldName] || '';
+    
+    console.log(`Getting field value for ${selectedLanguage}.${fieldName}:`, {
+      formValues,
+      languageData,
+      fieldName,
+      value,
+      refreshKey
+    });
+    
     return value;
   };
 

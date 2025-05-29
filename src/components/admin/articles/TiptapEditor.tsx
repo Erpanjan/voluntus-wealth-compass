@@ -29,9 +29,33 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
 
   // Update editor content when value prop changes (language switching)
   useEffect(() => {
-    if (editor && editor.getHTML() !== value) {
-      console.log('Editor content updating:', { currentContent: editor.getHTML(), newValue: value });
-      editor.commands.setContent(value || '');
+    if (editor) {
+      const currentContent = editor.getHTML();
+      const normalizedCurrentContent = currentContent === '<p></p>' ? '' : currentContent;
+      const normalizedNewValue = value || '';
+      
+      console.log('TiptapEditor value change detected:', {
+        currentContent: normalizedCurrentContent,
+        newValue: normalizedNewValue,
+        isDifferent: normalizedCurrentContent !== normalizedNewValue
+      });
+      
+      if (normalizedCurrentContent !== normalizedNewValue) {
+        console.log('Updating editor content from', normalizedCurrentContent, 'to', normalizedNewValue);
+        
+        // Clear the editor first, then set new content
+        editor.commands.clearContent();
+        
+        if (normalizedNewValue) {
+          editor.commands.setContent(normalizedNewValue);
+        }
+        
+        // Force a re-render
+        setTimeout(() => {
+          editor.commands.focus();
+          editor.commands.blur();
+        }, 10);
+      }
     }
   }, [editor, value]);
 

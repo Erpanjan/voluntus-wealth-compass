@@ -16,12 +16,14 @@ type Language = 'en' | 'zh';
 interface MultilingualArticleContentSectionProps {
   form: UseFormReturn<any>;
   selectedLanguage: Language;
+  getCurrentFieldValue: (fieldName: string) => string;
   refreshKey?: number;
 }
 
 const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSectionProps> = ({ 
   form, 
   selectedLanguage,
+  getCurrentFieldValue,
   refreshKey = 0
 }) => {
   const [isOpen, setIsOpen] = React.useState(true);
@@ -67,18 +69,31 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
             <FormField
               control={form.control}
               name={`${selectedLanguage}.content`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <TiptapEditor 
-                      key={`${selectedLanguage}-content-editor-${refreshKey}`}
-                      value={field.value || ''} 
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const currentValue = getCurrentFieldValue('content');
+                console.log('Content field render:', {
+                  selectedLanguage,
+                  fieldValue: field.value,
+                  currentValue,
+                  refreshKey
+                });
+                
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <TiptapEditor 
+                        key={`${selectedLanguage}-content-editor-${refreshKey}`}
+                        value={currentValue}
+                        onChange={(value) => {
+                          console.log('TiptapEditor onChange:', { selectedLanguage, value });
+                          field.onChange(value);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
           </div>
         </CollapsibleContent>

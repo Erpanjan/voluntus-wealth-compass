@@ -18,12 +18,14 @@ type Language = 'en' | 'zh';
 interface MultilingualArticleBasicInfoSectionProps {
   form: UseFormReturn<any>;
   selectedLanguage: Language;
+  getCurrentFieldValue: (fieldName: string) => string;
   refreshKey?: number;
 }
 
 const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfoSectionProps> = ({
   form,
   selectedLanguage,
+  getCurrentFieldValue,
   refreshKey = 0
 }) => {
   return (
@@ -40,7 +42,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
               <Input 
                 key={`${selectedLanguage}-title-${refreshKey}`}
                 placeholder="Enter article title" 
-                value={field.value || ''}
+                value={getCurrentFieldValue('title')}
                 onChange={field.onChange}
                 className="focus-visible:ring-gray-400"
               />
@@ -66,7 +68,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
                 key={`${selectedLanguage}-description-${refreshKey}`}
                 placeholder="Enter article description (optional)" 
                 rows={3}
-                value={field.value || ''}
+                value={getCurrentFieldValue('description')}
                 onChange={field.onChange}
                 className="focus-visible:ring-gray-400 resize-none"
               />
@@ -92,7 +94,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
                 <Input 
                   key={`${selectedLanguage}-category-${refreshKey}`}
                   placeholder="Enter category (optional)" 
-                  value={field.value || ''}
+                  value={getCurrentFieldValue('category')}
                   onChange={field.onChange}
                   className="focus-visible:ring-gray-400"
                 />
@@ -117,7 +119,7 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
                 <Input 
                   key={`${selectedLanguage}-author-${refreshKey}`}
                   placeholder="Enter author name (optional)" 
-                  value={field.value || ''}
+                  value={getCurrentFieldValue('author_name')}
                   onChange={field.onChange}
                   className="focus-visible:ring-gray-400"
                 />
