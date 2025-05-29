@@ -170,7 +170,7 @@ const EditArticleSimple = () => {
         const fileName = `${Date.now()}.${fileExt}`;
         
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('article-images')
+          .from('article-assets')
           .upload(fileName, imageFile);
 
         if (uploadError) {
@@ -179,7 +179,7 @@ const EditArticleSimple = () => {
         }
 
         const { data: { publicUrl } } = supabase.storage
-          .from('article-images')
+          .from('article-assets')
           .getPublicUrl(fileName);
         
         finalImageUrl = publicUrl;
