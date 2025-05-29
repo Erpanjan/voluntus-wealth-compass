@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { 
   MultilingualArticle, 
@@ -261,7 +260,7 @@ class UnifiedArticleService {
   }
 
   /**
-   * Save multilingual article
+   * Save multilingual article - FIXED TO INCLUDE LEGACY FIELDS
    */
   async saveMultilingualArticle(
     articleData: MultilingualArticleInput,
@@ -302,9 +301,17 @@ class UnifiedArticleService {
       .replace(/-+/g, '-')
       .trim();
 
-    // Prepare article data for database - only multilingual fields
+    // Prepare fallback values for legacy fields (required by current schema)
+    const primaryTitle = articleData.en.title || articleData.zh.title || 'Untitled Article';
+    const primaryDescription = articleData.en.description || articleData.zh.description || '';
+    const primaryContent = articleData.en.content || articleData.zh.content || {};
+    const primaryCategory = articleData.en.category || articleData.zh.category || '';
+    const primaryAuthor = articleData.en.author_name || articleData.zh.author_name || '';
+
+    // Prepare article data for database - include both multilingual and legacy fields
     const dbData = {
       id: articleData.id,
+      // Multilingual fields
       title_en: articleData.en.title || '',
       title_zh: articleData.zh.title || '',
       description_en: articleData.en.description || '',
@@ -315,10 +322,19 @@ class UnifiedArticleService {
       category_zh: articleData.zh.category || '',
       author_name_en: articleData.en.author_name || '',
       author_name_zh: articleData.zh.author_name || '',
+      // Legacy fields (required by current schema)
+      title: primaryTitle,
+      description: primaryDescription,
+      content: primaryContent,
+      category: primaryCategory,
+      author_name: primaryAuthor,
+      // Common fields
       image_url: imageUrl,
       slug: slug,
       published_at: articleData.published_at,
     };
+
+    console.log(`📝 [SAVE DEBUG] Prepared article data:`, dbData);
 
     // Insert or update article
     const { data, error } = await supabase
@@ -328,11 +344,11 @@ class UnifiedArticleService {
       .single();
 
     if (error) {
-      console.error('Error saving multilingual article:', error);
+      console.error('❌ [SAVE ERROR] Error saving multilingual article:', error);
       throw error;
     }
 
-    console.log('Multilingual article saved successfully:', data?.id);
+    console.log('✅ [SAVE SUCCESS] Multilingual article saved successfully:', data?.id);
     return data?.id || null;
   }
 
