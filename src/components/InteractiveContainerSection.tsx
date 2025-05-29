@@ -19,7 +19,7 @@ interface InteractiveContainerSectionProps {
   autoplayInterval?: number;
 }
 
-// Consolidated animation state for better performance
+// Optimized animation state for better performance
 type AnimationState = {
   isAnimating: boolean;
   direction: 'left' | 'right' | null;
@@ -51,7 +51,7 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
     return () => clearInterval(interval);
   }, [autoplayPaused, isUserInteracting, animationState.isAnimating, autoplayInterval, sections.length]);
 
-  // Optimized navigation with memoized callback
+  // Optimized navigation with reduced animation duration
   const scrollToSection = useCallback((index: number, direction?: 'left' | 'right') => {
     if (animationState.isAnimating) return;
     
@@ -68,7 +68,8 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
     // Mark user as interacting to pause autoplay temporarily
     setIsUserInteracting(true);
     
-    const animationDuration = animationType === 'swipe' ? 350 : 600;
+    // Reduced animation duration for smoother feel
+    const animationDuration = animationType === 'swipe' ? 300 : 500;
     
     setTimeout(() => {
       setAnimationState({
@@ -133,6 +134,10 @@ const InteractiveContainerSection: React.FC<InteractiveContainerSectionProps> = 
         onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouchStart} 
         onTouchEnd={handleTouchEnd}
+        style={{
+          willChange: 'transform',
+          contain: 'layout style paint'
+        }}
       >
         {/* Background containers */}
         <BackgroundContainers 

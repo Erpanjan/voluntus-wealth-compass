@@ -1,5 +1,5 @@
 
-/* Interactive container and card animations */
+/* Interactive container and card animations with GPU acceleration */
 @keyframes containerFlip {
   0% {
     transform: rotateY(0deg) scale(1);
@@ -14,21 +14,21 @@
 
 @keyframes containerLift {
   from {
-    transform: translateY(0px) scale(1);
+    transform: translate3d(0, 0px, 0) scale(1);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
   to {
-    transform: translateY(-8px) scale(1.02);
+    transform: translate3d(0, -8px, 0) scale(1.02);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
   }
 }
 
 @keyframes polaroidShuffle {
-  0% { transform: rotate(0deg) translateX(0px); }
-  25% { transform: rotate(2deg) translateX(5px); }
-  50% { transform: rotate(-1deg) translateX(-3px); }
-  75% { transform: rotate(1deg) translateX(2px); }
-  100% { transform: rotate(0deg) translateX(0px); }
+  0% { transform: rotate(0deg) translate3d(0px, 0, 0); }
+  25% { transform: rotate(2deg) translate3d(5px, 0, 0); }
+  50% { transform: rotate(-1deg) translate3d(-3px, 0, 0); }
+  75% { transform: rotate(1deg) translate3d(2px, 0, 0); }
+  100% { transform: rotate(0deg) translate3d(0px, 0, 0); }
 }
 
 @keyframes touchFeedback {
@@ -42,49 +42,147 @@
   }
 }
 
-/* Interactive animation classes */
+/* Optimized swipe animations for mobile */
+@keyframes swipeOutLeft {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(-100%, 0, 0) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes swipeOutRight {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(100%, 0, 0) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes swipeInLeft {
+  from {
+    transform: translate3d(100%, 0, 0) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes swipeInRight {
+  from {
+    transform: translate3d(-100%, 0, 0) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Interactive animation classes with optimized timing */
 .animate-container-flip {
-  animation: containerFlip 0.6s ease-in-out forwards;
+  animation: containerFlip 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .animate-container-lift {
-  animation: containerLift 0.3s ease-out forwards;
+  animation: containerLift 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
 }
 
 .animate-polaroid-shuffle {
-  animation: polaroidShuffle 2s ease-in-out infinite;
+  animation: polaroidShuffle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .animate-touch-feedback {
-  animation: touchFeedback 0.15s ease-out forwards;
+  animation: touchFeedback 0.12s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
 }
 
-/* Interactive container specific styles */
+.animate-swipe-out-left {
+  animation: swipeOutLeft 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.animate-swipe-out-right {
+  animation: swipeOutRight 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.animate-swipe-in-left {
+  animation: swipeInLeft 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+.animate-swipe-in-right {
+  animation: swipeInRight 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+/* Interactive container specific styles with GPU acceleration */
+.container-interactive {
+  will-change: transform;
+  backface-visibility: hidden;
+  contain: layout style paint;
+}
+
 .container-interactive:hover {
-  animation: containerLift 0.3s ease-out forwards;
+  animation: containerLift 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
 }
 
 .container-background {
-  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .container-main {
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  backface-visibility: hidden;
+  contain: layout style paint;
 }
 
 /* Header transition utilities */
 .header-transition {
-  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .header-hidden {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-2px);
+  transform: translate3d(0, -2px, 0);
 }
 
 .header-visible {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* Performance optimizations */
+.swipe-container {
+  contain: layout style paint;
+  will-change: transform;
+}
+
+.swipe-container.animating {
+  pointer-events: none;
+}
+
+/* Mobile touch optimizations */
+@media (max-width: 768px) {
+  .container-interactive {
+    touch-action: manipulation;
+  }
+  
+  .animate-container-lift {
+    animation-duration: 0.2s;
+  }
+  
+  .animate-touch-feedback {
+    animation-duration: 0.1s;
+  }
 }

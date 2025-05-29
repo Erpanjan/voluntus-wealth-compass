@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -43,7 +44,7 @@ const MainContainer: React.FC<MainContainerProps> = ({
   const isMobile = useIsMobile();
   const { t } = useLanguage();
 
-  // Generate random rotation for polaroid effect
+  // Generate random rotation for polaroid effect with optimized values
   const getRotation = (index: number) => {
     const rotations = [-2, 1.5, -1, 2.5, -1.5, 1];
     return rotations[index % rotations.length];
@@ -79,18 +80,27 @@ const MainContainer: React.FC<MainContainerProps> = ({
     return '';
   };
 
+  // Get optimized transform style
+  const getTransformStyle = () => {
+    const rotation = isMobile ? 0 : getRotation(current);
+    return {
+      transform: `rotate(${rotation}deg)`,
+      willChange: 'transform',
+      backfaceVisibility: 'hidden' as const,
+      contain: 'layout style paint' as const
+    };
+  };
+
   return (
     <div
       className={cn(
-        "relative bg-white rounded-2xl shadow-2xl transition-all duration-300 z-10 mx-auto",
-        "will-change-transform", // GPU acceleration
+        "relative bg-white rounded-2xl shadow-2xl z-10 mx-auto container-interactive container-main",
         isMobile ? "w-[90vw] max-w-md h-[480px] sm:h-[540px]" : "w-[500px] h-[480px] cursor-pointer",
         !isMobile && !animationState.isAnimating && "hover:shadow-3xl hover:-translate-y-1",
         getAnimationClasses()
       )}
       style={{
-        // Only apply rotation on desktop, keep mobile containers straight
-        transform: isMobile ? 'rotate(0deg)' : `rotate(${getRotation(current)}deg)`,
+        ...getTransformStyle(),
         ...(!isMobile ? {} : swipeProps.style)
       }}
       onClick={handleClick}
@@ -119,7 +129,7 @@ const MainContainer: React.FC<MainContainerProps> = ({
           <Button 
             asChild 
             size={isMobile ? "default" : "default"}
-            className="bg-black/80 hover:bg-black text-white transition-all duration-300"
+            className="bg-black/80 hover:bg-black text-white transition-all duration-200"
           >
             <Link to="/services" className="inline-flex items-center">
               {t('home.howWeCanHelp')} <ArrowRight size={isMobile ? 16 : 16} className="ml-1" />
@@ -130,7 +140,7 @@ const MainContainer: React.FC<MainContainerProps> = ({
 
       {/* Hover overlay - only on desktop */}
       {!isMobile && (
-        <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none" />
+        <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity duration-200 rounded-2xl pointer-events-none" />
       )}
     </div>
   );
