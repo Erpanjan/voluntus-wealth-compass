@@ -12,31 +12,20 @@ import { ArrowLeft, Download, RefreshCw } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const ArticleDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
-  const { article, loading, error, refetch } = useSimpleArticleDetail(id || '', language);
+  const { article, loading, error, refetch } = useSimpleArticleDetail(slug || '', language);
 
-  console.log('🔍 [ArticleDetail] Component render:', { 
-    id, 
-    language, 
-    loading, 
-    error: error?.message,
-    hasArticle: !!article,
-    articleTitle: article?.title 
-  });
-
-  // Scroll to top when component mounts or id changes
+  // Scroll to top when component mounts or slug changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [slug]);
 
-  if (!id) {
-    console.log('❌ [ArticleDetail] No ID provided, redirecting to insight');
+  if (!slug) {
     return <Navigate to="/insight" replace />;
   }
 
   if (loading) {
-    console.log('⏳ [ArticleDetail] Loading article...');
     return (
       <div className="min-h-screen">
         <div className="bg-gray-50 py-16">
@@ -58,12 +47,11 @@ const ArticleDetail = () => {
   }
 
   if (error || !article) {
-    console.log('❌ [ArticleDetail] Error or no article found:', { error: error?.message, hasArticle: !!article });
     return (
       <div className="min-h-screen">
         <Hero 
           title="Article Not Found"
-          subtitle={error ? `Error: ${error.message}` : "The article you're looking for doesn't exist or has been removed."}
+          subtitle="The article you're looking for doesn't exist or has been removed."
           background="light"
         />
         <Section>
@@ -76,12 +64,6 @@ const ArticleDetail = () => {
               <RefreshCw className="mr-2 h-4 w-4" />
               Try Again
             </Button>
-            <div className="mt-4 p-4 bg-gray-100 rounded text-sm text-gray-600">
-              <p>Debug Info:</p>
-              <p>ID: {id}</p>
-              <p>Language: {language}</p>
-              <p>Error: {error?.message || 'No article found'}</p>
-            </div>
           </div>
         </Section>
       </div>
@@ -90,80 +72,37 @@ const ArticleDetail = () => {
 
   // Process content for rendering
   const renderContent = (content: any) => {
-    console.log('🎨 [ArticleDetail] Rendering content:', { 
-      hasContent: !!content, 
-      contentType: typeof content,
-      isObject: typeof content === 'object',
-      hasBlocks: content?.blocks?.length
-    });
-
     if (!content || typeof content !== 'object') {
-      return (
-        <div className="prose max-w-none">
-          <p className="text-gray-600">No content available for this article.</p>
-        </div>
-      );
+      return <p>No content available.</p>;
     }
 
     // Handle different content structures
     if (content.blocks && Array.isArray(content.blocks)) {
-      return (
-        <div className="prose prose-lg max-w-none">
-          {content.blocks.map((block: any, index: number) => {
-            switch (block.type) {
-              case 'paragraph':
-                return <p key={index} className="mb-4 leading-relaxed">{block.data?.text || ''}</p>;
-              case 'header':
-                const HeaderTag = `h${Math.min(block.data?.level || 2, 6)}` as keyof JSX.IntrinsicElements;
-                return <HeaderTag key={index} className="font-bold mb-4">{block.data?.text || ''}</HeaderTag>;
-              case 'list':
-                const ListTag = block.data?.style === 'ordered' ? 'ol' : 'ul';
-                return (
-                  <ListTag key={index} className="mb-4 ml-6">
-                    {block.data?.items?.map((item: string, itemIndex: number) => (
-                      <li key={itemIndex} className="mb-2">{item}</li>
-                    ))}
-                  </ListTag>
-                );
-              default:
-                return (
-                  <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
-                    <p className="text-sm text-gray-600">Block type: {block.type}</p>
-                    <pre className="text-xs overflow-auto">{JSON.stringify(block.data, null, 2)}</pre>
-                  </div>
-                );
-            }
-          })}
-        </div>
-      );
+      return content.blocks.map((block: any, index: number) => {
+        switch (block.type) {
+          case 'paragraph':
+            return <p key={index} className="mb-4">{block.data?.text || ''}</p>;
+          case 'header':
+            const HeaderTag = `h${Math.min(block.data?.level || 2, 6)}` as keyof JSX.IntrinsicElements;
+            return <HeaderTag key={index} className="font-bold mb-4">{block.data?.text || ''}</HeaderTag>;
+          case 'list':
+            const ListTag = block.data?.style === 'ordered' ? 'ol' : 'ul';
+            return (
+              <ListTag key={index} className="mb-4 ml-6">
+                {block.data?.items?.map((item: string, itemIndex: number) => (
+                  <li key={itemIndex} className="mb-2">{item}</li>
+                ))}
+              </ListTag>
+            );
+          default:
+            return <div key={index} className="mb-4">{JSON.stringify(block.data)}</div>;
+        }
+      });
     }
 
-    // Handle simple content or fallback
-    if (typeof content === 'string') {
-      return (
-        <div className="prose prose-lg max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: content }} />
-        </div>
-      );
-    }
-
-    // Fallback for unstructured content
-    return (
-      <div className="prose prose-lg max-w-none">
-        <div className="p-4 bg-gray-50 rounded">
-          <p className="text-sm text-gray-600 mb-2">Raw content:</p>
-          <pre className="text-xs overflow-auto">{JSON.stringify(content, null, 2)}</pre>
-        </div>
-      </div>
-    );
+    // Fallback for simple content
+    return <div className="prose max-w-none">{JSON.stringify(content)}</div>;
   };
-
-  console.log('✅ [ArticleDetail] Rendering article:', { 
-    title: article.title, 
-    hasImage: !!article.image_url,
-    hasReports: article.reports?.length > 0,
-    reportsCount: article.reports?.length || 0
-  });
 
   return (
     <div className="min-h-screen">
@@ -225,7 +164,9 @@ const ArticleDetail = () => {
       {/* Article Content */}
       <Section>
         <div className="max-w-4xl mx-auto">
-          {renderContent(article.content)}
+          <div className="prose prose-lg max-w-none">
+            {renderContent(article.content)}
+          </div>
         </div>
       </Section>
 

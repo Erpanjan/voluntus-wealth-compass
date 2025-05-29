@@ -28,26 +28,15 @@ const ArticleCard: React.FC<ArticleCardProps> = memo(({
 }) => {
   // Properly encode the slug for URL navigation
   const encodedSlug = encodeURIComponent(id);
-  const articleUrl = `/insight/${encodedSlug}`;
-
-  console.log('🔗 [ArticleCard] Creating link:', { 
-    originalId: id, 
-    encodedSlug, 
-    articleUrl,
-    title: title.substring(0, 50) + '...'
-  });
 
   return (
     <Link 
-      to={articleUrl}
+      to={`/insight/${encodedSlug}`}
       className={cn(
         "block bg-white rounded-xl overflow-hidden transition-all duration-300 group",
         "border border-gray-200 shadow-sm hover:shadow-md",
         className
       )}
-      onClick={() => {
-        console.log('👆 [ArticleCard] Clicked article:', { id, title, articleUrl });
-      }}
     >
       <article className="flex flex-col h-full">
         {image && (
