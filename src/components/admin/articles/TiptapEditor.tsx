@@ -12,11 +12,12 @@ import EditorStylesComponent from './editor/EditorStylesComponent';
 interface TiptapEditorProps {
   value: string;
   onChange: (value: string) => void;
+  languageKey?: string; // Add language key to track language switches
 }
 
-const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
+const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange, languageKey }) => {
   const editorState = useEditorState();
-  const initialContentSetRef = useRef(false);
+  const currentLanguageRef = useRef<string | undefined>(languageKey);
   const userIsEditingRef = useRef(false);
   
   const editor = useEditor({
@@ -33,31 +34,40 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
     editorProps: getEditorProps(editorState.isFullscreen),
   });
 
-  // Set content only when editor is ready and we haven't set initial content yet
+  // Handle language switching - clear editing flag and load new content
   useEffect(() => {
-    if (editor && value && value !== '<p></p>' && !initialContentSetRef.current) {
-      console.log('🔄 [TIPTAP] Setting initial editor content:', {
-        valueLength: value.length,
-        valuePreview: value.substring(0, 100) + '...',
+    if (editor && languageKey && currentLanguageRef.current !== languageKey) {
+      console.log('🌍 [TIPTAP] Language switch detected:', {
+        from: currentLanguageRef.current,
+        to: languageKey,
+        newContentLength: value?.length || 0
       });
-      editor.commands.setContent(value, false);
-      initialContentSetRef.current = true;
+      
+      // Reset editing state for language switch
       userIsEditingRef.current = false;
+      currentLanguageRef.current = languageKey;
+      
+      // Set content for new language
+      if (value && value !== '<p></p>') {
+        editor.commands.setContent(value, false);
+      } else {
+        editor.commands.setContent('<p></p>', false);
+      }
     }
-  }, [editor, value]);
+  }, [editor, languageKey, value]);
 
-  // Reset the initial content flag when value changes significantly (e.g., language switch)
+  // Handle initial content loading (only when not editing)
   useEffect(() => {
-    if (editor && value && !userIsEditingRef.current) {
+    if (editor && value && value !== '<p></p>' && !userIsEditingRef.current) {
       const currentContent = editor.getHTML();
-      // Check if this is a significant content change (like language switch)
-      if (currentContent !== value && Math.abs(currentContent.length - value.length) > 100) {
-        console.log('🔄 [TIPTAP] Significant content change detected, updating editor:', {
-          currentLength: currentContent.length,
-          newLength: value.length,
+      
+      // Only update if content is significantly different
+      if (currentContent !== value && Math.abs(currentContent.length - value.length) > 10) {
+        console.log('🔄 [TIPTAP] Loading content:', {
+          valueLength: value.length,
+          valuePreview: value.substring(0, 100) + '...',
         });
         editor.commands.setContent(value, false);
-        userIsEditingRef.current = false;
       }
     }
   }, [editor, value]);

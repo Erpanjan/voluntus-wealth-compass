@@ -66,6 +66,16 @@ const EditArticleSimple = () => {
     }
   });
 
+  // Handle language switching with content preservation
+  const handleLanguageSwitch = (newLanguage: 'en' | 'zh') => {
+    console.log('🌍 [LANGUAGE SWITCH] Switching from', selectedLanguage, 'to', newLanguage);
+    
+    // Force form to update with current values before switching
+    form.trigger();
+    
+    setSelectedLanguage(newLanguage);
+  };
+
   // Load article data directly from database
   useEffect(() => {
     const loadArticle = async () => {
@@ -287,7 +297,7 @@ const EditArticleSimple = () => {
                 <CardTitle>Language</CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs value={selectedLanguage} onValueChange={(value) => setSelectedLanguage(value as 'en' | 'zh')}>
+                <Tabs value={selectedLanguage} onValueChange={handleLanguageSwitch}>
                   <TabsList>
                     <TabsTrigger value="en">English</TabsTrigger>
                     <TabsTrigger value="zh">中文</TabsTrigger>
@@ -406,6 +416,7 @@ const EditArticleSimple = () => {
                         <TiptapEditor
                           value={field.value}
                           onChange={field.onChange}
+                          languageKey={selectedLanguage}
                         />
                       </FormControl>
                       <FormMessage />
