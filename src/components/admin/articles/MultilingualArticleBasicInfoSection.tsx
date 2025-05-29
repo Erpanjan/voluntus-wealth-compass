@@ -28,17 +28,6 @@ const MultilingualArticleBasicInfoSection: React.FC<MultilingualArticleBasicInfo
   
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full">
-          <span className="text-sm font-medium">
-            {isEnglish ? '🇺🇸 English' : '🇨🇳 中文'}
-          </span>
-        </div>
-        <span className="text-sm text-gray-500">
-          {isEnglish ? 'Editing English version' : 'Editing Chinese version'}
-        </span>
-      </div>
-
       <FormField
         control={form.control}
         name={`${selectedLanguage}.title`}

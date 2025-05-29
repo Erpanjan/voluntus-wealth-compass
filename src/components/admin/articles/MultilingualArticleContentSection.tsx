@@ -37,11 +37,6 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
             <h2 className="text-xl font-semibold text-gray-800">
               {isEnglish ? 'Article Content' : '文章内容'}
             </h2>
-            <div className="flex items-center gap-2 px-3 py-1 bg-white border rounded-full">
-              <span className="text-sm font-medium">
-                {isEnglish ? '🇺🇸 English' : '🇨🇳 中文'}
-              </span>
-            </div>
           </div>
           <CollapsibleTrigger asChild>
             <button className="p-2 rounded-md hover:bg-gray-200 transition-colors">

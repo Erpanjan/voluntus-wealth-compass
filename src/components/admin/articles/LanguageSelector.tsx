@@ -39,12 +39,10 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       
       <Tabs value={selectedLanguage} onValueChange={(value) => onLanguageChange(value as Language)}>
         <TabsList className="grid w-full grid-cols-2 max-w-md">
-          <TabsTrigger value="en" className="flex items-center gap-2">
-            <span>🇺🇸</span>
+          <TabsTrigger value="en">
             English
           </TabsTrigger>
-          <TabsTrigger value="zh" className="flex items-center gap-2">
-            <span>🇨🇳</span>
+          <TabsTrigger value="zh">
             中文
           </TabsTrigger>
         </TabsList>
