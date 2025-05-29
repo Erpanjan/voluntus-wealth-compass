@@ -24,6 +24,12 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
 }) => {
   const [isOpen, setIsOpen] = React.useState(true);
   
+  // Debug logging for language switching
+  React.useEffect(() => {
+    const currentContent = form.getValues(`${selectedLanguage}.content`);
+    console.log(`Language switched to ${selectedLanguage}, content:`, currentContent?.substring(0, 100) + '...');
+  }, [selectedLanguage, form]);
+  
   return (
     <Card className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       <Collapsible
@@ -34,7 +40,7 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
         <div className="flex items-center justify-between px-6 py-5 border-b bg-gray-50">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-semibold text-gray-800">
-              Article Content
+              Article Content ({selectedLanguage === 'en' ? 'English' : 'Chinese'})
             </h2>
           </div>
           <CollapsibleTrigger asChild>
@@ -69,7 +75,8 @@ const MultilingualArticleContentSection: React.FC<MultilingualArticleContentSect
                 <FormItem>
                   <FormControl>
                     <TiptapEditor 
-                      value={field.value} 
+                      key={`editor-${selectedLanguage}`}
+                      value={field.value || ''} 
                       onChange={field.onChange}
                     />
                   </FormControl>

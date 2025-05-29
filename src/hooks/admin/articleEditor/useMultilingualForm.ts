@@ -56,15 +56,40 @@ export const useMultilingualForm = () => {
     });
   };
 
+  // Enhanced content detection
   const hasContent = {
-    en: Boolean(form.watch('en.title') || form.watch('en.content')),
-    zh: Boolean(form.watch('zh.title') || form.watch('zh.content'))
+    en: Boolean(
+      form.watch('en.title')?.trim() || 
+      form.watch('en.content')?.trim() || 
+      form.watch('en.description')?.trim()
+    ),
+    zh: Boolean(
+      form.watch('zh.title')?.trim() || 
+      form.watch('zh.content')?.trim() || 
+      form.watch('zh.description')?.trim()
+    )
+  };
+
+  // Enhanced language switching with debugging
+  const handleLanguageChange = (newLanguage: Language) => {
+    const currentData = form.getValues();
+    console.log('Switching from', selectedLanguage, 'to', newLanguage);
+    console.log('Current form data:', currentData);
+    console.log('Target language data:', currentData[newLanguage]);
+    
+    setSelectedLanguage(newLanguage);
+    
+    // Force form to acknowledge the language change
+    setTimeout(() => {
+      const updatedData = form.getValues();
+      console.log('After language switch, form data:', updatedData[newLanguage]);
+    }, 100);
   };
 
   return {
     form,
     selectedLanguage,
-    setSelectedLanguage,
+    setSelectedLanguage: handleLanguageChange,
     getCurrentLanguageData,
     updateCurrentLanguageData,
     hasContent
