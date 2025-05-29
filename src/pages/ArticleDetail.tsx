@@ -43,8 +43,8 @@ const ArticleDetail = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-6 max-w-4xl">
-        {/* Navigation Section - isolated at top */}
-        <div className="py-8">
+        {/* Navigation Section - positioned below fixed header */}
+        <div className="pt-28 pb-8">
           <ArticleDetailNavigation />
         </div>
 

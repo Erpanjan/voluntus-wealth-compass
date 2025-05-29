@@ -6,8 +6,8 @@ const ArticleDetailLoading: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-6 max-w-4xl">
-        {/* Navigation Loading */}
-        <div className="py-8">
+        {/* Navigation Loading - positioned below fixed header */}
+        <div className="pt-28 pb-8">
           <Skeleton className="h-6 w-32" />
         </div>
         
