@@ -79,6 +79,16 @@ export const getArticleBySlugAndLanguage = async (
     }
 
     const article = data[0];
+    
+    // Safely handle reports data - ensure it's an array or default to empty array
+    let reports = [];
+    if (article.reports && Array.isArray(article.reports)) {
+      reports = article.reports;
+    } else if (article.reports && typeof article.reports === 'object') {
+      // If it's a JSON object but not an array, try to extract array data
+      reports = [];
+    }
+
     const result: Article = {
       id: article.id,
       title: article.title || '',
@@ -92,7 +102,7 @@ export const getArticleBySlugAndLanguage = async (
       created_at: article.created_at,
       updated_at: article.updated_at,
       authors: [],
-      reports: article.reports || [],
+      reports: reports,
     };
 
     console.log(`✅ [SimpleArticleService] Successfully fetched article: ${result.title}`);
