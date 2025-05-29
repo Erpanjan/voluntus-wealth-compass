@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 
@@ -70,7 +70,7 @@ export const useMultilingualForm = () => {
     )
   };
 
-  // Enhanced language switching with debugging
+  // Enhanced language switching with form refresh
   const handleLanguageChange = (newLanguage: Language) => {
     const currentData = form.getValues();
     console.log('Switching from', selectedLanguage, 'to', newLanguage);
@@ -78,13 +78,28 @@ export const useMultilingualForm = () => {
     console.log('Target language data:', currentData[newLanguage]);
     
     setSelectedLanguage(newLanguage);
-    
-    // Force form to acknowledge the language change
-    setTimeout(() => {
-      const updatedData = form.getValues();
-      console.log('After language switch, form data:', updatedData[newLanguage]);
-    }, 100);
   };
+
+  // Force form to refresh when language changes
+  useEffect(() => {
+    const currentFormData = form.getValues();
+    console.log('useEffect triggered for language change:', selectedLanguage);
+    console.log('Current language data:', currentFormData[selectedLanguage]);
+    
+    // Force React Hook Form to refresh all field bindings
+    // This ensures that the displayed values match the current language's data
+    form.reset(currentFormData, { 
+      keepDefaultValues: false,
+      keepValues: true,
+      keepDirty: true,
+      keepTouched: true
+    });
+    
+    // Also trigger revalidation to ensure all fields are properly bound
+    setTimeout(() => {
+      form.trigger();
+    }, 0);
+  }, [selectedLanguage, form]);
 
   return {
     form,
