@@ -2,13 +2,12 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { articleService } from '@/services/article';
-import { Article } from '@/types/multilingual-article.types';
-import { normalizeArticleContent } from '@/utils/articleContentUtils';
 import { useOptimizedQuery } from './useOptimizedQuery';
+import { MultilingualArticle } from '@/types/multilingual-article.types';
 
-export const useArticles = () => {
+export const useMultilingualArticles = () => {
   const { toast } = useToast();
-  const [localArticles, setLocalArticles] = useState<Article[]>([]);
+  const [localArticles, setLocalArticles] = useState<MultilingualArticle[]>([]);
 
   const {
     data: articlesData,
@@ -16,19 +15,13 @@ export const useArticles = () => {
     error,
     refetch
   } = useOptimizedQuery({
-    queryKey: ['articles'],
+    queryKey: ['multilingual-articles'],
     queryFn: async () => {
-      console.log('Fetching articles...');
+      console.log('Fetching multilingual articles...');
       const data = await articleService.getMultilingualArticles();
-      console.log('Articles fetched successfully:', data);
-      
-      // Convert multilingual articles to Article format
-      const normalizedArticles = data.articles.map(article => 
-        normalizeArticleContent(article, 'en')
-      );
-      
-      setLocalArticles(normalizedArticles);
-      return normalizedArticles;
+      console.log('Multilingual articles fetched successfully:', data);
+      setLocalArticles(data.articles);
+      return data.articles;
     },
     priority: 'normal',
     cacheStrategy: 'normal',
@@ -37,7 +30,7 @@ export const useArticles = () => {
   // Handle errors with useEffect
   useEffect(() => {
     if (error) {
-      console.error('Error fetching articles:', error);
+      console.error('Error fetching multilingual articles:', error);
       toast({
         title: "Error fetching articles",
         description: "There was a problem retrieving the articles. Please try again.",

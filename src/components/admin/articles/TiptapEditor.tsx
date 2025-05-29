@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { getEditorExtensions } from './editor/EditorExtensions';
 import { useEditorState } from './editor/hooks/useEditorState';
@@ -10,29 +10,16 @@ import EditorToolbar from './editor/EditorToolbar';
 import EditorStylesComponent from './editor/EditorStylesComponent';
 
 interface TiptapEditorProps {
-  value: string | { _type?: string; value?: string } | any;
+  value: string;
   onChange: (value: string) => void;
 }
 
 const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
   const editorState = useEditorState();
   
-  // Handle different value formats - extract string content
-  const getStringValue = (val: any): string => {
-    if (typeof val === 'string') {
-      return val;
-    }
-    if (val && typeof val === 'object' && val.value && typeof val.value === 'string') {
-      return val.value;
-    }
-    return '';
-  };
-
-  const stringValue = getStringValue(value);
-  
   const editor = useEditor({
     extensions: getEditorExtensions(),
-    content: stringValue,
+    content: value,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onChange(html);
@@ -40,30 +27,44 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ value, onChange }) => {
     editorProps: getEditorProps(editorState.isFullscreen),
   });
 
+  // Update editor content when value prop changes (language switching)
+  useEffect(() => {
+    if (editor) {
+      const currentContent = editor.getHTML();
+      const normalizedCurrentContent = currentContent === '<p></p>' ? '' : currentContent;
+      const normalizedNewValue = value || '';
+      
+      console.log('TiptapEditor value change detected:', {
+        currentContent: normalizedCurrentContent,
+        newValue: normalizedNewValue,
+        isDifferent: normalizedCurrentContent !== normalizedNewValue
+      });
+      
+      if (normalizedCurrentContent !== normalizedNewValue) {
+        console.log('Updating editor content from', normalizedCurrentContent, 'to', normalizedNewValue);
+        
+        // Clear the editor first, then set new content
+        editor.commands.clearContent();
+        
+        if (normalizedNewValue) {
+          editor.commands.setContent(normalizedNewValue);
+        }
+        
+        // Force a re-render
+        setTimeout(() => {
+          editor.commands.focus();
+          editor.commands.blur();
+        }, 10);
+      }
+    }
+  }, [editor, value]);
+
   const editorHandlers = useEditorHandlers({
     editor,
     ...editorState,
   });
 
   useKeyboardShortcuts(editor, editorState.setLinkPopoverOpen);
-
-  // Handle value prop changes to update editor content
-  React.useEffect(() => {
-    const currentStringValue = getStringValue(value);
-    if (editor && currentStringValue !== editor.getHTML()) {
-      console.log('TiptapEditor: Updating content from prop value:', typeof currentStringValue === 'string' ? currentStringValue.substring(0, 100) + '...' : 'Not a string');
-      editor.commands.setContent(currentStringValue || '', false);
-    }
-  }, [value, editor]);
-
-  // Force editor to update when key changes (language switch)
-  React.useEffect(() => {
-    if (editor) {
-      const currentStringValue = getStringValue(value);
-      console.log('TiptapEditor: Editor re-mounted, setting content:', typeof currentStringValue === 'string' ? currentStringValue.substring(0, 100) + '...' : 'Not a string');
-      editor.commands.setContent(currentStringValue || '', false);
-    }
-  }, [editor]);
 
   if (!editor) {
     return null;

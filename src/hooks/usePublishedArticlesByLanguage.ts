@@ -1,12 +1,15 @@
 
 import { useState, useEffect, useMemo } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { articleService, Article } from '@/services/article';
-import { useOptimizedQuery } from './useOptimizedQuery';
+import { articleService } from '@/services/article';
+import { useBaseArticleOperations } from './useBaseArticleOperations';
+import { Language } from '@/types/multilingual-article.types';
 
-export const usePublishedArticlesByLanguage = (pageSize: number = 4, language: string = 'en') => {
+export const usePublishedArticlesByLanguage = (pageSize: number = 4, language: Language = 'en') => {
   const [currentPage, setCurrentPage] = useState(0);
-  const { toast } = useToast();
+  const { createQuery, showErrorToast } = useBaseArticleOperations({
+    priority: 'high',
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   // Reset page when language changes
   useEffect(() => {
@@ -19,37 +22,31 @@ export const usePublishedArticlesByLanguage = (pageSize: number = 4, language: s
     isLoading,
     error,
     refetch
-  } = useOptimizedQuery({
-    queryKey: ['published-articles-by-language', currentPage, pageSize, language],
-    queryFn: () => articleService.getPublishedArticlesByLanguage(currentPage, pageSize, language),
-    priority: 'high',
-    cacheStrategy: 'aggressive',
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+  } = createQuery(
+    ['published-articles-by-language', currentPage, pageSize, language],
+    () => articleService.getPublishedArticlesByLanguage(currentPage, pageSize, language)
+  );
 
   // Prefetch next page for better UX
   const nextPage = currentPage + 1;
   const hasNextPage = currentPageData && (nextPage * pageSize < currentPageData.totalCount);
   
-  useOptimizedQuery({
-    queryKey: ['published-articles-by-language', nextPage, pageSize, language],
-    queryFn: () => articleService.getPublishedArticlesByLanguage(nextPage, pageSize, language),
-    enabled: hasNextPage,
-    priority: 'low',
-    cacheStrategy: 'aggressive',
-  });
+  createQuery(
+    ['published-articles-by-language', nextPage, pageSize, language],
+    () => articleService.getPublishedArticlesByLanguage(nextPage, pageSize, language),
+    { enabled: hasNextPage, priority: 'low' }
+  );
 
   // Error handling
   useEffect(() => {
     if (error) {
       console.error('Error fetching published articles by language:', error);
-      toast({
-        title: "Error loading articles",
-        description: "There was a problem loading the articles. Please try again.",
-        variant: "destructive",
-      });
+      showErrorToast(
+        "Error loading articles",
+        "There was a problem loading the articles. Please try again."
+      );
     }
-  }, [error, toast]);
+  }, [error, showErrorToast]);
 
   // Memoized computed values
   const computedValues = useMemo(() => {

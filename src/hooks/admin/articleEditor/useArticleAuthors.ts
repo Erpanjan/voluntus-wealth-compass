@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { articleService } from '@/services/article';
 import { authorService } from '@/services/authorService';
-import { Author } from '@/types/article.types';
+import { Author } from '@/types/multilingual-article.types';
 
 export const useArticleAuthors = (isEditMode: boolean) => {
   const { id } = useParams();
@@ -22,8 +22,8 @@ export const useArticleAuthors = (isEditMode: boolean) => {
       
       // 2. If in edit mode, find the article and get its authors
       if (isEditMode && id) {
-        const articles = await articleService.getArticles();
-        const article = articles.find(a => a.id === id);
+        const articlesResponse = await articleService.getMultilingualArticles();
+        const article = articlesResponse.articles.find(a => a.id === id); // Fixed: access articles array
         
         if (article && article.authors && article.authors.length > 0) {
           // Extract author IDs from the article

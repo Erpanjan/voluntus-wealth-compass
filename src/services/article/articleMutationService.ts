@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { createUniqueSlug } from '@/utils/articleUtils';
@@ -27,7 +28,7 @@ interface MultilingualArticleInput {
  */
 export const articleMutationService = {
   /**
-   * Create or update a multilingual article
+   * Create or update a multilingual article - UPDATED FOR CLEAN SCHEMA
    * @param article The multilingual article data to save
    * @param authorIds Not used anymore - kept for compatibility
    * @param imageFile Optional image file to upload
@@ -41,10 +42,22 @@ export const articleMutationService = {
     attachments?: any[]
   ): Promise<string | null> {
     try {
+      // Check authentication first
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        console.error('Authentication required:', authError);
+        throw new Error('You must be logged in to save articles');
+      }
+
       const isUpdate = !!article.id;
       let articleId = article.id || uuidv4();
       
       console.log(`${isUpdate ? 'Updating' : 'Creating'} multilingual article with ID: ${articleId}`);
+      console.log('Article data being saved:', {
+        en: article.en,
+        zh: article.zh,
+        user: user.id
+      });
       
       // 1. Upload image if provided
       let imageUrl = article.image_url;
@@ -71,30 +84,41 @@ export const articleMutationService = {
         console.log("Uploaded image URL:", imageUrl);
       }
       
-      // 2. Create or update the multilingual article
+      // 2. Generate slug from title (the trigger will also handle this, but we need it for the insert)
+      const generateSlug = (title: string): string => {
+        return title
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .trim();
+      };
+      
+      const slug = article.en.title 
+        ? generateSlug(article.en.title)
+        : article.zh.title 
+          ? generateSlug(article.zh.title)
+          : `untitled-${Date.now()}`;
+      
+      // 3. Create or update the multilingual article with clean schema
       const articleData = {
-        title_en: article.en.title || '',
-        title_zh: article.zh.title || '',
-        description_en: article.en.description || '',
-        description_zh: article.zh.description || '',
+        title_en: article.en.title?.trim() || '',
+        title_zh: article.zh.title?.trim() || '',
+        description_en: article.en.description?.trim() || '',
+        description_zh: article.zh.description?.trim() || '',
         content_en: article.en.content || {},
         content_zh: article.zh.content || {},
-        category_en: article.en.category || '',
-        category_zh: article.zh.category || '',
-        author_name_en: article.en.author_name || '',
-        author_name_zh: article.zh.author_name || '',
-        // Keep legacy columns for backward compatibility (use English as default)
-        title: article.en.title || article.zh.title || '',
-        description: article.en.description || article.zh.description || '',
-        content: article.en.content || article.zh.content || {},
-        category: article.en.category || article.zh.category || '',
-        author_name: article.en.author_name || article.zh.author_name || '',
+        category_en: article.en.category?.trim() || '',
+        category_zh: article.zh.category?.trim() || '',
+        author_name_en: article.en.author_name?.trim() || '',
+        author_name_zh: article.zh.author_name?.trim() || '',
         image_url: imageUrl,
         published_at: article.published_at,
         updated_at: new Date().toISOString(),
+        slug: slug,
       };
       
-      let slug: string | null = null;
+      console.log('Final clean multilingual article data for database:', articleData);
       
       if (isUpdate) {
         // Update existing article
@@ -110,30 +134,31 @@ export const articleMutationService = {
           throw updateError;
         }
         
-        slug = articleId;
+        return articleId;
       } else {
-        // Create new article with unique slug
-        const uniqueSlug = createUniqueSlug(article.en.title || article.zh.title || 'untitled');
-        
+        // Create new article
         const { data: newArticle, error: insertError } = await supabase
           .from('articles')
           .insert({
             id: articleId,
-            ...articleData,
-            slug: uniqueSlug
+            ...articleData
           })
           .select('id')
           .single();
         
         if (insertError) {
           console.error('Error creating multilingual article:', insertError);
+          console.error('Insert error details:', {
+            message: insertError.message,
+            details: insertError.details,
+            hint: insertError.hint,
+            code: insertError.code
+          });
           throw insertError;
         }
         
-        slug = articleId;
+        return articleId;
       }
-      
-      return slug;
     } catch (error) {
       console.error('Error in saveMultilingualArticle:', error);
       throw error;
@@ -141,7 +166,7 @@ export const articleMutationService = {
   },
 
   /**
-   * Create or update an article
+   * Create or update an article (legacy method)
    * @param article The article data to save
    * @param authorIds Not used anymore - kept for compatibility
    * @param imageFile Optional image file to upload
@@ -154,93 +179,28 @@ export const articleMutationService = {
     imageFile?: File | null, 
     attachments?: any[]
   ): Promise<string | null> {
-    try {
-      const isUpdate = !!article.id;
-      let articleId = article.id || uuidv4();
-      
-      console.log(`${isUpdate ? 'Updating' : 'Creating'} article with ID: ${articleId}`);
-      
-      // 1. Upload image if provided
-      let imageUrl = article.image_url;
-      if (imageFile) {
-        const imagePath = `articles/${articleId}/${uuidv4()}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('article-assets')
-          .upload(imagePath, imageFile, {
-            upsert: true,
-            contentType: imageFile.type,
-          });
-        
-        if (uploadError) {
-          console.error('Error uploading image:', uploadError);
-          throw uploadError;
-        }
-        
-        // Get public URL of the uploaded image
-        const { data: { publicUrl } } = supabase.storage
-          .from('article-assets')
-          .getPublicUrl(imagePath);
-        
-        imageUrl = publicUrl;
-        console.log("Uploaded image URL:", imageUrl);
-      }
-      
-      // 2. Create or update the article
-      const articleData = {
-        title: article.title,
+    // Convert legacy article to multilingual format and use the new method
+    const multilingualArticle: MultilingualArticleInput = {
+      id: article.id,
+      en: {
+        title: article.title || '',
         description: article.description || '',
         content: article.content || {},
         category: article.category || '',
         author_name: article.author_name || '',
-        image_url: imageUrl,
-        published_at: article.published_at,
-        updated_at: new Date().toISOString(),
-      };
-      
-      let slug: string | null = null;
-      
-      if (isUpdate) {
-        // Update existing article
-        const { data: updatedArticle, error: updateError } = await supabase
-          .from('articles')
-          .update(articleData)
-          .eq('id', articleId)
-          .select('id')
-          .single();
-        
-        if (updateError) {
-          console.error('Error updating article:', updateError);
-          throw updateError;
-        }
-        
-        slug = articleId;
-      } else {
-        // Create new article with unique slug
-        const uniqueSlug = createUniqueSlug(article.title || 'untitled');
-        
-        const { data: newArticle, error: insertError } = await supabase
-          .from('articles')
-          .insert({
-            id: articleId,
-            ...articleData,
-            slug: uniqueSlug
-          })
-          .select('id')
-          .single();
-        
-        if (insertError) {
-          console.error('Error creating article:', insertError);
-          throw insertError;
-        }
-        
-        slug = articleId;
-      }
-      
-      return slug;
-    } catch (error) {
-      console.error('Error in saveArticle:', error);
-      throw error;
-    }
+      },
+      zh: {
+        title: '',
+        description: '',
+        content: {},
+        category: '',
+        author_name: '',
+      },
+      image_url: article.image_url,
+      published_at: article.published_at,
+    };
+    
+    return this.saveMultilingualArticle(multilingualArticle, authorIds, imageFile, attachments);
   },
 
   /**
