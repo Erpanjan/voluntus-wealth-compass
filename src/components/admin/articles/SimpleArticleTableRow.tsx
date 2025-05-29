@@ -1,3 +1,4 @@
+
 import React, { memo, useMemo } from 'react';
 import { format } from 'date-fns';
 import { 
@@ -80,11 +81,6 @@ const SimpleArticleTableRow = memo(({
   const hasEnglishContent = Boolean(article.title_en && article.title_en.trim());
   const hasChineseContent = Boolean(article.title_zh && article.title_zh.trim());
 
-  const handleEdit = () => {
-    console.log('🔄 Navigating to edit article:', article.id);
-    onEdit(article.id);
-  };
-
   return (
     <TableRow className="hover:bg-gray-50">
       <TableCell className="font-medium max-w-[300px]">
@@ -139,7 +135,7 @@ const SimpleArticleTableRow = memo(({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[160px]">
-            <DropdownMenuItem onClick={handleEdit} className="cursor-pointer">
+            <DropdownMenuItem onClick={() => onEdit(article.id)} className="cursor-pointer">
               <Edit className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>

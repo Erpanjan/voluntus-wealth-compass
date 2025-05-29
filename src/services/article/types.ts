@@ -10,4 +10,4 @@ export type {
   PaginatedArticlesResponse,
   PaginatedMultilingualArticlesResponse,
   ArticleQueryOptions
-} from '@/types/multilingual-article.types';
+} from '@/types/article.types';
