@@ -33,14 +33,17 @@ export const useMultilingualArticleActions = () => {
           description: formData.en.description,
           category: formData.en.category,
           author_name: formData.en.author_name,
+          hasContent: !!formData.en.content && formData.en.content !== '<p></p>'
         },
         zh: {
           title: formData.zh.title,
           description: formData.zh.description,
           category: formData.zh.category,
           author_name: formData.zh.author_name,
+          hasContent: !!formData.zh.content && formData.zh.content !== '<p></p>'
         },
-        hasImage: !!imageFile
+        hasImage: !!imageFile,
+        published_at: formData.published_at
       });
 
       const result = await articleService.saveMultilingualArticle(
@@ -86,9 +89,21 @@ export const useMultilingualArticleActions = () => {
       }
     } catch (error: any) {
       console.error('Error saving multilingual draft:', error);
+      
+      let errorMessage = 'Failed to save article draft. Please try again.';
+      
+      // Provide more specific error messages based on the error
+      if (error.message?.includes('row-level security')) {
+        errorMessage = 'Authentication error. Please log in again and try saving the draft.';
+      } else if (error.message?.includes('violates not-null constraint')) {
+        errorMessage = 'Missing required information. Please ensure you have provided a title.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: 'Error',
-        description: error.message || 'Failed to save article draft. Please try again.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -117,14 +132,17 @@ export const useMultilingualArticleActions = () => {
           description: formData.en.description,
           category: formData.en.category,
           author_name: formData.en.author_name,
+          hasContent: !!formData.en.content && formData.en.content !== '<p></p>'
         },
         zh: {
           title: formData.zh.title,
           description: formData.zh.description,
           category: formData.zh.category,
           author_name: formData.zh.author_name,
+          hasContent: !!formData.zh.content && formData.zh.content !== '<p></p>'
         },
-        hasImage: !!imageFile
+        hasImage: !!imageFile,
+        published_at: formData.published_at
       });
 
       const result = await articleService.saveMultilingualArticle(
@@ -168,9 +186,21 @@ export const useMultilingualArticleActions = () => {
       navigate('/admin/articles');
     } catch (error: any) {
       console.error('Error publishing multilingual article:', error);
+      
+      let errorMessage = 'Failed to publish article. Please try again.';
+      
+      // Provide more specific error messages based on the error
+      if (error.message?.includes('row-level security')) {
+        errorMessage = 'Authentication error. Please log in again and try publishing the article.';
+      } else if (error.message?.includes('violates not-null constraint')) {
+        errorMessage = 'Missing required information. Please ensure you have provided all necessary fields.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: 'Error',
-        description: error.message || 'Failed to publish article. Please try again.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

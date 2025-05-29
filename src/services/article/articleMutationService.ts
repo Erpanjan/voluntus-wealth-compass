@@ -41,10 +41,22 @@ export const articleMutationService = {
     attachments?: any[]
   ): Promise<string | null> {
     try {
+      // Check authentication first
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        console.error('Authentication required:', authError);
+        throw new Error('You must be logged in to save articles');
+      }
+
       const isUpdate = !!article.id;
       let articleId = article.id || uuidv4();
       
       console.log(`${isUpdate ? 'Updating' : 'Creating'} multilingual article with ID: ${articleId}`);
+      console.log('Article data being saved:', {
+        en: article.en,
+        zh: article.zh,
+        user: user.id
+      });
       
       // 1. Upload image if provided
       let imageUrl = article.image_url;
@@ -71,28 +83,37 @@ export const articleMutationService = {
         console.log("Uploaded image URL:", imageUrl);
       }
       
-      // 2. Create or update the multilingual article
+      // 2. Determine the primary title and ensure required fields are populated
+      const primaryTitle = article.en.title?.trim() || article.zh.title?.trim() || 'Untitled Article';
+      const primaryDescription = article.en.description?.trim() || article.zh.description?.trim() || '';
+      const primaryCategory = article.en.category?.trim() || article.zh.category?.trim() || '';
+      const primaryAuthor = article.en.author_name?.trim() || article.zh.author_name?.trim() || '';
+      const primaryContent = article.en.content || article.zh.content || {};
+      
+      // 3. Create or update the multilingual article
       const articleData = {
-        title_en: article.en.title || '',
-        title_zh: article.zh.title || '',
-        description_en: article.en.description || '',
-        description_zh: article.zh.description || '',
+        title_en: article.en.title?.trim() || '',
+        title_zh: article.zh.title?.trim() || '',
+        description_en: article.en.description?.trim() || '',
+        description_zh: article.zh.description?.trim() || '',
         content_en: article.en.content || {},
         content_zh: article.zh.content || {},
-        category_en: article.en.category || '',
-        category_zh: article.zh.category || '',
-        author_name_en: article.en.author_name || '',
-        author_name_zh: article.zh.author_name || '',
-        // Keep legacy columns for backward compatibility (use English as default)
-        title: article.en.title || article.zh.title || '',
-        description: article.en.description || article.zh.description || '',
-        content: article.en.content || article.zh.content || {},
-        category: article.en.category || article.zh.category || '',
-        author_name: article.en.author_name || article.zh.author_name || '',
+        category_en: article.en.category?.trim() || '',
+        category_zh: article.zh.category?.trim() || '',
+        author_name_en: article.en.author_name?.trim() || '',
+        author_name_zh: article.zh.author_name?.trim() || '',
+        // Keep legacy columns for backward compatibility (use primary values)
+        title: primaryTitle,
+        description: primaryDescription,
+        content: primaryContent,
+        category: primaryCategory,
+        author_name: primaryAuthor,
         image_url: imageUrl,
         published_at: article.published_at,
         updated_at: new Date().toISOString(),
       };
+      
+      console.log('Final article data for database:', articleData);
       
       let slug: string | null = null;
       
@@ -113,7 +134,7 @@ export const articleMutationService = {
         slug = articleId;
       } else {
         // Create new article with unique slug
-        const uniqueSlug = createUniqueSlug(article.en.title || article.zh.title || 'untitled');
+        const uniqueSlug = createUniqueSlug(primaryTitle);
         
         const { data: newArticle, error: insertError } = await supabase
           .from('articles')
@@ -127,6 +148,12 @@ export const articleMutationService = {
         
         if (insertError) {
           console.error('Error creating multilingual article:', insertError);
+          console.error('Insert error details:', {
+            message: insertError.message,
+            details: insertError.details,
+            hint: insertError.hint,
+            code: insertError.code
+          });
           throw insertError;
         }
         
@@ -155,6 +182,13 @@ export const articleMutationService = {
     attachments?: any[]
   ): Promise<string | null> {
     try {
+      // Check authentication first
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        console.error('Authentication required:', authError);
+        throw new Error('You must be logged in to save articles');
+      }
+
       const isUpdate = !!article.id;
       let articleId = article.id || uuidv4();
       
