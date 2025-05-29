@@ -10,12 +10,16 @@ export type { Author, Article, Report } from './types';
 export const articleService = {
   // Query operations
   getArticles: articleQueryService.getArticles,
-  getArticleById: articleQueryService.getArticleById, // New optimized function
+  getArticleById: articleQueryService.getArticleById,
+  getMultilingualArticleById: articleQueryService.getMultilingualArticleById, // New multilingual function
   getPublishedArticles: articleQueryService.getPublishedArticles,
+  getPublishedArticlesByLanguage: articleQueryService.getPublishedArticlesByLanguage, // New language-aware function
   getArticleBySlug: articleQueryService.getArticleBySlug,
+  getArticleBySlugAndLanguage: articleQueryService.getArticleBySlugAndLanguage, // New language-aware function
   
   // Mutation operations
   saveArticle: articleMutationService.saveArticle,
+  saveMultilingualArticle: articleMutationService.saveMultilingualArticle, // New multilingual function
   deleteArticle: articleMutationService.deleteArticle,
   togglePublishStatus: articleMutationService.togglePublishStatus,
   

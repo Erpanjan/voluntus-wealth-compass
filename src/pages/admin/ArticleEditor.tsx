@@ -7,18 +7,17 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { useMultilingualForm } from '@/hooks/admin/articleEditor/useMultilingualForm';
 import { useArticleImage } from '@/hooks/admin/articleEditor/useArticleImage';
 import { useArticlePreview } from '@/hooks/admin/articleEditor/useArticlePreview';
-import { useArticleActions } from '@/hooks/admin/articleEditor/useArticleActions';
+import { useMultilingualArticleActions } from '@/hooks/admin/articleEditor/useMultilingualArticleActions';
+import { useMultilingualArticleData } from '@/hooks/admin/articleEditor/useMultilingualArticleData';
 import LanguageSelector from '@/components/admin/articles/LanguageSelector';
 import MultilingualArticleBasicInfoSection from '@/components/admin/articles/MultilingualArticleBasicInfoSection';
 import MultilingualArticleContentSection from '@/components/admin/articles/MultilingualArticleContentSection';
 import ArticleImageUpload from '@/components/admin/articles/ArticleImageUpload';
 import ArticleEditorToolbar from '@/components/admin/articles/ArticleEditorToolbar';
 import ArticlePreviewDialog from '@/components/admin/articles/ArticlePreviewDialog';
-import { useParams } from 'react-router-dom';
 
 const ArticleEditor = () => {
-  const { id } = useParams();
-  const isEditMode = !!id;
+  const { isEditMode, loadArticleData } = useMultilingualArticleData();
   
   const { 
     form, 
@@ -34,26 +33,55 @@ const ArticleEditor = () => {
   } = useArticleImage();
   
   const { previewOpen, setPreviewOpen, openPreview } = useArticlePreview();
-  const { submitting, navigateBack, saveDraft, publishArticle } = useArticleActions();
+  const { submitting, navigateBack, saveDraft, publishArticle } = useMultilingualArticleActions();
   
   // Load article data if in edit mode
   useEffect(() => {
-    // TODO: Load multilingual article data when in edit mode
-    // This will be implemented when connecting to Supabase
-  }, [isEditMode]);
+    const loadExistingData = async () => {
+      if (isEditMode) {
+        const articleData = await loadArticleData();
+        if (articleData) {
+          console.log('Loading existing multilingual data:', articleData);
+          
+          // Set form data with multilingual content
+          form.reset({
+            en: {
+              title: articleData.en.title || '',
+              description: articleData.en.description || '',
+              content: articleData.en.content || '',
+              category: articleData.en.category || '',
+              author_name: articleData.en.author_name || '',
+            },
+            zh: {
+              title: articleData.zh.title || '',
+              description: articleData.zh.description || '',
+              content: articleData.zh.content || '',
+              category: articleData.zh.category || '',
+              author_name: articleData.zh.author_name || '',
+            },
+            image_url: articleData.image_url || '',
+            published_at: articleData.published_at ? new Date(articleData.published_at).toISOString().split('T')[0] : '',
+          });
+          
+          // Load image if available
+          if (articleData.image_url) {
+            loadImageData(articleData.image_url);
+          }
+        }
+      }
+    };
+    
+    loadExistingData();
+  }, [isEditMode, loadArticleData, form, loadImageData]);
 
   const handleSaveDraft = async () => {
     const formData = form.getValues();
-    // TODO: Transform multilingual data for backend
-    console.log('Saving multilingual draft:', formData);
-    // await saveDraft(formData, imageFile);
+    await saveDraft({ ...formData, image_url: imagePreview }, imageFile);
   };
 
   const handlePublishArticle = async () => {
     const formData = form.getValues();
-    // TODO: Transform multilingual data for backend
-    console.log('Publishing multilingual article:', formData);
-    // await publishArticle(formData, imageFile);
+    await publishArticle({ ...formData, image_url: imagePreview }, imageFile);
   };
 
   const currentLanguageData = form.watch(selectedLanguage);
