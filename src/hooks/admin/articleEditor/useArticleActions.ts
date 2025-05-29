@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { articleService } from '@/services/article';
+import { ArticleInput } from '@/types/multilingual-article.types';
 
 export const useArticleActions = () => {
   const { id } = useParams();
@@ -15,7 +16,7 @@ export const useArticleActions = () => {
     navigate('/admin/articles');
   };
 
-  // Save article as draft
+  // Save article as draft - convert to multilingual format
   const saveDraft = async (formData: any, imageFile: File | null) => {
     if (submitting) return;
     
@@ -35,17 +36,29 @@ export const useArticleActions = () => {
         hasImage: !!imageFile
       });
 
-      const result = await articleService.saveArticle(
-        {
-          id: id,
+      // Convert legacy format to multilingual format
+      const multilingualData = {
+        id: id,
+        en: {
           title: formData.title.trim(),
           description: formData.description?.trim() || '',
           content: formData.content || '',
           category: formData.category?.trim() || '',
           author_name: formData.author_name?.trim() || '',
-          // For drafts, set published_at to a future date
-          published_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
         },
+        zh: {
+          title: '',
+          description: '',
+          content: '',
+          category: '',
+          author_name: '',
+        },
+        // For drafts, set published_at to a future date
+        published_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
+      };
+
+      const result = await articleService.saveMultilingualArticle(
+        multilingualData,
         [], // No authors array needed
         imageFile,
         [] // No attachments
@@ -78,7 +91,7 @@ export const useArticleActions = () => {
     }
   };
 
-  // Publish article
+  // Publish article - convert to multilingual format
   const publishArticle = async (formData: any, imageFile: File | null) => {
     if (submitting) return;
     
@@ -101,17 +114,29 @@ export const useArticleActions = () => {
         hasImage: !!imageFile
       });
 
-      const result = await articleService.saveArticle(
-        {
-          id: id,
+      // Convert legacy format to multilingual format
+      const multilingualData = {
+        id: id,
+        en: {
           title: formData.title.trim(),
           description: formData.description?.trim() || '',
           content: formData.content,
           category: formData.category?.trim() || '',
           author_name: formData.author_name?.trim() || '',
-          // For published articles, set published_at to now
-          published_at: new Date().toISOString(),
         },
+        zh: {
+          title: '',
+          description: '',
+          content: '',
+          category: '',
+          author_name: '',
+        },
+        // For published articles, set published_at to now
+        published_at: new Date().toISOString(),
+      };
+
+      const result = await articleService.saveMultilingualArticle(
+        multilingualData,
         [], // No authors array needed
         imageFile,
         [] // No attachments

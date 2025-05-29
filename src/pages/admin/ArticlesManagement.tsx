@@ -10,6 +10,7 @@ import { useOptimizedMultilingualArticles } from '@/hooks/useOptimizedMultilingu
 import { Card, CardContent } from '@/components/ui/card';
 import ArticleFilters from '@/components/admin/articles/ArticleFilters';
 import { DateRange } from 'react-day-picker';
+import { MultilingualArticle } from '@/types/multilingual-article.types';
 
 const ArticlesManagement = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const ArticlesManagement = () => {
   };
   
   // Filter articles based on search term and filters with multilingual support
-  const filteredArticles = articles.filter(article => {
+  const filteredArticles: MultilingualArticle[] = articles.filter(article => {
     // Multilingual search - search across both language fields
     const matchesSearch = searchTerm === '' || 
       (article.title_en && article.title_en.toLowerCase().includes(searchTerm.toLowerCase())) ||
