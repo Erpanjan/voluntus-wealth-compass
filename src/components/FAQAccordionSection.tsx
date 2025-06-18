@@ -28,7 +28,7 @@ const FAQAccordionSection: React.FC<FAQAccordionSectionProps> = ({
   propositions
 }) => {
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="min-h-[80vh] md:min-h-screen flex flex-col justify-center bg-white py-16 md:py-24">
       <div className="container-custom mx-auto px-6 md:px-8 lg:px-0">
         <div className="flex flex-col md:flex-row gap-12 lg:gap-16">
           {/* Left side - Title and subtitle */}
