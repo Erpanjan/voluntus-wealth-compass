@@ -15,7 +15,7 @@ interface SectionProps {
   titleClassName?: string;
   subtitleClassName?: string;
   contentClassName?: string;
-  matchFAQHeight?: boolean; // New prop to match FAQ section height
+  matchFAQHeight?: boolean;
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -36,11 +36,10 @@ const Section: React.FC<SectionProps> = ({
   
   const bgClasses = {
     'white': 'bg-white',
-    'light': 'bg-[#F1F1F1]',
-    'dark': 'bg-black text-white',
+    'light': 'bg-brand-almond',
+    'dark': 'bg-brand-black-olive text-white',
   };
 
-  // Apply specific height classes when matching FAQ height
   const sectionHeightClasses = matchFAQHeight 
     ? 'py-16 md:py-24' 
     : carouselItem 
@@ -66,9 +65,9 @@ const Section: React.FC<SectionProps> = ({
             {title && (
               <h2 
                 className={cn(
-                  "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-semibold mb-3 md:mb-6 tracking-tight animate-fade-in",
+                  "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-heading font-semibold mb-3 md:mb-6 tracking-tight animate-fade-in",
                   titleClassName,
-                  background === 'dark' ? 'text-white' : 'text-[#333333]'
+                  background === 'dark' ? 'text-white' : 'text-brand-black-olive'
                 )}
                 data-section-title="true"
               >
@@ -78,9 +77,9 @@ const Section: React.FC<SectionProps> = ({
             {subtitle && (
               <p 
                 className={cn(
-                  "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in mobile-text-base",
+                  "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in mobile-text-base font-body",
                   subtitleClassName,
-                  background === 'dark' ? 'text-white/70' : 'text-[#666666]'
+                  background === 'dark' ? 'text-white/70' : 'text-brand-muted-gray'
                 )}
                 data-section-subtitle="true"
               > 

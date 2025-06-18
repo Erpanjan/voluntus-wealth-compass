@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,76 +69,78 @@ const ContactForm = () => {
   return (
     <div className="max-w-2xl mx-auto p-8 md:p-12">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-6 text-[#333333] font-poppins">
+        <h2 className="text-3xl md:text-4xl font-heading font-semibold mb-6 text-brand-black-olive">
           Join Our Waitlist
         </h2>
-        <p className="text-[#666666] text-lg font-poppins">
+        <p className="text-brand-muted-gray text-lg font-body">
           Be among the first to experience our service when we launch
         </p>
       </div>
       
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="bg-white rounded-comfortable shadow-peaceful p-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <Input
+                name="firstName"
+                type="text"
+                required
+                value={formData.firstName}
+                onChange={handleInputChange}
+                placeholder="First name"
+                className="w-full bg-brand-white-smoke border border-brand-light-gray rounded-gentle shadow-inner-peaceful text-brand-black-olive placeholder:text-brand-muted-gray h-12 px-4 py-3 font-body focus-visible:ring-1 focus-visible:ring-brand-black-olive focus-visible:border-brand-black-olive transition-all duration-200"
+              />
+            </div>
+            <div>
+              <Input
+                name="lastName"
+                type="text"
+                required
+                value={formData.lastName}
+                onChange={handleInputChange}
+                placeholder="Last name"
+                className="w-full bg-brand-white-smoke border border-brand-light-gray rounded-gentle shadow-inner-peaceful text-brand-black-olive placeholder:text-brand-muted-gray h-12 px-4 py-3 font-body focus-visible:ring-1 focus-visible:ring-brand-black-olive focus-visible:border-brand-black-olive transition-all duration-200"
+              />
+            </div>
+          </div>
+
           <div>
             <Input
-              name="firstName"
-              type="text"
+              name="email"
+              type="email"
               required
-              value={formData.firstName}
+              value={formData.email}
               onChange={handleInputChange}
-              placeholder="First name"
-              className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
+              placeholder="Email address"
+              className="w-full bg-brand-white-smoke border border-brand-light-gray rounded-gentle shadow-inner-peaceful text-brand-black-olive placeholder:text-brand-muted-gray h-12 px-4 py-3 font-body focus-visible:ring-1 focus-visible:ring-brand-black-olive focus-visible:border-brand-black-olive transition-all duration-200"
             />
           </div>
+
           <div>
-            <Input
-              name="lastName"
-              type="text"
-              required
-              value={formData.lastName}
+            <Textarea
+              name="message"
+              value={formData.message}
               onChange={handleInputChange}
-              placeholder="Last name"
-              className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
+              placeholder="Your message"
+              className="w-full bg-brand-white-smoke border border-brand-light-gray rounded-gentle shadow-inner-peaceful text-brand-black-olive placeholder:text-brand-muted-gray min-h-[80px] px-4 py-3 font-body resize-none focus-visible:ring-1 focus-visible:ring-brand-black-olive focus-visible:border-brand-black-olive transition-all duration-200"
             />
           </div>
-        </div>
 
-        <div>
-          <Input
-            name="email"
-            type="email"
-            required
-            value={formData.email}
-            onChange={handleInputChange}
-            placeholder="Email address"
-            className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
-          />
-        </div>
+          <div className="pt-4">
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="w-full bg-brand-black-olive hover:bg-opacity-90 text-white py-4 h-auto text-base font-medium rounded-comfortable font-body shadow-gentle hover:shadow-comfortable transition-all duration-300"
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit'}
+            </Button>
+          </div>
 
-        <div>
-          <Textarea
-            name="message"
-            value={formData.message}
-            onChange={handleInputChange}
-            placeholder="Your message"
-            className="w-full bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] min-h-[80px] px-0 pb-3 pt-0 font-poppins resize-none focus-visible:ring-0 focus-visible:border-[#333333] transition-colors"
-          />
-        </div>
-
-        <div className="pt-4">
-          <Button 
-            type="submit" 
-            disabled={isSubmitting}
-            className="w-full bg-[#333333] hover:bg-[#555555] text-white py-4 h-auto text-base font-medium rounded-none font-poppins"
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
-          </Button>
-        </div>
-
-        <p className="text-xs text-[#999999] text-center mt-8 leading-relaxed font-poppins">
-          By clicking 'Submit', I authorize [Company] to reach out to me about their service, exclusive events, service updates, and company news.
-        </p>
-      </form>
+          <p className="text-xs text-brand-muted-gray text-center mt-8 leading-relaxed font-body">
+            By clicking 'Submit', I authorize [Company] to reach out to me about their service, exclusive events, service updates, and company news.
+          </p>
+        </form>
+      </div>
     </div>
   );
 };
