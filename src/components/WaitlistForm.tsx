@@ -91,10 +91,10 @@ const WaitlistForm = () => {
               value={formData.firstName}
               onChange={handleInputChange}
               placeholder={t('waitlist.firstName')}
-              className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent"
+              className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent"
               style={{
                 WebkitBoxShadow: '0 0 0 1000px transparent inset',
-                WebkitTextFillColor: '#333333'
+                WebkitTextFillColor: '#666666'
               }}
             />
           </div>
@@ -106,10 +106,10 @@ const WaitlistForm = () => {
               value={formData.lastName}
               onChange={handleInputChange}
               placeholder={t('waitlist.lastName')}
-              className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent"
+              className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent"
               style={{
                 WebkitBoxShadow: '0 0 0 1000px transparent inset',
-                WebkitTextFillColor: '#333333'
+                WebkitTextFillColor: '#666666'
               }}
             />
           </div>
@@ -123,10 +123,10 @@ const WaitlistForm = () => {
             value={formData.preferredContact}
             onChange={handleInputChange}
             placeholder={t('waitlist.preferredContact')}
-            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent"
+            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent"
             style={{
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
-              WebkitTextFillColor: '#333333'
+              WebkitTextFillColor: '#666666'
             }}
           />
         </div>
@@ -139,10 +139,10 @@ const WaitlistForm = () => {
             value={formData.contactInfo}
             onChange={handleInputChange}
             placeholder={t('waitlist.contactInfo')}
-            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent"
+            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent"
             style={{
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
-              WebkitTextFillColor: '#333333'
+              WebkitTextFillColor: '#666666'
             }}
           />
         </div>
@@ -153,10 +153,10 @@ const WaitlistForm = () => {
             value={formData.interests}
             onChange={handleInputChange}
             placeholder={t('waitlist.interests')}
-            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#333333] placeholder:text-[#999999] min-h-[80px] px-0 pb-3 pt-0 font-poppins resize-none focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent"
+            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] min-h-[80px] px-0 pb-3 pt-0 font-poppins resize-none focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent"
             style={{
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
-              WebkitTextFillColor: '#333333'
+              WebkitTextFillColor: '#666666'
             }}
           />
         </div>
