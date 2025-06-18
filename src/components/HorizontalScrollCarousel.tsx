@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useCallback } from 'react';
 import XScroll from '@/components/ui/x-scroll';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -199,7 +198,7 @@ const HorizontalScrollCarousel = () => {
               >
                 {/* Progress Numbering Badge */}
                 <div className="absolute top-6 right-6 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-sm font-medium">
-                  {section.originalIndex + 1} of {containerSections.length}
+                  {section.originalIndex + 1}
                 </div>
                 
                 <div className="h-full flex flex-col pt-4">
