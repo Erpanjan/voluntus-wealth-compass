@@ -106,7 +106,7 @@ const translations = {
     'service.risk.title': 'Risk Management',
     'service.risk.content': 'With our strong quantitative skills and deep investment expertise, we manage risk across multiple dimensions. Through vigilant, ongoing oversight, we ensure your investments stay aligned with your evolving financial circumstances and remain positioned to achieve your goals—delivering peace of mind and confidence in your investment journey.',
     'service.policy.title': 'Policy Keeping',
-    'service.policy.content': 'Your Financial Planning Policy adapts to shifting market conditions and your personal life changes, meticulously tracking all advice given and decisions made. This flexible, proactive approach brings clarity to uncertain times, keeping your investment strategy both resilient and relevant.',
+    'service.policy.content': 'Many assume that global diversification requires significant wealth or expertise—but it doesn't. Our Financial Planning Policy delivers personalized, cost-effective investment strategies that offer broad diversification and adapt over time, helping clients manage risk and stay aligned with their long-term goals.',
 
     // Value propositions
     'value.control.title': 'We give you control',
