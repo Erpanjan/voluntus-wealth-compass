@@ -29,7 +29,7 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
   };
 
   return (
-    <div className="w-full py-12 md:py-16">
+    <div className="w-full py-6 md:py-8">
       <div className="container-custom mx-auto px-6 md:px-8 lg:px-0">
         <div className="flex flex-col gap-8">
           <div className="flex gap-4 flex-col items-start max-w-3xl">

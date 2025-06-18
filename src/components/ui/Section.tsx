@@ -46,17 +46,21 @@ const Section: React.FC<SectionProps> = ({
     : carouselItem 
       ? 'py-3 md:py-6' 
       : id === 'whats-included'
-        ? 'py-8 sm:py-12 md:py-16'
+        ? 'py-6 md:py-8'
         : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
+
+  // Use different justify alignment for services section to reduce bottom spacing
+  const justifyAlignment = id === 'whats-included' ? 'justify-start' : 'justify-center';
 
   return (
     <section id={id} className={cn(
       sectionHeightClasses,
-      'flex flex-col justify-center overflow-hidden relative',
+      'flex flex-col overflow-hidden relative',
+      justifyAlignment,
       bgClasses[background],
       className
     )}>
-      <div className={cn("container-custom flex flex-col justify-center h-full px-3 md:px-6", carouselItem && "h-full")}>
+      <div className={cn("container-custom flex flex-col h-full px-3 md:px-6", carouselItem && "h-full", id === 'whats-included' && "justify-start")}>
         {(title || subtitle) && (
           <div 
             className={cn(
@@ -91,7 +95,7 @@ const Section: React.FC<SectionProps> = ({
             )}
           </div>
         )}
-        <div className={cn("flex-grow flex flex-col items-center justify-start w-full", contentClassName)} data-section-content="true">
+        <div className={cn("flex flex-col items-center w-full", id === 'whats-included' ? "justify-start" : "flex-grow justify-start", contentClassName)} data-section-content="true">
           {children}
         </div>
       </div>
