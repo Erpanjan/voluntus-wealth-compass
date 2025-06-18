@@ -1,22 +1,22 @@
 
 @layer components {
   .btn {
-    @apply px-7 py-3 rounded-comfortable font-medium transition-all duration-300 inline-flex items-center gap-2;
+    @apply px-7 py-3 rounded-full font-medium transition-all duration-300 inline-flex items-center gap-2;
     /* Safari button rendering fix */
     -webkit-appearance: none;
     -moz-appearance: none;
   }
 
   .btn-primary {
-    @apply bg-brand-black-olive text-white shadow-peaceful hover:shadow-comfortable hover:bg-opacity-90;
+    @apply bg-black text-white hover:shadow-hover hover:bg-opacity-90;
   }
 
   .btn-secondary {
-    @apply bg-brand-almond text-brand-black-olive shadow-peaceful hover:shadow-comfortable hover:bg-opacity-90;
+    @apply bg-[#F1F1F1] text-[#333333] hover:bg-[#CCCCCC] hover:shadow-soft;
   }
 
   .btn-outline {
-    @apply border border-brand-light-gray text-brand-black-olive shadow-peaceful hover:bg-brand-light-gray hover:shadow-comfortable;
+    @apply border border-[#F1F1F1] text-[#333333] hover:bg-[#F1F1F1] hover:shadow-soft;
   }
 
   .section {
@@ -31,11 +31,11 @@
   }
 
   .link {
-    @apply text-brand-muted-gray hover:text-brand-black-olive transition-colors duration-200;
+    @apply text-[#666666] hover:text-[#333333] transition-colors duration-200;
   }
 
   input, textarea, select {
-    @apply transition-all duration-200 bg-white border-brand-light-gray rounded-peaceful shadow-inner-peaceful focus:shadow-comfortable;
+    @apply transition-all duration-200;
     /* Safari input rendering */
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -43,17 +43,9 @@
   }
 
   .card {
-    @apply bg-white rounded-comfortable shadow-layered p-8 transition-all duration-300 hover:shadow-elevated;
+    @apply bg-white rounded-3xl shadow-soft p-8 transition-all duration-300 hover:shadow-hover;
     /* Safari card rendering */
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
-  }
-
-  .peaceful-card {
-    @apply bg-white rounded-comfortable shadow-peaceful border border-brand-light-gray/30 transition-all duration-300 hover:shadow-comfortable;
-  }
-
-  .comfortable-button {
-    @apply shadow-peaceful hover:shadow-comfortable transition-all duration-300 hover:animate-peaceful-bounce;
   }
 }

@@ -53,14 +53,6 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
-        // Brand color system
-        brand: {
-          'white-smoke': '#F5F5F5',
-          'almond': '#EBDED1', 
-          'light-gray': '#E6E6E7',
-          'black-olive': '#3B3B3D',
-          'muted-gray': '#A3A3A3',
-        },
         voluntus: {
           white: '#FFFFFF',
           gray: {
@@ -81,9 +73,9 @@ export default {
             dark: '#0D9488',
           },
           text: {
-            primary: '#3B3B3D',
+            primary: '#000000',
             secondary: '#000006',
-            tertiary: '#A3A3A3',
+            tertiary: '#9F9EA1',
           },
           accent: {
             peach: '#FFE4E6',
@@ -94,26 +86,14 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['DM Sans', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
         nunito: ['Nunito', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
         space: ['Space Grotesk', 'sans-serif'],
         manrope: ['Manrope', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
-        heading: ['Inter', 'system-ui', 'sans-serif'],
-        body: ['DM Sans', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        // Peaceful, layered shadow system
-        'peaceful': '0 1px 3px rgba(59, 59, 61, 0.05), 0 4px 12px rgba(59, 59, 61, 0.03)',
-        'comfortable': '0 2px 8px rgba(59, 59, 61, 0.06), 0 8px 24px rgba(59, 59, 61, 0.04)',
-        'elevated': '0 4px 16px rgba(59, 59, 61, 0.08), 0 12px 32px rgba(59, 59, 61, 0.05)',
-        'floating': '0 8px 32px rgba(59, 59, 61, 0.12), 0 16px 48px rgba(59, 59, 61, 0.08)',
-        // Inner shadows for depth
-        'inner-peaceful': 'inset 0 1px 3px rgba(59, 59, 61, 0.03)',
-        'inner-comfortable': 'inset 0 2px 6px rgba(59, 59, 61, 0.04)',
-        // Combined shadows
-        'layered': '0 1px 3px rgba(59, 59, 61, 0.05), 0 4px 12px rgba(59, 59, 61, 0.03), inset 0 1px 2px rgba(255, 255, 255, 0.4)',
         'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
         'hover': '0 10px 40px -15px rgba(0, 0, 0, 0.1)',
       },
@@ -122,8 +102,6 @@ export default {
         '2xl': '1.5rem',
         '3xl': '2rem',
         '4xl': '3rem',
-        'comfortable': '1.25rem',
-        'peaceful': '0.875rem',
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -131,7 +109,6 @@ export default {
         'fade-in': 'fade-in 0.4s ease-out',
         'fade-up': 'fadeUp 0.5s ease-out forwards',
         'slide-in': 'slideIn 0.3s ease-out forwards',
-        'peaceful-bounce': 'peaceful-bounce 0.6s ease-out',
       },
       keyframes: {
         'accordion-down': {
@@ -183,11 +160,6 @@ export default {
         slideIn: {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(0)' },
-        },
-        'peaceful-bounce': {
-          '0%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.02)' },
-          '100%': { transform: 'scale(1)' },
         },
       },
     },
