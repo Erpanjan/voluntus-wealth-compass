@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -30,9 +31,6 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-[#333333] tracking-tight max-w-xl text-left leading-tight">
                 {t('services.whatsIncluded')}
               </h2>
-              <p className="text-base sm:text-lg md:text-lg max-w-xl lg:max-w-lg leading-relaxed text-[#666666] text-left">
-                Comprehensive financial planning services designed to help you achieve your goals.
-              </p>
             </div>
           </div>
           
