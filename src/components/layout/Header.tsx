@@ -1,109 +1,77 @@
 
 import { cn } from '@/lib/utils';
-import { useHeaderLogic } from './header/useHeaderLogic';
-import Logo from './header/Logo';
+import { useState } from 'react';
+import { useScrollState } from '@/hooks/useScrollState';
+import { useNavigationState } from '@/hooks/useNavigationState';
+import { useTransitionState } from '@/hooks/useTransitionState';
+import { getHeaderBackgroundClass } from '@/utils/headerUtils';
+import { HEADER_CLASSES, NAV_LINKS } from './header/constants';
+import HeaderLeft from './header/sections/HeaderLeft';
+import HeaderCenter from './header/sections/HeaderCenter';
+import HeaderRight from './header/sections/HeaderRight';
 import NavLinks from './header/NavLinks';
-import LoginButton from './header/LoginButton';
-import MobileMenu from './header/MobileMenu';
-import LanguageSelector from '@/components/LanguageSelector';
 
 const Header = () => {
-  const {
-    isMenuOpen,
-    setIsMenuOpen,
-    scrolled,
-    isActive,
-    navLinks,
-    handleNavLinkClick,
-    handleLoginClick,
-    isOnLoginPage,
-    isTransitioning
-  } = useHeaderLogic();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Custom hooks for different concerns
+  const scrolled = useScrollState();
+  const { isActive, handleNavLinkClick } = useNavigationState();
+  const { isOnLoginPage, isTransitioning, handleLoginClick } = useTransitionState();
+  
+  // Visibility state for child components
+  const visibilityState = { isOnLoginPage, isTransitioning };
+  
+  // Header background logic
+  const headerBackgroundClass = getHeaderBackgroundClass(isOnLoginPage, scrolled, isMenuOpen);
+  
+  const handleLogoClick = () => {
+    window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  };
   
   return (
-    <header 
-      className={cn(
-        'fixed top-0 left-0 w-full z-40 transition-all duration-300',
-        // Show minimal header on login page with backdrop
-        isOnLoginPage 
-          ? 'bg-white/90 backdrop-blur-sm shadow-sm' 
-          : (scrolled || isMenuOpen ? 'bg-white shadow-sm' : 'bg-transparent')
-      )}
-    >
-      <div className="container-custom py-4 flex justify-between items-center relative">
-        {/* Logo on the left */}
-        <div className={cn(
-          "transition-opacity duration-300 ease-in-out",
-          isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
-        )}>
-          <Logo 
-            handleNavLinkClick={() => {
-              if (isMenuOpen) setIsMenuOpen(false);
-              window.requestAnimationFrame(() => {
-                window.scrollTo({
-                  top: 0,
-                  behavior: 'smooth'
-                });
-              });
-            }}
-          />
-        </div>
+    <header className={cn(HEADER_CLASSES.FIXED_HEADER, headerBackgroundClass)}>
+      <div className={HEADER_CLASSES.CONTAINER}>
+        {/* Left Section - Logo */}
+        <HeaderLeft 
+          visibilityState={visibilityState}
+          onLogoClick={handleLogoClick}
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+        />
 
-        {/* Navigation centered absolutely */}
-        <div className={cn(
-          "transition-opacity duration-300 ease-in-out",
-          isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
-        )}>
-          <NavLinks 
-            navLinks={navLinks} 
-            isActive={isActive} 
-            handleNavLinkClick={(e, isActivePath) => handleNavLinkClick(e, isActivePath)} 
-          />
-        </div>
+        {/* Center Section - Navigation */}
+        <HeaderCenter 
+          visibilityState={visibilityState}
+          navLinks={NAV_LINKS}
+          isActive={isActive}
+          handleNavLinkClick={handleNavLinkClick}
+        />
 
-        {/* Right side elements: Language selector, Login button, Mobile menu */}
-        <div className="flex items-center space-x-2">
-          {/* Language selector - now with conditional visibility */}
-          <div className={cn(
-            "transition-opacity duration-300 ease-in-out",
-            isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
-          )}>
-            <LanguageSelector />
-          </div>
-          
-          {/* Login button - hidden on login page */}
-          <div className={cn(
-            "transition-opacity duration-300 ease-in-out",
-            isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
-          )}>
-            <LoginButton 
-              handleLoginClick={handleLoginClick} 
-              isActive={isActive('/login')}
-            />
-          </div>
-          
-          {/* Mobile menu - hidden on login page */}
-          <div className={cn(
-            "transition-opacity duration-300 ease-in-out",
-            isOnLoginPage || isTransitioning ? "opacity-0 pointer-events-none" : "opacity-100"
-          )}>
-            <MobileMenu
-              isMenuOpen={isMenuOpen}
-              setIsMenuOpen={setIsMenuOpen}
-            />
-          </div>
-        </div>
+        {/* Right Section - Language, Login, Mobile Menu */}
+        <HeaderRight 
+          visibilityState={visibilityState}
+          isActive={isActive}
+          handleLoginClick={handleLoginClick}
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+        />
       </div>
 
       {/* Mobile menu container */}
       <div className={cn(
-        "container-custom lg:hidden transition-all duration-300 ease-in-out overflow-hidden",
+        HEADER_CLASSES.MOBILE_MENU_CONTAINER,
         isMenuOpen && !isOnLoginPage && !isTransitioning 
-          ? "max-h-[32rem] opacity-100 pb-4" 
-          : "max-h-0 opacity-0 pointer-events-none"
+          ? HEADER_CLASSES.MOBILE_MENU_VISIBLE
+          : HEADER_CLASSES.MOBILE_MENU_HIDDEN
       )}>
         <NavLinks 
-          navLinks={navLinks} 
+          navLinks={NAV_LINKS} 
           isActive={isActive} 
           handleNavLinkClick={(e, isActivePath) => {
             handleNavLinkClick(e, isActivePath);
