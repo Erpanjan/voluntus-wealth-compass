@@ -22,9 +22,9 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-soft overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-soft hover:shadow-hover transition-shadow duration-300 overflow-hidden">
         {/* Tab Headers with Two-Layer Structure */}
-        <div className="relative bg-[#efefef] p-1.5 sm:p-2 rounded-t-2xl">
+        <div className="relative bg-[#F2F2F2] p-1.5 sm:p-2 rounded-t-3xl">
           {/* Background Layer - Static positioned divs */}
           <div className="absolute inset-1.5 sm:inset-2 flex gap-0.5 sm:gap-1">
             {services.map((_, index) => (
@@ -43,7 +43,7 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
             }}
           >
             <div 
-              className="bg-white rounded-xl shadow-sm"
+              className="bg-white rounded-xl shadow-soft"
               style={{
                 width: `${100 / services.length}%`,
                 transform: `translateX(${activeTab * (100 + (2 / services.length))}%)`,
@@ -60,8 +60,8 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
                 className={`
                   flex-1 h-11 sm:h-12 relative transition-all duration-300 rounded-xl font-medium text-sm sm:text-sm md:text-base z-10 px-1 sm:px-2
                   ${activeTab === index 
-                    ? 'text-black' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'text-[#333333] font-semibold' 
+                    : 'text-[#666666] hover:text-[#333333]'
                   }
                   touch-manipulation
                 `}
@@ -78,7 +78,7 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
         </div>
 
         {/* Content Panel - Matched height with FAQ section */}
-        <div className="w-full h-[520px] sm:h-[380px] md:h-[400px] bg-[#efefef] relative">
+        <div className="w-full h-[520px] sm:h-[380px] md:h-[400px] bg-[#F2F2F2] relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -101,13 +101,13 @@ const ServiceTabs: React.FC<ServiceTabsProps> = ({ services }) => {
                 duration: 0.3,
                 ease: "easeOut",
               }}
-              className="absolute inset-0 p-4 sm:p-6 md:p-8"
+              className="absolute inset-0 p-6 sm:p-8 md:p-10"
             >
               <div className="h-full flex flex-col justify-center">
-                <h3 className="text-xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-black mb-4 sm:mb-4 md:mb-6 leading-tight">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-[#333333] mb-6 sm:mb-6 md:mb-8 leading-tight">
                   {services[activeTab].title}
                 </h3>
-                <p className="text-gray-700 text-base sm:text-base md:text-lg leading-relaxed">
+                <p className="text-[#666666] text-base sm:text-lg md:text-lg leading-relaxed">
                   {services[activeTab].content}
                 </p>
               </div>
