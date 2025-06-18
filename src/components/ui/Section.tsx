@@ -47,7 +47,9 @@ const Section: React.FC<SectionProps> = ({
       ? 'py-3 md:py-6' 
       : id === 'whats-included'
         ? 'py-6 md:py-8'
-        : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
+        : id === 'contact'
+          ? 'py-6 sm:py-8 md:py-12 min-h-[80vh] sm:min-h-[70vh] md:min-h-screen'
+          : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
 
   // Use different justify alignment for services section to reduce bottom spacing
   const justifyAlignment = id === 'whats-included' ? 'justify-start' : 'justify-center';
