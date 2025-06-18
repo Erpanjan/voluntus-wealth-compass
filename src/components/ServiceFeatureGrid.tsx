@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { User } from 'lucide-react';
+import { User, TrendingUp, Shield, FileText } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ServiceItem {
@@ -15,6 +15,18 @@ interface ServiceFeatureGridProps {
 
 const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => {
   const { t } = useLanguage();
+
+  // Define icons for each service position
+  const getServiceIcon = (index: number) => {
+    const icons = [
+      TrendingUp, // Investment Solution
+      User,       // Dedicated Advisor
+      Shield,     // Risk Management
+      FileText    // Policy Keeping
+    ];
+    const IconComponent = icons[index] || User;
+    return <IconComponent className="w-8 h-8 stroke-1 text-[#666666]" />;
+  };
 
   return (
     <div className="w-full py-16 md:py-24">
@@ -31,7 +43,7 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Investment Service - spans 2 columns on desktop */}
             <div className="bg-[#F2F2F2] rounded-3xl h-full lg:col-span-2 p-6 sm:p-8 aspect-square lg:aspect-auto flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              <User className="w-8 h-8 stroke-1 text-[#666666]" />
+              {getServiceIcon(0)}
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
                   {services[0]?.title}
@@ -44,7 +56,7 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
 
             {/* Advisor Service */}
             <div className="bg-[#F2F2F2] rounded-3xl aspect-square p-6 sm:p-8 flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              <User className="w-8 h-8 stroke-1 text-[#666666]" />
+              {getServiceIcon(1)}
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
                   {services[1]?.title}
@@ -57,7 +69,7 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
 
             {/* Risk Service */}
             <div className="bg-[#F2F2F2] rounded-3xl aspect-square p-6 sm:p-8 flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              <User className="w-8 h-8 stroke-1 text-[#666666]" />
+              {getServiceIcon(2)}
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
                   {services[2]?.title}
@@ -70,7 +82,7 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
 
             {/* Policy Service - spans 2 columns on desktop */}
             <div className="bg-[#F2F2F2] rounded-3xl h-full lg:col-span-2 p-6 sm:p-8 aspect-square lg:aspect-auto flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              <User className="w-8 h-8 stroke-1 text-[#666666]" />
+              {getServiceIcon(3)}
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
                   {services[3]?.title}
