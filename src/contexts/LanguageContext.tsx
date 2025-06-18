@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 type Language = 'en' | 'zh';
@@ -102,7 +103,7 @@ const translations = {
     'service.investment.title': 'Investment Solution',
     'service.investment.content': 'Many assume that global diversification requires significant wealth or expertise—but it doesn\'t. Our Financial Planning Policy delivers personalized, cost-effective investment strategies that offer broad diversification and adapt over time, helping clients manage risk and stay aligned with their long-term goals.',
     'service.advisor.title': 'Dedicated Advisor',
-    'service.advisor.content': 'Every client is paired with a dedicated financial advisor who not only executes the policy but regularly refines your Financial Planning Policy based on market condition and your circumstances. Through proactive, insightful communication, they keep you informed and empowered—ensuring you feel confident in every investment decision you make.',
+    'service.advisor.content': 'Each client is supported by a dedicated advisor who refines their plan as markets and circumstances evolve, providing clear, proactive guidance to ensure confident decision-making.',
     'service.risk.title': 'Risk Management',
     'service.risk.content': 'With our strong quantitative skills and deep investment expertise, we manage risk across multiple dimensions. Through vigilant, ongoing oversight, we ensure your investments stay aligned with your evolving financial circumstances and remain positioned to achieve your goals—delivering peace of mind and confidence in your investment journey.',
     'service.policy.title': 'Policy Keeping',
