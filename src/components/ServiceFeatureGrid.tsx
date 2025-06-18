@@ -40,13 +40,15 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
             </div>
           </div>
           
-          {/* Balanced 2x2 grid layout */}
+          {/* Balanced 2x2 grid layout with aligned titles */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             {/* Investment Service */}
-            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              {getServiceIcon(0)}
-              <div className="flex flex-col">
-                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
+            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex flex-col shadow-soft hover:shadow-hover transition-all duration-300">
+              <div className="mb-6">
+                {getServiceIcon(0)}
+              </div>
+              <div className="flex flex-col flex-grow">
+                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3 min-h-[28px]">
                   {services[0]?.title}
                 </h3>
                 <p className="text-[#666666] text-base leading-relaxed">
@@ -56,10 +58,12 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
             </div>
 
             {/* Advisor Service */}
-            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              {getServiceIcon(1)}
-              <div className="flex flex-col">
-                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
+            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex flex-col shadow-soft hover:shadow-hover transition-all duration-300">
+              <div className="mb-6">
+                {getServiceIcon(1)}
+              </div>
+              <div className="flex flex-col flex-grow">
+                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3 min-h-[28px]">
                   {services[1]?.title}
                 </h3>
                 <p className="text-[#666666] text-base leading-relaxed">
@@ -69,10 +73,12 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
             </div>
 
             {/* Risk Service */}
-            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              {getServiceIcon(2)}
-              <div className="flex flex-col">
-                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
+            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex flex-col shadow-soft hover:shadow-hover transition-all duration-300">
+              <div className="mb-6">
+                {getServiceIcon(2)}
+              </div>
+              <div className="flex flex-col flex-grow">
+                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3 min-h-[28px]">
                   {services[2]?.title}
                 </h3>
                 <p className="text-[#666666] text-base leading-relaxed">
@@ -82,10 +88,12 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
             </div>
 
             {/* Policy Service */}
-            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              {getServiceIcon(3)}
-              <div className="flex flex-col">
-                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
+            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex flex-col shadow-soft hover:shadow-hover transition-all duration-300">
+              <div className="mb-6">
+                {getServiceIcon(3)}
+              </div>
+              <div className="flex flex-col flex-grow">
+                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3 min-h-[28px]">
                   {services[3]?.title}
                 </h3>
                 <p className="text-[#666666] text-base leading-relaxed">
