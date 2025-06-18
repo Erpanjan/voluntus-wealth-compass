@@ -91,9 +91,9 @@ const HorizontalScrollCarousel = () => {
 
   // Create three copies for infinite scroll
   const infiniteItems = [
-    ...containerSections.map(section => ({ ...section, id: `${section.id}-1` })),
-    ...containerSections.map(section => ({ ...section, id: `${section.id}-2` })),
-    ...containerSections.map(section => ({ ...section, id: `${section.id}-3` }))
+    ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-1`, originalIndex: index })),
+    ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-2`, originalIndex: index })),
+    ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-3`, originalIndex: index }))
   ];
 
   // Calculate card width based on viewport - show one card at a time
@@ -194,10 +194,15 @@ const HorizontalScrollCarousel = () => {
             {infiniteItems.map((section) => (
               <div
                 key={section.id}
-                className="shrink-0 rounded-3xl bg-white p-8 sm:p-10 shadow-soft hover:shadow-hover transition-shadow duration-300"
+                className="shrink-0 rounded-3xl bg-white p-8 sm:p-10 shadow-soft hover:shadow-hover transition-shadow duration-300 relative"
                 style={{ width: `${cardWidth}px`, minHeight: '400px' }}
               >
-                <div className="h-full flex flex-col">
+                {/* Progress Numbering Badge */}
+                <div className="absolute top-6 right-6 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-sm font-medium">
+                  {section.originalIndex + 1} of {containerSections.length}
+                </div>
+                
+                <div className="h-full flex flex-col pt-4">
                   <h3 className="text-2xl sm:text-3xl font-semibold text-black mb-6 leading-tight">
                     {section.title}
                   </h3>
