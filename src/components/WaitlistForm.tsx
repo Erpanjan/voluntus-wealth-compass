@@ -3,13 +3,16 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const WaitlistForm = () => {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -71,27 +74,31 @@ const WaitlistForm = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-      <div className="text-center mb-8 sm:mb-10 md:mb-12">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-4 sm:mb-6 text-[#333333] font-poppins leading-tight">
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-6 md:px-8 lg:px-12">
+      <div className="text-center mb-6 sm:mb-8 md:mb-12">
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold mb-3 sm:mb-4 md:mb-6 text-[#333333] font-poppins leading-tight">
           {t('contact.title')}
         </h2>
-        <p className="text-[#666666] text-base sm:text-lg font-poppins leading-relaxed max-w-xl mx-auto">
+        <p className="text-[#666666] text-sm sm:text-base md:text-lg font-poppins leading-relaxed max-w-xl mx-auto">
           {t('contact.subtitle')}
         </p>
       </div>
       
-      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
           <div className="w-full">
+            <Label htmlFor="firstName" className="text-xs sm:text-sm text-[#666666] font-poppins mb-1 block">
+              {t('waitlist.firstName')}
+            </Label>
             <Input
+              id="firstName"
               name="firstName"
               type="text"
               required
               value={formData.firstName}
               onChange={handleInputChange}
-              placeholder={t('waitlist.firstName')}
-              className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
+              placeholder={isMobile ? "First name" : t('waitlist.firstName')}
+              className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-10 sm:h-11 md:h-12 px-0 pb-2 sm:pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
               style={{
                 WebkitBoxShadow: '0 0 0 1000px transparent inset',
                 WebkitTextFillColor: '#666666'
@@ -99,14 +106,18 @@ const WaitlistForm = () => {
             />
           </div>
           <div className="w-full">
+            <Label htmlFor="lastName" className="text-xs sm:text-sm text-[#666666] font-poppins mb-1 block">
+              {t('waitlist.lastName')}
+            </Label>
             <Input
+              id="lastName"
               name="lastName"
               type="text"
               required
               value={formData.lastName}
               onChange={handleInputChange}
-              placeholder={t('waitlist.lastName')}
-              className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
+              placeholder={isMobile ? "Last name" : t('waitlist.lastName')}
+              className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-10 sm:h-11 md:h-12 px-0 pb-2 sm:pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
               style={{
                 WebkitBoxShadow: '0 0 0 1000px transparent inset',
                 WebkitTextFillColor: '#666666'
@@ -116,14 +127,18 @@ const WaitlistForm = () => {
         </div>
 
         <div className="w-full">
+          <Label htmlFor="preferredContact" className="text-xs sm:text-sm text-[#666666] font-poppins mb-1 block">
+            Preferred contact method <span className="text-[#999999] text-xs">(Email, Phone, WeChat, WhatsApp, etc.)</span>
+          </Label>
           <Input
+            id="preferredContact"
             name="preferredContact"
             type="text"
             required
             value={formData.preferredContact}
             onChange={handleInputChange}
-            placeholder={t('waitlist.preferredContact')}
-            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
+            placeholder={isMobile ? "Contact method" : "e.g., Email, Phone, WeChat"}
+            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-10 sm:h-11 md:h-12 px-0 pb-2 sm:pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
             style={{
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
               WebkitTextFillColor: '#666666'
@@ -132,14 +147,18 @@ const WaitlistForm = () => {
         </div>
 
         <div className="w-full">
+          <Label htmlFor="contactInfo" className="text-xs sm:text-sm text-[#666666] font-poppins mb-1 block">
+            {t('waitlist.contactInfo')}
+          </Label>
           <Input
+            id="contactInfo"
             name="contactInfo"
             type="text"
             required
             value={formData.contactInfo}
             onChange={handleInputChange}
-            placeholder={t('waitlist.contactInfo')}
-            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
+            placeholder={isMobile ? "Contact details" : t('waitlist.contactInfo')}
+            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-10 sm:h-11 md:h-12 px-0 pb-2 sm:pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
             style={{
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
               WebkitTextFillColor: '#666666'
@@ -148,12 +167,16 @@ const WaitlistForm = () => {
         </div>
 
         <div className="w-full">
+          <Label htmlFor="interests" className="text-xs sm:text-sm text-[#666666] font-poppins mb-1 block">
+            {t('waitlist.interests')} <span className="text-[#999999] text-xs">(Optional)</span>
+          </Label>
           <Textarea
+            id="interests"
             name="interests"
             value={formData.interests}
             onChange={handleInputChange}
-            placeholder={t('waitlist.interests')}
-            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] min-h-[80px] px-0 pb-3 pt-0 font-poppins resize-none focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
+            placeholder={isMobile ? "Tell us about your interests..." : t('waitlist.interests')}
+            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] min-h-[60px] sm:min-h-[80px] px-0 pb-2 sm:pb-3 pt-0 font-poppins resize-none focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
             style={{
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
               WebkitTextFillColor: '#666666'
@@ -161,7 +184,7 @@ const WaitlistForm = () => {
           />
         </div>
 
-        <div className="pt-3 sm:pt-4 w-full">
+        <div className="pt-2 sm:pt-3 md:pt-4 w-full">
           <Button 
             type="submit" 
             disabled={isSubmitting}
@@ -171,7 +194,7 @@ const WaitlistForm = () => {
           </Button>
         </div>
 
-        <p className="text-xs sm:text-sm text-[#999999] text-center mt-6 sm:mt-8 leading-relaxed font-poppins max-w-lg mx-auto">
+        <p className="text-xs sm:text-sm text-[#999999] text-center mt-4 sm:mt-6 md:mt-8 leading-relaxed font-poppins max-w-lg mx-auto">
           {t('waitlist.consent')}
         </p>
       </form>
