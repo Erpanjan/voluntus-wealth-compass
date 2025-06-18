@@ -22,7 +22,7 @@ const HorizontalScrollCarousel = () => {
       title: t('container.gambling.title'),
       content: (
         <>
-          <p className="mb-3 sm:mb-4 text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="mb-4 text-sm sm:text-base leading-6 sm:leading-7">
             {t('container.gambling.text1')}
           </p>
           <p className="text-sm sm:text-base leading-6 sm:leading-7">
@@ -36,7 +36,7 @@ const HorizontalScrollCarousel = () => {
       title: t('container.complicated.title'),
       content: (
         <>
-          <p className="mb-3 sm:mb-4 text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="mb-4 text-sm sm:text-base leading-6 sm:leading-7">
             {t('container.complicated.text1')}
           </p>
           <p className="text-sm sm:text-base leading-6 sm:leading-7">
@@ -50,7 +50,7 @@ const HorizontalScrollCarousel = () => {
       title: t('container.bestInterest.title'),
       content: (
         <>
-          <p className="mb-3 sm:mb-4 text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="mb-4 text-sm sm:text-base leading-6 sm:leading-7">
             {t('container.bestInterest.text1')}
           </p>
           <p className="text-sm sm:text-base leading-6 sm:leading-7">
@@ -64,7 +64,7 @@ const HorizontalScrollCarousel = () => {
       title: t('container.accountability.title'),
       content: (
         <>
-          <p className="mb-3 sm:mb-4 text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="mb-4 text-sm sm:text-base leading-6 sm:leading-7">
             {t('container.accountability.text1')}
           </p>
           <p className="text-sm sm:text-base leading-6 sm:leading-7">
@@ -78,7 +78,7 @@ const HorizontalScrollCarousel = () => {
       title: t('container.staticAdvice.title'),
       content: (
         <>
-          <p className="mb-3 sm:mb-4 text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="mb-4 text-sm sm:text-base leading-6 sm:leading-7">
             {t('container.staticAdvice.text1')}
           </p>
           <p className="text-sm sm:text-base leading-6 sm:leading-7">
@@ -96,19 +96,19 @@ const HorizontalScrollCarousel = () => {
     ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-3`, originalIndex: index }))
   ];
 
-  // Calculate card width based on viewport - mobile-first responsive design
+  // Calculate card width based on viewport - optimized for mobile
   const getCardWidth = () => {
     if (typeof window !== 'undefined') {
       const viewportWidth = window.innerWidth;
-      if (viewportWidth < 640) return Math.min(320, viewportWidth * 0.85); // Mobile: 85% with max 320px
-      if (viewportWidth < 1024) return viewportWidth * 0.7; // Tablet: 70% of viewport
-      return Math.min(550, viewportWidth * 0.55); // Desktop: max 550px or 55% of viewport
+      if (viewportWidth < 640) return viewportWidth * 0.90; // Mobile: 90% of viewport
+      if (viewportWidth < 1024) return viewportWidth * 0.75; // Tablet: 75% of viewport
+      return Math.min(600, viewportWidth * 0.6); // Desktop: max 600px or 60% of viewport
     }
-    return 320; // Mobile-first fallback
+    return 500; // Fallback
   };
 
   const cardWidth = getCardWidth();
-  const cardGap = window.innerWidth < 640 ? 12 : window.innerWidth < 1024 ? 20 : 32;
+  const cardGap = window.innerWidth < 640 ? 16 : 32; // Smaller gap on mobile
   const totalCardWidth = cardWidth + cardGap;
   const sectionLength = containerSections.length;
 
@@ -162,7 +162,7 @@ const HorizontalScrollCarousel = () => {
     // Handle window resize to recalculate card width
     const handleResize = () => {
       const newCardWidth = getCardWidth();
-      const newCardGap = window.innerWidth < 640 ? 12 : window.innerWidth < 1024 ? 20 : 32;
+      const newCardGap = window.innerWidth < 640 ? 16 : 32;
       const newTotalCardWidth = newCardWidth + newCardGap;
       const newInitialPosition = newTotalCardWidth * sectionLength;
       viewport.scrollTo({
@@ -181,49 +181,45 @@ const HorizontalScrollCarousel = () => {
 
   return (
     <div className="w-full">
-      {/* Header - Mobile optimized */}
-      <div className="mb-6 sm:mb-8 md:mb-12 lg:mb-16 px-3 sm:px-4 md:px-6">
-        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-semibold leading-tight">
+      {/* Header */}
+      <div className="mb-8 sm:mb-12 md:mb-16 px-4 sm:px-6">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-semibold leading-tight">
           {t('home.whatWeCanHelp')}
         </h2>
       </div>
 
-      {/* Horizontal Scroll Container - Mobile optimized */}
+      {/* Horizontal Scroll Container */}
       <div className="mx-auto w-full">
-        <XScroll ref={scrollViewportRef} className="mobile-swipe-container touch-manipulation">
-          <div className="flex gap-3 sm:gap-5 md:gap-6 lg:gap-8 p-3 sm:p-4 md:p-6 pb-6 sm:pb-8 md:pb-12">
+        <XScroll ref={scrollViewportRef} className="mobile-swipe-container">
+          <div className="flex gap-4 sm:gap-6 md:gap-8 p-4 sm:p-6 pb-8 sm:pb-12 touch-manipulation">
             {infiniteItems.map((section) => (
               <div
                 key={section.id}
-                className="shrink-0 rounded-xl sm:rounded-2xl md:rounded-3xl bg-white p-4 sm:p-5 md:p-6 lg:p-8 shadow-soft hover:shadow-hover transition-all duration-300 relative mobile-card-transition"
+                className="shrink-0 rounded-2xl sm:rounded-3xl bg-white p-4 sm:p-6 md:p-8 lg:p-10 shadow-soft hover:shadow-hover transition-shadow duration-300 relative mobile-card-transition"
                 style={{ 
                   width: `${cardWidth}px`, 
-                  minHeight: window.innerWidth < 640 ? '280px' : window.innerWidth < 1024 ? '320px' : '380px'
+                  minHeight: window.innerWidth < 640 ? '300px' : '400px'
                 }}
               >
-                {/* Progress Numbering Badge - Mobile optimized */}
-                <div className="absolute top-3 right-3 sm:top-4 sm:right-4 md:top-5 md:right-5 lg:top-6 lg:right-6 bg-[#F2F2F2] text-[#666666] px-2 py-1 sm:px-2.5 sm:py-1 md:px-3 md:py-1.5 rounded-full text-xs sm:text-sm font-medium">
+                {/* Progress Numbering Badge */}
+                <div className="absolute top-3 right-3 sm:top-4 sm:right-4 md:top-6 md:right-6 bg-gray-100 text-gray-700 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium">
                   {section.originalIndex + 1}
                 </div>
                 
-                <div className="h-full flex flex-col pt-1 sm:pt-2 md:pt-4">
-                  <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-semibold text-[#333333] mb-3 sm:mb-4 md:mb-6 leading-tight pr-6 sm:pr-8 md:pr-0">
+                <div className="h-full flex flex-col pt-2 sm:pt-4">
+                  <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-black mb-4 sm:mb-6 leading-tight pr-8 sm:pr-0">
                     {section.title}
                   </h3>
-                  <div className="text-[#666666] mb-4 sm:mb-5 md:mb-6 lg:mb-8 flex-1">
+                  <div className="text-gray-600 mb-6 sm:mb-8 flex-1">
                     {section.content}
                   </div>
                   <Button 
                     asChild 
-                    size={window.innerWidth < 640 ? "sm" : window.innerWidth < 1024 ? "default" : "lg"}
-                    className="bg-black/90 hover:bg-black text-white transition-all duration-200 self-start text-xs sm:text-sm md:text-base mobile-touch-target"
+                    size={window.innerWidth < 640 ? "default" : "lg"}
+                    className="bg-black/80 hover:bg-black text-white transition-all duration-200 self-start text-sm sm:text-base mobile-touch-target"
                   >
                     <Link to="/services" className="inline-flex items-center">
-                      {t('home.howWeCanHelp')} 
-                      <ArrowRight 
-                        size={window.innerWidth < 640 ? 14 : window.innerWidth < 1024 ? 16 : 18} 
-                        className="ml-1.5 sm:ml-2" 
-                      />
+                      {t('home.howWeCanHelp')} <ArrowRight size={window.innerWidth < 640 ? 16 : 18} className="ml-2" />
                     </Link>
                   </Button>
                 </div>
