@@ -70,10 +70,11 @@
 
   /* Mobile swipe container optimizations */
   .mobile-swipe-container {
-    touch-action: pan-y pinch-zoom;
+    touch-action: pan-x pan-y;
     -webkit-overflow-scrolling: touch;
     user-select: none;
     -webkit-user-select: none;
+    scroll-behavior: smooth;
   }
 
   /* Prevent text selection during swipe */
@@ -88,7 +89,18 @@
 
   /* Smooth swipe transitions */
   .mobile-card-transition {
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform 0.2s ease-out;
+    will-change: transform;
+  }
+
+  /* Better mobile carousel performance */
+  .mobile-swipe-container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .mobile-swipe-container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 }
 
@@ -121,6 +133,8 @@
   .mobile-swipe-container {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 }
 
