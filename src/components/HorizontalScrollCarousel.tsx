@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import XScroll from '@/components/ui/x-scroll';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
@@ -14,6 +14,7 @@ interface ContentSection {
 
 const HorizontalScrollCarousel = () => {
   const { t } = useLanguage();
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
 
   const containerSections: ContentSection[] = [
     {
@@ -88,6 +89,67 @@ const HorizontalScrollCarousel = () => {
     }
   ];
 
+  // Create three copies for infinite scroll
+  const infiniteItems = [
+    ...containerSections.map(section => ({ ...section, id: `${section.id}-1` })),
+    ...containerSections.map(section => ({ ...section, id: `${section.id}-2` })),
+    ...containerSections.map(section => ({ ...section, id: `${section.id}-3` }))
+  ];
+
+  const cardWidth = 320 + 24; // 320px width + 24px gap
+  const sectionLength = containerSections.length;
+
+  const handleScroll = useCallback(() => {
+    const viewport = scrollViewportRef.current;
+    if (!viewport) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = viewport;
+    const maxScroll = scrollWidth - clientWidth;
+    const sectionWidth = cardWidth * sectionLength;
+
+    // Reset to middle section when scrolling near the edges
+    if (scrollLeft <= sectionWidth * 0.1) {
+      // Near the beginning, jump to the end of the first complete section
+      viewport.scrollTo({
+        left: scrollLeft + sectionWidth,
+        behavior: 'auto'
+      });
+    } else if (scrollLeft >= maxScroll - sectionWidth * 0.1) {
+      // Near the end, jump to the beginning of the second complete section
+      viewport.scrollTo({
+        left: scrollLeft - sectionWidth,
+        behavior: 'auto'
+      });
+    }
+  }, [cardWidth, sectionLength]);
+
+  useEffect(() => {
+    const viewport = scrollViewportRef.current;
+    if (!viewport) return;
+
+    // Initial position to start in the middle section
+    const initialPosition = cardWidth * sectionLength;
+    viewport.scrollTo({
+      left: initialPosition,
+      behavior: 'auto'
+    });
+
+    // Add scroll listener with throttling
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    viewport.addEventListener('scroll', throttledScroll);
+    return () => viewport.removeEventListener('scroll', throttledScroll);
+  }, [handleScroll, cardWidth, sectionLength]);
+
   return (
     <div className="w-full">
       {/* Header */}
@@ -99,9 +161,9 @@ const HorizontalScrollCarousel = () => {
 
       {/* Horizontal Scroll Container */}
       <div className="mx-auto w-full">
-        <XScroll>
+        <XScroll ref={scrollViewportRef}>
           <div className="flex gap-6 p-6 pb-8">
-            {containerSections.map((section) => (
+            {infiniteItems.map((section) => (
               <div
                 key={section.id}
                 className="grid w-80 shrink-0 place-items-start rounded-2xl bg-white p-6 shadow-soft"
