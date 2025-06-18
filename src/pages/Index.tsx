@@ -6,17 +6,18 @@ import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import WaitlistForm from '@/components/WaitlistForm';
 import { Button } from '@/components/ui/button';
-import HorizontalScrollCarousel from '@/components/HorizontalScrollCarousel';
+import InteractiveContainerSection from '@/components/InteractiveContainerSection';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
   const { t } = useLanguage();
 
-  // Define the sections with translations
-  const carouselSections = [
+  // Define the interactive container sections with translations
+  const containerSections = [
     {
       id: "gambling",
       title: t('container.gambling.title'),
+      background: "light" as const,
       content: (
         <>
           <p className="mb-3">
@@ -31,6 +32,7 @@ const Index = () => {
     {
       id: "complicated",
       title: t('container.complicated.title'),
+      background: "light" as const,
       content: (
         <>
           <p className="mb-3">
@@ -45,6 +47,7 @@ const Index = () => {
     {
       id: "best-interest",
       title: t('container.bestInterest.title'),
+      background: "light" as const,
       content: (
         <>
           <p className="mb-3">
@@ -59,6 +62,7 @@ const Index = () => {
     {
       id: "accountability",
       title: t('container.accountability.title'),
+      background: "light" as const,
       content: (
         <>
           <p className="mb-3">
@@ -73,6 +77,7 @@ const Index = () => {
     {
       id: "static-advice",
       title: t('container.staticAdvice.title'),
+      background: "light" as const,
       content: (
         <>
           <p className="mb-3">
@@ -107,17 +112,12 @@ const Index = () => {
         </div>
       </Hero>
 
-      {/* Section Header */}
-      <Section id="how-we-can-help" background="white" className="py-8 md:py-12">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-4">
-            {t('home.whatWeCanHelp')}
-          </h2>
+      {/* Interactive Container Section */}
+      <Section id="how-we-can-help" background="white" className="py-16 md:py-20">
+        <div className="w-full">
+          <InteractiveContainerSection sections={containerSections} />
         </div>
       </Section>
-
-      {/* Horizontal Scroll Carousel */}
-      <HorizontalScrollCarousel sections={carouselSections} />
 
       {/* Waitlist Form Section */}
       <Section id="contact" background="light">

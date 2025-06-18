@@ -83,7 +83,7 @@
     "cmdk": "^1.0.0",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.3.0",
-    "framer-motion": "^12.18.1",
+    "framer-motion": "^12.9.4",
     "identity-obj-proxy": "^3.0.0",
     "input-otp": "^1.2.4",
     "lowlight": "^3.3.0",
