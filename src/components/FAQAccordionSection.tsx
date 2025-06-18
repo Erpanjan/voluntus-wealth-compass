@@ -34,7 +34,7 @@ const FAQAccordionSection: React.FC<FAQAccordionSectionProps> = ({
           {/* Left side - Title and subtitle */}
           <div className="md:w-2/5 lg:w-1/3">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4">{title}</h2>
-            <p className="text-gray-500">{subtitle}</p>
+            <p className="text-base sm:text-lg md:text-xl text-[#666666]">{subtitle}</p>
           </div>
           
           {/* Right side - Accordion */}
@@ -52,7 +52,7 @@ const FAQAccordionSection: React.FC<FAQAccordionSectionProps> = ({
                       <span className="text-gray-500 font-light text-sm">{prop.subtitle}</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-6 pt-0 text-gray-600">
+                  <AccordionContent className="px-6 pb-6 pt-0 text-base leading-relaxed text-[#666666]">
                     {prop.description}
                   </AccordionContent>
                 </AccordionItem>
