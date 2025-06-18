@@ -2,7 +2,7 @@
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
-import ServiceTabs from '@/components/ServiceTabs';
+import ServiceFeatureGrid from '@/components/ServiceFeatureGrid';
 import WaitlistForm from '@/components/WaitlistForm';
 import FAQAccordionSection from '@/components/FAQAccordionSection';
 import { Button } from '@/components/ui/button';
@@ -100,16 +100,12 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* What's Included Section */}
+      {/* What's Included Section - now using ServiceFeatureGrid */}
       <Section 
         id="whats-included" 
-        title={t('services.whatsIncluded')}
         background="white"
-        matchFAQHeight={true}
       >
-        <div className="w-full">
-          <ServiceTabs services={serviceItems} />
-        </div>
+        <ServiceFeatureGrid services={serviceItems} />
       </Section>
 
       {/* Value Propositions */}
