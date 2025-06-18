@@ -128,7 +128,7 @@ const WaitlistForm = () => {
 
         <div className="w-full">
           <Label htmlFor="preferredContact" className="text-xs sm:text-sm text-[#666666] font-poppins mb-1 block">
-            Preferred contact method <span className="text-[#999999] text-xs">(Email, Phone, WeChat, WhatsApp, etc.)</span>
+            {t('waitlist.preferredContact')}
           </Label>
           <Input
             id="preferredContact"
