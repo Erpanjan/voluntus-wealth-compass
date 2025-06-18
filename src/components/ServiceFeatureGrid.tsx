@@ -63,7 +63,7 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
                   {services[1]?.title}
                 </h3>
                 <p className="text-[#666666] text-base leading-relaxed">
-                  {services[1]?.content}
+                  Each client is supported by a dedicated advisor who refines their plan as markets and circumstances evolve, providing clear, proactive guidance to ensure confident decision-making.
                 </p>
               </div>
             </div>
