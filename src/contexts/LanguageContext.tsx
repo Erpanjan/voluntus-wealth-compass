@@ -100,7 +100,7 @@ const translations = {
 
     // Service items
     'service.investment.title': 'Investment Solution',
-    'service.investment.content': "Many believe building a diversified investment portfolio requires substantial wealth and expertise, limiting it to a small set of investors—but this isn't true. Our Financial Planning Policy provides personalized investment strategies offering effective global diversification, empowering clients to navigate market volatility confidently. Moreover, our portfolios are designed to be cost-effective, lowering upfront investment expenses. Regular updates ensure the strategies remain aligned with each client's evolving goals and market conditions, maintaining a robust financial plan aimed at achieving long-term success.",
+    'service.investment.content': 'Many assume that global diversification requires significant wealth or expertise—but it doesn\'t. Our Financial Planning Policy delivers personalized, cost-effective investment strategies that offer broad diversification and adapt over time, helping clients manage risk and stay aligned with their long-term goals.',
     'service.advisor.title': 'Dedicated Advisor',
     'service.advisor.content': 'Every client is paired with a dedicated financial advisor who not only executes the policy but regularly refines your Financial Planning Policy based on market condition and your circumstances. Through proactive, insightful communication, they keep you informed and empowered—ensuring you feel confident in every investment decision you make.',
     'service.risk.title': 'Risk Management',
