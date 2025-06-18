@@ -53,14 +53,6 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
-        // Brand Colors
-        brand: {
-          'white-smoke': '#F5F5F5',
-          'almond': '#EBDED1',
-          'light-gray': '#E6E6E7',
-          'black-olive': '#3B3B3D',
-          'muted-gray': '#A3A3A3',
-        },
         voluntus: {
           white: '#FFFFFF',
           gray: {
@@ -100,27 +92,16 @@ export default {
         space: ['Space Grotesk', 'sans-serif'],
         manrope: ['Manrope', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
-        // Brand Typography
-        heading: ['Inter', 'sans-serif'],
-        body: ['DM Sans', 'sans-serif'],
       },
       boxShadow: {
         'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
         'hover': '0 10px 40px -15px rgba(0, 0, 0, 0.1)',
-        // Brand Shadows - Peaceful and Comfortable
-        'peaceful': '0 2px 8px -2px rgba(59, 59, 61, 0.08), 0 4px 16px -4px rgba(59, 59, 61, 0.04)',
-        'comfortable': '0 4px 12px -3px rgba(59, 59, 61, 0.1), 0 8px 24px -6px rgba(59, 59, 61, 0.05)',
-        'gentle': '0 1px 4px -1px rgba(59, 59, 61, 0.06), 0 2px 8px -2px rgba(59, 59, 61, 0.03)',
-        'inner-peaceful': 'inset 0 1px 3px rgba(59, 59, 61, 0.05)',
       },
       borderRadius: {
         'xl': '1rem',
         '2xl': '1.5rem',
         '3xl': '2rem',
         '4xl': '3rem',
-        // Brand border radius - Comfortable and approachable
-        'comfortable': '0.75rem',
-        'gentle': '0.5rem',
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
