@@ -40,12 +40,14 @@ const Section: React.FC<SectionProps> = ({
     'dark': 'bg-black text-white',
   };
 
-  // Apply specific height classes when matching FAQ height
+  // Apply specific height classes when matching FAQ height or for ServiceFeatureGrid
   const sectionHeightClasses = matchFAQHeight 
     ? 'py-16 md:py-24' 
     : carouselItem 
       ? 'py-3 md:py-6' 
-      : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
+      : id === 'whats-included'
+        ? 'py-8 sm:py-12 md:py-16'
+        : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
 
   return (
     <section id={id} className={cn(

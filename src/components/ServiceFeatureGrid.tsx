@@ -29,9 +29,9 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
   };
 
   return (
-    <div className="w-full py-16 md:py-24">
+    <div className="w-full py-12 md:py-16">
       <div className="container-custom mx-auto px-6 md:px-8 lg:px-0">
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-8">
           <div className="flex gap-4 flex-col items-start max-w-3xl">
             <div className="flex gap-2 flex-col">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-[#333333] tracking-tight max-w-xl text-left leading-tight">
@@ -40,9 +40,10 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
             </div>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {/* Investment Service - spans 2 columns on desktop */}
-            <div className="bg-[#F2F2F2] rounded-3xl lg:col-span-2 p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
+          {/* Balanced 2x2 grid layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+            {/* Investment Service */}
+            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
               {getServiceIcon(0)}
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
@@ -80,8 +81,8 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
               </div>
             </div>
 
-            {/* Policy Service - spans 2 columns on desktop */}
-            <div className="bg-[#F2F2F2] rounded-3xl lg:col-span-2 p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
+            {/* Policy Service */}
+            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
               {getServiceIcon(3)}
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
