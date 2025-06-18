@@ -111,7 +111,7 @@ const GlassDock: React.FC<{ icons: DockIcon[]; href?: string; to?: string }> = (
 );
 
 // Button Component
-const GlassButton: React.FC<{ children: React.ReactNode; href?: string; to?: string; onClick?: () => void; type?: "button" | "submit" | "reset" }> = ({
+const GlassButton: React.FC<{ children: React.ReactNode; href?: string; to?: string; onClick?: (e: React.MouseEvent) => void; type?: "button" | "submit" | "reset" }> = ({
   children,
   href,
   to,

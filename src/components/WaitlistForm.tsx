@@ -70,6 +70,13 @@ const WaitlistForm = () => {
     }
   };
 
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isSubmitting) {
+      handleSubmit(e as any);
+    }
+  };
+
   return (
     <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative">
       <GlassFilter />
@@ -147,11 +154,7 @@ const WaitlistForm = () => {
           <div className="pt-4 w-full flex justify-center">
             <GlassButton
               type="submit"
-              onClick={(e) => {
-                if (!isSubmitting) {
-                  handleSubmit(e as any);
-                }
-              }}
+              onClick={handleButtonClick}
             >
               <div className="text-white py-2 px-4 text-base font-medium font-poppins">
                 {isSubmitting ? t('waitlist.submitting') : t('waitlist.submit')}
