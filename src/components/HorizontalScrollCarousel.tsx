@@ -22,10 +22,10 @@ const HorizontalScrollCarousel = () => {
       title: t('container.gambling.title'),
       content: (
         <>
-          <p className="mb-3">
+          <p className="mb-4 text-base leading-7">
             {t('container.gambling.text1')}
           </p>
-          <p>
+          <p className="text-base leading-7">
             {t('container.gambling.text2')}
           </p>
         </>
@@ -36,10 +36,10 @@ const HorizontalScrollCarousel = () => {
       title: t('container.complicated.title'),
       content: (
         <>
-          <p className="mb-3">
+          <p className="mb-4 text-base leading-7">
             {t('container.complicated.text1')}
           </p>
-          <p>
+          <p className="text-base leading-7">
             {t('container.complicated.text2')}
           </p>
         </>
@@ -50,10 +50,10 @@ const HorizontalScrollCarousel = () => {
       title: t('container.bestInterest.title'),
       content: (
         <>
-          <p className="mb-3">
+          <p className="mb-4 text-base leading-7">
             {t('container.bestInterest.text1')}
           </p>
-          <p>
+          <p className="text-base leading-7">
             {t('container.bestInterest.text2')}
           </p>
         </>
@@ -64,10 +64,10 @@ const HorizontalScrollCarousel = () => {
       title: t('container.accountability.title'),
       content: (
         <>
-          <p className="mb-3">
+          <p className="mb-4 text-base leading-7">
             {t('container.accountability.text1')}
           </p>
-          <p>
+          <p className="text-base leading-7">
             {t('container.accountability.text2')}
           </p>
         </>
@@ -78,10 +78,10 @@ const HorizontalScrollCarousel = () => {
       title: t('container.staticAdvice.title'),
       content: (
         <>
-          <p className="mb-3">
+          <p className="mb-4 text-base leading-7">
             {t('container.staticAdvice.text1')}
           </p>
-          <p>
+          <p className="text-base leading-7">
             {t('container.staticAdvice.text2')}
           </p>
         </>
@@ -96,7 +96,20 @@ const HorizontalScrollCarousel = () => {
     ...containerSections.map(section => ({ ...section, id: `${section.id}-3` }))
   ];
 
-  const cardWidth = 320 + 24; // 320px width + 24px gap
+  // Calculate card width based on viewport - show one card at a time
+  const getCardWidth = () => {
+    if (typeof window !== 'undefined') {
+      const viewportWidth = window.innerWidth;
+      if (viewportWidth < 640) return viewportWidth * 0.85; // Mobile: 85% of viewport
+      if (viewportWidth < 1024) return viewportWidth * 0.75; // Tablet: 75% of viewport
+      return Math.min(600, viewportWidth * 0.6); // Desktop: max 600px or 60% of viewport
+    }
+    return 500; // Fallback
+  };
+
+  const cardWidth = getCardWidth();
+  const cardGap = 32; // Increased gap between cards
+  const totalCardWidth = cardWidth + cardGap;
   const sectionLength = containerSections.length;
 
   const handleScroll = useCallback(() => {
@@ -105,30 +118,28 @@ const HorizontalScrollCarousel = () => {
 
     const { scrollLeft, scrollWidth, clientWidth } = viewport;
     const maxScroll = scrollWidth - clientWidth;
-    const sectionWidth = cardWidth * sectionLength;
+    const sectionWidth = totalCardWidth * sectionLength;
 
     // Reset to middle section when scrolling near the edges
     if (scrollLeft <= sectionWidth * 0.1) {
-      // Near the beginning, jump to the end of the first complete section
       viewport.scrollTo({
         left: scrollLeft + sectionWidth,
         behavior: 'auto'
       });
     } else if (scrollLeft >= maxScroll - sectionWidth * 0.1) {
-      // Near the end, jump to the beginning of the second complete section
       viewport.scrollTo({
         left: scrollLeft - sectionWidth,
         behavior: 'auto'
       });
     }
-  }, [cardWidth, sectionLength]);
+  }, [totalCardWidth, sectionLength]);
 
   useEffect(() => {
     const viewport = scrollViewportRef.current;
     if (!viewport) return;
 
     // Initial position to start in the middle section
-    const initialPosition = cardWidth * sectionLength;
+    const initialPosition = totalCardWidth * sectionLength;
     viewport.scrollTo({
       left: initialPosition,
       behavior: 'auto'
@@ -147,14 +158,31 @@ const HorizontalScrollCarousel = () => {
     };
 
     viewport.addEventListener('scroll', throttledScroll);
-    return () => viewport.removeEventListener('scroll', throttledScroll);
-  }, [handleScroll, cardWidth, sectionLength]);
+    
+    // Handle window resize to recalculate card width
+    const handleResize = () => {
+      const newCardWidth = getCardWidth();
+      const newTotalCardWidth = newCardWidth + cardGap;
+      const newInitialPosition = newTotalCardWidth * sectionLength;
+      viewport.scrollTo({
+        left: newInitialPosition,
+        behavior: 'auto'
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      viewport.removeEventListener('scroll', throttledScroll);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [handleScroll, totalCardWidth, sectionLength, cardGap]);
 
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="mb-8 sm:mb-12 px-4 sm:px-0">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold">
+      <div className="mb-12 sm:mb-16 px-4 sm:px-6">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight">
           {t('home.whatWeCanHelp')}
         </h2>
       </div>
@@ -162,26 +190,27 @@ const HorizontalScrollCarousel = () => {
       {/* Horizontal Scroll Container */}
       <div className="mx-auto w-full">
         <XScroll ref={scrollViewportRef}>
-          <div className="flex gap-6 p-6 pb-8">
+          <div className="flex gap-8 p-6 pb-12">
             {infiniteItems.map((section) => (
               <div
                 key={section.id}
-                className="grid w-80 shrink-0 place-items-start rounded-2xl bg-white p-6 shadow-soft"
+                className="shrink-0 rounded-3xl bg-white p-8 sm:p-10 shadow-soft hover:shadow-hover transition-shadow duration-300"
+                style={{ width: `${cardWidth}px`, minHeight: '400px' }}
               >
                 <div className="h-full flex flex-col">
-                  <h3 className="text-xl font-semibold text-black mb-4 leading-tight">
+                  <h3 className="text-2xl sm:text-3xl font-semibold text-black mb-6 leading-tight">
                     {section.title}
                   </h3>
-                  <div className="text-gray-600 text-sm leading-relaxed mb-6 flex-1">
+                  <div className="text-gray-600 mb-8 flex-1">
                     {section.content}
                   </div>
                   <Button 
                     asChild 
-                    size="default"
+                    size="lg"
                     className="bg-black/80 hover:bg-black text-white transition-all duration-200 self-start"
                   >
-                    <Link to="/services" className="inline-flex items-center">
-                      {t('home.howWeCanHelp')} <ArrowRight size={16} className="ml-1" />
+                    <Link to="/services" className="inline-flex items-center text-base">
+                      {t('home.howWeCanHelp')} <ArrowRight size={18} className="ml-2" />
                     </Link>
                   </Button>
                 </div>
