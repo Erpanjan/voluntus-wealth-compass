@@ -3,13 +3,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { NavigationLink } from './types';
 
 interface NavLinksProps {
-  navLinks: Array<{
-    path: string;
-    label: string;
-    translationKey: string;
-  }>;
+  navLinks: readonly NavigationLink[];
   isActive: (path: string) => boolean;
   handleNavLinkClick: (e: React.MouseEvent, isActivePath: boolean) => void;
   handleLoginClick?: (e: React.MouseEvent) => void;

@@ -2,9 +2,9 @@
 import { ReactNode } from 'react';
 
 export interface NavigationLink {
-  path: string;
-  label: string;
-  translationKey: string;
+  readonly path: string;
+  readonly label: string;
+  readonly translationKey: string;
 }
 
 export interface HeaderVisibilityState {
