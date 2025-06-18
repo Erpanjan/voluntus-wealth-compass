@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ServiceItem {
   id: string;
@@ -14,6 +14,8 @@ interface ServiceFeatureGridProps {
 }
 
 const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="w-full py-16 md:py-24">
       <div className="container-custom mx-auto px-6 md:px-8 lg:px-0">
@@ -21,12 +23,12 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
           <div className="flex gap-4 flex-col items-start max-w-3xl">
             <div>
               <Badge className="bg-[#F2F2F2] text-[#333333] hover:bg-[#E5E5E5] border-0">
-                Services
+                {t('services.whatsIncluded')}
               </Badge>
             </div>
             <div className="flex gap-2 flex-col">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-[#333333] tracking-tight max-w-xl text-left leading-tight">
-                What's Included
+                {t('services.whatsIncluded')}
               </h2>
               <p className="text-base sm:text-lg md:text-lg max-w-xl lg:max-w-lg leading-relaxed text-[#666666] text-left">
                 Comprehensive financial planning services designed to help you achieve your goals.
