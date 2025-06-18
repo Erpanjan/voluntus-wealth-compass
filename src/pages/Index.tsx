@@ -92,7 +92,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-brand-white-smoke">
       {/* Hero Section */}
       <Hero 
         title={t('home.hero.title')}
@@ -103,7 +103,7 @@ const Index = () => {
           <Button 
             asChild 
             size="lg"
-            className="bg-black/80 hover:bg-black text-white transition-all duration-300"
+            className="bg-brand-black-olive/90 hover:bg-brand-black-olive text-white transition-all duration-300 shadow-comfortable hover:shadow-elevated"
           >
             <Link to="/services" className="inline-flex items-center">
               {t('home.ourServices')} <ArrowRight size={18} className="ml-2" />
@@ -113,14 +113,14 @@ const Index = () => {
       </Hero>
 
       {/* Interactive Container Section */}
-      <Section id="how-we-can-help" background="white" className="py-16 md:py-20">
+      <Section id="how-we-can-help" background="white" className="py-16 md:py-20 bg-white">
         <div className="w-full">
           <InteractiveContainerSection sections={containerSections} />
         </div>
       </Section>
 
       {/* Waitlist Form Section */}
-      <Section id="contact" background="light">
+      <Section id="contact" background="light" className="bg-brand-almond/20">
         <WaitlistForm />
       </Section>
     </div>

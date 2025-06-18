@@ -6,24 +6,24 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-comfortable text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-black text-white hover:bg-black/90 shadow-sm hover:shadow-md",
+        default: "bg-brand-black-olive text-white shadow-peaceful hover:shadow-comfortable hover:bg-opacity-90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-[#F1F1F1] bg-background hover:bg-[#F1F1F1] hover:text-black",
+          "border border-brand-light-gray bg-white shadow-peaceful hover:bg-brand-light-gray hover:shadow-comfortable hover:text-brand-black-olive",
         secondary:
-          "bg-[#F1F1F1] text-black hover:bg-[#CCCCCC]",
-        ghost: "hover:bg-[#F1F1F1] hover:text-black",
-        link: "text-[#9F9EA1] underline-offset-4 hover:underline",
+          "bg-brand-almond text-brand-black-olive shadow-peaceful hover:shadow-comfortable hover:bg-opacity-90",
+        ghost: "hover:bg-brand-light-gray hover:text-brand-black-olive shadow-none hover:shadow-peaceful",
+        link: "text-brand-muted-gray underline-offset-4 hover:underline hover:text-brand-black-olive shadow-none",
       },
       size: {
         default: "h-11 px-6 py-2.5 sm:h-12 sm:px-7 sm:py-3",
-        sm: "h-9 rounded-full px-4 sm:h-10 sm:px-5",
-        lg: "h-12 rounded-full px-8 text-base sm:h-14 sm:px-10",
+        sm: "h-9 rounded-peaceful px-4 sm:h-10 sm:px-5",
+        lg: "h-12 rounded-comfortable px-8 text-base sm:h-14 sm:px-10",
         icon: "h-10 w-10",
       },
     },
@@ -45,7 +45,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button"
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }), "mobile-touch-target")}
+        className={cn(buttonVariants({ variant, size, className }), "mobile-touch-target comfortable-button")}
         ref={ref}
         {...props}
       />
