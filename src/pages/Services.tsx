@@ -2,7 +2,7 @@
 import React from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
-import ServiceTabs from '@/components/ServiceTabs';
+import ServiceBentoGrid from '@/components/ServiceBentoGrid';
 import WaitlistForm from '@/components/WaitlistForm';
 import FAQAccordionSection from '@/components/FAQAccordionSection';
 import { Button } from '@/components/ui/button';
@@ -100,15 +100,15 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* What's Included Section */}
+      {/* What's Included Section - Now with Bento Grid */}
       <Section 
         id="whats-included" 
         title={t('services.whatsIncluded')}
         background="white"
-        matchFAQHeight={true}
+        matchFAQHeight={false}
       >
         <div className="w-full">
-          <ServiceTabs services={serviceItems} />
+          <ServiceBentoGrid services={serviceItems} />
         </div>
       </Section>
 
