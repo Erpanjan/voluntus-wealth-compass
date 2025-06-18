@@ -42,52 +42,52 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Investment Service - spans 2 columns on desktop */}
-            <div className="bg-[#F2F2F2] rounded-3xl h-full lg:col-span-2 p-6 sm:p-8 aspect-square lg:aspect-auto flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
+            <div className="bg-[#F2F2F2] rounded-3xl lg:col-span-2 p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
               {getServiceIcon(0)}
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
                   {services[0]?.title}
                 </h3>
-                <p className="text-[#666666] max-w-xs text-base leading-relaxed">
+                <p className="text-[#666666] text-base leading-relaxed">
                   {services[0]?.content}
                 </p>
               </div>
             </div>
 
             {/* Advisor Service */}
-            <div className="bg-[#F2F2F2] rounded-3xl aspect-square p-6 sm:p-8 flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
+            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
               {getServiceIcon(1)}
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
                   {services[1]?.title}
                 </h3>
-                <p className="text-[#666666] max-w-xs text-base leading-relaxed">
+                <p className="text-[#666666] text-base leading-relaxed">
                   {services[1]?.content}
                 </p>
               </div>
             </div>
 
             {/* Risk Service */}
-            <div className="bg-[#F2F2F2] rounded-3xl aspect-square p-6 sm:p-8 flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
+            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
               {getServiceIcon(2)}
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
                   {services[2]?.title}
                 </h3>
-                <p className="text-[#666666] max-w-xs text-base leading-relaxed">
+                <p className="text-[#666666] text-base leading-relaxed">
                   {services[2]?.content}
                 </p>
               </div>
             </div>
 
             {/* Policy Service - spans 2 columns on desktop */}
-            <div className="bg-[#F2F2F2] rounded-3xl h-full lg:col-span-2 p-6 sm:p-8 aspect-square lg:aspect-auto flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
+            <div className="bg-[#F2F2F2] rounded-3xl lg:col-span-2 p-6 sm:p-8 min-h-[280px] flex justify-between flex-col shadow-soft hover:shadow-hover transition-all duration-300">
               {getServiceIcon(3)}
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3">
                   {services[3]?.title}
                 </h3>
-                <p className="text-[#666666] max-w-xs text-base leading-relaxed">
+                <p className="text-[#666666] text-base leading-relaxed">
                   {services[3]?.content}
                 </p>
               </div>
