@@ -10,12 +10,12 @@ interface SectionProps {
   children: ReactNode;
   className?: string;
   titleCentered?: boolean;
-  background?: 'white' | 'light' | 'dark';
+  background?: 'white' | 'light' | 'dark' | 'white-smoke' | 'almond' | 'silver';
   carouselItem?: boolean;
   titleClassName?: string;
   subtitleClassName?: string;
   contentClassName?: string;
-  matchFAQHeight?: boolean; // New prop to match FAQ section height
+  matchFAQHeight?: boolean;
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -38,6 +38,27 @@ const Section: React.FC<SectionProps> = ({
     'white': 'bg-white',
     'light': 'bg-[#F1F1F1]',
     'dark': 'bg-black text-white',
+    'white-smoke': 'bg-brand-white-smoke',
+    'almond': 'bg-brand-almond',
+    'silver': 'bg-brand-silver',
+  };
+
+  const textColorClasses = {
+    'white': 'text-brand-black-olive',
+    'light': 'text-brand-black-olive',
+    'dark': 'text-white',
+    'white-smoke': 'text-brand-black-olive',
+    'almond': 'text-brand-black-olive',
+    'silver': 'text-brand-black-olive',
+  };
+
+  const subtitleColorClasses = {
+    'white': 'text-brand-medium-gray',
+    'light': 'text-brand-medium-gray',
+    'dark': 'text-white/70',
+    'white-smoke': 'text-brand-medium-gray',
+    'almond': 'text-brand-medium-gray',
+    'silver': 'text-brand-medium-gray',
   };
 
   // Apply specific height classes when matching FAQ height or for ServiceFeatureGrid
@@ -74,7 +95,7 @@ const Section: React.FC<SectionProps> = ({
                 className={cn(
                   "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-semibold mb-3 md:mb-6 tracking-tight animate-fade-in",
                   titleClassName,
-                  background === 'dark' ? 'text-white' : 'text-[#333333]'
+                  textColorClasses[background]
                 )}
                 data-section-title="true"
               >
@@ -86,7 +107,7 @@ const Section: React.FC<SectionProps> = ({
                 className={cn(
                   "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in mobile-text-base",
                   subtitleClassName,
-                  background === 'dark' ? 'text-white/70' : 'text-[#666666]'
+                  subtitleColorClasses[background]
                 )}
                 data-section-subtitle="true"
               > 
