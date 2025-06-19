@@ -26,7 +26,7 @@ const WaitlistFormInput: React.FC<WaitlistFormInputProps> = ({
 }) => {
   return (
     <div className={`w-full ${className}`}>
-      <Label htmlFor={id} className="block text-sm font-medium text-[#666666] mb-1 font-poppins">
+      <Label htmlFor={id} className="block text-sm font-normal text-[#666666] mb-1 font-poppins">
         {label}
       </Label>
       <Input
@@ -37,7 +37,7 @@ const WaitlistFormInput: React.FC<WaitlistFormInputProps> = ({
         value={value}
         onChange={onChange}
         placeholder=""
-        className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
+        className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins font-light focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
         style={{
           WebkitBoxShadow: '0 0 0 1000px transparent inset',
           WebkitTextFillColor: '#666666'
