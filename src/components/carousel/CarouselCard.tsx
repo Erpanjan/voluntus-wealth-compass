@@ -20,9 +20,9 @@ const CarouselCard: React.FC<CarouselCardProps> = ({ section, isMobile }) => {
       data-carousel-card
       className="shrink-0 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-all duration-500 relative"
       style={{ 
-        width: isMobile ? '85vw' : '70vw',
+        width: isMobile ? 'calc(100vw - 4rem)' : 'min(calc(100vw - 8rem), 65vw)',
         minHeight: isMobile ? '420px' : '500px',
-        scrollSnapAlign: 'center',
+        scrollSnapAlign: 'start',
         scrollSnapStop: 'always'
       }}
     >

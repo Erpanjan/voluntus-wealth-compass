@@ -2,20 +2,20 @@
 export const CAROUSEL_CONFIG = {
   MOBILE_BREAKPOINT: 768,
   
-  // Fixed viewport-based widths for predictable one-card display
+  // Improved viewport-based widths to prevent cutoff
   CARD_WIDTH: {
-    MOBILE: '85vw', // 85% of viewport width on mobile
-    DESKTOP: '70vw', // 70% of viewport width on desktop
+    MOBILE: 'calc(100vw - 4rem)', // Account for container margins
+    DESKTOP: 'calc(100vw - 8rem)', // Account for container margins with max constraint
   },
   
   GAP: {
-    MOBILE: '2rem', // 32px
-    DESKTOP: '3rem', // 48px
+    MOBILE: '1.5rem', // 24px - reduced for better fit
+    DESKTOP: '2rem', // 32px - reduced for better fit
   },
   
   PADDING: {
-    MOBILE: '1rem', // 16px
-    DESKTOP: '2rem', // 32px
+    MOBILE: '2rem', // 32px - container outer padding
+    DESKTOP: '4rem', // 64px - container outer padding
   },
   
   AUTO_SCROLL: {
