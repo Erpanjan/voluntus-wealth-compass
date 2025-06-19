@@ -134,7 +134,7 @@ const WaitlistForm = () => {
             value={formData.interests}
             onChange={handleInputChange}
             placeholder={t('waitlist.interests')}
-            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] min-h-[80px] px-0 pb-3 pt-0 font-poppins resize-none focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
+            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] min-h-[80px] px-0 pb-3 pt-0 font-poppins resize-none focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base placeholder:font-poppins placeholder:text-sm placeholder:sm:text-base"
             style={{
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
               WebkitTextFillColor: '#666666'
