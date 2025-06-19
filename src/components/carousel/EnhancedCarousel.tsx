@@ -2,7 +2,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import { useIsMobile } from '@/hooks/use-mobile';
-import CarouselIndicators from './CarouselIndicators';
 import { cn } from '@/lib/utils';
 
 interface EnhancedCarouselProps {
@@ -125,15 +124,6 @@ const EnhancedCarousel: React.FC<EnhancedCarouselProps> = ({
           </>
         )}
       </Carousel>
-
-      {showIndicators && (
-        <CarouselIndicators
-          total={count}
-          current={current}
-          onDotClick={goToSlide}
-          className="mt-6"
-        />
-      )}
     </div>
   );
 };
