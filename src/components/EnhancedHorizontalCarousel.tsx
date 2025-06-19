@@ -115,39 +115,40 @@ const EnhancedHorizontalCarousel = () => {
       setCurrent(api.selectedScrollSnap() + 1);
     });
 
-    // Handle autoplay state changes
-    const handleAutoplayStop = () => setIsAutoPlaying(false);
-    const handleAutoplayPlay = () => setIsAutoPlaying(true);
-
-    autoplayPlugin.on("autoplay:stop", handleAutoplayStop);
-    autoplayPlugin.on("autoplay:play", handleAutoplayPlay);
-
-    return () => {
-      autoplayPlugin.off("autoplay:stop", handleAutoplayStop);
-      autoplayPlugin.off("autoplay:play", handleAutoplayPlay);
+    // Handle user interaction to stop autoplay
+    const handleUserInteraction = () => {
+      setIsAutoPlaying(false);
     };
-  }, [api, autoplayPlugin]);
+
+    api.on("pointerDown", handleUserInteraction);
+    api.on("keyDown", handleUserInteraction);
+  }, [api]);
 
   const toggleAutoplay = useCallback(() => {
     if (!autoplayPlugin) return;
     
     if (isAutoPlaying) {
       autoplayPlugin.stop();
+      setIsAutoPlaying(false);
     } else {
       autoplayPlugin.play();
+      setIsAutoPlaying(true);
     }
   }, [autoplayPlugin, isAutoPlaying]);
 
   const scrollToPrevious = useCallback(() => {
     api?.scrollPrev();
+    setIsAutoPlaying(false);
   }, [api]);
 
   const scrollToNext = useCallback(() => {
     api?.scrollNext();
+    setIsAutoPlaying(false);
   }, [api]);
 
   const scrollTo = useCallback((index: number) => {
     api?.scrollTo(index);
+    setIsAutoPlaying(false);
   }, [api]);
 
   return (
