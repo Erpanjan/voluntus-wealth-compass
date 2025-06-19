@@ -24,7 +24,8 @@ const CarouselCard: React.FC<CarouselCardProps> = ({ section, isMobile }) => {
         width: isMobile ? CAROUSEL_CONFIG.CARD_WIDTH.MOBILE : CAROUSEL_CONFIG.CARD_WIDTH.DESKTOP,
         minHeight: isMobile ? '420px' : '500px',
         scrollSnapAlign: 'center',
-        scrollSnapStop: 'always'
+        scrollSnapStop: 'always',
+        maxWidth: isMobile ? CAROUSEL_CONFIG.CARD_WIDTH.MOBILE : CAROUSEL_CONFIG.CARD_WIDTH.DESKTOP
       }}
     >
       {/* Progress Badge */}

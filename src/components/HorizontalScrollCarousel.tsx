@@ -67,9 +67,9 @@ const HorizontalScrollCarousel = () => {
         </h2>
       </div>
 
-      {/* Simplified Carousel Container */}
+      {/* Fixed Carousel Container */}
       <div 
-        className="relative"
+        className="relative w-full max-w-full overflow-hidden"
         onMouseEnter={pauseAutoScroll}
         onTouchStart={pauseAutoScroll}
       >
@@ -82,6 +82,7 @@ const HorizontalScrollCarousel = () => {
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
+            maxWidth: '100vw'
           }}
         >
           <div 
@@ -91,7 +92,8 @@ const HorizontalScrollCarousel = () => {
               paddingLeft: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
               paddingRight: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
               paddingTop: isMobile ? '12px' : '24px',
-              paddingBottom: isMobile ? '12px' : '24px'
+              paddingBottom: isMobile ? '12px' : '24px',
+              minWidth: 'max-content'
             }}
           >
             {infiniteItems.map((section) => (
