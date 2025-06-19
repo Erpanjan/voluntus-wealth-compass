@@ -76,13 +76,12 @@ const HorizontalScrollCarousel = () => {
         <div 
           ref={containerRef}
           className={cn(
-            "w-full overflow-x-auto scroll-smooth",
+            "w-full overflow-x-auto scroll-smooth hide-scrollbar",
             "snap-x snap-mandatory"
           )}
           style={{
             scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            WebkitScrollbar: { display: 'none' } as any
+            msOverflowStyle: 'none'
           }}
         >
           <div 
