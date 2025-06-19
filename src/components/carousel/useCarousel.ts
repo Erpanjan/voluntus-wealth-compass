@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ContentSection, CarouselItem } from './types';
 
@@ -5,6 +6,9 @@ export const useCarousel = (containerSections: ContentSection[]) => {
   const scrollViewportRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(true);
 
   // Check if we're on mobile and if we're on the client
   useEffect(() => {
@@ -59,6 +63,20 @@ export const useCarousel = (containerSections: ContentSection[]) => {
     return () => window.removeEventListener('resize', handleResize);
   }, [getCardWidth, isClient]);
 
+  // Update current index and scroll states
+  const updateScrollState = useCallback(() => {
+    const viewport = scrollViewportRef.current;
+    if (!viewport || !isClient) return;
+
+    const { scrollLeft } = viewport;
+    const newIndex = Math.round(scrollLeft / totalCardWidth) % sectionLength;
+    setCurrentIndex(newIndex);
+    
+    // Update scroll button states
+    setCanScrollPrev(scrollLeft > totalCardWidth * 0.5);
+    setCanScrollNext(scrollLeft < (totalCardWidth * sectionLength * 2.5));
+  }, [totalCardWidth, sectionLength, isClient]);
+
   const handleScroll = useCallback(() => {
     const viewport = scrollViewportRef.current;
     if (!viewport || !isClient) return;
@@ -79,7 +97,49 @@ export const useCarousel = (containerSections: ContentSection[]) => {
         behavior: 'auto'
       });
     }
+
+    updateScrollState();
+  }, [totalCardWidth, sectionLength, isClient, updateScrollState]);
+
+  // Navigation functions
+  const scrollToIndex = useCallback((index: number) => {
+    const viewport = scrollViewportRef.current;
+    if (!viewport || !isClient) return;
+
+    const targetScroll = (index + sectionLength) * totalCardWidth;
+    viewport.scrollTo({
+      left: targetScroll,
+      behavior: 'smooth'
+    });
   }, [totalCardWidth, sectionLength, isClient]);
+
+  const scrollPrevious = useCallback(() => {
+    const newIndex = currentIndex === 0 ? sectionLength - 1 : currentIndex - 1;
+    scrollToIndex(newIndex);
+  }, [currentIndex, sectionLength, scrollToIndex]);
+
+  const scrollNext = useCallback(() => {
+    const newIndex = (currentIndex + 1) % sectionLength;
+    scrollToIndex(newIndex);
+  }, [currentIndex, sectionLength, scrollToIndex]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!isClient) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        scrollPrevious();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        scrollNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [scrollPrevious, scrollNext, isClient]);
 
   useEffect(() => {
     const viewport = scrollViewportRef.current;
@@ -106,16 +166,26 @@ export const useCarousel = (containerSections: ContentSection[]) => {
 
     viewport.addEventListener('scroll', throttledScroll, { passive: true });
     
+    // Initial state update
+    updateScrollState();
+    
     return () => {
       viewport.removeEventListener('scroll', throttledScroll);
     };
-  }, [handleScroll, totalCardWidth, sectionLength, isClient]);
+  }, [handleScroll, totalCardWidth, sectionLength, isClient, updateScrollState]);
 
   return {
     scrollViewportRef,
     isMobile,
     isClient,
     infiniteItems,
-    cardWidth
+    cardWidth,
+    currentIndex,
+    canScrollPrev,
+    canScrollNext,
+    scrollPrevious,
+    scrollNext,
+    scrollToIndex,
+    totalItems: sectionLength
   };
 };
