@@ -25,7 +25,7 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
       FileText    // Policy Keeping
     ];
     const IconComponent = icons[index] || User;
-    return <IconComponent className="w-6 h-6 stroke-1.5 text-[#333333]" />;
+    return <IconComponent className="w-5 h-5 stroke-[1.5] text-[#333333]" />;
   };
 
   return (
@@ -40,30 +40,43 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
             </div>
           </div>
           
-          {/* Clean vertical list layout - centered */}
-          <div className="max-w-4xl mx-auto">
-            <div className="space-y-0">
+          {/* Enhanced card-based grid layout */}
+          <div className="max-w-5xl mx-auto">
+            <div className="grid gap-6 md:gap-8">
               {services.map((service, index) => (
                 <div
                   key={service.id}
-                  className="group border-b border-[#F2F2F2] last:border-b-0 py-8 first:pt-4 last:pb-4 hover:bg-[#FAFAFA] transition-all duration-300 cursor-default"
+                  className="group relative bg-white rounded-2xl border border-[#F2F2F2] hover:border-[#E5E5E5] transition-all duration-300 overflow-hidden hover:shadow-sm"
                 >
-                  <div className="flex gap-6 items-start">
-                    {/* Icon */}
-                    <div className="flex-shrink-0 mt-1">
-                      {getServiceIcon(index)}
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-grow min-w-0">
-                      <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-[#333333] mb-3 group-hover:text-black transition-colors duration-300">
-                        {service.title}
-                      </h3>
-                      <p className="text-[#666666] text-base md:text-lg leading-relaxed max-w-3xl">
-                        {service.content}
-                      </p>
+                  {/* Dotted border decoration - top */}
+                  <div className="absolute top-0 left-8 right-8 h-px border-t border-dotted border-[#E5E5E5] opacity-50"></div>
+                  
+                  <div className="p-8 md:p-10">
+                    <div className="flex gap-6 md:gap-8 items-start">
+                      {/* Enhanced icon container */}
+                      <div className="flex-shrink-0 mt-1">
+                        <div className="w-12 h-12 rounded-full bg-[#F8F8F8] border border-[#F2F2F2] flex items-center justify-center group-hover:bg-[#F5F5F5] group-hover:border-[#E5E5E5] transition-all duration-300">
+                          {getServiceIcon(index)}
+                        </div>
+                      </div>
+                      
+                      {/* Enhanced content */}
+                      <div className="flex-grow min-w-0">
+                        <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-[#333333] mb-4 group-hover:text-black transition-colors duration-300 leading-tight">
+                          {service.title}
+                        </h3>
+                        <p className="text-[#666666] text-base md:text-lg leading-relaxed max-w-4xl group-hover:text-[#555555] transition-colors duration-300">
+                          {service.content}
+                        </p>
+                      </div>
                     </div>
                   </div>
+                  
+                  {/* Dotted border decoration - bottom */}
+                  <div className="absolute bottom-0 left-8 right-8 h-px border-b border-dotted border-[#E5E5E5] opacity-50"></div>
+                  
+                  {/* Subtle gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#FAFAFA] opacity-0 group-hover:opacity-30 transition-opacity duration-300 pointer-events-none"></div>
                 </div>
               ))}
             </div>
