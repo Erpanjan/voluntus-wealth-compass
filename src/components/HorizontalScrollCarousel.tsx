@@ -45,8 +45,8 @@ const HorizontalScrollCarousel = () => {
   if (!isClient) {
     return (
       <div className="w-full">
-        <div className="mb-8 sm:mb-12 md:mb-16 px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-semibold leading-tight">
+        <div className="mb-12 px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight text-gray-900">
             {t('home.whatWeCanHelp')}
           </h2>
         </div>
@@ -58,17 +58,17 @@ const HorizontalScrollCarousel = () => {
   }
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="mb-8 sm:mb-12 md:mb-16 px-4 sm:px-6">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-semibold leading-tight">
+    <div className="w-full bg-gray-50/30">
+      {/* Header - Improved spacing and typography */}
+      <div className="mb-12 px-4 sm:px-6 pt-8">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight text-gray-900 max-w-4xl">
           {t('home.whatWeCanHelp')}
         </h2>
       </div>
 
-      {/* Carousel */}
+      {/* Carousel Container - Enhanced with better background */}
       <div 
-        className="relative"
+        className="relative pb-8"
         onMouseEnter={pauseAutoScroll}
         onTouchStart={pauseAutoScroll}
         style={{
@@ -76,6 +76,7 @@ const HorizontalScrollCarousel = () => {
           paddingRight: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
         }}
       >
+        {/* Scroll Container */}
         <div 
           ref={containerRef}
           className={cn(
@@ -93,9 +94,9 @@ const HorizontalScrollCarousel = () => {
           <div 
             className="flex"
             style={{ 
-              gap: isMobile ? CAROUSEL_CONFIG.GAP.MOBILE : CAROUSEL_CONFIG.GAP.DESKTOP,
-              paddingTop: isMobile ? '12px' : '24px',
-              paddingBottom: isMobile ? '12px' : '24px'
+              gap: isMobile ? '1.25rem' : '1.5rem',
+              paddingTop: '8px',
+              paddingBottom: '8px'
             }}
           >
             {infiniteItems.map((section) => (
@@ -106,6 +107,16 @@ const HorizontalScrollCarousel = () => {
               />
             ))}
           </div>
+        </div>
+
+        {/* Subtle scroll indicators */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex space-x-1 opacity-40">
+          {containerSections.map((_, index) => (
+            <div
+              key={index}
+              className="w-1.5 h-1.5 bg-gray-400 rounded-full"
+            />
+          ))}
         </div>
       </div>
 

@@ -18,46 +18,56 @@ const CarouselCard: React.FC<CarouselCardProps> = ({ section, isMobile }) => {
   return (
     <div
       data-carousel-card
-      className="shrink-0 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-all duration-500 relative"
+      className="shrink-0 rounded-2xl bg-white border border-gray-100 hover:border-gray-200 transition-all duration-300 relative group hover:shadow-sm"
       style={{ 
-        width: isMobile ? 'calc(100vw - 4rem)' : 'min(calc(100vw - 8rem), 65vw)',
-        minHeight: isMobile ? '420px' : '500px',
+        width: isMobile ? 'calc(100vw - 3rem)' : 'min(45vw, 580px)',
+        minHeight: isMobile ? '380px' : '420px',
         scrollSnapAlign: 'center',
         scrollSnapStop: 'always'
       }}
     >
-      {/* Progress Badge */}
+      {/* Progress Badge - Redesigned as elegant indicator */}
       <div className={cn(
-        "absolute bg-gradient-to-r from-gray-100 to-gray-50 text-gray-800 rounded-full font-semibold shadow-sm",
-        isMobile ? 'top-4 right-4 px-3 py-2 text-sm' : 'top-6 right-6 px-4 py-2 text-base'
+        "absolute bg-gray-900 text-white rounded-full font-medium flex items-center justify-center transition-all duration-300 group-hover:bg-black",
+        isMobile ? 'top-5 right-5 w-8 h-8 text-sm' : 'top-6 right-6 w-10 h-10 text-base'
       )}>
         {section.originalIndex + 1}
       </div>
       
       <div className={cn(
-        "h-full flex flex-col",
-        isMobile ? 'p-6 pt-5' : 'p-8 md:p-10 lg:p-12'
+        "h-full flex flex-col justify-between",
+        isMobile ? 'p-6 pt-5' : 'p-8'
       )}>
-        <h3 className={cn(
-          "font-bold text-black mb-6 sm:mb-8 leading-tight",
-          isMobile ? 'text-xl pr-12' : 'text-2xl md:text-3xl lg:text-4xl pr-16'
-        )}>
-          {section.title}
-        </h3>
-        
-        <div className={cn("flex-1", isMobile ? 'mb-6' : 'mb-8')}>
-          {section.content}
+        {/* Content Section */}
+        <div className="flex-grow">
+          <h3 className={cn(
+            "font-semibold text-gray-900 mb-6 leading-tight pr-12",
+            isMobile ? 'text-lg' : 'text-xl md:text-2xl'
+          )}>
+            {section.title}
+          </h3>
+          
+          <div className={cn("text-gray-600 leading-relaxed", isMobile ? 'text-sm' : 'text-base')}>
+            {section.content}
+          </div>
         </div>
         
-        <Button 
-          asChild 
-          size={isMobile ? "default" : "lg"}
-          className="bg-black hover:bg-gray-900 text-white transition-all duration-300 self-start shadow-md hover:shadow-lg transform hover:scale-[1.02]"
-        >
-          <Link to="/services" className="inline-flex items-center font-medium">
-            {t('home.howWeCanHelp')} <ArrowRight size={isMobile ? 16 : 20} className="ml-3" />
-          </Link>
-        </Button>
+        {/* CTA Button - Fixed positioning */}
+        <div className={cn("pt-6 border-t border-gray-50", isMobile ? 'mt-6' : 'mt-8')}>
+          <Button 
+            asChild 
+            size={isMobile ? "sm" : "default"}
+            className="bg-gray-900 hover:bg-black text-white transition-all duration-200 font-medium group/btn"
+          >
+            <Link to="/services" className="inline-flex items-center">
+              {t('home.howWeCanHelp')} 
+              <ArrowRight 
+                size={isMobile ? 14 : 16} 
+                className="ml-2 transition-transform duration-200 group-hover/btn:translate-x-0.5" 
+              />
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

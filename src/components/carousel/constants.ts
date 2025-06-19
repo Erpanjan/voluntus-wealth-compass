@@ -2,24 +2,24 @@
 export const CAROUSEL_CONFIG = {
   MOBILE_BREAKPOINT: 768,
   
-  // Improved viewport-based widths to prevent cutoff
+  // Optimized viewport-based widths for better proportions
   CARD_WIDTH: {
-    MOBILE: 'calc(100vw - 4rem)', // Account for container margins
-    DESKTOP: 'calc(100vw - 8rem)', // Account for container margins with max constraint
+    MOBILE: 'calc(100vw - 3rem)', // Reduced padding for better mobile experience
+    DESKTOP: 'min(45vw, 580px)', // Smaller cards for better readability
   },
   
   GAP: {
-    MOBILE: '1.5rem', // 24px - reduced for better fit
-    DESKTOP: '2rem', // 32px - reduced for better fit
+    MOBILE: '1.25rem', // 20px - tighter spacing for mobile
+    DESKTOP: '1.5rem', // 24px - cleaner spacing for desktop
   },
   
   PADDING: {
-    MOBILE: '2rem', // 32px - container outer padding
-    DESKTOP: '4rem', // 64px - container outer padding
+    MOBILE: '1.5rem', // 24px - reduced outer padding
+    DESKTOP: '3rem', // 48px - cleaner outer padding
   },
   
   AUTO_SCROLL: {
-    INTERVAL: 4000, // 4 seconds
+    INTERVAL: 5000, // 5 seconds - slightly slower for better readability
     PAUSE_ON_INTERACTION: 3000, // 3 seconds pause after interaction
   },
 } as const;
