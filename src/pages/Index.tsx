@@ -6,7 +6,7 @@ import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import WaitlistForm from '@/components/WaitlistForm';
 import { Button } from '@/components/ui/button';
-import EnhancedHorizontalScrollCarousel from '@/components/EnhancedHorizontalScrollCarousel';
+import HorizontalScrollCarousel from '@/components/HorizontalScrollCarousel';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
@@ -33,10 +33,10 @@ const Index = () => {
         </div>
       </Hero>
 
-      {/* Enhanced Horizontal Scroll Carousel Section */}
+      {/* Horizontal Scroll Carousel Section */}
       <Section id="how-we-can-help" background="white" className="py-16 md:py-20">
         <div className="w-full">
-          <EnhancedHorizontalScrollCarousel />
+          <HorizontalScrollCarousel />
         </div>
       </Section>
 
