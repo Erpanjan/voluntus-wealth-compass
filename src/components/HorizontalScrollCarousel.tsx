@@ -108,16 +108,6 @@ const HorizontalScrollCarousel = () => {
             ))}
           </div>
         </div>
-
-        {/* Subtle scroll indicators */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex space-x-1 opacity-40">
-          {containerSections.map((_, index) => (
-            <div
-              key={index}
-              className="w-1.5 h-1.5 bg-gray-400 rounded-full"
-            />
-          ))}
-        </div>
       </div>
 
       {/* CSS for hiding scrollbar */}
