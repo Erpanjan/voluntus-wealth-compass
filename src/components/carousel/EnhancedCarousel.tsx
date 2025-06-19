@@ -134,13 +134,6 @@ const EnhancedCarousel: React.FC<EnhancedCarouselProps> = ({
           className="mt-6"
         />
       )}
-
-      {/* Progress counter */}
-      <div className="text-center mt-4">
-        <span className="text-sm text-gray-500 font-medium">
-          {current + 1} / {count}
-        </span>
-      </div>
     </div>
   );
 };
