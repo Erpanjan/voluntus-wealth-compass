@@ -85,7 +85,7 @@ const WaitlistForm = () => {
       <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
           <div className="w-full">
-            <Label htmlFor="firstName" className="block text-sm font-medium text-[#333333] mb-2 font-poppins">
+            <Label htmlFor="firstName" className="block text-sm font-medium text-[#333333] mb-1 font-poppins">
               {t('waitlist.firstName')}
             </Label>
             <Input
@@ -95,7 +95,7 @@ const WaitlistForm = () => {
               required
               value={formData.firstName}
               onChange={handleInputChange}
-              placeholder={t('waitlist.firstNameShort')}
+              placeholder=""
               className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
               style={{
                 WebkitBoxShadow: '0 0 0 1000px transparent inset',
@@ -104,7 +104,7 @@ const WaitlistForm = () => {
             />
           </div>
           <div className="w-full">
-            <Label htmlFor="lastName" className="block text-sm font-medium text-[#333333] mb-2 font-poppins">
+            <Label htmlFor="lastName" className="block text-sm font-medium text-[#333333] mb-1 font-poppins">
               {t('waitlist.lastName')}
             </Label>
             <Input
@@ -114,7 +114,7 @@ const WaitlistForm = () => {
               required
               value={formData.lastName}
               onChange={handleInputChange}
-              placeholder={t('waitlist.lastNameShort')}
+              placeholder=""
               className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
               style={{
                 WebkitBoxShadow: '0 0 0 1000px transparent inset',
@@ -125,7 +125,7 @@ const WaitlistForm = () => {
         </div>
 
         <div className="w-full">
-          <Label htmlFor="preferredContact" className="block text-sm font-medium text-[#333333] mb-2 font-poppins">
+          <Label htmlFor="preferredContact" className="block text-sm font-medium text-[#333333] mb-1 font-poppins">
             {t('waitlist.preferredContact')}
           </Label>
           <Input
@@ -135,7 +135,7 @@ const WaitlistForm = () => {
             required
             value={formData.preferredContact}
             onChange={handleInputChange}
-            placeholder={t('waitlist.preferredContactShort')}
+            placeholder=""
             className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
             style={{
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
@@ -145,7 +145,7 @@ const WaitlistForm = () => {
         </div>
 
         <div className="w-full">
-          <Label htmlFor="contactInfo" className="block text-sm font-medium text-[#333333] mb-2 font-poppins">
+          <Label htmlFor="contactInfo" className="block text-sm font-medium text-[#333333] mb-1 font-poppins">
             {t('waitlist.contactInfo')}
           </Label>
           <Input
@@ -155,7 +155,7 @@ const WaitlistForm = () => {
             required
             value={formData.contactInfo}
             onChange={handleInputChange}
-            placeholder={t('waitlist.contactInfoShort')}
+            placeholder=""
             className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
             style={{
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
@@ -165,7 +165,7 @@ const WaitlistForm = () => {
         </div>
 
         <div className="w-full">
-          <Label htmlFor="interests" className="block text-sm font-medium text-[#333333] mb-2 font-poppins">
+          <Label htmlFor="interests" className="block text-sm font-medium text-[#333333] mb-1 font-poppins">
             {t('waitlist.interests')}
           </Label>
           <Textarea
@@ -173,7 +173,7 @@ const WaitlistForm = () => {
             name="interests"
             value={formData.interests}
             onChange={handleInputChange}
-            placeholder={t('waitlist.interestsShort')}
+            placeholder=""
             className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] min-h-[80px] px-0 pb-3 pt-0 font-poppins resize-none focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
             style={{
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
