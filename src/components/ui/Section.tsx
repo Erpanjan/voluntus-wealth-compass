@@ -15,8 +15,7 @@ interface SectionProps {
   titleClassName?: string;
   subtitleClassName?: string;
   contentClassName?: string;
-  matchFAQHeight?: boolean;
-  noMinHeight?: boolean; // New prop to disable minimum height constraints
+  matchFAQHeight?: boolean; // New prop to match FAQ section height
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -31,8 +30,7 @@ const Section: React.FC<SectionProps> = ({
   titleClassName = '',
   subtitleClassName = '',
   contentClassName = '',
-  matchFAQHeight = false,
-  noMinHeight = false
+  matchFAQHeight = false
 }) => {
   const isMobile = useIsMobile();
   
@@ -43,15 +41,13 @@ const Section: React.FC<SectionProps> = ({
   };
 
   // Apply specific height classes when matching FAQ height or for ServiceFeatureGrid
-  const sectionHeightClasses = noMinHeight 
-    ? 'py-12 md:py-16' // Only padding when noMinHeight is true
-    : matchFAQHeight 
-      ? 'py-16 md:py-24' 
-      : carouselItem 
-        ? 'py-3 md:py-6' 
-        : id === 'whats-included'
-          ? 'py-6 md:py-8'
-          : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
+  const sectionHeightClasses = matchFAQHeight 
+    ? 'py-16 md:py-24' 
+    : carouselItem 
+      ? 'py-3 md:py-6' 
+      : id === 'whats-included'
+        ? 'py-6 md:py-8'
+        : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
 
   // Use different justify alignment for services section to reduce bottom spacing
   const justifyAlignment = id === 'whats-included' ? 'justify-start' : 'justify-center';
