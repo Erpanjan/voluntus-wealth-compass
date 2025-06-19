@@ -10,12 +10,12 @@ interface SectionProps {
   children: ReactNode;
   className?: string;
   titleCentered?: boolean;
-  background?: 'white' | 'light' | 'dark' | 'brand-primary' | 'brand-secondary';
+  background?: 'white' | 'light' | 'dark';
   carouselItem?: boolean;
   titleClassName?: string;
   subtitleClassName?: string;
   contentClassName?: string;
-  matchFAQHeight?: boolean;
+  matchFAQHeight?: boolean; // New prop to match FAQ section height
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -38,10 +38,9 @@ const Section: React.FC<SectionProps> = ({
     'white': 'bg-white',
     'light': 'bg-[#F1F1F1]',
     'dark': 'bg-black text-white',
-    'brand-primary': 'bg-brand-primary',
-    'brand-secondary': 'bg-brand-secondary',
   };
 
+  // Apply specific height classes when matching FAQ height or for ServiceFeatureGrid
   const sectionHeightClasses = matchFAQHeight 
     ? 'py-16 md:py-24' 
     : carouselItem 
@@ -50,6 +49,7 @@ const Section: React.FC<SectionProps> = ({
         ? 'py-6 md:py-8'
         : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
 
+  // Use different justify alignment for services section to reduce bottom spacing
   const justifyAlignment = id === 'whats-included' ? 'justify-start' : 'justify-center';
 
   return (
@@ -74,7 +74,7 @@ const Section: React.FC<SectionProps> = ({
                 className={cn(
                   "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-semibold mb-3 md:mb-6 tracking-tight animate-fade-in",
                   titleClassName,
-                  background === 'dark' ? 'text-white' : 'text-brand-accent'
+                  background === 'dark' ? 'text-white' : 'text-[#333333]'
                 )}
                 data-section-title="true"
               >
@@ -86,7 +86,7 @@ const Section: React.FC<SectionProps> = ({
                 className={cn(
                   "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in mobile-text-base",
                   subtitleClassName,
-                  background === 'dark' ? 'text-white/70' : 'text-brand-gray'
+                  background === 'dark' ? 'text-white/70' : 'text-[#666666]'
                 )}
                 data-section-subtitle="true"
               > 

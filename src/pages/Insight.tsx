@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useMemo } from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
@@ -69,7 +70,7 @@ const Insight = () => {
         category={article.category}
         authors={article.authors?.map(author => author.name) || []}
         image={article.image_url}
-        priority={index < 2}
+        priority={index < 2} // First 2 images load eagerly
       />
     ));
   }, [articles, language]);
@@ -78,7 +79,7 @@ const Insight = () => {
   const paginationComponent = useMemo(() => {
     if (totalPages <= 1 || loading) return null;
 
-    const displayPage = currentPage + 1;
+    const displayPage = currentPage + 1; // Convert to 1-based for UI
 
     return (
       <div className="mt-12">
@@ -132,7 +133,7 @@ const Insight = () => {
 
     const startIndex = currentPage * 4;
     return (
-      <div className="mt-8 text-center text-sm text-brand-gray">
+      <div className="mt-8 text-center text-sm text-gray-600">
         {t('insight.showing')} {Math.min(startIndex + 1, totalCount)} - {Math.min(startIndex + 4, totalCount)} {t('insight.of')} {totalCount} {t('insight.articles')}
       </div>
     );
@@ -155,18 +156,18 @@ const Insight = () => {
       <Hero 
         title={t('insight.title')}
         subtitle={t('insight.subtitle')}
-        background="brand-primary"
+        background="light"
       />
 
       {/* Latest Research Section */}
-      <Section title={t('insight.latestResearch')} titleCentered={true} background="white">
+      <Section title={t('insight.latestResearch')} titleCentered={true}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
           {loading ? renderSkeletons : articleCards}
           
           {!loading && articles.length === 0 && (
             <div className="col-span-full text-center py-16">
-              <h3 className="text-xl font-medium text-brand-gray">{t('insight.noArticles')}</h3>
-              <p className="mt-2 text-brand-gray">{t('insight.noArticles.subtitle')}</p>
+              <h3 className="text-xl font-medium text-gray-600">{t('insight.noArticles')}</h3>
+              <p className="mt-2 text-gray-500">{t('insight.noArticles.subtitle')}</p>
               <Button 
                 variant="outline" 
                 onClick={handleRefresh}
@@ -175,7 +176,7 @@ const Insight = () => {
                 <RefreshCw size={16} className="mr-2" />
                 {t('insight.refresh')}
               </Button>
-              <div className="mt-4 text-sm text-brand-gray">
+              <div className="mt-4 text-sm text-gray-400">
                 Debug: Language={language}, Total Count={totalCount}, Loading={loading ? 'true' : 'false'}
               </div>
             </div>
@@ -187,7 +188,7 @@ const Insight = () => {
       </Section>
 
       {/* Waitlist Form Section */}
-      <Section id="contact" background="brand-secondary">
+      <Section id="contact" background="light">
         <WaitlistForm />
       </Section>
     </div>

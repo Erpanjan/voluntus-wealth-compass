@@ -13,11 +13,10 @@ const Contact = () => {
       <Hero 
         title={t('contact.title')}
         subtitle={t('contact.subtitle')}
-        background="brand-primary"
       />
 
       {/* Waitlist Form Section */}
-      <Section id="contact" background="brand-secondary">
+      <Section id="contact">
         <WaitlistForm />
       </Section>
     </div>
