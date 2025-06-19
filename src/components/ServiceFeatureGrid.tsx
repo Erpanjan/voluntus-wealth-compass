@@ -40,8 +40,8 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
             </div>
           </div>
           
-          {/* Clean vertical list layout */}
-          <div className="max-w-4xl">
+          {/* Clean vertical list layout - centered */}
+          <div className="max-w-4xl mx-auto">
             <div className="space-y-0">
               {services.map((service, index) => (
                 <div
