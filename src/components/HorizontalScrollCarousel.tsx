@@ -76,13 +76,13 @@ const HorizontalScrollCarousel = () => {
         <div 
           ref={containerRef}
           className={cn(
-            "w-full overflow-x-auto scroll-smooth hide-scrollbar",
+            "w-full overflow-x-auto scroll-smooth",
             "snap-x snap-mandatory"
           )}
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            WebkitScrollbar: { display: 'none' }
+            WebkitScrollbar: { display: 'none' } as any
           }}
         >
           <div 
@@ -116,15 +116,18 @@ const HorizontalScrollCarousel = () => {
         />
       </div>
 
-      <style jsx>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
+      {/* CSS for hiding scrollbar */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `
+      }} />
     </div>
   );
 };
