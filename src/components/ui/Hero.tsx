@@ -8,7 +8,7 @@ interface HeroProps {
   className?: string;
   children?: ReactNode;
   collaboration?: string;
-  background?: 'light' | 'dark' | 'transparent';
+  background?: 'light' | 'warm' | 'transparent';
 }
 
 const Hero: React.FC<HeroProps> = ({ 
@@ -20,20 +20,20 @@ const Hero: React.FC<HeroProps> = ({
   background = 'transparent'
 }) => {
   const bgClasses = {
-    'light': 'bg-gradient-to-b from-brand-white-smoke to-brand-almond',
-    'dark': 'bg-gradient-to-b from-brand-black-olive to-brand-black-olive/90 text-white',
-    'transparent': 'bg-gradient-to-b from-brand-white-smoke/50 to-brand-almond/30',
+    'light': 'bg-gradient-to-b from-brand-white-smoke to-brand-almond/50',
+    'warm': 'bg-gradient-to-b from-brand-almond to-brand-white-smoke',
+    'transparent': 'bg-gradient-to-b from-brand-white-smoke/80 to-brand-almond/30',
   };
 
   const textColors = {
     'light': 'text-brand-black-olive',
-    'dark': 'text-white',
+    'warm': 'text-brand-black-olive',
     'transparent': 'text-brand-black-olive',
   };
 
   const subtitleColors = {
     'light': 'text-brand-gray',
-    'dark': 'text-white/80',
+    'warm': 'text-brand-gray',
     'transparent': 'text-brand-gray',
   };
 
@@ -63,7 +63,7 @@ const Hero: React.FC<HeroProps> = ({
           
           {collaboration && (
             <p className={cn(
-              "text-sm italic mb-5 md:mb-8 animate-fade-in mobile-text-sm",
+              "text-sm italic mb-5 md:mb-8 animate-fade-in mobile-text-sm text-center",
               subtitleColors[background]
             )}>
               {collaboration}

@@ -24,7 +24,7 @@ const Index = () => {
           <Button 
             asChild 
             size="lg"
-            className="bg-brand-black-olive/90 hover:bg-brand-black-olive text-white transition-all duration-300 shadow-brand"
+            className="bg-brand-black-olive hover:bg-brand-black-olive/90 text-white transition-all duration-300 shadow-brand"
           >
             <Link to="/services" className="inline-flex items-center">
               {t('home.ourServices')} <ArrowRight size={18} className="ml-2" />

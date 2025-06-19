@@ -38,7 +38,7 @@ const Insight = () => {
   const renderSkeletons = useMemo(() => (
     <>
       {[...Array(4)].map((_, i) => (
-        <div key={i} className="bg-white rounded-xl overflow-hidden shadow-brand">
+        <div key={i} className="bg-white rounded-xl overflow-hidden shadow-brand border border-brand-silver/20">
           <Skeleton className="h-48 w-full" />
           <div className="p-6 space-y-3">
             <Skeleton className="h-4 w-24" />

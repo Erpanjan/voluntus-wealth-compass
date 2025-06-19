@@ -10,7 +10,7 @@ interface SectionProps {
   children: ReactNode;
   className?: string;
   titleCentered?: boolean;
-  background?: 'white' | 'light' | 'dark' | 'almond';
+  background?: 'white' | 'light' | 'warm' | 'almond';
   carouselItem?: boolean;
   titleClassName?: string;
   subtitleClassName?: string;
@@ -36,23 +36,23 @@ const Section: React.FC<SectionProps> = ({
   
   const bgClasses = {
     'white': 'bg-brand-white-smoke',
-    'light': 'bg-brand-almond',
+    'light': 'bg-gradient-to-b from-brand-white-smoke to-brand-almond/30',
+    'warm': 'bg-brand-almond',
     'almond': 'bg-brand-almond',
-    'dark': 'bg-brand-black-olive text-white',
   };
 
   const textColors = {
     'white': 'text-brand-black-olive',
     'light': 'text-brand-black-olive',
+    'warm': 'text-brand-black-olive',
     'almond': 'text-brand-black-olive',
-    'dark': 'text-white',
   };
 
   const subtitleTextColors = {
     'white': 'text-brand-gray',
     'light': 'text-brand-gray',
+    'warm': 'text-brand-gray',
     'almond': 'text-brand-gray',
-    'dark': 'text-white/80',
   };
 
   // Apply specific height classes when matching FAQ height or for ServiceFeatureGrid

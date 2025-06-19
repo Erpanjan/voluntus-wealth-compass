@@ -53,13 +53,13 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
-        // Brand colors
+        // Brand colors - peaceful and comfortable
         brand: {
-          'white-smoke': '#F5F5F5',
-          'almond': '#EBDED1',
-          'silver': '#E6E6E7',
-          'black-olive': '#3B3B3D',
-          'gray': '#A3A3A3',
+          'white-smoke': '#F5F5F5',     // Primary base - clean and peaceful
+          'almond': '#EBDED1',          // Secondary warm - comfort and warmth
+          'silver': '#E6E6E7',          // Subtle contrast
+          'black-olive': '#3B3B3D',     // Accent - sophisticated text
+          'gray': '#A3A3A3',            // Secondary text
         },
         voluntus: {
           white: '#FFFFFF',

@@ -44,9 +44,9 @@ const FAQAccordionSection: React.FC<FAQAccordionSectionProps> = ({
                 <AccordionItem 
                   key={prop.id} 
                   value={prop.id}
-                  className="border-none bg-brand-almond rounded-xl overflow-hidden shadow-brand"
+                  className="border-none bg-brand-almond rounded-xl overflow-hidden shadow-brand border border-brand-silver/20"
                 >
-                  <AccordionTrigger className="px-6 py-5 hover:no-underline">
+                  <AccordionTrigger className="px-6 py-5 hover:no-underline hover:bg-brand-almond/80 transition-colors duration-200">
                     <div className="flex flex-col items-start text-left">
                       <span className="text-xl font-semibold mb-1 text-brand-black-olive">{prop.title}</span>
                       <span className="text-brand-gray font-light text-sm">{prop.subtitle}</span>
