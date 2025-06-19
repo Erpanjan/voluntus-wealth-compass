@@ -5,7 +5,6 @@ import { useCarouselContent } from './carousel/CarouselContent';
 import { useAutoScroll } from './carousel/hooks/useAutoScroll';
 import { CAROUSEL_CONFIG } from './carousel/constants';
 import CarouselCard from './carousel/CarouselCard';
-import ScrollIndicators from './carousel/ScrollIndicators';
 import { cn } from '@/lib/utils';
 
 const HorizontalScrollCarousel = () => {
@@ -36,7 +35,7 @@ const HorizontalScrollCarousel = () => {
     ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-3`, originalIndex: index }))
   ];
 
-  const { currentIndex, scrollToIndex, pauseAutoScroll } = useAutoScroll(
+  const { pauseAutoScroll } = useAutoScroll(
     containerRef,
     containerSections.length,
     isClient
@@ -107,16 +106,6 @@ const HorizontalScrollCarousel = () => {
             ))}
           </div>
         </div>
-
-        {/* Scroll Indicators */}
-        <ScrollIndicators
-          total={containerSections.length}
-          current={currentIndex}
-          onIndicatorClick={(index) => {
-            scrollToIndex(index);
-            pauseAutoScroll();
-          }}
-        />
       </div>
 
       {/* CSS for hiding scrollbar */}
