@@ -1,21 +1,20 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import XScroll from '@/components/ui/x-scroll';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useCarouselDimensions } from './carousel/hooks/useCarouselDimensions';
-import { useCarouselScroll } from './carousel/hooks/useCarouselScroll';
 import { useCarouselContent } from './carousel/CarouselContent';
+import { useAutoScroll } from './carousel/hooks/useAutoScroll';
 import { CAROUSEL_CONFIG } from './carousel/constants';
 import CarouselCard from './carousel/CarouselCard';
-import { InfiniteSection } from './carousel/types';
+import ScrollIndicators from './carousel/ScrollIndicators';
+import { cn } from '@/lib/utils';
 
 const HorizontalScrollCarousel = () => {
   const { t } = useLanguage();
-  const scrollViewportRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
-  // Check if we're on mobile and if we're on the client
+  // Check if we're on mobile and client-side
   useEffect(() => {
     setIsClient(true);
     const checkMobile = () => {
@@ -29,18 +28,19 @@ const HorizontalScrollCarousel = () => {
   }, []);
 
   const { containerSections } = useCarouselContent();
-  const { cardWidth, cardGap, totalCardWidth } = useCarouselDimensions(isClient, isMobile);
-
-  // Create three copies for infinite scroll
-  const infiniteItems: InfiniteSection[] = [
+  
+  // Create sections for smooth infinite scroll (3 copies)
+  const infiniteItems = [
     ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-1`, originalIndex: index })),
     ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-2`, originalIndex: index })),
     ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-3`, originalIndex: index }))
   ];
 
-  const sectionLength = containerSections.length;
-
-  useCarouselScroll(scrollViewportRef, totalCardWidth, sectionLength, isClient);
+  const { currentIndex, scrollToIndex, pauseAutoScroll } = useAutoScroll(
+    containerRef,
+    containerSections.length,
+    isClient
+  );
 
   // Show loading state during hydration
   if (!isClient) {
@@ -67,38 +67,64 @@ const HorizontalScrollCarousel = () => {
         </h2>
       </div>
 
-      {/* Enhanced One-Card Horizontal Scroll Container */}
-      <div className="mx-auto w-full">
-        <XScroll 
-          ref={scrollViewportRef} 
-          className="one-card-carousel scroll-smooth"
+      {/* Simplified One-Card Carousel */}
+      <div 
+        className="relative"
+        onMouseEnter={pauseAutoScroll}
+        onTouchStart={pauseAutoScroll}
+      >
+        <div 
+          ref={containerRef}
+          className={cn(
+            "w-full overflow-x-auto scroll-smooth hide-scrollbar",
+            "snap-x snap-mandatory"
+          )}
           style={{
-            scrollSnapType: 'x mandatory',
-            scrollBehavior: 'smooth'
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitScrollbar: { display: 'none' }
           }}
         >
           <div 
             className="flex"
             style={{ 
-              gap: `${cardGap}px`,
-              // Smart padding system for one-card visibility
-              paddingLeft: isMobile ? '5%' : '7.5%',
-              paddingRight: isMobile ? '5%' : '7.5%',
+              gap: isMobile ? CAROUSEL_CONFIG.GAP.MOBILE : CAROUSEL_CONFIG.GAP.DESKTOP,
+              paddingLeft: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
+              paddingRight: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
               paddingTop: isMobile ? '12px' : '24px',
-              paddingBottom: isMobile ? '32px' : '48px'
+              paddingBottom: isMobile ? '12px' : '24px'
             }}
           >
             {infiniteItems.map((section) => (
               <CarouselCard
                 key={section.id}
                 section={section}
-                cardWidth={cardWidth}
                 isMobile={isMobile}
               />
             ))}
           </div>
-        </XScroll>
+        </div>
+
+        {/* Scroll Indicators */}
+        <ScrollIndicators
+          total={containerSections.length}
+          current={currentIndex}
+          onIndicatorClick={(index) => {
+            scrollToIndex(index);
+            pauseAutoScroll();
+          }}
+        />
       </div>
+
+      <style jsx>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 };
