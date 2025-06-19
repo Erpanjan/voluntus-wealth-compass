@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 type Language = 'en' | 'zh';
@@ -112,7 +113,7 @@ const translations = {
     'value.control.title': 'We give you control',
     'value.control.subtitle': 'over your wealth, decisions, and outcomes.',
     'value.control.description': 'By placing the financial planning policy at the center of our service, we empower clients with direct control over the rules, processes, and the outcome.',
-    'value.fiduciary.title': 'We bear fiduciary Duty',
+    'value.fiduciary.title': 'We bear fiduciary duty',
     'value.fiduciary.subtitle': 'with a transparent governance',
     'value.fiduciary.description': 'We uphold a fiduciary duty to act in the client\'s best interest. This commitment is reflected in a clear plan that outlines all rules, including legal accountability. Importantly, we do not accept commissions from third party, this ensures that our interests remain aligned.',
     'value.simplicity.title': 'We value simplicity',
