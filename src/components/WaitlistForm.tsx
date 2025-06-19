@@ -85,7 +85,7 @@ const WaitlistForm = () => {
       <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
           <div className="w-full">
-            <Label htmlFor="firstName" className="block text-sm font-medium text-[#333333] mb-1 font-poppins">
+            <Label htmlFor="firstName" className="block text-sm font-medium text-[#666666] mb-1 font-poppins">
               {t('waitlist.firstName')}
             </Label>
             <Input
@@ -104,7 +104,7 @@ const WaitlistForm = () => {
             />
           </div>
           <div className="w-full">
-            <Label htmlFor="lastName" className="block text-sm font-medium text-[#333333] mb-1 font-poppins">
+            <Label htmlFor="lastName" className="block text-sm font-medium text-[#666666] mb-1 font-poppins">
               {t('waitlist.lastName')}
             </Label>
             <Input
@@ -125,7 +125,7 @@ const WaitlistForm = () => {
         </div>
 
         <div className="w-full">
-          <Label htmlFor="preferredContact" className="block text-sm font-medium text-[#333333] mb-1 font-poppins">
+          <Label htmlFor="preferredContact" className="block text-sm font-medium text-[#666666] mb-1 font-poppins">
             {t('waitlist.preferredContact')}
           </Label>
           <Input
@@ -145,7 +145,7 @@ const WaitlistForm = () => {
         </div>
 
         <div className="w-full">
-          <Label htmlFor="contactInfo" className="block text-sm font-medium text-[#333333] mb-1 font-poppins">
+          <Label htmlFor="contactInfo" className="block text-sm font-medium text-[#666666] mb-1 font-poppins">
             {t('waitlist.contactInfo')}
           </Label>
           <Input
@@ -165,7 +165,7 @@ const WaitlistForm = () => {
         </div>
 
         <div className="w-full">
-          <Label htmlFor="interests" className="block text-sm font-medium text-[#333333] mb-1 font-poppins">
+          <Label htmlFor="interests" className="block text-sm font-medium text-[#666666] mb-1 font-poppins">
             {t('waitlist.interests')}
           </Label>
           <Textarea
