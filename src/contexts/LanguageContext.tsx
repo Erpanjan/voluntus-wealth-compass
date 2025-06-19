@@ -153,7 +153,7 @@ const translations = {
     'waitlist.message': 'Your message',
     'waitlist.submit': 'Submit',
     'waitlist.submitting': 'Submitting...',
-    'waitlist.consent': 'By clicking \'Join Waitlist\'/\'Submit\', I authorize Voluntas Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.',
+    'waitlist.consent': 'By clicking \'Submit\', I authorize Voluntas Long-term Capital to reach out to me about their service, exclusive events, service updates, and company news.',
 
     // Common buttons and actions
     'common.joinWaitlist': 'Join the Waitlist',
