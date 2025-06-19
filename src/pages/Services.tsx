@@ -66,10 +66,11 @@ const Services = () => {
   ];
 
   return (
-    <div className="min-h-screen font-inter">
+    <div className="min-h-screen font-inter bg-brand-white-smoke">
       {/* Hero Section */}
       <Hero 
         title={t('services.title')}
+        background="light"
       />
 
       {/* Roadmap Section */}
@@ -79,7 +80,7 @@ const Services = () => {
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight">
               {t('services.roadmap.title')}
             </h2>
-            <div className="space-y-4 sm:space-y-6 text-white/70 text-base sm:text-lg font-light">
+            <div className="space-y-4 sm:space-y-6 text-white/80 text-base sm:text-lg font-light">
               <p className="mobile-text-base">
                 {t('services.roadmap.text1')}
               </p>
@@ -90,7 +91,7 @@ const Services = () => {
             <Button 
               asChild 
               size="lg"
-              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
+              className="bg-brand-white-smoke hover:bg-white text-brand-black-olive transition-all duration-300 shadow-brand"
             >
               <Link to="#contact" className="inline-flex items-center">
                 {t('common.joinWaitlist')} <ArrowRight size={18} className="ml-2" />
@@ -103,13 +104,13 @@ const Services = () => {
       {/* What's Included Section - now using ServiceFeatureGrid */}
       <Section 
         id="whats-included" 
-        background="white"
+        background="almond"
       >
         <ServiceFeatureGrid services={serviceItems} />
       </Section>
 
       {/* Value Propositions */}
-      <div id="principles">
+      <div id="principles" className="bg-brand-white-smoke">
         <FAQAccordionSection 
           title={t('services.whyChooseUs')}
           subtitle={t('services.whyChooseUs.subtitle')}
@@ -127,7 +128,7 @@ const Services = () => {
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
               {t('services.pricing.title')}
             </h2>
-            <div className="space-y-4 sm:space-y-6 text-base sm:text-lg font-light text-white/70">
+            <div className="space-y-4 sm:space-y-6 text-base sm:text-lg font-light text-white/80">
               <p className="mobile-text-base">
                 {t('services.pricing.text1')}
               </p>
@@ -138,7 +139,7 @@ const Services = () => {
             <Button
               asChild 
               size="lg"
-              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
+              className="bg-brand-white-smoke hover:bg-white text-brand-black-olive transition-all duration-300 shadow-brand"
             >
               <Link to="#contact" className="inline-flex items-center">
                 {t('common.joinWaitlist')} <ArrowRight size={18} className="ml-2" />
@@ -149,7 +150,7 @@ const Services = () => {
       </Section>
 
       {/* Waitlist Form */}
-      <Section id="contact">
+      <Section id="contact" background="white">
         <WaitlistForm />
       </Section>
     </div>

@@ -53,6 +53,14 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
+        // Brand colors
+        brand: {
+          'white-smoke': '#F5F5F5',
+          'almond': '#EBDED1',
+          'silver': '#E6E6E7',
+          'black-olive': '#3B3B3D',
+          'gray': '#A3A3A3',
+        },
         voluntus: {
           white: '#FFFFFF',
           gray: {
@@ -96,6 +104,7 @@ export default {
       boxShadow: {
         'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
         'hover': '0 10px 40px -15px rgba(0, 0, 0, 0.1)',
+        'brand': '0 4px 20px -2px rgba(59, 59, 61, 0.1)',
       },
       borderRadius: {
         'xl': '1rem',
