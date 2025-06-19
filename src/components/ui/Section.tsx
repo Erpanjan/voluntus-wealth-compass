@@ -10,12 +10,12 @@ interface SectionProps {
   children: ReactNode;
   className?: string;
   titleCentered?: boolean;
-  background?: 'white' | 'light' | 'warm' | 'almond';
+  background?: 'white' | 'light' | 'dark';
   carouselItem?: boolean;
   titleClassName?: string;
   subtitleClassName?: string;
   contentClassName?: string;
-  matchFAQHeight?: boolean;
+  matchFAQHeight?: boolean; // New prop to match FAQ section height
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -35,24 +35,9 @@ const Section: React.FC<SectionProps> = ({
   const isMobile = useIsMobile();
   
   const bgClasses = {
-    'white': 'bg-brand-white-smoke',
-    'light': 'bg-gradient-to-b from-brand-white-smoke to-brand-almond/30',
-    'warm': 'bg-brand-almond',
-    'almond': 'bg-brand-almond',
-  };
-
-  const textColors = {
-    'white': 'text-brand-black-olive',
-    'light': 'text-brand-black-olive',
-    'warm': 'text-brand-black-olive',
-    'almond': 'text-brand-black-olive',
-  };
-
-  const subtitleTextColors = {
-    'white': 'text-brand-gray',
-    'light': 'text-brand-gray',
-    'warm': 'text-brand-gray',
-    'almond': 'text-brand-gray',
+    'white': 'bg-white',
+    'light': 'bg-[#F1F1F1]',
+    'dark': 'bg-black text-white',
   };
 
   // Apply specific height classes when matching FAQ height or for ServiceFeatureGrid
@@ -89,7 +74,7 @@ const Section: React.FC<SectionProps> = ({
                 className={cn(
                   "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-semibold mb-3 md:mb-6 tracking-tight animate-fade-in",
                   titleClassName,
-                  textColors[background]
+                  background === 'dark' ? 'text-white' : 'text-[#333333]'
                 )}
                 data-section-title="true"
               >
@@ -101,7 +86,7 @@ const Section: React.FC<SectionProps> = ({
                 className={cn(
                   "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in mobile-text-base",
                   subtitleClassName,
-                  subtitleTextColors[background]
+                  background === 'dark' ? 'text-white/70' : 'text-[#666666]'
                 )}
                 data-section-subtitle="true"
               > 

@@ -8,16 +8,15 @@ const Contact = () => {
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-brand-white-smoke">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <Hero 
         title={t('contact.title')}
         subtitle={t('contact.subtitle')}
-        background="light"
       />
 
       {/* Waitlist Form Section */}
-      <Section id="contact" background="almond">
+      <Section id="contact">
         <WaitlistForm />
       </Section>
     </div>

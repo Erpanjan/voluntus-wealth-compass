@@ -13,7 +13,7 @@ const Index = () => {
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-brand-white-smoke">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <Hero 
         title={t('home.hero.title')}
@@ -24,7 +24,7 @@ const Index = () => {
           <Button 
             asChild 
             size="lg"
-            className="bg-brand-black-olive hover:bg-brand-black-olive/90 text-white transition-all duration-300 shadow-brand"
+            className="bg-black/80 hover:bg-black text-white transition-all duration-300"
           >
             <Link to="/services" className="inline-flex items-center">
               {t('home.ourServices')} <ArrowRight size={18} className="ml-2" />
@@ -34,14 +34,14 @@ const Index = () => {
       </Hero>
 
       {/* Horizontal Scroll Carousel Section */}
-      <Section id="how-we-can-help" background="almond" className="py-16 md:py-20">
+      <Section id="how-we-can-help" background="white" className="py-16 md:py-20">
         <div className="w-full">
           <HorizontalScrollCarousel />
         </div>
       </Section>
 
       {/* Waitlist Form Section */}
-      <Section id="contact" background="white">
+      <Section id="contact" background="light">
         <WaitlistForm />
       </Section>
     </div>

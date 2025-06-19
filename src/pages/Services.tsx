@@ -66,21 +66,20 @@ const Services = () => {
   ];
 
   return (
-    <div className="min-h-screen font-inter bg-brand-white-smoke">
+    <div className="min-h-screen font-inter">
       {/* Hero Section */}
       <Hero 
         title={t('services.title')}
-        background="light"
       />
 
-      {/* Roadmap Section - replaced dark with warm almond */}
-      <Section id="roadmap" background="warm">
+      {/* Roadmap Section */}
+      <Section id="roadmap" background="dark">
         <div className="grid md:grid-cols-1 gap-6 sm:gap-8 items-start max-w-3xl mx-auto">
           <div className="space-y-6 sm:space-y-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-brand-black-olive tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight">
               {t('services.roadmap.title')}
             </h2>
-            <div className="space-y-4 sm:space-y-6 text-brand-gray text-base sm:text-lg font-light">
+            <div className="space-y-4 sm:space-y-6 text-white/70 text-base sm:text-lg font-light">
               <p className="mobile-text-base">
                 {t('services.roadmap.text1')}
               </p>
@@ -91,7 +90,7 @@ const Services = () => {
             <Button 
               asChild 
               size="lg"
-              className="bg-brand-black-olive hover:bg-brand-black-olive/90 text-white transition-all duration-300 shadow-brand"
+              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
             >
               <Link to="#contact" className="inline-flex items-center">
                 {t('common.joinWaitlist')} <ArrowRight size={18} className="ml-2" />
@@ -101,7 +100,7 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* What's Included Section */}
+      {/* What's Included Section - now using ServiceFeatureGrid */}
       <Section 
         id="whats-included" 
         background="white"
@@ -110,7 +109,7 @@ const Services = () => {
       </Section>
 
       {/* Value Propositions */}
-      <div id="principles" className="bg-brand-white-smoke">
+      <div id="principles">
         <FAQAccordionSection 
           title={t('services.whyChooseUs')}
           subtitle={t('services.whyChooseUs.subtitle')}
@@ -118,17 +117,17 @@ const Services = () => {
         />
       </div>
 
-      {/* Pricing Section - replaced dark with subtle gradient */}
+      {/* Pricing Section */}
       <Section 
         id="policy-fee" 
-        background="light"
+        background="dark"
       >
         <div className="grid md:grid-cols-1 gap-6 sm:gap-8 items-start max-w-3xl mx-auto">
           <div className="space-y-6 sm:space-y-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-brand-black-olive">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
               {t('services.pricing.title')}
             </h2>
-            <div className="space-y-4 sm:space-y-6 text-base sm:text-lg font-light text-brand-gray">
+            <div className="space-y-4 sm:space-y-6 text-base sm:text-lg font-light text-white/70">
               <p className="mobile-text-base">
                 {t('services.pricing.text1')}
               </p>
@@ -139,7 +138,7 @@ const Services = () => {
             <Button
               asChild 
               size="lg"
-              className="bg-brand-black-olive hover:bg-brand-black-olive/90 text-white transition-all duration-300 shadow-brand"
+              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
             >
               <Link to="#contact" className="inline-flex items-center">
                 {t('common.joinWaitlist')} <ArrowRight size={18} className="ml-2" />
@@ -150,7 +149,7 @@ const Services = () => {
       </Section>
 
       {/* Waitlist Form */}
-      <Section id="contact" background="white">
+      <Section id="contact">
         <WaitlistForm />
       </Section>
     </div>

@@ -38,7 +38,7 @@ const Insight = () => {
   const renderSkeletons = useMemo(() => (
     <>
       {[...Array(4)].map((_, i) => (
-        <div key={i} className="bg-white rounded-xl overflow-hidden shadow-brand border border-brand-silver/20">
+        <div key={i} className="bg-white rounded-xl overflow-hidden">
           <Skeleton className="h-48 w-full" />
           <div className="p-6 space-y-3">
             <Skeleton className="h-4 w-24" />
@@ -133,7 +133,7 @@ const Insight = () => {
 
     const startIndex = currentPage * 4;
     return (
-      <div className="mt-8 text-center text-sm text-brand-gray">
+      <div className="mt-8 text-center text-sm text-gray-600">
         {t('insight.showing')} {Math.min(startIndex + 1, totalCount)} - {Math.min(startIndex + 4, totalCount)} {t('insight.of')} {totalCount} {t('insight.articles')}
       </div>
     );
@@ -151,7 +151,7 @@ const Insight = () => {
   });
 
   return (
-    <div className="min-h-screen bg-brand-white-smoke">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <Hero 
         title={t('insight.title')}
@@ -160,23 +160,23 @@ const Insight = () => {
       />
 
       {/* Latest Research Section */}
-      <Section title={t('insight.latestResearch')} titleCentered={true} background="almond">
+      <Section title={t('insight.latestResearch')} titleCentered={true}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
           {loading ? renderSkeletons : articleCards}
           
           {!loading && articles.length === 0 && (
             <div className="col-span-full text-center py-16">
-              <h3 className="text-xl font-medium text-brand-gray">{t('insight.noArticles')}</h3>
-              <p className="mt-2 text-brand-gray">{t('insight.noArticles.subtitle')}</p>
+              <h3 className="text-xl font-medium text-gray-600">{t('insight.noArticles')}</h3>
+              <p className="mt-2 text-gray-500">{t('insight.noArticles.subtitle')}</p>
               <Button 
                 variant="outline" 
                 onClick={handleRefresh}
-                className="mt-4 border-brand-gray text-brand-black-olive hover:bg-brand-white-smoke"
+                className="mt-4"
               >
                 <RefreshCw size={16} className="mr-2" />
                 {t('insight.refresh')}
               </Button>
-              <div className="mt-4 text-sm text-brand-gray">
+              <div className="mt-4 text-sm text-gray-400">
                 Debug: Language={language}, Total Count={totalCount}, Loading={loading ? 'true' : 'false'}
               </div>
             </div>
@@ -188,7 +188,7 @@ const Insight = () => {
       </Section>
 
       {/* Waitlist Form Section */}
-      <Section id="contact" background="white">
+      <Section id="contact" background="light">
         <WaitlistForm />
       </Section>
     </div>
