@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import XScroll from '@/components/ui/x-scroll';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -111,18 +110,24 @@ const HorizontalScrollCarousel = () => {
     ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-3`, originalIndex: index }))
   ];
 
-  // Calculate card width based on viewport - optimized for mobile
+  // Calculate card width based on viewport - one card for web, multiple for mobile
   const getCardWidth = useCallback(() => {
     if (!isClient || typeof window === 'undefined') return 300; // Fallback for SSR
     
     const viewportWidth = window.innerWidth;
-    if (viewportWidth < 640) return Math.min(280, viewportWidth * 0.85); // Mobile: 85% of viewport, max 280px
-    if (viewportWidth < 1024) return viewportWidth * 0.75; // Tablet: 75% of viewport
-    return Math.min(600, viewportWidth * 0.6); // Desktop: max 600px or 60% of viewport
+    if (viewportWidth < 640) {
+      // Mobile: keep existing behavior - 85% of viewport, max 280px
+      return Math.min(280, viewportWidth * 0.85);
+    } else {
+      // Web/Desktop: one card at a time - container width minus padding
+      const containerPadding = viewportWidth < 1024 ? 48 : 96; // 3rem or 6rem total padding
+      return Math.min(800, viewportWidth - containerPadding);
+    }
   }, [isClient]);
 
   const [cardWidth, setCardWidth] = useState(() => getCardWidth());
-  const cardGap = isMobile ? 12 : 32; // Smaller gap on mobile
+  // Adjust gap based on screen size and single-card display
+  const cardGap = isMobile ? 12 : 48; // Larger gap for web to ensure proper spacing
   const totalCardWidth = cardWidth + cardGap;
   const sectionLength = containerSections.length;
 
@@ -220,7 +225,11 @@ const HorizontalScrollCarousel = () => {
       <div className="mx-auto w-full">
         <XScroll ref={scrollViewportRef} className="mobile-swipe-container">
           <div 
-            className={`flex touch-manipulation ${isMobile ? 'gap-3 p-3 pb-6' : 'gap-6 md:gap-8 p-4 sm:p-6 pb-8 sm:pb-12'}`}
+            className={`flex touch-manipulation ${
+              isMobile 
+                ? 'gap-3 p-3 pb-6' 
+                : 'gap-12 px-6 md:px-12 pb-8 sm:pb-12 justify-start'
+            }`}
           >
             {infiniteItems.map((section) => (
               <div
@@ -238,9 +247,9 @@ const HorizontalScrollCarousel = () => {
                   {section.originalIndex + 1}
                 </div>
                 
-                <div className={`h-full flex flex-col ${isMobile ? 'p-4 pt-3' : 'p-4 sm:p-6 md:p-8 lg:p-10 pt-2 sm:pt-4'}`}>
+                <div className={`h-full flex flex-col ${isMobile ? 'p-4 pt-3' : 'p-6 md:p-8 lg:p-10 pt-4'}`}>
                   <h3 className={`font-semibold text-black mb-4 sm:mb-6 leading-tight ${
-                    isMobile ? 'text-lg pr-6' : 'text-lg sm:text-xl md:text-2xl lg:text-3xl pr-8 sm:pr-0'
+                    isMobile ? 'text-lg pr-6' : 'text-xl md:text-2xl lg:text-3xl pr-8 sm:pr-0'
                   }`}>
                     {section.title}
                   </h3>
