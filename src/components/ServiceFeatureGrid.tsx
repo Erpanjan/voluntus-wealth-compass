@@ -25,7 +25,7 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
       FileText    // Policy Keeping
     ];
     const IconComponent = icons[index] || User;
-    return <IconComponent className="w-8 h-8 stroke-1 text-[#666666]" />;
+    return <IconComponent className="w-6 h-6 stroke-1.5 text-[#333333]" />;
   };
 
   return (
@@ -40,66 +40,32 @@ const ServiceFeatureGrid: React.FC<ServiceFeatureGridProps> = ({ services }) => 
             </div>
           </div>
           
-          {/* Balanced 2x2 grid layout with aligned titles */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-            {/* Investment Service */}
-            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              <div className="mb-6">
-                {getServiceIcon(0)}
-              </div>
-              <div className="flex flex-col flex-grow">
-                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3 min-h-[28px]">
-                  {services[0]?.title}
-                </h3>
-                <p className="text-[#666666] text-base leading-relaxed">
-                  {services[0]?.content}
-                </p>
-              </div>
-            </div>
-
-            {/* Advisor Service */}
-            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              <div className="mb-6">
-                {getServiceIcon(1)}
-              </div>
-              <div className="flex flex-col flex-grow">
-                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3 min-h-[28px]">
-                  {services[1]?.title}
-                </h3>
-                <p className="text-[#666666] text-base leading-relaxed">
-                  {services[1]?.content}
-                </p>
-              </div>
-            </div>
-
-            {/* Risk Service */}
-            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              <div className="mb-6">
-                {getServiceIcon(2)}
-              </div>
-              <div className="flex flex-col flex-grow">
-                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3 min-h-[28px]">
-                  {services[2]?.title}
-                </h3>
-                <p className="text-[#666666] text-base leading-relaxed">
-                  {services[2]?.content}
-                </p>
-              </div>
-            </div>
-
-            {/* Policy Service */}
-            <div className="bg-[#F2F2F2] rounded-3xl p-6 sm:p-8 min-h-[280px] flex flex-col shadow-soft hover:shadow-hover transition-all duration-300">
-              <div className="mb-6">
-                {getServiceIcon(3)}
-              </div>
-              <div className="flex flex-col flex-grow">
-                <h3 className="text-xl font-semibold tracking-tight text-[#333333] mb-3 min-h-[28px]">
-                  {services[3]?.title}
-                </h3>
-                <p className="text-[#666666] text-base leading-relaxed">
-                  {services[3]?.content}
-                </p>
-              </div>
+          {/* Clean vertical list layout */}
+          <div className="max-w-4xl">
+            <div className="space-y-0">
+              {services.map((service, index) => (
+                <div
+                  key={service.id}
+                  className="group border-b border-[#F2F2F2] last:border-b-0 py-8 first:pt-4 last:pb-4 hover:bg-[#FAFAFA] transition-all duration-300 cursor-default"
+                >
+                  <div className="flex gap-6 items-start">
+                    {/* Icon */}
+                    <div className="flex-shrink-0 mt-1">
+                      {getServiceIcon(index)}
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-grow min-w-0">
+                      <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-[#333333] mb-3 group-hover:text-black transition-colors duration-300">
+                        {service.title}
+                      </h3>
+                      <p className="text-[#666666] text-base md:text-lg leading-relaxed max-w-3xl">
+                        {service.content}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
