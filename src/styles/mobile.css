@@ -68,17 +68,18 @@
     font-size: 1rem !important;
   }
 
-  /* Mobile swipe container optimizations */
-  .mobile-swipe-container {
+  /* Enhanced One-Card Carousel for Mobile */
+  .one-card-carousel {
     touch-action: pan-x pan-y;
     -webkit-overflow-scrolling: touch;
     user-select: none;
     -webkit-user-select: none;
     scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
   }
 
   /* Prevent text selection during swipe */
-  .mobile-swipe-container * {
+  .one-card-carousel * {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -87,20 +88,46 @@
     user-select: none;
   }
 
-  /* Smooth swipe transitions */
-  .mobile-card-transition {
-    transition: transform 0.2s ease-out;
-    will-change: transform;
+  /* Premium card enhancements for mobile */
+  .premium-card {
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    will-change: transform, box-shadow;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  .premium-card:active {
+    transform: scale(0.98);
   }
 
   /* Better mobile carousel performance */
-  .mobile-swipe-container::-webkit-scrollbar {
+  .one-card-carousel::-webkit-scrollbar {
     display: none;
   }
   
-  .mobile-swipe-container {
+  .one-card-carousel {
     scrollbar-width: none;
     -ms-overflow-style: none;
+  }
+}
+
+/* Desktop enhancements for one-card carousel */
+@media (min-width: 768px) {
+  .one-card-carousel {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+  }
+
+  .premium-card {
+    transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+    will-change: transform, box-shadow;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  .premium-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   }
 }
 
@@ -129,8 +156,8 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* iOS swipe optimizations */
-  .mobile-swipe-container {
+  /* iOS one-card carousel optimizations */
+  .one-card-carousel {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
     -webkit-backface-visibility: hidden;
@@ -138,84 +165,23 @@
   }
 }
 
-/* Android Chrome specific fixes */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  select {
-    background-image: none;
+/* ... keep existing code (Android Chrome specific fixes, High DPI displays, Reduce motion, Dark mode preferences, Mobile-specific login modal improvements) */
+
+/* Enhanced scroll snap support */
+@supports (scroll-snap-type: x mandatory) {
+  .one-card-carousel {
+    scroll-snap-type: x mandatory;
+  }
+  
+  .premium-card {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
   }
 }
 
-/* High DPI displays */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .card {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-}
-
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Dark mode preferences */
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: light; /* Force light mode for now */
-  }
-}
-
-/* Mobile-specific login modal improvements */
-@media (max-width: 640px) {
-  .login-modal-container {
-    width: 95vw !important;
-    max-height: 90vh !important;
-    margin: 1rem !important;
-  }
-
-  .login-modal-header {
-    padding: 1rem !important;
-    padding-top: 2rem !important;
-  }
-
-  .login-modal-body {
-    padding: 0 1rem 1rem 1rem !important;
-  }
-
-  /* Better tab spacing on mobile */
-  .mobile-tab-list {
-    gap: 0.25rem !important;
-  }
-
-  .mobile-tab-trigger {
-    padding: 0.5rem 0.75rem !important;
-    font-size: 0.75rem !important;
-    min-height: 2.5rem !important;
-  }
-
-  /* Form improvements for mobile */
-  .mobile-form-spacing {
-    gap: 1rem !important;
-  }
-
-  .mobile-input-group {
-    margin-bottom: 1rem !important;
-  }
-
-  /* Better button sizing */
-  .mobile-login-button {
-    padding: 0.875rem 2rem !important;
-    font-size: 1rem !important;
-    width: 100% !important;
-  }
-
-  /* Enhanced mobile navigation styling */
-  .mobile-nav-container {
-    padding: 1rem 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+/* Smooth scrolling enhancement */
+@media (prefers-reduced-motion: no-preference) {
+  .one-card-carousel {
+    scroll-behavior: smooth;
   }
 }

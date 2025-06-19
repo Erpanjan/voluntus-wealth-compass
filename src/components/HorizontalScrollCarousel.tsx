@@ -22,7 +22,7 @@ const HorizontalScrollCarousel = () => {
   useEffect(() => {
     setIsClient(true);
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
+      setIsMobile(window.innerWidth < 768);
     };
     
     checkMobile();
@@ -37,10 +37,10 @@ const HorizontalScrollCarousel = () => {
       title: t('container.gambling.title'),
       content: (
         <>
-          <p className="mb-4 text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="mb-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-700">
             {t('container.gambling.text1')}
           </p>
-          <p className="text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="text-base sm:text-lg leading-7 sm:leading-8 text-gray-700">
             {t('container.gambling.text2')}
           </p>
         </>
@@ -51,10 +51,10 @@ const HorizontalScrollCarousel = () => {
       title: t('container.complicated.title'),
       content: (
         <>
-          <p className="mb-4 text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="mb-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-700">
             {t('container.complicated.text1')}
           </p>
-          <p className="text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="text-base sm:text-lg leading-7 sm:leading-8 text-gray-700">
             {t('container.complicated.text2')}
           </p>
         </>
@@ -65,10 +65,10 @@ const HorizontalScrollCarousel = () => {
       title: t('container.bestInterest.title'),
       content: (
         <>
-          <p className="mb-4 text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="mb-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-700">
             {t('container.bestInterest.text1')}
           </p>
-          <p className="text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="text-base sm:text-lg leading-7 sm:leading-8 text-gray-700">
             {t('container.bestInterest.text2')}
           </p>
         </>
@@ -79,10 +79,10 @@ const HorizontalScrollCarousel = () => {
       title: t('container.accountability.title'),
       content: (
         <>
-          <p className="mb-4 text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="mb-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-700">
             {t('container.accountability.text1')}
           </p>
-          <p className="text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="text-base sm:text-lg leading-7 sm:leading-8 text-gray-700">
             {t('container.accountability.text2')}
           </p>
         </>
@@ -93,10 +93,10 @@ const HorizontalScrollCarousel = () => {
       title: t('container.staticAdvice.title'),
       content: (
         <>
-          <p className="mb-4 text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="mb-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-700">
             {t('container.staticAdvice.text1')}
           </p>
-          <p className="text-sm sm:text-base leading-6 sm:leading-7">
+          <p className="text-base sm:text-lg leading-7 sm:leading-8 text-gray-700">
             {t('container.staticAdvice.text2')}
           </p>
         </>
@@ -111,18 +111,22 @@ const HorizontalScrollCarousel = () => {
     ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-3`, originalIndex: index }))
   ];
 
-  // Calculate card width based on viewport - optimized for mobile
+  // Calculate card width for one-card-at-a-time display
   const getCardWidth = useCallback(() => {
-    if (!isClient || typeof window === 'undefined') return 300; // Fallback for SSR
+    if (!isClient || typeof window === 'undefined') return 350;
     
     const viewportWidth = window.innerWidth;
-    if (viewportWidth < 640) return Math.min(280, viewportWidth * 0.85); // Mobile: 85% of viewport, max 280px
-    if (viewportWidth < 1024) return viewportWidth * 0.75; // Tablet: 75% of viewport
-    return Math.min(600, viewportWidth * 0.6); // Desktop: max 600px or 60% of viewport
+    if (viewportWidth < 768) {
+      // Mobile: 95% of viewport width for immersive experience
+      return Math.min(viewportWidth * 0.95, viewportWidth - 20);
+    } else {
+      // Web: 85-90% of viewport width, max 900px for optimal reading
+      return Math.min(900, viewportWidth * 0.87);
+    }
   }, [isClient]);
 
   const [cardWidth, setCardWidth] = useState(() => getCardWidth());
-  const cardGap = isMobile ? 12 : 32; // Smaller gap on mobile
+  const cardGap = isMobile ? 20 : 40; // Larger gap for better separation
   const totalCardWidth = cardWidth + cardGap;
   const sectionLength = containerSections.length;
 
@@ -216,44 +220,54 @@ const HorizontalScrollCarousel = () => {
         </h2>
       </div>
 
-      {/* Horizontal Scroll Container */}
+      {/* Enhanced One-Card Horizontal Scroll Container */}
       <div className="mx-auto w-full">
-        <XScroll ref={scrollViewportRef} className="mobile-swipe-container">
+        <XScroll 
+          ref={scrollViewportRef} 
+          className="one-card-carousel scroll-smooth"
+          style={{
+            scrollSnapType: 'x mandatory',
+            scrollBehavior: 'smooth'
+          }}
+        >
           <div 
-            className={`flex touch-manipulation ${isMobile ? 'gap-3 p-3 pb-6' : 'gap-6 md:gap-8 p-4 sm:p-6 pb-8 sm:pb-12'}`}
+            className={`flex ${isMobile ? 'gap-5 p-3 pb-8' : 'gap-10 p-6 pb-12'}`}
+            style={{ paddingLeft: isMobile ? '2.5%' : '6.5%', paddingRight: isMobile ? '2.5%' : '6.5%' }}
           >
             {infiniteItems.map((section) => (
               <div
                 key={section.id}
-                className="shrink-0 rounded-2xl sm:rounded-3xl bg-white shadow-soft hover:shadow-hover transition-shadow duration-300 relative mobile-card-transition"
+                className="shrink-0 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-all duration-500 relative premium-card"
                 style={{ 
                   width: `${cardWidth}px`,
-                  minHeight: isMobile ? '280px' : '400px'
+                  minHeight: isMobile ? '420px' : '500px',
+                  scrollSnapAlign: 'center',
+                  scrollSnapStop: 'always'
                 }}
               >
-                {/* Progress Numbering Badge */}
-                <div className={`absolute bg-gray-100 text-gray-700 rounded-full text-xs sm:text-sm font-medium ${
-                  isMobile ? 'top-3 right-3 px-2 py-1' : 'top-4 right-4 md:top-6 md:right-6 px-3 py-1.5'
+                {/* Enhanced Progress Numbering Badge */}
+                <div className={`absolute bg-gradient-to-r from-gray-100 to-gray-50 text-gray-800 rounded-full font-semibold shadow-sm ${
+                  isMobile ? 'top-4 right-4 px-3 py-2 text-sm' : 'top-6 right-6 px-4 py-2 text-base'
                 }`}>
                   {section.originalIndex + 1}
                 </div>
                 
-                <div className={`h-full flex flex-col ${isMobile ? 'p-4 pt-3' : 'p-4 sm:p-6 md:p-8 lg:p-10 pt-2 sm:pt-4'}`}>
-                  <h3 className={`font-semibold text-black mb-4 sm:mb-6 leading-tight ${
-                    isMobile ? 'text-lg pr-6' : 'text-lg sm:text-xl md:text-2xl lg:text-3xl pr-8 sm:pr-0'
+                <div className={`h-full flex flex-col ${isMobile ? 'p-6 pt-5' : 'p-8 md:p-10 lg:p-12'}`}>
+                  <h3 className={`font-bold text-black mb-6 sm:mb-8 leading-tight ${
+                    isMobile ? 'text-xl pr-12' : 'text-2xl md:text-3xl lg:text-4xl pr-16'
                   }`}>
                     {section.title}
                   </h3>
-                  <div className={`text-gray-600 flex-1 ${isMobile ? 'mb-4' : 'mb-6 sm:mb-8'}`}>
+                  <div className={`flex-1 ${isMobile ? 'mb-6' : 'mb-8'}`}>
                     {section.content}
                   </div>
                   <Button 
                     asChild 
-                    size={isMobile ? "sm" : "lg"}
-                    className="bg-black/80 hover:bg-black text-white transition-all duration-200 self-start mobile-touch-target"
+                    size={isMobile ? "default" : "lg"}
+                    className="bg-black hover:bg-gray-900 text-white transition-all duration-300 self-start shadow-md hover:shadow-lg transform hover:scale-[1.02]"
                   >
-                    <Link to="/services" className="inline-flex items-center">
-                      {t('home.howWeCanHelp')} <ArrowRight size={isMobile ? 14 : 18} className="ml-2" />
+                    <Link to="/services" className="inline-flex items-center font-medium">
+                      {t('home.howWeCanHelp')} <ArrowRight size={isMobile ? 16 : 20} className="ml-3" />
                     </Link>
                   </Button>
                 </div>
