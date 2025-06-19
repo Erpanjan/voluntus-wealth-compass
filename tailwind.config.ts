@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,6 +51,13 @@ export default {
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
+        },
+        // Brand colors for peaceful, sophisticated UI
+        brand: {
+          primary: '#F5F5F5',     // White Smoke - main backgrounds
+          secondary: '#E6E6E7',   // Silver - subtle sections  
+          accent: '#3B3B3D',      // Black Olive - headings and primary text
+          gray: '#A3A3A3',        // Medium Gray - body text and secondary elements
         },
         voluntus: {
           white: '#FFFFFF',

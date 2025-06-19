@@ -18,13 +18,13 @@ const Index = () => {
       <Hero 
         title={t('home.hero.title')}
         subtitle={t('home.hero.subtitle')}
-        background="transparent"
+        background="brand-primary"
       >
         <div className="flex flex-wrap justify-center gap-4">
           <Button 
             asChild 
             size="lg"
-            className="bg-black/80 hover:bg-black text-white transition-all duration-300"
+            className="bg-brand-accent hover:bg-brand-accent/90 text-white transition-all duration-300"
           >
             <Link to="/services" className="inline-flex items-center">
               {t('home.ourServices')} <ArrowRight size={18} className="ml-2" />
@@ -41,7 +41,7 @@ const Index = () => {
       </Section>
 
       {/* Waitlist Form Section */}
-      <Section id="contact" background="light">
+      <Section id="contact" background="brand-secondary">
         <WaitlistForm />
       </Section>
     </div>
