@@ -111,39 +111,58 @@ const HorizontalScrollCarousel = () => {
     ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-3`, originalIndex: index }))
   ];
 
-  // Enhanced card width calculation for one-card-at-a-time
+  // Viewport-based width calculation for one-card-at-a-time
   const getCardWidth = useCallback(() => {
     if (!isClient || typeof window === 'undefined') return 350;
     
     const viewportWidth = window.innerWidth;
+    
     if (viewportWidth < 768) {
-      // Mobile: 90% of viewport width for better centering
-      return Math.floor(viewportWidth * 0.9);
+      // Mobile: Calculate available width after padding (10% total) and use 90% of that
+      const totalPadding = viewportWidth * 0.1; // 5% on each side
+      const availableWidth = viewportWidth - totalPadding;
+      return Math.floor(availableWidth * 0.9);
     } else {
-      // Web: 85% of viewport width with max 900px
-      return Math.floor(Math.min(900, viewportWidth * 0.85));
+      // Web: Calculate available width after padding (15% total) and use 90% of that
+      const totalPadding = viewportWidth * 0.15; // 7.5% on each side
+      const availableWidth = viewportWidth - totalPadding;
+      const calculatedWidth = Math.floor(availableWidth * 0.9);
+      return Math.min(calculatedWidth, 800); // Max width cap for very large screens
     }
   }, [isClient]);
 
   const [cardWidth, setCardWidth] = useState(() => getCardWidth());
   
-  // Enhanced gap system for proper separation
-  const cardGap = isMobile ? 60 : 80; // Larger gaps ensure only one card visible
+  // Dynamic gap calculation for proper separation
+  const getCardGap = useCallback(() => {
+    if (!isClient || typeof window === 'undefined') return 60;
+    
+    const viewportWidth = window.innerWidth;
+    if (viewportWidth < 768) {
+      return Math.floor(viewportWidth * 0.15); // 15% of viewport for mobile
+    } else {
+      return Math.floor(viewportWidth * 0.2); // 20% of viewport for desktop
+    }
+  }, [isClient, isMobile]);
+
+  const [cardGap, setCardGap] = useState(() => getCardGap());
   const totalCardWidth = cardWidth + cardGap;
   const sectionLength = containerSections.length;
 
-  // Update card width on resize
+  // Update card width and gap on resize
   useEffect(() => {
     if (!isClient) return;
     
     const handleResize = () => {
       const newCardWidth = getCardWidth();
+      const newCardGap = getCardGap();
       setCardWidth(newCardWidth);
+      setCardGap(newCardGap);
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [getCardWidth, isClient]);
+  }, [getCardWidth, getCardGap, isClient]);
 
   const handleScroll = useCallback(() => {
     const viewport = scrollViewportRef.current;
@@ -236,7 +255,7 @@ const HorizontalScrollCarousel = () => {
             className="flex"
             style={{ 
               gap: `${cardGap}px`,
-              // Simplified padding for better one-card visibility
+              // Smart padding system for one-card visibility
               paddingLeft: isMobile ? '5%' : '7.5%',
               paddingRight: isMobile ? '5%' : '7.5%',
               paddingTop: isMobile ? '12px' : '24px',
