@@ -35,7 +35,7 @@ const HorizontalScrollCarousel = () => {
     ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-3`, originalIndex: index }))
   ];
 
-  const { pauseAutoScroll } = useAutoScroll(
+  const { pauseAutoScroll, handleScroll } = useAutoScroll(
     containerRef,
     containerSections.length,
     isClient
@@ -66,7 +66,7 @@ const HorizontalScrollCarousel = () => {
         </h2>
       </div>
 
-      {/* Improved One-Card Carousel */}
+      {/* Carousel */}
       <div 
         className="relative"
         onMouseEnter={pauseAutoScroll}
@@ -82,6 +82,7 @@ const HorizontalScrollCarousel = () => {
             "w-full overflow-x-auto scroll-smooth hide-scrollbar",
             "snap-x snap-mandatory"
           )}
+          onScroll={handleScroll}
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',

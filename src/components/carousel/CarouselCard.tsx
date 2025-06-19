@@ -22,7 +22,7 @@ const CarouselCard: React.FC<CarouselCardProps> = ({ section, isMobile }) => {
       style={{ 
         width: isMobile ? 'calc(100vw - 4rem)' : 'min(calc(100vw - 8rem), 65vw)',
         minHeight: isMobile ? '420px' : '500px',
-        scrollSnapAlign: 'start',
+        scrollSnapAlign: 'center',
         scrollSnapStop: 'always'
       }}
     >
