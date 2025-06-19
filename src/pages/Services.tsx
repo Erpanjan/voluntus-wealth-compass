@@ -66,31 +66,32 @@ const Services = () => {
   ];
 
   return (
-    <div className="min-h-screen font-inter">
+    <div className="min-h-screen font-inter bg-brand-primary">
       {/* Hero Section */}
       <Hero 
         title={t('services.title')}
+        background="transparent"
       />
 
       {/* Roadmap Section */}
-      <Section id="roadmap" background="dark">
-        <div className="grid md:grid-cols-1 gap-6 sm:gap-8 items-start max-w-3xl mx-auto">
+      <Section id="roadmap" background="light">
+        <div className="grid md:grid-cols-1 gap-6 sm:gap-8 items-start max-w-4xl mx-auto">
           <div className="space-y-6 sm:space-y-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-brand-accent tracking-tight">
               {t('services.roadmap.title')}
             </h2>
-            <div className="space-y-4 sm:space-y-6 text-white/70 text-base sm:text-lg font-light">
-              <p className="mobile-text-base">
+            <div className="space-y-4 sm:space-y-6 text-brand-gray text-base sm:text-lg font-light">
+              <p className="mobile-text-base leading-relaxed">
                 {t('services.roadmap.text1')}
               </p>
-              <p className="mobile-text-base">
+              <p className="mobile-text-base leading-relaxed">
                 {t('services.roadmap.text2')}
               </p>
             </div>
             <Button 
               asChild 
               size="lg"
-              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
+              className="bg-brand-accent hover:bg-brand-accent/90 text-brand-primary transition-all duration-300"
             >
               <Link to="#contact" className="inline-flex items-center">
                 {t('common.joinWaitlist')} <ArrowRight size={18} className="ml-2" />
@@ -100,10 +101,11 @@ const Services = () => {
         </div>
       </Section>
 
-      {/* What's Included Section - now using ServiceFeatureGrid */}
+      {/* What's Included Section - Enhanced with new ServiceFeatureGrid */}
       <Section 
         id="whats-included" 
         background="white"
+        className="py-16 md:py-24"
       >
         <ServiceFeatureGrid services={serviceItems} />
       </Section>
@@ -120,25 +122,25 @@ const Services = () => {
       {/* Pricing Section */}
       <Section 
         id="policy-fee" 
-        background="dark"
+        background="light"
       >
-        <div className="grid md:grid-cols-1 gap-6 sm:gap-8 items-start max-w-3xl mx-auto">
+        <div className="grid md:grid-cols-1 gap-6 sm:gap-8 items-start max-w-4xl mx-auto">
           <div className="space-y-6 sm:space-y-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-brand-accent">
               {t('services.pricing.title')}
             </h2>
-            <div className="space-y-4 sm:space-y-6 text-base sm:text-lg font-light text-white/70">
-              <p className="mobile-text-base">
+            <div className="space-y-4 sm:space-y-6 text-base sm:text-lg font-light text-brand-gray">
+              <p className="mobile-text-base leading-relaxed">
                 {t('services.pricing.text1')}
               </p>
-              <p className="mobile-text-base">
+              <p className="mobile-text-base leading-relaxed">
                 {t('services.pricing.text2')}
               </p>
             </div>
             <Button
               asChild 
               size="lg"
-              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
+              className="bg-brand-accent hover:bg-brand-accent/90 text-brand-primary transition-all duration-300"
             >
               <Link to="#contact" className="inline-flex items-center">
                 {t('common.joinWaitlist')} <ArrowRight size={18} className="ml-2" />
@@ -149,7 +151,7 @@ const Services = () => {
       </Section>
 
       {/* Waitlist Form */}
-      <Section id="contact">
+      <Section id="contact" background="white">
         <WaitlistForm />
       </Section>
     </div>

@@ -53,6 +53,12 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
+        brand: {
+          primary: '#F5F5F5', // White Smoke
+          secondary: '#E6E6E7', // Silver
+          accent: '#3B3B3D', // Black Olive
+          gray: '#A3A3A3', // Medium Gray
+        },
         voluntus: {
           white: '#FFFFFF',
           gray: {
