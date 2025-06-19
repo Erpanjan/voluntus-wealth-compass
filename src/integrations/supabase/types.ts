@@ -131,7 +131,6 @@ export type Database = {
       contact_submissions: {
         Row: {
           contact_info: string
-          contact_type: string
           created_at: string
           first_name: string
           id: string
@@ -141,7 +140,6 @@ export type Database = {
         }
         Insert: {
           contact_info: string
-          contact_type: string
           created_at?: string
           first_name: string
           id?: string
@@ -151,7 +149,6 @@ export type Database = {
         }
         Update: {
           contact_info?: string
-          contact_type?: string
           created_at?: string
           first_name?: string
           id?: string

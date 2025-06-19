@@ -13,7 +13,6 @@ const WaitlistForm = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    preferredContact: '',
     contactInfo: '',
     interests: ''
   });
@@ -38,7 +37,6 @@ const WaitlistForm = () => {
           {
             first_name: formData.firstName,
             last_name: formData.lastName,
-            contact_type: formData.preferredContact,
             contact_info: formData.contactInfo,
             message: formData.interests || 'Waitlist signup'
           }
@@ -54,7 +52,6 @@ const WaitlistForm = () => {
       setFormData({
         firstName: '',
         lastName: '',
-        preferredContact: '',
         contactInfo: '',
         interests: ''
       });
@@ -113,22 +110,6 @@ const WaitlistForm = () => {
               }}
             />
           </div>
-        </div>
-
-        <div className="w-full">
-          <Input
-            name="preferredContact"
-            type="text"
-            required
-            value={formData.preferredContact}
-            onChange={handleInputChange}
-            placeholder={t('waitlist.preferredContact')}
-            className="w-full !bg-transparent focus:!bg-transparent active:!bg-transparent border-0 border-b border-[#E5E5E5] rounded-none shadow-none text-[#666666] placeholder:text-[#999999] h-11 sm:h-12 px-0 pb-3 pt-0 font-poppins focus-visible:ring-0 focus-visible:border-[#333333] transition-colors min-w-0 [-webkit-autofill]:!bg-transparent text-sm sm:text-base"
-            style={{
-              WebkitBoxShadow: '0 0 0 1000px transparent inset',
-              WebkitTextFillColor: '#666666'
-            }}
-          />
         </div>
 
         <div className="w-full">

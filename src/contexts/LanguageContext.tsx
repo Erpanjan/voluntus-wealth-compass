@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 type Language = 'en' | 'zh';
@@ -291,8 +290,6 @@ const translations = {
     'waitlist.joinWaitlist': '抢先预约',
     'waitlist.firstName': '名字',
     'waitlist.lastName': '姓氏',
-    'waitlist.contactMethod': '联系方式（邮箱、电话等）',
-    'waitlist.preferredContact': '首选联系方式（邮箱、电话、微信、WhatsApp 等）',
     'waitlist.contactInfo': '您的联系账号',
     'waitlist.interests': '特别关注的内容或想了解的问题？（选填）',
     'waitlist.message': '您的留言',
