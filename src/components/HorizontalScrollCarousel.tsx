@@ -111,22 +111,24 @@ const HorizontalScrollCarousel = () => {
     ...containerSections.map((section, index) => ({ ...section, id: `${section.id}-3`, originalIndex: index }))
   ];
 
-  // Calculate card width for one-card-at-a-time display
+  // Enhanced card width calculation for one-card-at-a-time
   const getCardWidth = useCallback(() => {
     if (!isClient || typeof window === 'undefined') return 350;
     
     const viewportWidth = window.innerWidth;
     if (viewportWidth < 768) {
-      // Mobile: 95% of viewport width for immersive experience
-      return Math.min(viewportWidth * 0.95, viewportWidth - 20);
+      // Mobile: 90% of viewport width for better centering
+      return Math.floor(viewportWidth * 0.9);
     } else {
-      // Web: 85-90% of viewport width, max 900px for optimal reading
-      return Math.min(900, viewportWidth * 0.87);
+      // Web: 85% of viewport width with max 900px
+      return Math.floor(Math.min(900, viewportWidth * 0.85));
     }
   }, [isClient]);
 
   const [cardWidth, setCardWidth] = useState(() => getCardWidth());
-  const cardGap = isMobile ? 20 : 40; // Larger gap for better separation
+  
+  // Enhanced gap system for proper separation
+  const cardGap = isMobile ? 60 : 80; // Larger gaps ensure only one card visible
   const totalCardWidth = cardWidth + cardGap;
   const sectionLength = containerSections.length;
 
@@ -169,7 +171,7 @@ const HorizontalScrollCarousel = () => {
     const viewport = scrollViewportRef.current;
     if (!viewport || !isClient) return;
 
-    // Initial position to start in the middle section
+    // Enhanced initial positioning to center first card
     const initialPosition = totalCardWidth * sectionLength;
     viewport.scrollTo({
       left: initialPosition,
@@ -231,8 +233,15 @@ const HorizontalScrollCarousel = () => {
           }}
         >
           <div 
-            className={`flex ${isMobile ? 'gap-5 p-3 pb-8' : 'gap-10 p-6 pb-12'}`}
-            style={{ paddingLeft: isMobile ? '2.5%' : '6.5%', paddingRight: isMobile ? '2.5%' : '6.5%' }}
+            className="flex"
+            style={{ 
+              gap: `${cardGap}px`,
+              // Simplified padding for better one-card visibility
+              paddingLeft: isMobile ? '5%' : '7.5%',
+              paddingRight: isMobile ? '5%' : '7.5%',
+              paddingTop: isMobile ? '12px' : '24px',
+              paddingBottom: isMobile ? '32px' : '48px'
+            }}
           >
             {infiniteItems.map((section) => (
               <div
