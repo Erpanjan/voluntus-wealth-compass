@@ -67,15 +67,11 @@ const HorizontalScrollCarousel = () => {
         </h2>
       </div>
 
-      {/* Improved One-Card Carousel */}
+      {/* Simplified Carousel Container */}
       <div 
         className="relative"
         onMouseEnter={pauseAutoScroll}
         onTouchStart={pauseAutoScroll}
-        style={{
-          paddingLeft: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
-          paddingRight: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
-        }}
       >
         <div 
           ref={containerRef}
@@ -86,14 +82,14 @@ const HorizontalScrollCarousel = () => {
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            scrollPaddingLeft: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
-            scrollPaddingRight: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
           }}
         >
           <div 
             className="flex"
             style={{ 
               gap: isMobile ? CAROUSEL_CONFIG.GAP.MOBILE : CAROUSEL_CONFIG.GAP.DESKTOP,
+              paddingLeft: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
+              paddingRight: isMobile ? CAROUSEL_CONFIG.PADDING.MOBILE : CAROUSEL_CONFIG.PADDING.DESKTOP,
               paddingTop: isMobile ? '12px' : '24px',
               paddingBottom: isMobile ? '12px' : '24px'
             }}

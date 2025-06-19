@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { InfiniteSection } from './types';
+import { CAROUSEL_CONFIG } from './constants';
 
 interface CarouselCardProps {
   section: InfiniteSection;
@@ -20,9 +21,9 @@ const CarouselCard: React.FC<CarouselCardProps> = ({ section, isMobile }) => {
       data-carousel-card
       className="shrink-0 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-all duration-500 relative"
       style={{ 
-        width: isMobile ? 'calc(100vw - 4rem)' : 'min(calc(100vw - 8rem), 65vw)',
+        width: isMobile ? CAROUSEL_CONFIG.CARD_WIDTH.MOBILE : CAROUSEL_CONFIG.CARD_WIDTH.DESKTOP,
         minHeight: isMobile ? '420px' : '500px',
-        scrollSnapAlign: 'start',
+        scrollSnapAlign: 'center',
         scrollSnapStop: 'always'
       }}
     >
