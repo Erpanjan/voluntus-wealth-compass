@@ -19,44 +19,36 @@ const Hero: React.FC<HeroProps> = ({
   collaboration,
   background = 'transparent'
 }) => {
-  const bgClasses = {
-    'light': 'bg-[#F1F1F1]',
-    'dark': 'bg-black text-white',
-    'transparent': 'bg-transparent',
-  };
-
   return (
     <section className={cn(
-      'min-h-[80vh] md:min-h-screen flex flex-col justify-center items-center overflow-hidden relative',
-      bgClasses[background],
+      'min-h-screen flex flex-col justify-center items-center overflow-hidden relative bg-white',
       className
     )}>
-      <div className="container-custom relative z-10 flex flex-col justify-center py-12 sm:py-16 md:py-20">
-        <div className="max-w-3xl mx-auto px-4 md:px-0">
-          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 md:mb-6 tracking-tight animate-fade-in text-center">
+      <div className="container-custom relative z-10 flex flex-col justify-center py-24 md:py-32">
+        <div className="max-w-4xl mx-auto px-0">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-medium leading-tight mb-12 md:mb-16 tracking-tight text-center text-black">
             {title}
           </h1>
           
           {subtitle && (
-            <p className="text-base sm:text-lg md:text-xl text-[#666666] font-light mb-6 md:mb-10 animate-fade-in max-w-2xl mx-auto text-center mobile-text-base">
+            <p className="text-lg md:text-xl text-gray-600 font-light mb-16 md:mb-20 max-w-2xl mx-auto text-center leading-loose">
               {subtitle}
             </p>
           )}
           
           {collaboration && (
-            <p className="text-sm text-[#666666] italic mb-5 md:mb-8 animate-fade-in mobile-text-sm">
+            <p className="text-sm text-gray-500 font-light mb-12 md:mb-16 text-center uppercase tracking-wider">
               {collaboration}
             </p>
           )}
           
           {children && (
-            <div className="mt-6 md:mt-10 animate-fade-in">
+            <div className="mt-16 md:mt-20 text-center">
               {children}
             </div>
           )}
         </div>
       </div>
-      <div className="absolute left-0 bottom-0 w-full h-32 bg-gradient-to-t from-[#F1F1F1]/30 to-transparent"></div>
     </section>
   );
 };
