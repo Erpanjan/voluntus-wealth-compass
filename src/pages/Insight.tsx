@@ -2,15 +2,12 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
-import ArticleCard from '@/components/ArticleCard';
 import WaitlistForm from '@/components/WaitlistForm';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useSimplePublishedArticles } from '@/hooks/useSimplePublishedArticles';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-import { RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Link } from 'react-router-dom';
 
 const Insight = () => {
   const { t, language } = useLanguage();
@@ -22,173 +19,130 @@ const Insight = () => {
     currentPage,
     setCurrentPage,
     refresh 
-  } = useSimplePublishedArticles(4, language);
+  } = useSimplePublishedArticles(6, language);
   
   const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page - 1); // Convert to 0-based for backend
+    setCurrentPage(page - 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [setCurrentPage]);
 
-  const handleRefresh = useCallback(() => {
-    console.log('Refreshing articles...');
-    refresh();
-  }, [refresh]);
+  // Editorial article cards
+  const articleCards = useMemo(() => {
+    return articles.map((article, index) => (
+      <article key={article.id} className="group">
+        {/* Large featured image */}
+        <Link to={`/insight/${article.slug}`} className="block editorial-spacing">
+          <img 
+            src={article.image_url || `https://images.unsplash.com/photo-${1488590528505 + index}?auto=format&fit=crop&q=80&w=800&h=600`}
+            alt={article.title}
+            className="editorial-image w-full h-[400px] md:h-[500px] object-cover group-hover:opacity-90 transition-opacity duration-300"
+            loading={index < 2 ? "eager" : "lazy"}
+          />
+        </Link>
+        
+        {/* Editorial content */}
+        <div className="text-center">
+          <Link to={`/insight/${article.slug}`}>
+            <h3 className="text-xl md:text-2xl font-normal tracking-wide text-black mb-4 leading-tight group-hover:opacity-70 transition-opacity duration-200">
+              {article.title}
+            </h3>
+          </Link>
+          {article.description && (
+            <p className="text-sm md:text-base font-light text-gray-600 leading-relaxed mb-6 max-w-xl mx-auto">
+              {article.description}
+            </p>
+          )}
+          
+          {/* Minimal metadata */}
+          <div className="text-xs text-gray-400 uppercase tracking-widest">
+            {format(new Date(article.published_at), 'MMMM yyyy')}
+            {article.authors && article.authors.length > 0 && (
+              <span> • {article.authors[0].name}</span>
+            )}
+          </div>
+        </div>
+      </article>
+    ));
+  }, [articles]);
 
-  // Memoized skeleton renderer
+  // Loading skeletons
   const renderSkeletons = useMemo(() => (
     <>
-      {[...Array(4)].map((_, i) => (
-        <div key={i} className="bg-white rounded-xl overflow-hidden">
-          <Skeleton className="h-48 w-full" />
-          <div className="p-6 space-y-3">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-6 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-2/3" />
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className="space-y-6">
+          <Skeleton className="h-[400px] w-full" />
+          <div className="text-center space-y-3">
+            <Skeleton className="h-6 w-3/4 mx-auto" />
+            <Skeleton className="h-4 w-full mx-auto" />
+            <Skeleton className="h-3 w-1/3 mx-auto" />
           </div>
         </div>
       ))}
     </>
   ), []);
 
-  // Memoized article cards
-  const articleCards = useMemo(() => {
-    console.log('Rendering article cards:', { 
-      articlesCount: articles.length, 
-      language,
-      articles: articles.map(a => ({ id: a.id, title: a.title, hasContent: !!a.content }))
-    });
-    
-    return articles.map((article, index) => (
-      <ArticleCard
-        key={article.id}
-        id={article.slug}
-        title={article.title}
-        date={format(new Date(article.published_at), 'MMMM dd, yyyy')}
-        description={article.description}
-        category={article.category}
-        authors={article.authors?.map(author => author.name) || []}
-        image={article.image_url}
-        priority={index < 2} // First 2 images load eagerly
-      />
-    ));
-  }, [articles, language]);
-
-  // Memoized pagination
-  const paginationComponent = useMemo(() => {
-    if (totalPages <= 1 || loading) return null;
-
-    const displayPage = currentPage + 1; // Convert to 1-based for UI
-
-    return (
-      <div className="mt-12">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious 
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (displayPage > 1) handlePageChange(displayPage - 1);
-                }}
-                className={displayPage === 1 ? 'pointer-events-none opacity-50' : ''}
-              />
-            </PaginationItem>
-            
-            {[...Array(totalPages)].map((_, i) => (
-              <PaginationItem key={i + 1}>
-                <PaginationLink 
-                  href="#" 
-                  isActive={displayPage === i + 1}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handlePageChange(i + 1);
-                  }}
-                >
-                  {i + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            
-            <PaginationItem>
-              <PaginationNext 
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (displayPage < totalPages) handlePageChange(displayPage + 1);
-                }}
-                className={displayPage === totalPages ? 'pointer-events-none opacity-50' : ''}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-    );
-  }, [totalPages, loading, currentPage, handlePageChange]);
-
-  // Memoized article stats
-  const articleStats = useMemo(() => {
-    if (loading || totalCount === 0) return null;
-
-    const startIndex = currentPage * 4;
-    return (
-      <div className="mt-8 text-center text-sm text-gray-600">
-        {t('insight.showing')} {Math.min(startIndex + 1, totalCount)} - {Math.min(startIndex + 4, totalCount)} {t('insight.of')} {totalCount} {t('insight.articles')}
-      </div>
-    );
-  }, [loading, totalCount, currentPage, t]);
-
-  console.log('Insight page render:', { 
-    articles: articles.length, 
-    loading, 
-    totalCount, 
-    totalPages,
-    currentPage: currentPage + 1,
-    language,
-    hasArticles: articles.length > 0,
-    isDataReady: !loading && articles.length >= 0
-  });
-
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
+    <div className="min-h-screen bg-white">
+      {/* Ultra-minimal Hero */}
       <Hero 
         title={t('insight.title')}
         subtitle={t('insight.subtitle')}
-        background="light"
+        background="white"
       />
 
-      {/* Latest Research Section */}
-      <Section title={t('insight.latestResearch')} titleCentered={true}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full">
-          {loading ? renderSkeletons : articleCards}
+      {/* Editorial Articles Grid */}
+      <Section background="white" className="py-32">
+        <div className="w-full">
+          {/* Section title */}
+          <div className="editorial-spacing-large text-center">
+            <h2 className="font-light tracking-wide leading-tight">
+              {t('insight.latestResearch')}
+            </h2>
+          </div>
           
-          {!loading && articles.length === 0 && (
-            <div className="col-span-full text-center py-16">
-              <h3 className="text-xl font-medium text-gray-600">{t('insight.noArticles')}</h3>
-              <p className="mt-2 text-gray-500">{t('insight.noArticles.subtitle')}</p>
-              <Button 
-                variant="outline" 
-                onClick={handleRefresh}
-                className="mt-4"
-              >
-                <RefreshCw size={16} className="mr-2" />
-                {t('insight.refresh')}
-              </Button>
-              <div className="mt-4 text-sm text-gray-400">
-                Debug: Language={language}, Total Count={totalCount}, Loading={loading ? 'true' : 'false'}
+          {/* Articles grid - editorial style */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 max-w-6xl mx-auto">
+            {loading ? renderSkeletons : articleCards}
+            
+            {!loading && articles.length === 0 && (
+              <div className="col-span-full text-center py-32">
+                <h3 className="text-xl font-light text-gray-600 mb-4">{t('insight.noArticles')}</h3>
+                <p className="text-sm font-light text-gray-500">{t('insight.noArticles.subtitle')}</p>
+              </div>
+            )}
+          </div>
+          
+          {/* Minimal pagination */}
+          {totalPages > 1 && !loading && (
+            <div className="text-center mt-24">
+              <div className="inline-flex space-x-8">
+                {currentPage > 0 && (
+                  <button 
+                    onClick={() => handlePageChange(currentPage)}
+                    className="text-xs uppercase tracking-widest text-black hover:opacity-70 transition-opacity duration-200"
+                  >
+                    Previous
+                  </button>
+                )}
+                <span className="text-xs text-gray-400 uppercase tracking-widest">
+                  {currentPage + 1} of {totalPages}
+                </span>
+                {currentPage + 1 < totalPages && (
+                  <button 
+                    onClick={() => handlePageChange(currentPage + 2)}
+                    className="text-xs uppercase tracking-widest text-black hover:opacity-70 transition-opacity duration-200"
+                  >
+                    Next
+                  </button>
+                )}
               </div>
             </div>
           )}
         </div>
-        
-        {paginationComponent}
-        {articleStats}
       </Section>
 
-      {/* Waitlist Form Section */}
-      <Section id="contact" background="light">
+      {/* Minimal Contact */}
+      <Section background="white" className="py-32">
         <WaitlistForm />
       </Section>
     </div>

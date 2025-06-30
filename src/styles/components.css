@@ -1,51 +1,111 @@
 
 @layer components {
+  /* Ultra-minimal button styles */
   .btn {
-    @apply px-7 py-3 rounded-full font-medium transition-all duration-300 inline-flex items-center gap-2;
-    /* Safari button rendering fix */
-    -webkit-appearance: none;
-    -moz-appearance: none;
+    @apply font-normal transition-opacity duration-200 inline-flex items-center;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 0;
+    background: none;
+    border: none;
   }
 
   .btn-primary {
-    @apply bg-black text-white hover:shadow-hover hover:bg-opacity-90;
+    @apply text-black hover:opacity-70;
   }
 
   .btn-secondary {
-    @apply bg-[#F1F1F1] text-[#333333] hover:bg-[#CCCCCC] hover:shadow-soft;
+    @apply text-gray-600 hover:text-black;
   }
 
   .btn-outline {
-    @apply border border-[#F1F1F1] text-[#333333] hover:bg-[#F1F1F1] hover:shadow-soft;
+    @apply text-black hover:opacity-70;
+    border-bottom: 1px solid transparent;
   }
 
+  .btn-outline:hover {
+    border-bottom: 1px solid black;
+  }
+
+  /* Editorial section spacing */
   .section {
-    @apply py-24 md:py-32;
+    @apply py-32 md:py-48; /* Much more generous spacing */
   }
 
+  /* Ultra-minimal container */
   .container-custom {
-    @apply container mx-auto px-6 md:px-8 max-w-7xl;
-    /* Safari container fix */
+    @apply container mx-auto px-8 md:px-16 max-w-6xl; /* Wider, more editorial layout */
     width: 100%;
     overflow-x: hidden;
   }
 
+  /* Editorial link styles */
   .link {
-    @apply text-[#666666] hover:text-[#333333] transition-colors duration-200;
+    @apply text-black hover:opacity-70 transition-opacity duration-200;
+    font-weight: 300;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
   }
 
+  /* Minimal form elements */
   input, textarea, select {
-    @apply transition-all duration-200;
-    /* Safari input rendering */
+    @apply transition-opacity duration-200 bg-transparent border-0 border-b border-gray-300;
+    font-weight: 300;
+    padding: 0.75rem 0;
+    border-radius: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    @apply border-black outline-none;
+    box-shadow: none;
+  }
+
+  /* Remove card styling - pure editorial */
+  .card {
+    @apply bg-transparent p-0;
+    box-shadow: none;
+    border: none;
     border-radius: 0;
   }
 
-  .card {
-    @apply bg-white rounded-3xl shadow-soft p-8 transition-all duration-300 hover:shadow-hover;
-    /* Safari card rendering */
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
+  /* Editorial image styles */
+  .editorial-image {
+    @apply w-full h-auto;
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Minimal navigation */
+  .nav-item {
+    @apply text-black font-normal;
+    font-weight: 300;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: opacity 0.2s ease;
+  }
+
+  .nav-item:hover {
+    opacity: 0.7;
+  }
+
+  /* Editorial spacing utilities */
+  .editorial-spacing {
+    margin-bottom: 4rem;
+  }
+
+  .editorial-spacing-large {
+    margin-bottom: 8rem;
+  }
+
+  /* Minimal dividers */
+  .editorial-divider {
+    @apply w-full h-px bg-gray-200 my-16;
   }
 }

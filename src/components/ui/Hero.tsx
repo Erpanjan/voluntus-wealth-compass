@@ -1,62 +1,70 @@
 
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { cn } from '@/lib/utils';
 
 interface HeroProps {
   title: string;
   subtitle?: string;
+  children?: React.ReactNode;
+  background?: 'white' | 'light' | 'dark' | 'transparent';
   className?: string;
-  children?: ReactNode;
   collaboration?: string;
-  background?: 'light' | 'dark' | 'transparent';
 }
 
-const Hero: React.FC<HeroProps> = ({ 
-  title, 
-  subtitle, 
-  className, 
+const Hero: React.FC<HeroProps> = ({
+  title,
+  subtitle,
   children,
-  collaboration,
-  background = 'transparent'
+  background = 'white',
+  className,
+  collaboration
 }) => {
-  const bgClasses = {
-    'light': 'bg-[#F1F1F1]',
-    'dark': 'bg-black text-white',
-    'transparent': 'bg-transparent',
+  const backgroundClasses = {
+    white: 'bg-white',
+    light: 'bg-white',
+    dark: 'bg-black text-white',
+    transparent: 'bg-transparent'
   };
 
   return (
     <section className={cn(
-      'min-h-[80vh] md:min-h-screen flex flex-col justify-center items-center overflow-hidden relative',
-      bgClasses[background],
+      'min-h-screen flex items-center justify-center',
+      backgroundClasses[background],
       className
     )}>
-      <div className="container-custom relative z-10 flex flex-col justify-center py-12 sm:py-16 md:py-20">
-        <div className="max-w-3xl mx-auto px-4 md:px-0">
-          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 md:mb-6 tracking-tight animate-fade-in text-center">
+      <div className="container-custom text-center">
+        <div className="max-w-4xl mx-auto editorial-spacing-large">
+          {/* Ultra-minimal title */}
+          <h1 className="mb-16 font-light leading-none tracking-wide">
             {title}
           </h1>
           
+          {/* Subtitle if provided */}
           {subtitle && (
-            <p className="text-base sm:text-lg md:text-xl text-[#666666] font-light mb-6 md:mb-10 animate-fade-in max-w-2xl mx-auto text-center mobile-text-base">
-              {subtitle}
-            </p>
+            <div className="editorial-spacing">
+              <p className="text-lg md:text-xl font-light text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                {subtitle}
+              </p>
+            </div>
           )}
-          
+
+          {/* Collaboration text if provided */}
           {collaboration && (
-            <p className="text-sm text-[#666666] italic mb-5 md:mb-8 animate-fade-in mobile-text-sm">
-              {collaboration}
-            </p>
+            <div className="editorial-spacing">
+              <p className="text-sm font-light text-gray-500 uppercase tracking-widest">
+                {collaboration}
+              </p>
+            </div>
           )}
-          
+
+          {/* Children (typically CTA buttons) */}
           {children && (
-            <div className="mt-6 md:mt-10 animate-fade-in">
+            <div className="editorial-spacing">
               {children}
             </div>
           )}
         </div>
       </div>
-      <div className="absolute left-0 bottom-0 w-full h-32 bg-gradient-to-t from-[#F1F1F1]/30 to-transparent"></div>
     </section>
   );
 };
