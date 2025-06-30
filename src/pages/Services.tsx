@@ -4,7 +4,9 @@ import Hero from '@/components/ui/Hero';
 import Section from '@/components/ui/Section';
 import ServiceFeatureGrid from '@/components/ServiceFeatureGrid';
 import WaitlistForm from '@/components/WaitlistForm';
+import FAQAccordionSection from '@/components/FAQAccordionSection';
 import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -35,72 +37,119 @@ const Services = () => {
     },
   ];
 
-  return (
-    <div className="min-h-screen font-inter bg-white">
-      {/* Ultra-minimal Hero */}
-      <Hero title={t('services.title')} />
+  // Value propositions with translations
+  const valuePropositionItems = [
+    {
+      id: "control",
+      title: t('value.control.title'),
+      subtitle: t('value.control.subtitle'),
+      description: t('value.control.description')
+    },
+    {
+      id: "fiduciary",
+      title: t('value.fiduciary.title'),
+      subtitle: t('value.fiduciary.subtitle'),
+      description: t('value.fiduciary.description')
+    },
+    {
+      id: "simplicity",
+      title: t('value.simplicity.title'),
+      subtitle: t('value.simplicity.subtitle'),
+      description: t('value.simplicity.description')
+    },
+    {
+      id: "accountability",
+      title: t('value.accountability.title'),
+      subtitle: t('value.accountability.subtitle'),
+      description: t('value.accountability.description')
+    },
+  ];
 
-      {/* Editorial Featured Image Section */}
-      <Section background="white" className="py-32">
-        <div className="max-w-5xl mx-auto">
-          <img 
-            src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&q=80&w=1200&h=600"
-            alt="Financial Services"
-            className="editorial-image w-full h-[500px] md:h-[700px] object-cover mb-16"
-          />
-          <div className="max-w-3xl mx-auto text-center">
-            <h3 className="text-2xl md:text-4xl font-light tracking-wide mb-8 leading-tight">
+  return (
+    <div className="min-h-screen font-inter">
+      {/* Hero Section */}
+      <Hero 
+        title={t('services.title')}
+      />
+
+      {/* Roadmap Section */}
+      <Section id="roadmap" background="dark">
+        <div className="grid md:grid-cols-1 gap-6 sm:gap-8 items-start max-w-3xl mx-auto">
+          <div className="space-y-6 sm:space-y-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight">
               {t('services.roadmap.title')}
-            </h3>
-            <p className="text-base md:text-lg font-light text-gray-600 leading-relaxed mb-8">
-              {t('services.roadmap.text1')}
-            </p>
-            <p className="text-base md:text-lg font-light text-gray-600 leading-relaxed mb-12">
-              {t('services.roadmap.text2')}
-            </p>
-            <Button asChild variant="default" size="lg">
-              <Link to="#contact">
-                {t('common.joinWaitlist')}
+            </h2>
+            <div className="space-y-4 sm:space-y-6 text-white/70 text-base sm:text-lg font-light">
+              <p className="mobile-text-base">
+                {t('services.roadmap.text1')}
+              </p>
+              <p className="mobile-text-base">
+                {t('services.roadmap.text2')}
+              </p>
+            </div>
+            <Button 
+              asChild 
+              size="lg"
+              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
+            >
+              <Link to="#contact" className="inline-flex items-center">
+                {t('common.joinWaitlist')} <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
         </div>
       </Section>
 
-      {/* Services Grid - Editorial Style */}
-      <Section background="white" className="py-32">
+      {/* What's Included Section - now using ServiceFeatureGrid */}
+      <Section 
+        id="whats-included" 
+        background="white"
+      >
         <ServiceFeatureGrid services={serviceItems} />
       </Section>
 
-      {/* Pricing Section - Editorial */}
-      <Section background="white" className="py-32">
-        <div className="max-w-5xl mx-auto">
-          <img 
-            src="https://images.unsplash.com/photo-1486718448742-163732cd1544?auto=format&fit=crop&q=80&w=1200&h=600"
-            alt="Pricing Structure"
-            className="editorial-image w-full h-[400px] md:h-[600px] object-cover mb-16"
-          />
-          <div className="max-w-3xl mx-auto text-center">
-            <h3 className="text-2xl md:text-4xl font-light tracking-wide mb-8 leading-tight">
+      {/* Value Propositions */}
+      <div id="principles">
+        <FAQAccordionSection 
+          title={t('services.whyChooseUs')}
+          subtitle={t('services.whyChooseUs.subtitle')}
+          propositions={valuePropositionItems}
+        />
+      </div>
+
+      {/* Pricing Section */}
+      <Section 
+        id="policy-fee" 
+        background="dark"
+      >
+        <div className="grid md:grid-cols-1 gap-6 sm:gap-8 items-start max-w-3xl mx-auto">
+          <div className="space-y-6 sm:space-y-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
               {t('services.pricing.title')}
-            </h3>
-            <p className="text-base md:text-lg font-light text-gray-600 leading-relaxed mb-8">
-              {t('services.pricing.text1')}
-            </p>
-            <p className="text-base md:text-lg font-light text-gray-600 leading-relaxed mb-12">
-              {t('services.pricing.text2')}
-            </p>
-            <Button asChild variant="default" size="lg">
-              <Link to="#contact">
-                {t('common.joinWaitlist')}
+            </h2>
+            <div className="space-y-4 sm:space-y-6 text-base sm:text-lg font-light text-white/70">
+              <p className="mobile-text-base">
+                {t('services.pricing.text1')}
+              </p>
+              <p className="mobile-text-base">
+                {t('services.pricing.text2')}
+              </p>
+            </div>
+            <Button
+              asChild 
+              size="lg"
+              className="bg-white hover:bg-white/90 text-black transition-all duration-300"
+            >
+              <Link to="#contact" className="inline-flex items-center">
+                {t('common.joinWaitlist')} <ArrowRight size={18} className="ml-2" />
               </Link>
             </Button>
           </div>
         </div>
       </Section>
 
-      {/* Minimal Contact */}
-      <Section id="contact" background="white" className="py-32">
+      {/* Waitlist Form */}
+      <Section id="contact">
         <WaitlistForm />
       </Section>
     </div>

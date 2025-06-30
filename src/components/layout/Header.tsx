@@ -1,108 +1,88 @@
 
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { useScrollState } from '@/hooks/useScrollState';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useNavigationState } from '@/hooks/useNavigationState';
+import { useTransitionState } from '@/hooks/useTransitionState';
+import { getHeaderBackgroundClass } from '@/utils/headerUtils';
+import { HEADER_CLASSES, NAV_LINKS } from './header/constants';
+import HeaderLeft from './header/sections/HeaderLeft';
+import HeaderCenter from './header/sections/HeaderCenter';
+import HeaderRight from './header/sections/HeaderRight';
+import NavLinks from './header/NavLinks';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Custom hooks for different concerns
   const scrolled = useScrollState();
-  const location = useLocation();
-  const { t } = useLanguage();
-
-  const navLinks = [
-    { path: '/', label: 'HOME' },
-    { path: '/services', label: 'SERVICES' },
-    { path: '/insight', label: 'STORIES' },
-    { path: '/about', label: 'ABOUT' },
-    { path: '/contact', label: 'CONTACT' },
-  ];
-
+  const { isActive, handleNavLinkClick } = useNavigationState();
+  const { isOnLoginPage, isTransitioning, handleLoginClick } = useTransitionState();
+  
+  // Visibility state for child components
+  const visibilityState = { isOnLoginPage, isTransitioning };
+  
+  // Header background logic
+  const headerBackgroundClass = getHeaderBackgroundClass(isOnLoginPage, scrolled, isMenuOpen);
+  
+  const handleLogoClick = () => {
+    window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  };
+  
   return (
-    <header className={cn(
-      "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-      scrolled ? "bg-white/95 backdrop-blur-sm" : "bg-white"
-    )}>
-      <div className="container-custom">
-        <div className="flex items-center justify-between py-8">
-          {/* Logo/Brand */}
-          <Link to="/" className="text-black font-normal text-sm tracking-widest uppercase">
-            VOLUNTAS
-          </Link>
+    <header className={cn(HEADER_CLASSES.FIXED_HEADER, headerBackgroundClass)}>
+      <div className={HEADER_CLASSES.CONTAINER}>
+        {/* Left Section - Logo */}
+        <HeaderLeft 
+          visibilityState={visibilityState}
+          onLogoClick={handleLogoClick}
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+        />
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-12">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  "nav-item",
-                  location.pathname === link.path && "opacity-100 font-normal"
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+        {/* Center Section - Navigation */}
+        <HeaderCenter 
+          visibilityState={visibilityState}
+          navLinks={NAV_LINKS}
+          isActive={isActive}
+          handleNavLinkClick={handleNavLinkClick}
+        />
 
-          {/* Get Updates CTA */}
-          <Link 
-            to="/contact" 
-            className="hidden md:block nav-item border-b border-transparent hover:border-black pb-px"
-          >
-            GET UPDATES
-          </Link>
+        {/* Right Section - Language, Login, Mobile Menu */}
+        <HeaderRight 
+          visibilityState={visibilityState}
+          isActive={isActive}
+          handleLoginClick={handleLoginClick}
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+        />
+      </div>
 
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden text-black"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <span className="sr-only">Menu</span>
-            <div className="w-5 h-4 flex flex-col justify-between">
-              <span className={cn(
-                "w-full h-px bg-black transition-all duration-300",
-                isMenuOpen && "rotate-45 translate-y-1.5"
-              )} />
-              <span className={cn(
-                "w-full h-px bg-black transition-all duration-300",
-                isMenuOpen && "opacity-0"
-              )} />
-              <span className={cn(
-                "w-full h-px bg-black transition-all duration-300",
-                isMenuOpen && "-rotate-45 -translate-y-1.5"
-              )} />
-            </div>
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        <div className={cn(
-          "md:hidden transition-all duration-300 overflow-hidden",
-          isMenuOpen ? "max-h-96 pb-8" : "max-h-0"
-        )}>
-          <nav className="flex flex-col space-y-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="nav-item"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link 
-              to="/contact" 
-              className="nav-item border-b border-black pb-px w-fit"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              GET UPDATES
-            </Link>
-          </nav>
-        </div>
+      {/* Mobile menu container */}
+      <div className={cn(
+        HEADER_CLASSES.MOBILE_MENU_CONTAINER,
+        isMenuOpen && !isOnLoginPage && !isTransitioning 
+          ? HEADER_CLASSES.MOBILE_MENU_VISIBLE
+          : HEADER_CLASSES.MOBILE_MENU_HIDDEN
+      )}>
+        <NavLinks 
+          navLinks={NAV_LINKS} 
+          isActive={isActive} 
+          handleNavLinkClick={(e, isActivePath) => {
+            handleNavLinkClick(e, isActivePath);
+            setIsMenuOpen(false);
+          }} 
+          handleLoginClick={(e) => {
+            handleLoginClick(e);
+            setIsMenuOpen(false);
+          }}
+          isMobile={true}
+        />
       </div>
     </header>
   );

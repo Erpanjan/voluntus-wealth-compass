@@ -9,47 +9,24 @@ const About = () => {
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Ultra-minimal Hero */}
+    <div className="min-h-screen">
+      {/* Hero Section */}
       <Hero 
         title={t('about.title')}
         subtitle={t('about.subtitle')}
-        background="white"
       />
 
-      {/* Editorial Featured Section */}
-      <Section background="white" className="py-32">
-        <div className="max-w-5xl mx-auto">
-          {/* Large featured image */}
-          <div className="editorial-spacing">
-            <img 
-              src="https://images.unsplash.com/photo-1493397212122-2b85dda8106b?auto=format&fit=crop&q=80&w=1200&h=700"
-              alt="About Us"
-              className="editorial-image w-full h-[500px] md:h-[700px] object-cover"
-            />
-          </div>
-          
-          {/* Editorial content */}
-          <div className="max-w-3xl mx-auto text-center">
-            <h3 className="text-2xl md:text-4xl font-light tracking-wide mb-12 leading-tight">
-              Our Vision
-            </h3>
-            <p className="text-lg md:text-xl font-light text-gray-600 leading-loose">
-              {t('about.vision')}
-            </p>
-          </div>
-          
-          {/* Minimal metadata */}
-          <div className="text-center mt-16">
-            <p className="text-xs text-gray-400 uppercase tracking-widest">
-              {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} • VOLUNTAS TEAM
-            </p>
-          </div>
+      {/* Vision Section */}
+      <Section>
+        <div className="max-w-4xl mx-auto text-center flex items-center justify-center min-h-[200px]">
+          <h2 className="text-xl sm:text-2xl md:text-3xl leading-relaxed text-zinc-800 text-left py-4 mx-4 sm:mx-6 md:mx-[24px] px-0 font-light lg:text-5xl lg:leading-relaxed">
+            {t('about.vision')}
+          </h2>
         </div>
       </Section>
 
-      {/* Minimal Contact */}
-      <Section background="white" className="py-32">
+      {/* Waitlist Form */}
+      <Section id="contact" background="light">
         <WaitlistForm />
       </Section>
     </div>
