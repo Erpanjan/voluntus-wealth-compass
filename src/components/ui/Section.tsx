@@ -15,7 +15,7 @@ interface SectionProps {
   titleClassName?: string;
   subtitleClassName?: string;
   contentClassName?: string;
-  matchFAQHeight?: boolean;
+  matchFAQHeight?: boolean; // New prop to match FAQ section height
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -36,40 +36,47 @@ const Section: React.FC<SectionProps> = ({
   
   const bgClasses = {
     'white': 'bg-white',
-    'light': 'bg-white',
+    'light': 'bg-[#F1F1F1]',
     'dark': 'bg-black text-white',
   };
 
+  // Apply specific height classes when matching FAQ height or for ServiceFeatureGrid
   const sectionHeightClasses = matchFAQHeight 
-    ? 'py-24 md:py-32' 
+    ? 'py-16 md:py-24' 
     : carouselItem 
-      ? 'py-16 md:py-20' 
+      ? 'py-3 md:py-6' 
       : id === 'whats-included'
-        ? 'py-24 md:py-32'
-        : 'py-32 md:py-48';
+        ? 'py-6 md:py-8'
+        : 'min-h-[70vh] md:min-h-screen py-8 sm:py-10 md:py-16';
+
+  // Use different justify alignment for services section to reduce bottom spacing
+  const justifyAlignment = id === 'whats-included' ? 'justify-start' : 'justify-center';
 
   return (
     <section id={id} className={cn(
       sectionHeightClasses,
       'flex flex-col overflow-hidden relative',
+      justifyAlignment,
       bgClasses[background],
       className
     )}>
-      <div className={cn("container-custom flex flex-col h-full px-8 md:px-16")}>
+      <div className={cn("container-custom flex flex-col h-full px-3 md:px-6", carouselItem && "h-full", id === 'whats-included' && "justify-start")}>
         {(title || subtitle) && (
           <div 
             className={cn(
-              'mb-16 md:mb-24', 
-              titleCentered ? 'text-center max-w-4xl mx-auto' : 'max-w-4xl'
+              'mb-5 sm:mb-6 md:mb-12', 
+              titleCentered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'
             )}
+            data-section-header="true"
           >
             {title && (
               <h2 
                 className={cn(
-                  "text-3xl md:text-5xl lg:text-6xl font-medium mb-8 md:mb-12 tracking-tight",
+                  "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-semibold mb-3 md:mb-6 tracking-tight animate-fade-in",
                   titleClassName,
-                  background === 'dark' ? 'text-white' : 'text-black'
+                  background === 'dark' ? 'text-white' : 'text-[#333333]'
                 )}
+                data-section-title="true"
               >
                 {title}
               </h2>
@@ -77,17 +84,18 @@ const Section: React.FC<SectionProps> = ({
             {subtitle && (
               <p 
                 className={cn(
-                  "text-lg md:text-xl max-w-3xl font-light leading-loose",
+                  "text-base sm:text-lg md:text-xl max-w-2xl animate-fade-in mobile-text-base",
                   subtitleClassName,
-                  background === 'dark' ? 'text-white/70' : 'text-gray-600'
+                  background === 'dark' ? 'text-white/70' : 'text-[#666666]'
                 )}
+                data-section-subtitle="true"
               > 
                 {subtitle}
               </p>
             )}
           </div>
         )}
-        <div className={cn("flex flex-col items-center w-full", contentClassName)}>
+        <div className={cn("flex flex-col items-center w-full", id === 'whats-included' ? "justify-start" : "flex-grow justify-start", contentClassName)} data-section-content="true">
           {children}
         </div>
       </div>
